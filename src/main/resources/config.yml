@@ -1,0 +1,81 @@
+MONGO:
+  DATABASE: "Brawl"
+  HOST: "127.0.0.1"
+  PORT: 27017
+  AUTHENTICATION:
+    ENABLED: false
+    USERNAME: ""
+    PASSWORD: ""
+LOCATIONS:
+  SPAWN: world:0:80:0:-90:90
+LANGUAGE:
+  ITEM:
+    SPAWN:
+      0:
+        TYPE: COMPASS
+        NAME: "&dKit Selector &7(Right Click)"
+        META: "KIT_SELECTOR"
+      1:
+        TYPE: CHEST
+        NAME: "&dEvent Selector &7(Right Click)"
+        META: "EVENT_SELECTOR"
+  SCOREBOARD:
+    SPAWN:
+      TITLE: "&5&lKITPVP"
+      LINES:
+      - "{LINE}"
+      - "&fKills: &d{KILLS:ROUNDED}"
+      - "&fDeaths: &d{DEATHS:ROUNDED}"
+      - "&fKillstreak: &d{KILLSTREAK:ROUNDED}"
+      - " "
+      - "&fActive Kit: &d{KIT}"
+      - "&fCoins: &d{COINS}"
+      - "  "
+      - "&7&owww.thecraft.rip"
+      - "&f{LINE}"
+  DISABLED: "&cThis interface is currently disabled. Please try again later."
+  TELEPORT:
+    ERROR:
+      ENDERPEARL: "&cYou cannot enderpearl into spawn, used enderpearl has been refunded."
+  LOCATION:
+    SET: "&eSet location of &d{0}&e."
+    NOT_FOUND: "&cNo location set for {0}&c."
+  ABILITY:
+    COOLDOWN: "&cYou must wait &l{0}&c before using this again."
+  PLAYER:
+    KIT:
+      SELECTED: "&eYou have chosen the &d{0}&e kit."
+    PROTECTION:
+      REMOVED: "&7You no longer have spawn protection."
+      DAMAGE: "&cYou still have spawn protection."
+      DAMAGE_OTHER: "&c{0}&c still has spawn protection."
+  COMMAND:
+    RELOAD:
+      SUCCESS: "&aReloaded configuration."
+      ERROR: "&cFailed to reload configuration"
+    REGION:
+      SAVE: "&eSaved regions in &d{0}ms&e."
+      LIST:
+      - "&7&m{LINE}"
+      - "&5&lRegions"
+      - "  &f{NAME}&c[{TYPE:FORMAT}] &7({X}, {Y}, {Z}) &7({X2}, {Y2}, {Z2})"
+      - "&7&m{LINE}"
+      HELP:
+      - "&7&m{LINE}"
+      - "&5&lRegion Commands"
+      - "  &f/region create &7(Create a region)"
+      - "  &f/region help &7(Region help commands)"
+      - "  &f/region list &7(List all regions)"
+      - "  &f/region remove &7(Remove a region)"
+      - "&7&m{LINE}"
+      CREATE: "&eCreated region &d{0}&e."
+      REMOVE: "&eRemoved region &d{0}&e."
+      ERROR:
+        NOT_SELECTED: "&cYou haven't selected a region."
+        NOT_FOUND: "&cRegion {0}&c not found."
+        ALREADY_EXISTS: "&cRegion {0}&c already exists."
+        TYPE_NOT_FOUND: "&cRegion type {0}&c not found."
+  KIT:
+    PVP:
+      DESCRIPTION: "Basic PvP class."
+      ENABLED: true
