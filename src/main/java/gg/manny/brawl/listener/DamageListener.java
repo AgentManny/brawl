@@ -76,7 +76,9 @@ public class DamageListener implements Listener {
                     Kit selectedKit = playerData.getSelectedKit();
                     if (selectedKit != null) {
                         statistic.get(selectedKit).addKills();
+                        playerData.setSelectedKit(null);
                     }
+                    playerData.setSpawnProtection(true);
                     break;
                 }
             }

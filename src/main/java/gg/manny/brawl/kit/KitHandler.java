@@ -1,18 +1,27 @@
 package gg.manny.brawl.kit;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.kit.command.BukkitCommand;
+import gg.manny.brawl.util.BrawlUtil;
+import gg.manny.brawl.util.item.item.Armor;
+import gg.manny.brawl.util.item.item.Items;
 import gg.manny.pivot.Pivot;
+import gg.manny.pivot.util.inventory.ItemBuilder;
 import lombok.Getter;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class KitHandler {
@@ -30,16 +39,19 @@ public class KitHandler {
     private void load() {
         File file = getFile();
         try (FileReader reader = new FileReader(file)) {
+            JsonParser parser = new JsonParser();
+            JsonArray array = parser.parse(reader).getAsJsonArray();
 
-            JsonObject jsonObject = Pivot.GSON.fromJson(reader, JsonObject.class);
-            for (JsonElement element : jsonObject.get("kits").getAsJsonArray()) {
-                JsonObject object = element.getAsJsonObject();
-                this.registerKit(new Kit(object));
+            for (Object object : array) {
+                JsonObject jsonObject = (JsonObject) object;
+                String name = jsonObject.get("name").getAsString();
+                this.registerKit(new Kit(jsonObject));
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+        this.getDefaultKit();
         this.save();
     }
 
@@ -48,10 +60,7 @@ public class KitHandler {
 
         try (FileWriter writer = new FileWriter(file)) {
 
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.add("kits", this.toJson());
-
-            Pivot.GSON.toJson(jsonObject, writer);
+            Pivot.GSON.toJson(toJson(), writer);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -78,12 +87,36 @@ public class KitHandler {
         return file;
     }
 
-    private void registerKit(Kit kit) {
+    public void registerKit(Kit kit) {
         this.kits.add(kit);
         new BukkitCommand(plugin, kit.getName());
     }
 
+    public void unregisterKit(Kit kit) {
+        this.kits.remove(kit);
+        //todo unregister command
+    }
+
     public Kit getDefaultKit() {
+        Kit kit = this.getKit("PvP");
+        if (kit == null) {
+            kit = new Kit("PvP");
+
+            kit.setIcon(BrawlUtil.create(Material.DIAMOND_SWORD));
+            kit.setDescription("Basic PvP class.");
+            kit.setPotionEffects(Collections.singletonList(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0)));
+
+            Armor armor = kit.getArmor();
+            armor.setHelmet(BrawlUtil.create(Material.IRON_HELMET));
+            armor.setChestplate(BrawlUtil.create(Material.IRON_CHESTPLATE));
+            armor.setLeggings(BrawlUtil.create(Material.IRON_LEGGINGS));
+            armor.setBoots(BrawlUtil.create(Material.IRON_BOOTS));
+
+            kit.setWeight(-1);
+
+            kit.setItems(new Items(new ItemBuilder(Material.DIAMOND_SWORD).enchant(Enchantment.DAMAGE_ALL, 1).enchant(Enchantment.DURABILITY, 3).create()));
+            this.registerKit(kit);
+        }
         return this.getKit("PVP");
     }
 

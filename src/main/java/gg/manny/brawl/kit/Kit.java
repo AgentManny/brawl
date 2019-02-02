@@ -1,8 +1,8 @@
 package gg.manny.brawl.kit;
 
-import com.google.gson.JsonElement;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.mongodb.lang.Nullable;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.Locale;
@@ -10,11 +10,11 @@ import gg.manny.brawl.ability.Ability;
 import gg.manny.brawl.kit.type.RankType;
 import gg.manny.brawl.kit.type.RarityType;
 import gg.manny.brawl.kit.type.RefillType;
+import gg.manny.brawl.util.BrawlUtil;
 import gg.manny.brawl.util.item.item.Armor;
 import gg.manny.brawl.util.item.item.Items;
-import gg.manny.pivot.Pivot;
-import gg.manny.pivot.util.PivotUtil;
 import gg.manny.pivot.util.PlayerUtils;
+import gg.manny.pivot.util.serialization.ItemStackAdapter;
 import gg.manny.pivot.util.serialization.PotionEffectAdapter;
 import lombok.Data;
 import org.bukkit.GameMode;
@@ -58,7 +58,7 @@ public class Kit implements Comparable<Kit> {
     public Kit(JsonObject jsonObject) {
         this.name = jsonObject.get("name").getAsString();
 
-        this.icon = jsonObject.has("icon") ? Pivot.GSON.fromJson(jsonObject.get("icon").getAsString(), ItemStack.class) : new ItemStack(Material.AIR);
+        this.icon = BrawlUtil.has(jsonObject, "icon") ? ItemStackAdapter.deserialize(jsonObject.get("icon")) : new ItemStack(Material.AIR);
 
         this.description = jsonObject.get("description").getAsString();
         this.weight = jsonObject.get("weight").getAsInt();
@@ -67,26 +67,19 @@ public class Kit implements Comparable<Kit> {
         this.rarityType = jsonObject.has("rarityType") ? RarityType.valueOf(jsonObject.get("rarityType").getAsString()) : RarityType.NONE;
         this.rankType = jsonObject.has("rankType") ? RankType.valueOf(jsonObject.get("rankType").getAsString()) : RankType.NONE;
         this.refillType = jsonObject.has("refillType") ? RefillType.valueOf(jsonObject.get("refillType").getAsString()) : RefillType.SOUP;
+        jsonObject.get("potionEffects").getAsJsonArray().forEach(element -> this.potionEffects.add(PotionEffectAdapter.fromJson(element)));
+        jsonObject.get("sidebar").getAsJsonArray().forEach(element -> this.sidebar.add(element.getAsString()));
+        jsonObject.get("type").getAsJsonArray().forEach(element -> {
+            Ability ability = Brawl.getInstance().getAbilityHandler().getAbilityByName(element.getAsString());
+            if (ability == null) {
+                Brawl.getInstance().getLogger().severe("[Kit] " + this.name + " failed to register ability " + element.getAsString() + " (Not found!)");
+            } else {
+                this.abilities.add(ability);
+            }
+        });
 
-        this.sidebar = Pivot.GSON.fromJson(jsonObject.get("sidebar").getAsString(), PivotUtil.LIST_STRING);
-
-        for (JsonElement element : new JsonParser().parse(jsonObject.get("potionEffects").getAsString()).getAsJsonArray()) {
-            this.potionEffects.add(PotionEffectAdapter.fromJson(element));
-        }
-
-        this.abilities = Pivot.GSON.<List<String>>fromJson(jsonObject.get("abilities").getAsString(), PivotUtil.LIST_STRING)
-                .stream()
-                .filter(ability -> Brawl.getInstance().getAbilityHandler().getAbilityByName(ability) != null)
-                .map(Brawl.getInstance().getAbilityHandler()::getAbilityByName)
-                .collect(Collectors.toList());
-
-        if (jsonObject.has("armor") && jsonObject.get("armor") != null) {
-            this.armor = new Armor(jsonObject.get("armor").getAsJsonObject());
-        }
-
-        if (jsonObject.has("items") && jsonObject.get("items") != null) {
-            this.items = new Items(jsonObject.get("items").getAsJsonObject());
-        }
+        this.armor = new Armor(jsonObject.get("armor").getAsJsonObject());
+        this.items = new Items(jsonObject.get("items").getAsJsonArray());
     }
 
     public boolean isFree() {
@@ -95,37 +88,62 @@ public class Kit implements Comparable<Kit> {
 
     public JsonObject toJson() {
         JsonObject jsonObject = new JsonObject();
-
         jsonObject.addProperty("name", this.name);
-        jsonObject.addProperty("icon", Pivot.GSON.toJson(this.icon));
+        jsonObject.add("icon", ItemStackAdapter.serialize(this.icon));
         jsonObject.addProperty("description", this.description);
         jsonObject.addProperty("weight", this.weight);
         jsonObject.addProperty("price", this.price);
         jsonObject.addProperty("rarityType", this.rarityType.name());
         jsonObject.addProperty("rankType", this.rankType.name());
         jsonObject.addProperty("refillType", this.refillType.name());
-        jsonObject.addProperty("sidebar", Pivot.GSON.toJson(this.sidebar));
-        jsonObject.addProperty("potionEffects", Pivot.GSON.toJson(this.potionEffects.stream().map(PotionEffectAdapter::toJson).collect(Collectors.toList())));
-        jsonObject.addProperty("abilities", Pivot.GSON.toJson(this.abilities.stream().map(Ability::getName).collect(Collectors.toList())));
+
+        // Could be simplified but, toxic to edit after.
+        // Needs to be as pretty as possible
+        JsonArray sidebarArray = new JsonArray();
+        for (String entry : this.sidebar) {
+            sidebarArray.add(new JsonPrimitive(entry));
+        }
+        jsonObject.add("sidebar", sidebarArray);
+
+        JsonArray potionEffectsArray = new JsonArray();
+        for (PotionEffect potionEffect : this.potionEffects) {
+            potionEffectsArray.add(PotionEffectAdapter.toJson(potionEffect));
+        }
+        jsonObject.add("potionEffects", potionEffectsArray);
+
+        JsonArray abilitiesArray = new JsonArray();
+        for (String entry : this.abilities.stream().map(Ability::getName).collect(Collectors.toList())) {
+            abilitiesArray.add(new JsonPrimitive(entry));
+        }
+        jsonObject.add("type", abilitiesArray);
+
+//        jsonObject.addProperty("potionEffects", Pivot.GSON.toJson(this.potionEffects.stream().map(PotionEffectAdapter::toJson).collect(Collectors.toList())));
+//        jsonObject.addProperty("type", Pivot.GSON.toJson(this.type.stream().map(Ability::getName).collect(Collectors.toList())));
         jsonObject.add("armor", this.armor == null ? null : this.armor.toJson());
         jsonObject.add("items", this.items == null ? null : this.items.toJson());
 
         return jsonObject;
     }
 
-    public void apply(Player player) {
+    public void apply(Player player, boolean updateProfile, boolean addRefill) {
         PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
-        player.sendMessage(Locale.PLAYER_KIT_SELECTED.format(this.name));
-        Brawl.getInstance().getPlayerDataHandler().getPlayerData(player).setSelectedKit(this);
+        if (updateProfile) {
+            player.sendMessage(Locale.PLAYER_KIT_SELECTED.format(this.name));
+            Brawl.getInstance().getPlayerDataHandler().getPlayerData(player).setSelectedKit(this);
+        }
 
         this.armor.apply(player);
         player.getInventory().setContents(this.items.getItems());
 
+        this.getAbilities().stream().map(Ability::getIcon).forEach(player.getInventory()::addItem);
+
         this.getPotionEffects().forEach(potionEffect -> player.addPotionEffect(potionEffect, true));
 
-        if (this.refillType.getItem().getType() != Material.AIR) {
-            while (player.getInventory().firstEmpty() != -1) {
-                player.getInventory().addItem(this.refillType.getItem());
+        if (addRefill) {
+            if (this.refillType.getItem().getType() != Material.AIR) {
+                while (player.getInventory().firstEmpty() != -1) {
+                    player.getInventory().addItem(this.refillType.getItem());
+                }
             }
         }
 

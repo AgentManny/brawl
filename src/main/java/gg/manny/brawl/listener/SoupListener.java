@@ -64,6 +64,7 @@ public class SoupListener implements Listener {
                 Player player = event.getPlayer();
                 player.setFoodLevel((player.getFoodLevel() + 7) > 20D ? 20 : player.getFoodLevel() + 7);
                 player.getItemInHand().setType(Material.BOWL);
+
             } else if (event.hasBlock() && event.getClickedBlock().getState() instanceof Sign) {
                 Sign sign = (Sign) event.getClickedBlock().getState();
                 if(sign.getLine(0).equalsIgnoreCase(ChatColor.GOLD + "[Soup]")) {
@@ -98,7 +99,7 @@ public class SoupListener implements Listener {
     public void onPlayerPickupItemEvent(PlayerPickupItemEvent event) {
         Player player = event.getPlayer();
         Material type = event.getItem().getItemStack().getType();
-        if (!(type == Material.MUSHROOM_SOUP ||
+        if (!(type == Material.MUSHROOM_SOUP || player.getInventory().getHelmet() != null && player.getInventory().getChestplate() != null && player.getInventory().getLeggings() != null &&player.getInventory().getBoots() != null &&
                 player.getInventory().getHelmet().getType() == type || player.getInventory().getChestplate().getType() == type ||
                 player.getInventory().getLeggings().getType() == type || player.getInventory().getBoots().getType() == type)) {
 

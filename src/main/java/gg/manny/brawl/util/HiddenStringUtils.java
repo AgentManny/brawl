@@ -1,8 +1,8 @@
 package gg.manny.brawl.util;
 
-import java.nio.charset.Charset;
-
 import org.bukkit.ChatColor;
+
+import java.nio.charset.Charset;
 
 public class HiddenStringUtils {
 

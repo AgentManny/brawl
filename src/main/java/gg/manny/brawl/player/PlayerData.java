@@ -30,6 +30,7 @@ public class PlayerData {
     private boolean spawnProtection = true;
 
     private boolean warping = false;
+    private boolean build = false;
 
     private Kit selectedKit;
     private Kit previousKit;
@@ -102,17 +103,17 @@ public class PlayerData {
     }
 
     public Cooldown addCooldown(String cooldownName, long time) {
-        Cooldown cooldown = this.getCooldown(cooldownName);
+        Cooldown cooldown = this.getCooldown(cooldownName.toUpperCase());
         if (cooldown != null) {
             cooldown.setExpire(cooldown.getExpire() + time);
         } else {
             cooldown = new Cooldown(time);
         }
 
-        return this.cooldownMap.put(cooldownName, cooldown);
+        return this.cooldownMap.put(cooldownName.toUpperCase(), cooldown);
     }
 
-    private Cooldown getCooldown(String cooldownName) {
+    public Cooldown getCooldown(String cooldownName) {
         Cooldown cooldown = null;
 
         if (cooldownMap.containsKey(cooldownName.toUpperCase())) {
@@ -128,7 +129,7 @@ public class PlayerData {
     }
 
     public boolean hasCooldown(String cooldownName) {
-        return this.getCooldown(cooldownName) != null && !this.getCooldown(cooldownName).hasExpired();
+        return this.getCooldown(cooldownName.toUpperCase()) != null;
     }
 
      Player toPlayer() {

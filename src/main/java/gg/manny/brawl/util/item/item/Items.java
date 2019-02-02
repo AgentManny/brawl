@@ -1,16 +1,18 @@
 package gg.manny.brawl.util.item.item;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import gg.manny.brawl.util.BrawlUtil;
 import gg.manny.pivot.Pivot;
 import gg.manny.pivot.util.inventory.ItemUtil;
+import gg.manny.pivot.util.serialization.ItemStackAdapter;
 import gg.manny.spigot.util.chatcolor.CC;
 import lombok.Getter;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,6 +26,8 @@ public class Items {
     public Items() {
         this.items = new ItemStack[] { };
     }
+
+    @Deprecated
     public Items(JsonObject jsonObject) {
         Map<Integer, String> map = Pivot.GSON.fromJson(jsonObject.get("items").getAsJsonObject(), BrawlUtil.MAP_INTEGER_STRING);
         List<ItemStack> items = new ArrayList<>();
@@ -34,19 +38,25 @@ public class Items {
         this.items = items.toArray(new ItemStack[] { });
     }
 
+    public Items(JsonArray jsonArray) {
+        List<ItemStack> items = new ArrayList<>();
+        for (JsonElement element : jsonArray) {
+            items.add(ItemStackAdapter.deserialize(element));
+        }
+        this.items = items.toArray(new ItemStack[] { });
+    }
+
 
     public Items(ItemStack... items) {
         this.items = items;
     }
 
-    public JsonObject toJson() {
-        Map<Integer, String> map = new HashMap<>();
-        for (int i = 0; i < this.items.length; i++) {
-            map.put(i, Pivot.GSON.toJson(this.items[i]));
+    public JsonArray toJson() {
+        JsonArray jsonArray = new JsonArray();
+        for (ItemStack itemStack : this.items) {
+            jsonArray.add(ItemStackAdapter.serialize(itemStack));
         }
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("items", Pivot.GSON.toJson(map, BrawlUtil.MAP_INTEGER_STRING));
-        return jsonObject;
+        return jsonArray;
     }
 
 
@@ -113,7 +123,7 @@ public class Items {
             }
         }
 
-        return null;
+        return itemName;
     }
 
     public static String color(ItemUtil.SwordType at) {
@@ -127,7 +137,7 @@ public class Items {
             case STONE:
                 return CC.DARK_GRAY;
             default:
-                return "";
+                return CC.WHITE;
         }
     }
 

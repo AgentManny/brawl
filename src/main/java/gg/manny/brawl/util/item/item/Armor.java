@@ -1,8 +1,9 @@
 package gg.manny.brawl.util.item.item;
 
 import com.google.gson.JsonObject;
-import gg.manny.pivot.Pivot;
+import gg.manny.brawl.util.BrawlUtil;
 import gg.manny.pivot.util.inventory.ItemUtil;
+import gg.manny.pivot.util.serialization.ItemStackAdapter;
 import gg.manny.spigot.util.chatcolor.CC;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,18 +36,18 @@ public class Armor {
 
     public JsonObject toJson() {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("helmet", this.helmet == null ? null : Pivot.GSON.toJson(this.helmet));
-        jsonObject.addProperty("chestplate", this.chestplate == null ? null : Pivot.GSON.toJson(this.chestplate));
-        jsonObject.addProperty("leggings", this.leggings == null ? null : Pivot.GSON.toJson(this.leggings));
-        jsonObject.addProperty("boots", this.boots == null ? null : Pivot.GSON.toJson(this.boots));
+        jsonObject.add("helmet", this.helmet == null ? null : ItemStackAdapter.serialize(this.helmet));
+        jsonObject.add("chestplate", this.chestplate == null ? null : ItemStackAdapter.serialize(this.chestplate));
+        jsonObject.add("leggings", this.leggings == null ? null : ItemStackAdapter.serialize(this.leggings));
+        jsonObject.add("boots", this.boots == null ? null : ItemStackAdapter.serialize(this.boots));
         return jsonObject;
     }
 
     public Armor(JsonObject jsonObject) {
-        this.helmet = jsonObject.has("helmet") && jsonObject.get("helmet") != null ? Pivot.GSON.fromJson(jsonObject.get("helmet").getAsString(), ItemStack.class) : null;
-        this.chestplate = jsonObject.has("chestplate") && jsonObject.get("chestplate") != null ? Pivot.GSON.fromJson(jsonObject.get("chestplate").getAsString(), ItemStack.class) : null;
-        this.leggings = jsonObject.has("leggings") && jsonObject.get("leggings") != null ? Pivot.GSON.fromJson(jsonObject.get("leggings").getAsString(), ItemStack.class) : null;
-        this.boots = jsonObject.has("boots") && jsonObject.get("boots") != null ? Pivot.GSON.fromJson(jsonObject.get("boots").getAsString(), ItemStack.class) : null;
+        this.helmet = BrawlUtil.has(jsonObject, "helmet") ? ItemStackAdapter.deserialize(jsonObject.get("helmet")) : null;
+        this.chestplate = BrawlUtil.has(jsonObject, "chestplate") ? ItemStackAdapter.deserialize(jsonObject.get("chestplate")) : null;
+        this.leggings = BrawlUtil.has(jsonObject, "leggings") ? ItemStackAdapter.deserialize(jsonObject.get("leggings")) : null;
+        this.boots = BrawlUtil.has(jsonObject, "boots") ? ItemStackAdapter.deserialize(jsonObject.get("boots")) : null;
     }
 
     public String info() {

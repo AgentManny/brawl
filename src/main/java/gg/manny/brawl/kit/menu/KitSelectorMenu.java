@@ -65,11 +65,11 @@ public class KitSelectorMenu extends Menu {
             PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
             List<String> lore = ItemBuilder.wrap(kit.getDescription(), CC.GRAY, 30);
             lore.add(0, CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 31));
-
+            lore.add("");
             lore.add(CC.GRAY + "Rarity: " + CC.WHITE + kit.getRarityType().getDisplayName());
             lore.add(playerData.hasKit(kit) ? CC.GREEN + CC.BOLD + "UNLOCKED" : (kit.getRankType() != RankType.NONE ? CC.GRAY + "Exclusive to " + CC.WHITE + kit.getRankType().getDisplayName() : CC.GRAY + "Price: " + CC.WHITE + kit.getPrice() + " coins"));
             lore.add("");
-            lore.add(CC.GRAY + "\u00bb " + CC.WHITE + (playerData.hasKit(kit) ? "Click to use this kit" : CC.RED + "Click to purchase this kit") + CC.GRAY + " \u00ab");
+            lore.add(CC.GRAY + "\u00bb " + CC.GREEN + (playerData.hasKit(kit) ? "Click to use this kit" : CC.RED + "Click to purchase this kit") + CC.GRAY + " \u00ab");
             lore.add(CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 31));
             return new ItemBuilder(kit.getIcon())
                     .name((playerData.hasKit(kit) ? CC.GREEN : CC.RED) + kit.getName())
@@ -81,7 +81,7 @@ public class KitSelectorMenu extends Menu {
         public void clicked(Player player, int slot, ClickType clickType, int hotbarButton) {
             PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
             if(playerData.hasKit(kit)) {
-                kit.apply(player);
+                kit.apply(player, true, true);
             } else {
                 player.sendMessage(CC.RED  + "You don't have permission to use this kit.");
             }

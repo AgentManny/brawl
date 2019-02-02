@@ -6,8 +6,6 @@ MONGO:
     ENABLED: false
     USERNAME: ""
     PASSWORD: ""
-LOCATIONS:
-  SPAWN: world:0:80:0:-90:90
 LANGUAGE:
   ITEM:
     SPAWN:
@@ -53,6 +51,16 @@ LANGUAGE:
     RELOAD:
       SUCCESS: "&aReloaded configuration."
       ERROR: "&cFailed to reload configuration"
+    KIT:
+      CREATE: "&eCreated kit &d{0}&e."
+      REMOVE: "&eRemoved kit &d{0}&e."
+      RETRIEVE: "&eGiven kit &d{0}&e. &dClick Here&e to update this kit."
+      UPDATE: "&eUpdated kit &d{0}&e. &dClick Here&e to return to spawn."
+      ICON: "&eUpdated icon for kit &d{0}&e."
+      DESCRIPTION: "&eUpdated description for kit &d{0}&e to &d{1}&e."
+      RANK: "&eUpdated rank for kit &d{0}&e."
+      RARITY: "&eUpdated rarity for kit &d{0}&e."
+      ABILITY: "&e{0} &eability &d{1}&e for kit &d{2}&e."
     REGION:
       SAVE: "&eSaved regions in &d{0}ms&e."
       LIST:

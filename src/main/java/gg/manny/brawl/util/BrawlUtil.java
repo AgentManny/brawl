@@ -1,11 +1,13 @@
 package gg.manny.brawl.util;
 
 import com.google.common.reflect.TypeToken;
+import com.google.gson.JsonObject;
 import gg.manny.brawl.Brawl;
-import org.bson.Document;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
@@ -13,6 +15,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class BrawlUtil {
 
@@ -26,8 +29,23 @@ public class BrawlUtil {
         return items.toArray(new ItemStack[]{});
     }
 
-    public static boolean has(Document document, String key) {
-        return document != null && document.containsKey(key) && document.get("key") != null;
+    public static ItemStack create(Material material) {
+        return new ItemStack(material, 1);
+    }
+
+    public static boolean match(ItemStack item1, ItemStack item2) {
+        if (item1 == null || item2 == null) {
+            return false;
+        }
+        return item1.getType() == item2.getType() && (item1.hasItemMeta() && item1.getItemMeta().hasDisplayName() && item2.hasItemMeta() && item2.getItemMeta().hasDisplayName() && item1.getItemMeta().getDisplayName().equalsIgnoreCase(item2.getItemMeta().getDisplayName()));
+    }
+
+    public static List<Entity> getNearbyPlayers(Player player, int radius) {
+        return player.getNearbyEntities(radius, radius, radius).stream().filter(entity -> entity instanceof Player).collect(Collectors.toList());
+    }
+
+    public static boolean has(JsonObject jsonObject, String key) {
+        return jsonObject != null && !jsonObject.isJsonNull() && jsonObject.has(key) && jsonObject.get(key) != null && !jsonObject.isJsonNull();
     }
 
     public static void registerCommand(Command command) {
@@ -48,5 +66,4 @@ public class BrawlUtil {
             e.printStackTrace();
         }
     }
-
 }

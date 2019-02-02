@@ -8,6 +8,7 @@ import gg.manny.brawl.ability.AbilityHandler;
 import gg.manny.brawl.ability.command.AbilityCommand;
 import gg.manny.brawl.ability.command.adapter.AbilityTypeAdapter;
 import gg.manny.brawl.command.BrawlCommand;
+import gg.manny.brawl.command.BuildCommand;
 import gg.manny.brawl.command.SpawnCommand;
 import gg.manny.brawl.kit.Kit;
 import gg.manny.brawl.kit.KitHandler;
@@ -71,8 +72,6 @@ public class Brawl extends JavaPlugin {
 
     private EntityHider entityHider;
 
-    private Quantum quantum;
-
     private Construct construct;
 
     private Map<String, Location> locationMap = new HashMap<>();
@@ -109,14 +108,15 @@ public class Brawl extends JavaPlugin {
     }
 
     private void registerCommands() {
-        this.quantum = new Quantum(this);
+        Quantum quantum = Pivot.getPlugin().getQuantum();
 
-        this.quantum.registerParameterType(Ability.class, new AbilityTypeAdapter(this));
-        this.quantum.registerParameterType(Kit.class, new KitTypeAdapter(this));
-        this.quantum.registerParameterType(PlayerData.class, new PlayerDataTypeAdapter(this));
+        quantum.registerParameterType(Ability.class, new AbilityTypeAdapter(this));
+        quantum.registerParameterType(Kit.class, new KitTypeAdapter(this));
+        quantum.registerParameterType(PlayerData.class, new PlayerDataTypeAdapter(this));
 
         Arrays.asList(
                 new AbilityCommand(),
+                new BuildCommand(this),
                 new BrawlCommand(this),
                 new SpawnCommand(this),
                 new KitCommand(this),

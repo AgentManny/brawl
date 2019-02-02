@@ -1,61 +1,69 @@
 package gg.manny.brawl.ability;
 
+import com.google.gson.JsonObject;
+import gg.manny.brawl.Brawl;
+import gg.manny.brawl.Locale;
+import gg.manny.brawl.player.PlayerData;
+import gg.manny.pivot.util.Cooldown;
+import gg.manny.pivot.util.serialization.ItemStackAdapter;
+import lombok.Data;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.concurrent.TimeUnit;
 
-public interface Ability {
+@Data
+public abstract class Ability {
 
-    String getName();
+    private String name;
 
-    default String getKey() {
-       return  "ability_" + this.getName();
+    private ItemStack icon;
+
+    public Ability(String name, ItemStack icon) {
+        this.name = name;
+        this.icon = icon;
     }
 
-    default void onActivate(Player player) {
+    public void onActivate(Player player) {
 
     }
 
-    default void onDeactivate(Player player) {
+    public void onDeactivate(Player player) {
 
     }
 
-    default long getCooldown() {
+    public JsonObject toJson() {
+        JsonObject object = new JsonObject();
+        object.addProperty("name", this.name);
+        object.add("icon", ItemStackAdapter.serialize(this.icon));
+        return object;
+    }
+
+    public void fromJson(JsonObject object) {
+        this.name = object.get("name").getAsString();
+        this.icon = ItemStackAdapter.deserialize(object.get("icon"));
+    }
+
+    private long getCooldown() {
         return TimeUnit.SECONDS.toMillis(25L);
     }
 
+    public boolean hasCooldown(Player player, boolean notify) {
+        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
 
-    /*
-    public boolean hasCooldown(Player player) {
-        return plugin.getPlayerDataHandler().getPlayerData(player).hasCooldown(this.key);
-    }
+        String key = "ABILITY_" + this.name;
+        Cooldown cooldown = playerData.getCooldown(key);
+        boolean active = playerData.hasCooldown(key);
 
-    public ItemStack getItem(PlayerInteractEvent event, String displayName, boolean handleCooldown) {
-        if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (event.hasItem()) {
-                ItemStack item = event.getItem();
-                if (item.hasItemMeta()) {
-                    ItemMeta meta = item.getItemMeta();
-                    if (meta.hasDisplayName() && meta.getDisplayName().equalsIgnoreCase(displayName)) {
-                        Player player = event.getPlayer();
-                        PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
-                        if (handleCooldown && playerData.hasCooldown(this.key)) {
-                            player.sendMessage(Locale.PLAYER_ABILITY_COOLDOWN.format(playerData.getCooldownMap().get(this.key).getTimeLeft()));
-                            return null;
-                        }
-
-
-                        return item;
-                    }
-                }
-            }
+        if (active && notify) {
+            player.sendMessage(Locale.PLAYER_ABILITY_COOLDOWN.format(cooldown.getTimeLeft()));
         }
-        return null;
+        return active;
     }
 
-    public ItemStack getItem(PlayerInteractEvent event, String displayName) {
-        return this.getItem(event, displayName, true);
+    public void addCooldown(Player player) {
+        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+        playerData.addCooldown("ABILITY_" + this.name, this.getCooldown());
     }
-    */
 
 }

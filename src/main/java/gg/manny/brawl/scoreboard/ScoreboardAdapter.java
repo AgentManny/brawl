@@ -1,10 +1,10 @@
 package gg.manny.brawl.scoreboard;
 
-import gg.manny.construct.ConstructAdapter;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.Locale;
 import gg.manny.brawl.player.PlayerData;
 import gg.manny.brawl.player.statistic.StatisticType;
+import gg.manny.construct.ConstructAdapter;
 import gg.manny.spigot.util.chatcolor.CC;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;

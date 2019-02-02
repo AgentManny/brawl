@@ -36,7 +36,7 @@ public class MovementListener implements SimpleMovementHandler, Listener {
                         selectedKit = previousKit;
                     }
 
-                    selectedKit.apply(player);
+                    selectedKit.apply(player, true, true);
                 }
 
                 player.sendMessage(Locale.PLAYER_PROTECTION_REMOVED.format());

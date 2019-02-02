@@ -4,7 +4,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
 import gg.manny.brawl.Brawl;
-import gg.manny.brawl.player.adapter.PlayerDataTypeAdapter;
 import gg.manny.pivot.Pivot;
 import lombok.Getter;
 import org.bson.Document;
@@ -29,8 +28,6 @@ public class PlayerDataHandler implements Closeable {
 
     public PlayerDataHandler(Brawl plugin) {
         this.plugin = plugin;
-
-        this.plugin.getQuantum().registerParameterType(PlayerData.class, new PlayerDataTypeAdapter(plugin));
 
         this.mongoCollection = plugin.getMongoDatabase().getCollection("playerData");
 
