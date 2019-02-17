@@ -2,7 +2,10 @@ package gg.manny.brawl.player;
 
 import com.google.gson.JsonObject;
 import gg.manny.brawl.Brawl;
+import gg.manny.brawl.game.GameType;
+import gg.manny.brawl.game.statistic.GameStatistic;
 import gg.manny.brawl.kit.Kit;
+import gg.manny.brawl.kit.statistic.KitStatistic;
 import gg.manny.brawl.player.statistic.PlayerStatistic;
 import gg.manny.pivot.Pivot;
 import gg.manny.pivot.util.Cooldown;
@@ -35,7 +38,12 @@ public class PlayerData {
     private Kit selectedKit;
     private Kit previousKit;
 
+    private boolean teamChat = false;
+
     private Map<String, Long> kitRentals = new HashMap<>();
+
+    private Map<GameType, GameStatistic> gameStatistics = new HashMap<>();
+    private Map<Kit, KitStatistic> kitStatistics = new HashMap<>();
 
     private PlayerStatistic statistic = new PlayerStatistic();
 
@@ -46,10 +54,19 @@ public class PlayerData {
     public Document toJSON() {
         Map<String, String> cooldownMap = new HashMap<>();
         this.cooldownMap.forEach((name, cooldown) -> cooldownMap.put(name, Pivot.GSON.toJson(cooldown.toJSON())));
+
+        Map<String, Document> gameStatistic = new HashMap<>();
+        this.gameStatistics.forEach((game, statistic) -> gameStatistic.put(game.name(), statistic.toJSON()));
+
+        Map<String, Document> kitStatistic = new HashMap<>();
+        this.kitStatistics.forEach((kit, statistic) -> kitStatistic.put(kit.getName(), statistic.toJSON()));
+
         return new Document("uniqueId", this.uniqueId)
                 .append("name", this.name)
                 .append("previousKit", this.previousKit == null ? null : this.previousKit.getName())
                 .append("cooldown", cooldownMap)
+                .append("gameStatistic", gameStatistic)
+                .append("kitStatistic", kitStatistic)
                 .append("rentals", this.kitRentals)
                 .append("statistic", this.statistic.toJSON());
     }
@@ -75,6 +92,22 @@ public class PlayerData {
         if(document.containsKey("statistic")) {
             statistic.fromJSON((Document) document.get("statistic"));
         }
+
+        if (document.containsKey("gameStatistic")) {
+            Map<String, Document> gameStatistic = (Map<String, Document>) document.get("gameStatistic");
+            gameStatistic.forEach((name, gameDocument) -> this.gameStatistics.put(GameType.valueOf(name), new GameStatistic(gameDocument)));
+        }
+
+        if (document.containsKey("kitStatistic")) {
+            Map<String, Document> kitStatistic = (Map<String, Document>) document.get("kitStatistic");
+            kitStatistic.forEach((name, kitDocument) -> {
+                Kit kit = Brawl.getInstance().getKitHandler().getKit(name);
+                if (kit != null) {
+                    this.kitStatistics.put(kit, new KitStatistic(kitDocument));
+                }
+            });
+        }
+
 
         this.loaded = true;
     }

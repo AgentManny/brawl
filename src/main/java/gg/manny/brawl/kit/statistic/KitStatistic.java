@@ -12,21 +12,21 @@ public class KitStatistic {
     private int uses, kills, deaths;
     private transient Map<String, Object> properties = new HashMap<>();
 
-    public Document toJSON() {
-        return new Document("uses", this.uses)
-                .append("kills", this.kills)
-                .append("deaths", this.deaths)
-                .append("properties", new Document(properties));
-    }
-
-    public void fromJSON(Document document) {
+    public KitStatistic(Document document) {
         this.uses = document.getInteger("uses");
         this.kills = document.getInteger("kills");
         this.deaths = document.getInteger("deaths");
 
         for (Map.Entry<String, Object> entry : ((Document) document.get("properties")).entrySet()) {
-            properties.put(entry.getKey(), (double) entry.getValue());
+            properties.put(entry.getKey(), entry.getValue());
         }
+    }
+
+    public Document toJSON() {
+        return new Document("uses", this.uses)
+                .append("kills", this.kills)
+                .append("deaths", this.deaths)
+                .append("properties", new Document(properties));
     }
 
     public double addKills(double value) {

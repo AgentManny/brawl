@@ -81,7 +81,7 @@ public class PlayerDataHandler implements Closeable {
         public void run() {
             playerMap.values().stream().filter(playerData -> playerData.toPlayer() == null).forEach(playerData -> {
                 remove(playerData);
-                System.out.println("Removed Profile '" + playerData.toString() + "' as player is not online.");
+                System.out.println("Removed Profile '" + playerData.toString() + "' as team is not online.");
             });
         }
     }

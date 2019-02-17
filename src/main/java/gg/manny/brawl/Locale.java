@@ -14,6 +14,12 @@ public enum Locale {
     SCOREBOARD_SPAWN_TITLE("SCOREBOARD.SPAWN.TITLE"),
     SCOREBOARD_SPAWN_LINES("SCOREBOARD.SPAWN.LINES"),
 
+    SCOREBOARD_GAME_OTHER_TITLE("SCOREBOARD.GAME.OTHER.TITLE"),
+    SCOREBOARD_GAME_OTHER_LINES("SCOREBOARD.GAME.OTHER.LINES"),
+
+    GAME_START_TIMER("GAME.START_TIMER"),
+    GAME_START("GAME.START"),
+
     TELEPORT_ERROR_ENDERPEARL("TELEPORT.ERROR.ENDERPEARL"),
 
     LOCATION_SET("LOCATION.SET"),
@@ -21,6 +27,27 @@ public enum Locale {
 
     @Deprecated
     DISABLED("DISABLED"),
+
+    TEAM_ANNOUNCEMENT("TEAM.ANNOUNCEMENT"),
+    TEAM_HELP("TEAM.HELP"),
+    TEAM_CREATE("TEAM.CREATE"),
+    TEAM_CHAT_SWITCHED("TEAM.CHAT_SWITCHED"),
+    TEAM_FULL("TEAM.FULL"),
+    TEAM_DISBAND("TEAM.DISBAND"),
+    TEAM_JOIN("TEAM.JOIN"),
+    TEAM_INFO("TEAM.INFO"),
+    TEAM_ERROR_ALPHA_NUMERIC("TEAM.ERROR.ALPHA_NUMERIC"),
+    TEAM_ERROR_NAME_MAX("TEAM.ERROR.NAME.MAX"),
+    TEAM_ERROR_NAME_MIN("TEAM.ERROR.NAME.MIN"),
+    TEAM_ERROR_DISBAND("TEAM.ERROR.DISBAND"),
+    TEAM_ERROR_ALREADY_EXISTS("TEAM.ERROR.ALREADY_EXISTS"),
+    TEAM_ERROR_PLAYER_NOT_FOUND("TEAM.ERROR.PLAYER.NOT_FOUND"),
+    TEAM_ERROR_PLAYER_SELF("TEAM.ERROR.PLAYER.SELF"),
+    TEAM_ERROR_PLAYER_FOUND("TEAM.ERROR.PLAYER.FOUND"),
+    TEAM_ERROR_LEADER_ONLY("TEAM.ERROR.LEADER_ONLY"),
+    TEAM_ERROR_DIFFERENT_TEAM("TEAM.ERROR.DIFFERENT_TEAM"),
+    TEAM_ERROR_CAPTAIN_ONLY("TEAM.ERROR.CAPTAIN_ONLY"),
+    TEAM_ERROR_NOT_INVITED("TEAM.ERROR.NOT_INVITED"),
 
     COMMAND_KIT_CREATE("COMMAND.KIT.CREATE"),
     COMMAND_KIT_REMOVE("COMMAND.KIT.REMOVE"),
@@ -56,12 +83,22 @@ public enum Locale {
     private String path;
 
     public String format(Object... objects) {
-        return new MessageFormat(ChatColor.translateAlternateColorCodes('&', Brawl.getInstance().getMainConfig().getString("LANGUAGE." + path))).format(objects);
+        return new MessageFormat(ChatColor.translateAlternateColorCodes('&', Brawl.getInstance().getMainConfig().getString("LANGUAGE." + path).replace("|", "\u2758"))).format(objects);
+    }
+
+    public String get() {
+        return ChatColor.translateAlternateColorCodes('&', Brawl.getInstance().getMainConfig().getString("LANGUAGE." + path).replace("|", "\u2758"));
     }
 
     public List<String> toList() {
         return Brawl.getInstance().getMainConfig().getStringList("LANGUAGE." + path).stream()
-                .map(line -> ChatColor.translateAlternateColorCodes('&', line))
+                .map(line -> ChatColor.translateAlternateColorCodes('&', line.replace("|", "\u2758")))
+                .collect(Collectors.toList());
+    }
+
+    public List<String> formatList(Object... objects) {
+        return Brawl.getInstance().getMainConfig().getStringList("LANGUAGE." + path).stream()
+                .map(line -> new MessageFormat(ChatColor.translateAlternateColorCodes('&', line.replace("|", "\u2758"))).format(objects))
                 .collect(Collectors.toList());
     }
 

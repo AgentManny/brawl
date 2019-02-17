@@ -44,6 +44,11 @@ public abstract class Ability {
         this.icon = ItemStackAdapter.deserialize(object.get("icon"));
     }
 
+    public boolean hasEquipped(Player player) {
+        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+        return playerData.getSelectedKit() != null && playerData.getSelectedKit().getAbilities().contains(this);
+    }
+
     private long getCooldown() {
         return TimeUnit.SECONDS.toMillis(25L);
     }

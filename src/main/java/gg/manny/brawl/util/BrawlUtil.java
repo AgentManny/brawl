@@ -15,11 +15,13 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class BrawlUtil {
 
-    public static Type MAP_INTEGER_STRING = new TypeToken<Map<Integer, String>>(){}.getType();
+    public final static Type MAP_INTEGER_STRING = new TypeToken<Map<Integer, String>>(){}.getType();
+    public final static Pattern ALPHA_NUMERIC_PATTERN = Pattern.compile("[^a-zA-Z0-9]");
 
     public static ItemStack[] convert(Material... materials) {
         List<ItemStack> items = new ArrayList<>();

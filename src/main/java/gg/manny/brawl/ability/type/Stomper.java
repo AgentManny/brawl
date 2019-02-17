@@ -3,17 +3,22 @@ package gg.manny.brawl.ability.type;
 import com.google.gson.JsonObject;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.ability.Ability;
+import gg.manny.brawl.util.BrawlUtil;
 import gg.manny.pivot.util.inventory.BlockUtil;
 import gg.manny.pivot.util.inventory.ItemBuilder;
 import gg.manny.spigot.util.chatcolor.CC;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.inventivetalent.particle.ParticleEffect;
 
-public class Stomper extends Ability {
+public class Stomper extends Ability implements Listener {
 
     private final Brawl brawl;
 
@@ -90,6 +95,22 @@ public class Stomper extends Ability {
 
         this.boost = object.get("boost").getAsDouble();
         this.multiplier = object.get("multiplier").getAsDouble();
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+            Player player = (Player) event.getEntity();
+            if (this.hasEquipped(player)) {
+                double damage = event.getDamage();
+                for (Entity entity : BrawlUtil.getNearbyPlayers(player, 5)) {
+                    Player nearby = (Player)entity;
+                    nearby.damage(nearby.isSneaking() ? ((damage / (this.multiplier + this.boost) < 10) ? 10 : (damage / (this.multiplier + this.boost))) : (damage / this.multiplier), event.getEntity());
+                }
+                event.setDamage(0.0);
+                event.setCancelled(true);
+            }
+        }
     }
 
     @RequiredArgsConstructor

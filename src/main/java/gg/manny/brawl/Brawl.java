@@ -18,7 +18,6 @@ import gg.manny.brawl.listener.DamageListener;
 import gg.manny.brawl.listener.MovementListener;
 import gg.manny.brawl.listener.PlayerListener;
 import gg.manny.brawl.listener.SoupListener;
-import gg.manny.brawl.nametag.KitNametagProvider;
 import gg.manny.brawl.player.PlayerData;
 import gg.manny.brawl.player.PlayerDataHandler;
 import gg.manny.brawl.player.adapter.PlayerDataTypeAdapter;
@@ -26,19 +25,29 @@ import gg.manny.brawl.region.RegionHandler;
 import gg.manny.brawl.region.command.RegionCommand;
 import gg.manny.brawl.scoreboard.ScoreboardAdapter;
 import gg.manny.brawl.task.SoupTask;
+import gg.manny.brawl.team.Team;
+import gg.manny.brawl.team.TeamHandler;
+import gg.manny.brawl.team.command.adapter.TeamTypeAdapter;
 import gg.manny.brawl.util.item.ItemHandler;
 import gg.manny.construct.Construct;
 import gg.manny.pivot.Pivot;
+import gg.manny.pivot.nametag.Nametag;
+import gg.manny.pivot.nametag.NametagProvider;
 import gg.manny.pivot.util.EntityHider;
 import gg.manny.pivot.util.file.type.BasicConfigurationFile;
 import gg.manny.pivot.util.serialization.LocationSerializer;
 import gg.manny.quantum.Quantum;
 import gg.manny.spigot.GenericSpigot;
+import gg.manny.spigot.util.chatcolor.CC;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -61,6 +70,8 @@ public class Brawl extends JavaPlugin {
     private KitHandler kitHandler;
 
     private AbilityHandler abilityHandler;
+
+    private TeamHandler teamHandler;
 
     private RegionHandler regionHandler;
 
@@ -105,6 +116,8 @@ public class Brawl extends JavaPlugin {
     public void onDisable() {
         this.playerDataHandler.close();
         this.regionHandler.close();
+        this.teamHandler.save();
+        this.kitHandler.save();
     }
 
     private void registerCommands() {
@@ -113,6 +126,7 @@ public class Brawl extends JavaPlugin {
         quantum.registerParameterType(Ability.class, new AbilityTypeAdapter(this));
         quantum.registerParameterType(Kit.class, new KitTypeAdapter(this));
         quantum.registerParameterType(PlayerData.class, new PlayerDataTypeAdapter(this));
+        quantum.registerParameterType(Team.class, new TeamTypeAdapter(this));
 
         Arrays.asList(
                 new AbilityCommand(),
@@ -127,6 +141,7 @@ public class Brawl extends JavaPlugin {
     private void registerHandlers() {
         this.playerDataHandler = new PlayerDataHandler(this);
         this.kitHandler = new KitHandler(this);
+        this.teamHandler = new TeamHandler(this);
 
         Plugin worldEditPlugin = getServer().getPluginManager().getPlugin("WorldEdit");
         this.worldEdit = worldEditPlugin instanceof WorldEditPlugin && worldEditPlugin.isEnabled() ? (WorldEditPlugin) worldEditPlugin : null;
@@ -138,9 +153,25 @@ public class Brawl extends JavaPlugin {
         this.itemHandler = new ItemHandler(this);
 
         this.construct = new Construct(this, new ScoreboardAdapter(this));
-        Pivot.getPlugin().getNametagHandler().registerProvider(new KitNametagProvider(this));
+        Pivot.getPlugin().getNametagHandler().registerProvider(this.registerNametag());
     }
 
+    private NametagProvider registerNametag() {
+        return new NametagProvider("KitPvP", 50) {
+            @Override
+            public Nametag fetchNametag(Player toRefresh, Player refreshFor) {
+                Scoreboard scoreboard = toRefresh.getScoreboard();
+                if (scoreboard != null && scoreboard.getObjective("health") != null) {
+                    Objective objective = scoreboard.registerNewObjective("health", "health");
+                    objective.setDisplayName(CC.DARK_RED + "\u2764");
+                    objective.getScore(refreshFor).setScore((int) toRefresh.getHealth());
+                    objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
+                }
+
+                return createNametag(Pivot.getPlugin().getProfileHandler().getProfile(toRefresh).getRank().getColor(), "");
+            }
+        };
+    }
     private void loadDatabase() {
         if (mainConfig.getBoolean("MONGO.AUTHENTICATION.ENABLED")) {
             mongoDatabase = new MongoClient(

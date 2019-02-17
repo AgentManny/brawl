@@ -2,7 +2,6 @@ package gg.manny.brawl.command;
 
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.Locale;
-import gg.manny.brawl.player.PlayerData;
 import gg.manny.quantum.command.Command;
 import gg.manny.spigot.util.chatcolor.CC;
 import lombok.RequiredArgsConstructor;
@@ -19,14 +18,8 @@ public class BrawlCommand {
 
     @Command(names = "brawl")
     public void execute(Player sender) {
-        sender.sendMessage(CC.GREEN + "Brawl v" + plugin.getDescription().getVersion() + " by Mannys.");
-        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(sender);
-        if (playerData.hasCooldown("TEST")) {
-            sender.sendMessage(CC.RED + "You are on cooldown.");
-            return;
-        }
-        playerData.addCooldown("TEST", 1000000000L);
-
+        sender.sendMessage(CC.GOLD + "Brawl " + CC.GRAY + "(Version: " + CC.WHITE + plugin.getDescription().getVersion() + CC.GRAY + ")");
+        sender.sendMessage(CC.GOLD + "Created by " + CC.WHITE + String.join(", ", plugin.getDescription().getAuthors()));
     }
 
     @Command(names = "brawl reload", permission = "brawl.command.config")
