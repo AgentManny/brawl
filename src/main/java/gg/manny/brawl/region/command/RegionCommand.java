@@ -71,20 +71,20 @@ public class RegionCommand {
             return;
         }
 
-        RegionType regionType = null;
+        RegionType regionType;
         try {
             regionType = RegionType.valueOf(type.toUpperCase());
         } catch (IllegalArgumentException exception) {
             player.sendMessage(Locale.COMMAND_REGION_ERROR_TYPE_NOT_FOUND.format(type));
-        } finally {
-            Region region = new Region(selection.getMaximumPoint(), selection.getMinimumPoint());
-            region.setType(regionType);
-            region.setName(name);
-
-            plugin.getRegionHandler().add(region);
-            region.save();
-            player.sendMessage(Locale.COMMAND_REGION_CREATE.format(name));
+            return;
         }
+        Region region = new Region(selection.getMaximumPoint(), selection.getMinimumPoint());
+        region.setType(regionType);
+        region.setName(name);
+
+        plugin.getRegionHandler().add(region);
+        region.save();
+        player.sendMessage(Locale.COMMAND_REGION_CREATE.format(name));
     }
 
 }
