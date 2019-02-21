@@ -27,8 +27,7 @@ public class PlayerStatistic {
             if(kitStatisticDocument.containsKey(kit.getName())) {
                 Document statistic = (Document) document.get(kit.getName());
 
-                this.kitStatisticMap.putIfAbsent(kit.getName(), new KitStatistic());
-                this.get(kit).fromJSON(statistic);
+                this.kitStatisticMap.putIfAbsent(kit.getName(), new KitStatistic(statistic));
             }
         }
 
@@ -46,7 +45,7 @@ public class PlayerStatistic {
     }
 
     public KitStatistic get(Kit kit) {
-        this.kitStatisticMap.putIfAbsent(kit.getName(), new KitStatistic());
+        this.kitStatisticMap.putIfAbsent(kit.getName(), new KitStatistic( ));
         return this.kitStatisticMap.get(kit.getName());
     }
 

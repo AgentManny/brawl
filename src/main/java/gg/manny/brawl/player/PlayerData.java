@@ -1,19 +1,18 @@
 package gg.manny.brawl.player;
 
-import com.google.gson.JsonObject;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.game.GameType;
 import gg.manny.brawl.game.statistic.GameStatistic;
 import gg.manny.brawl.kit.Kit;
 import gg.manny.brawl.kit.statistic.KitStatistic;
 import gg.manny.brawl.player.statistic.PlayerStatistic;
-import gg.manny.pivot.Pivot;
 import gg.manny.pivot.util.Cooldown;
 import lombok.Data;
 import lombok.NonNull;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,11 +48,13 @@ public class PlayerData {
 
     private Map<String, Cooldown> cooldownMap = new HashMap<>();
 
+    private BukkitTask enderpearlTask;
+
     private boolean loaded;
 
     public Document toJSON() {
-        Map<String, String> cooldownMap = new HashMap<>();
-        this.cooldownMap.forEach((name, cooldown) -> cooldownMap.put(name, Pivot.GSON.toJson(cooldown.toJSON())));
+        Map<String, Document> cooldownMap = new HashMap<>();
+        this.cooldownMap.forEach((name, cooldown) -> cooldownMap.put(name, cooldown.toDocument()));
 
         Map<String, Document> gameStatistic = new HashMap<>();
         this.gameStatistics.forEach((game, statistic) -> gameStatistic.put(game.name(), statistic.toJSON()));
@@ -61,7 +62,7 @@ public class PlayerData {
         Map<String, Document> kitStatistic = new HashMap<>();
         this.kitStatistics.forEach((kit, statistic) -> kitStatistic.put(kit.getName(), statistic.toJSON()));
 
-        return new Document("uniqueId", this.uniqueId)
+        return new Document("uniqueId", this.uniqueId.toString())
                 .append("name", this.name)
                 .append("previousKit", this.previousKit == null ? null : this.previousKit.getName())
                 .append("cooldown", cooldownMap)
@@ -81,8 +82,8 @@ public class PlayerData {
         this.previousKit = Brawl.getInstance().getKitHandler().getKit(document.getString("previousKit"));
 
         if(document.containsKey("cooldown")) {
-            Map<String, String> cooldownMap = (Map<String, String>) document.get("cooldown");
-            cooldownMap.forEach((name, cooldownDocument) -> this.cooldownMap.put(name, new Cooldown(Pivot.GSON.fromJson(cooldownDocument, JsonObject.class))));
+            Map<String, Document> cooldowns = (Map<String, Document>) document.get("cooldown");
+            cooldowns.forEach((name, cooldownDocument) -> this.cooldownMap.put(name, new Cooldown(cooldownDocument)));
         }
 
         if(document.containsKey("rentals")) {
@@ -133,6 +134,13 @@ public class PlayerData {
         }
 
         return this.toPlayer().isOp() || kit.isFree() || this.toPlayer().hasPermission("kit." + kit.getName().toLowerCase()) ||  (kitRentals.containsKey(kit.getName()) && kitRentals.get(kit.getName()) > System.currentTimeMillis());
+    }
+
+    public void setSelectedKit(Kit selectedKit) {
+        if (this.selectedKit != null) {
+            this.selectedKit.getAbilities().forEach(ability -> ability.onRemove(this.toPlayer()));
+        }
+        this.selectedKit = selectedKit;
     }
 
     public Cooldown addCooldown(String cooldownName, long time) {
