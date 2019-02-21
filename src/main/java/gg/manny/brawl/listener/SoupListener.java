@@ -2,6 +2,7 @@ package gg.manny.brawl.listener;
 
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.player.PlayerData;
+import gg.manny.pivot.util.PivotUtil;
 import gg.manny.spigot.util.chatcolor.CC;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
@@ -54,20 +55,20 @@ public class SoupListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             double health = event.getPlayer().getHealth();
-            if (event.hasItem() && event.getItem().getTypeId() == 282 && health < 20D) {
+            double maxHealth = event.getPlayer().getMaxHealth();
+            if (event.hasItem() && event.getItem().getTypeId() == 282 && health < maxHealth) {
                 event.setCancelled(true);
                 Player player = event.getPlayer();
-                player.setHealth(health + 7 > 20D ? 20 : health + 7);
+                player.setHealth(health + 7 > maxHealth ? maxHealth : health + 7);
                 player.getItemInHand().setType(Material.BOWL);
             } else if (event.hasItem() && event.getItem().getTypeId() == 282 && event.getPlayer().getFoodLevel() < 20) {
                 event.setCancelled(true);
                 Player player = event.getPlayer();
                 player.setFoodLevel((player.getFoodLevel() + 7) > 20D ? 20 : player.getFoodLevel() + 7);
                 player.getItemInHand().setType(Material.BOWL);
-
             } else if (event.hasBlock() && event.getClickedBlock().getState() instanceof Sign) {
                 Sign sign = (Sign) event.getClickedBlock().getState();
-                if(sign.getLine(0).equalsIgnoreCase(ChatColor.GOLD + "[Soup]")) {
+                if(sign.getLine(0).equalsIgnoreCase(ChatColor.DARK_PURPLE + "[Soup]")) {
                     Inventory inventory = Bukkit.createInventory(null, 27, "Soups");
                     for(int i = 0; i < inventory.getSize(); i++) {
                         inventory.setItem(i, new ItemStack(Material.MUSHROOM_SOUP));
@@ -86,7 +87,7 @@ public class SoupListener implements Listener {
             case MUSHROOM_SOUP:
             case BOWL:
             case GLASS_BOTTLE:
-                event.getItemDrop().remove();
+                PivotUtil.runLater(() -> event.getItemDrop().remove(), 5L, false);
                 break;
             default: {
                 event.setCancelled(true);

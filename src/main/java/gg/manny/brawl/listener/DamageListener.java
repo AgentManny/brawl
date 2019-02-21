@@ -6,7 +6,7 @@ import gg.manny.brawl.kit.Kit;
 import gg.manny.brawl.player.PlayerData;
 import gg.manny.brawl.player.statistic.PlayerStatistic;
 import gg.manny.brawl.player.statistic.StatisticType;
-import gg.manny.brawl.util.item.type.InventoryType;
+import gg.manny.brawl.item.type.InventoryType;
 import gg.manny.pivot.util.PivotUtil;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Item;
@@ -43,9 +43,10 @@ public class DamageListener implements Listener {
                 for (ItemStack it : event.getDrops()) {
                     if (this.shouldFilter(it)) {
                         Item item = player.getWorld().dropItem(player.getLocation().add(Brawl.RANDOM.nextInt(2) - 1, 0, Brawl.RANDOM.nextInt(2) - 1), it);
-                        plugin.getServer().getScheduler().runTaskLater(plugin, item::remove, 5L + (4 * i++));
+                        plugin.getServer().getScheduler().runTaskLater(plugin, item::remove, 15L + (4 * i++));
                     }
                 }
+                event.getDrops().clear();
                 PlayerStatistic statistic = playerData.getStatistic();
                 statistic.add(StatisticType.DEATHS);
                 statistic.set(StatisticType.KILLSTREAK, 0.0D);
@@ -103,6 +104,7 @@ public class DamageListener implements Listener {
         switch(playerData.getPlayerState()) {
             default: {
                 plugin.getItemHandler().apply(player, InventoryType.SPAWN);
+                playerData.setSpawnProtection(true);
                 event.setRespawnLocation(plugin.getLocationByName("SPAWN"));
                 break;
             }

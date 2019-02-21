@@ -24,6 +24,7 @@ public class MovementListener implements SimpleMovementHandler, Listener {
     @Override
     public void onPlayerMove(Player player, Location to, Location from) {
         PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
+        if (playerData == null) return;
         if (playerData.isSpawnProtection()) {
 
             if(RegionType.SAFEZONE.containsLocation(from) && !RegionType.SAFEZONE.containsLocation(to)) {
