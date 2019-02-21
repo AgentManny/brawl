@@ -11,14 +11,26 @@ TEAM:
 LANGUAGE:
   ITEM:
     SPAWN:
-      0:
-        TYPE: COMPASS
-        NAME: "&dKit Selector &7(Right Click)"
-        META: "KIT_SELECTOR"
-      1:
-        TYPE: CHEST
-        NAME: "&dEvent Selector &7(Right Click)"
-        META: "EVENT_SELECTOR"
+      '0':
+        TYPE: BOOK
+        NAME: "&7\u00bb &5&lKit Selector &7\u00ab"
+        META: KIT_SELECTOR
+      '1':
+        TYPE: WATCH
+        NAME: "&7\u00bb &d&lPrevious Kit &7\u00ab"
+        META: PREVIOUS_KIT
+      '4':
+        TYPE: EMERALD
+        NAME: "&7\u00bb &2&lShop &7\u00ab"
+        META: SHOP
+      '7':
+        TYPE: NETHER_STAR
+        NAME: "&7\u00bb &e&lEvent Selector &7\u00ab"
+        META: EVENT_SELECTOR
+      '8':
+        TYPE: 381
+        NAME: "&7\u00bb &6&l1v1 &7\u00ab"
+        META: DUEL_ARENA
   SCOREBOARD:
     SPAWN:
       TITLE: "&5&lKITPVP"
@@ -27,11 +39,8 @@ LANGUAGE:
         - "&5Kills: &d{KILLS:ROUNDED}"
         - "&5Deaths: &d{DEATHS:ROUNDED}"
         - "&5Killstreak: &d{KILLSTREAK:ROUNDED}"
-        - " "
-        - "&5Active Kit: &d{KIT}"
-        - "&5Coins: &d{COINS}"
-        - "  "
-        - "&7owww.thecraft.rip"
+        - "&4{ABILITY}: &c{ABILITY:TIME}"
+        - "&2{ABILITY:ACTIVE:KEY}: &a{ABILITY:ACTIVE:VALUE}"
         - "&f{LINE}"
     GAME:
       OTHER:
@@ -57,6 +66,7 @@ LANGUAGE:
     NOT_FOUND: "&cNo location set for {0}&c."
   ABILITY:
     COOLDOWN: "&cYou must wait &l{0}&c before using this again."
+    EXPIRED: "&aYou can now use &l{0}&a again."
   PLAYER:
     KIT:
       SELECTED: "&eYou have chosen the &d{0}&e kit."

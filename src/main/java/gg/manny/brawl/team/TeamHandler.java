@@ -7,9 +7,13 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.player.PlayerData;
+import gg.manny.brawl.team.command.*;
+import gg.manny.pivot.Pivot;
+import gg.manny.quantum.Quantum;
 import org.bson.Document;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -50,6 +54,17 @@ public class TeamHandler {
                 }
             }
         }
+        Quantum quantum = Pivot.getPlugin().getQuantum();
+        Arrays.asList(
+                new TeamAcceptCommand(brawl),
+                new TeamAnnouncementCommand(brawl),
+                new TeamChatCommand(brawl),
+                new TeamCommand(brawl),
+                new TeamCreateCommand(brawl),
+                new TeamDemoteCommand(brawl),
+                new TeamDisbandCommand(brawl),
+                new TeamInfoCommand(brawl)
+        ).forEach(quantum::registerCommand);
     }
 
     public void save() {
