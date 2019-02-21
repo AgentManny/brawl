@@ -11,8 +11,8 @@ import gg.manny.brawl.kit.type.RankType;
 import gg.manny.brawl.kit.type.RarityType;
 import gg.manny.brawl.kit.type.RefillType;
 import gg.manny.brawl.util.BrawlUtil;
-import gg.manny.brawl.util.item.item.Armor;
-import gg.manny.brawl.util.item.item.Items;
+import gg.manny.brawl.item.item.Armor;
+import gg.manny.brawl.item.item.Items;
 import gg.manny.pivot.util.PlayerUtils;
 import gg.manny.pivot.util.serialization.ItemStackAdapter;
 import gg.manny.pivot.util.serialization.PotionEffectAdapter;
@@ -25,6 +25,7 @@ import org.bukkit.potion.PotionEffect;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Data
@@ -47,8 +48,6 @@ public class Kit implements Comparable<Kit> {
     private List<Ability> abilities = new ArrayList<>();
     private List<PotionEffect> potionEffects = new ArrayList<>();
 
-    private List<String> sidebar = new ArrayList<>();
-
     private int weight = -1;
 
     public Kit(String name) {
@@ -68,15 +67,17 @@ public class Kit implements Comparable<Kit> {
         this.rankType = jsonObject.has("rankType") ? RankType.valueOf(jsonObject.get("rankType").getAsString()) : RankType.NONE;
         this.refillType = jsonObject.has("refillType") ? RefillType.valueOf(jsonObject.get("refillType").getAsString()) : RefillType.SOUP;
         jsonObject.get("potionEffects").getAsJsonArray().forEach(element -> this.potionEffects.add(PotionEffectAdapter.fromJson(element)));
-        jsonObject.get("sidebar").getAsJsonArray().forEach(element -> this.sidebar.add(element.getAsString()));
-        jsonObject.get("type").getAsJsonArray().forEach(element -> {
-            Ability ability = Brawl.getInstance().getAbilityHandler().getAbilityByName(element.getAsString());
-            if (ability == null) {
-                Brawl.getInstance().getLogger().severe("[Kit] " + this.name + " failed to register ability " + element.getAsString() + " (Not found!)");
-            } else {
-                this.abilities.add(ability);
-            }
-        });
+
+        if (jsonObject.has("abilites") && !jsonObject.get("abilities").isJsonNull()) {
+            jsonObject.get("abilities").getAsJsonArray().forEach(element -> {
+                Ability ability = Brawl.getInstance().getAbilityHandler().getAbilityByName(element.getAsString());
+                if (ability == null) {
+                    Brawl.getInstance().getLogger().severe("[Kit] " + this.name + " failed to register ability " + element.getAsString() + " (Not found!)");
+                } else {
+                    this.abilities.add(ability);
+                }
+            });
+        }
 
         this.armor = new Armor(jsonObject.get("armor").getAsJsonObject());
         this.items = new Items(jsonObject.get("items").getAsJsonArray());
@@ -96,14 +97,6 @@ public class Kit implements Comparable<Kit> {
         jsonObject.addProperty("rarityType", this.rarityType.name());
         jsonObject.addProperty("rankType", this.rankType.name());
         jsonObject.addProperty("refillType", this.refillType.name());
-
-        // Could be simplified but, toxic to edit after.
-        // Needs to be as pretty as possible
-        JsonArray sidebarArray = new JsonArray();
-        for (String entry : this.sidebar) {
-            sidebarArray.add(new JsonPrimitive(entry));
-        }
-        jsonObject.add("sidebar", sidebarArray);
 
         JsonArray potionEffectsArray = new JsonArray();
         for (PotionEffect potionEffect : this.potionEffects) {
@@ -135,9 +128,9 @@ public class Kit implements Comparable<Kit> {
         this.armor.apply(player);
         player.getInventory().setContents(this.items.getItems());
 
-        this.getAbilities().stream().map(Ability::getIcon).forEach(player.getInventory()::addItem);
-
-        this.getPotionEffects().forEach(potionEffect -> player.addPotionEffect(potionEffect, true));
+        this.abilities.stream().map(Ability::getIcon).filter(Objects::nonNull).forEach(player.getInventory()::addItem);
+        this.abilities.forEach(ability -> ability.onApply(player));
+        this.potionEffects.forEach(potionEffect -> player.addPotionEffect(potionEffect, true));
 
         if (addRefill) {
             if (this.refillType.getItem().getType() != Material.AIR) {

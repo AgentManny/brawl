@@ -9,13 +9,20 @@ import java.util.Map;
 @Data
 public class KitStatistic {
 
-    private int uses, kills, deaths;
+    private int uses = 0;
+    private int kills = 0;
+    private int deaths = 0;
+
     private transient Map<String, Object> properties = new HashMap<>();
 
+    public KitStatistic() {
+    }
+
     public KitStatistic(Document document) {
-        this.uses = document.getInteger("uses");
-        this.kills = document.getInteger("kills");
-        this.deaths = document.getInteger("deaths");
+        if (document == null) return;
+        this.uses = document.getInteger("uses", 0);
+        this.kills = document.getInteger("kills", 0);
+        this.deaths = document.getInteger("deaths", 0);
 
         for (Map.Entry<String, Object> entry : ((Document) document.get("properties")).entrySet()) {
             properties.put(entry.getKey(), entry.getValue());

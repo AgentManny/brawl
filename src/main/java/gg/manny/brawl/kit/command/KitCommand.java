@@ -4,11 +4,11 @@ import com.google.common.base.Strings;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.Locale;
 import gg.manny.brawl.ability.Ability;
+import gg.manny.brawl.item.item.Armor;
+import gg.manny.brawl.item.item.Items;
 import gg.manny.brawl.kit.Kit;
 import gg.manny.brawl.kit.type.RankType;
 import gg.manny.brawl.kit.type.RarityType;
-import gg.manny.brawl.util.item.item.Armor;
-import gg.manny.brawl.util.item.item.Items;
 import gg.manny.quantum.command.Command;
 import gg.manny.spigot.util.chatcolor.CC;
 import lombok.RequiredArgsConstructor;
@@ -67,7 +67,6 @@ public class KitCommand {
         } else {
             kit.getAbilities().add(ability);
         }
-
         player.sendMessage(Locale.COMMAND_KIT_ABILITY.format((kit.getAbilities().contains(ability) ? "Added" : "Removed"), kit.getName(), ability.getName()));
     }
 
