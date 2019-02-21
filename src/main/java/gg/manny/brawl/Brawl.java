@@ -1,6 +1,9 @@
 package gg.manny.brawl;
 
-import com.mongodb.*;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import gg.manny.brawl.ability.Ability;
@@ -10,6 +13,7 @@ import gg.manny.brawl.ability.command.adapter.AbilityTypeAdapter;
 import gg.manny.brawl.command.BrawlCommand;
 import gg.manny.brawl.command.BuildCommand;
 import gg.manny.brawl.command.SpawnCommand;
+import gg.manny.brawl.item.ItemHandler;
 import gg.manny.brawl.kit.Kit;
 import gg.manny.brawl.kit.KitHandler;
 import gg.manny.brawl.kit.command.KitCommand;
@@ -28,20 +32,20 @@ import gg.manny.brawl.task.SoupTask;
 import gg.manny.brawl.team.Team;
 import gg.manny.brawl.team.TeamHandler;
 import gg.manny.brawl.team.command.adapter.TeamTypeAdapter;
-import gg.manny.brawl.util.item.ItemHandler;
 import gg.manny.construct.Construct;
 import gg.manny.pivot.Pivot;
 import gg.manny.pivot.nametag.Nametag;
 import gg.manny.pivot.nametag.NametagProvider;
 import gg.manny.pivot.util.EntityHider;
 import gg.manny.pivot.util.file.type.BasicConfigurationFile;
-import gg.manny.pivot.util.serialization.LocationSerializer;
 import gg.manny.quantum.Quantum;
 import gg.manny.spigot.GenericSpigot;
 import gg.manny.spigot.util.chatcolor.CC;
 import lombok.Getter;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -118,6 +122,7 @@ public class Brawl extends JavaPlugin {
         this.regionHandler.close();
         this.teamHandler.save();
         this.kitHandler.save();
+        this.abilityHandler.save();
     }
 
     private void registerCommands() {
@@ -139,8 +144,9 @@ public class Brawl extends JavaPlugin {
     }
 
     private void registerHandlers() {
-        this.playerDataHandler = new PlayerDataHandler(this);
+        this.abilityHandler = new AbilityHandler(this);
         this.kitHandler = new KitHandler(this);
+        this.playerDataHandler = new PlayerDataHandler(this);
         this.teamHandler = new TeamHandler(this);
 
         Plugin worldEditPlugin = getServer().getPluginManager().getPlugin("WorldEdit");
@@ -148,11 +154,10 @@ public class Brawl extends JavaPlugin {
 
         this.regionHandler = new RegionHandler(this);
 
-        this.abilityHandler = new AbilityHandler(this);
-
         this.itemHandler = new ItemHandler(this);
 
         this.construct = new Construct(this, new ScoreboardAdapter(this));
+        this.construct.setUpdateInterval(100L);
         Pivot.getPlugin().getNametagHandler().registerProvider(this.registerNametag());
     }
 
@@ -189,8 +194,13 @@ public class Brawl extends JavaPlugin {
         ConfigurationSection configurationSection = this.mainConfig.getConfiguration().getConfigurationSection("LOCATIONS");
         if (configurationSection == null) return;
         for(String key : configurationSection.getKeys(false)) {
-            Location location = LocationSerializer.deserialize(BasicDBObject.parse(configurationSection.getString(key)));
-            this.locationMap.put(key, location);
+            World world = getServer().getWorld(configurationSection.getString(key + ".world"));
+            double x = configurationSection.getDouble(key + ".x");
+            double y = configurationSection.getDouble(key + ".y");
+            double z = configurationSection.getDouble(key + ".z");
+            float yaw = configurationSection.getFloat(key + ".yaw");
+            float pitch = configurationSection.getFloat(key + ".pitch");
+            this.locationMap.put(key, new Location(world, x, y, z, yaw, pitch));
         }
     }
 
@@ -205,7 +215,14 @@ public class Brawl extends JavaPlugin {
     public void setLocationByName(String locationName, Location location) {
         this.locationMap.put(locationName, location);
 
-        this.mainConfig.getConfiguration().set("LOCATIONS." + locationName.toUpperCase(), LocationSerializer.serialize(location).toJson());
+        FileConfiguration config = this.mainConfig.getConfiguration();
+        String prefix = "LOCATIONS." + locationName.toUpperCase() + ".";
+        config.set(prefix + "world", location.getWorld().getName());
+        config.set(prefix + "x", location.getX());
+        config.set(prefix + "y", location.getY());
+        config.set(prefix + "z", location.getZ());
+        config.set(prefix + "yaw", location.getYaw());
+        config.set(prefix + "pitch", location.getPitch());
         try {
             this.mainConfig.getConfiguration().save(this.mainConfig.getFile());
         } catch (IOException e) {
