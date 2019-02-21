@@ -10,7 +10,6 @@ public class AbilityCommand {
     @Command(names = { "ability", "a" }, permission = "brawl.command.ability")
     public void execute(Player sender, Ability ability) {
         sender.sendMessage(CC.YELLOW + "Activating " + ability.getName() + "...");
-        ability.onActivate(((Player)sender));
+        ability.onActivate(sender);
     }
-
 }
