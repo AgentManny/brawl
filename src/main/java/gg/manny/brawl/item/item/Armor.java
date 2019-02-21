@@ -1,4 +1,4 @@
-package gg.manny.brawl.util.item.item;
+package gg.manny.brawl.item.item;
 
 import com.google.gson.JsonObject;
 import gg.manny.brawl.util.BrawlUtil;

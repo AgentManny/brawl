@@ -1,11 +1,13 @@
-package gg.manny.brawl.util.item;
+package gg.manny.brawl.item;
 
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.Locale;
+import gg.manny.brawl.item.type.InventoryType;
+import gg.manny.brawl.item.type.MetadataType;
+import gg.manny.brawl.kit.Kit;
 import gg.manny.brawl.kit.menu.KitSelectorMenu;
+import gg.manny.brawl.player.PlayerData;
 import gg.manny.brawl.util.HiddenStringUtils;
-import gg.manny.brawl.util.item.type.InventoryType;
-import gg.manny.brawl.util.item.type.MetadataType;
 import gg.manny.pivot.util.PlayerUtils;
 import gg.manny.pivot.util.file.type.BasicConfigurationFile;
 import gg.manny.pivot.util.inventory.ItemBuilder;
@@ -15,6 +17,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -63,7 +66,11 @@ public class ItemHandler implements Listener {
                 }
 
                 if(configurationSection.get(key + ".META") != null) {
-                    itemBuilder.lore(Collections.singletonList(HiddenStringUtils.encodeString(configurationSection.getString(key + ".META"))));
+                    String metaData = configurationSection.getString(key + ".META");
+                    if (!MetadataType.isMetadata(metaData)) {
+                        plugin.getLogger().severe("Item " + material.name() + " encoded " + metaData + " but doesn't exist");
+                    }
+                    itemBuilder.lore(Collections.singletonList(HiddenStringUtils.encodeString(metaData)));
                 }
 
                 int i = 0;
@@ -124,22 +131,36 @@ public class ItemHandler implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
         if(event.hasItem() && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
             ItemStack item = event.getItem();
             ItemMeta meta = item.getItemMeta();
             List<String> lore = meta.getLore();
+            Player player = event.getPlayer();
+            PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
 
             if (lore != null && lore.size() > 0 && HiddenStringUtils.hasHiddenString(lore.get(0))) {
                 String metaData = HiddenStringUtils.extractHiddenString(lore.get(0));
-                MetadataType metadataType = MetadataType.fromMetadata(metaData);
-                switch (metadataType) {
-                    case KIT_SELECTOR: {
-                        new KitSelectorMenu(plugin).openMenu(player);
-                        break;
+                if (MetadataType.isMetadata(metaData)) {
+                    MetadataType metadataType = MetadataType.fromMetadata(metaData);
+                    if (metadataType.isCancellable()) {
+                        event.setCancelled(true);
+                        event.setUseInteractedBlock(Event.Result.DENY);
+                        event.setUseItemInHand(Event.Result.DENY);
                     }
-                    case EVENT_SELECTOR: {
-                        player.sendMessage(Locale.DISABLED.format());
+                    switch (metadataType) {
+                        case KIT_SELECTOR: {
+                            new KitSelectorMenu(plugin).openMenu(player);
+                            break;
+                        }
+                        case PREVIOUS_KIT: {
+                            Kit kit = playerData.getPreviousKit() == null ? plugin.getKitHandler().getDefaultKit() : playerData.getPreviousKit();
+                            kit.apply(player, true, true);
+                            break;
+                        }
+
+                        default: {
+                            player.sendMessage(Locale.DISABLED.format());
+                        }
                     }
                 }
             }

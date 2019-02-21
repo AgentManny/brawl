@@ -1,4 +1,4 @@
-package gg.manny.brawl.util.item.type;
+package gg.manny.brawl.item.type;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
