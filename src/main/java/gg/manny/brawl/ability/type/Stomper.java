@@ -10,7 +10,6 @@ import gg.manny.spigot.util.chatcolor.CC;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,13 +21,13 @@ public class Stomper extends Ability implements Listener {
 
     private final Brawl brawl;
 
-    private ParticleEffect activateParticle = ParticleEffect.BLOCK_CRACK;
+    private ParticleEffect activateParticle = ParticleEffect.FOOTSTEP;
     private Sound activateSound = Sound.BAT_TAKEOFF;
 
-    private ParticleEffect movementParticle = ParticleEffect.EXPLOSION_HUGE;
+    private ParticleEffect movementParticle = ParticleEffect.SMOKE_NORMAL;
 
     private ParticleEffect landParticle = ParticleEffect.EXPLOSION_HUGE;
-    private Sound landSound = Sound.HORSE_LAND;
+    private Sound landSound = Sound.ANVIL_LAND;
 
     private ParticleEffect sneakParticle = ParticleEffect.CLOUD;
     private Sound sneakSound = Sound.BAT_LOOP;
@@ -38,7 +37,7 @@ public class Stomper extends Ability implements Listener {
 
     public Stomper(Brawl brawl) {
         super("Stomper", new ItemBuilder(Material.ANVIL)
-                .name(CC.LIGHT_PURPLE + "Stomper Ability")
+                .name(CC.GRAY + "\u00bb " + CC.YELLOW + CC.BOLD + "Stomper" + CC.GRAY + " \u00ab")
                 .create()
         );
 
@@ -103,8 +102,7 @@ public class Stomper extends Ability implements Listener {
             Player player = (Player) event.getEntity();
             if (this.hasEquipped(player)) {
                 double damage = event.getDamage();
-                for (Entity entity : BrawlUtil.getNearbyPlayers(player, 5)) {
-                    Player nearby = (Player)entity;
+                for (Player nearby : BrawlUtil.getNearbyPlayers(player, Math.min(5, player.getFallDistance()))) {
                     nearby.damage(nearby.isSneaking() ? ((damage / (this.multiplier + this.boost) < 10) ? 10 : (damage / (this.multiplier + this.boost))) : (damage / this.multiplier), event.getEntity());
                 }
                 event.setDamage(0.0);

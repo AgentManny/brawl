@@ -2,10 +2,11 @@ package gg.manny.brawl.ability;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import gg.manny.brawl.Brawl;
-import gg.manny.brawl.ability.type.Stomper;
+import gg.manny.brawl.ability.type.*;
 import gg.manny.pivot.Pivot;
 import gg.manny.spigot.GenericSpigot;
 import gg.manny.spigot.handler.PacketHandler;
@@ -30,20 +31,32 @@ public class AbilityHandler {
     public AbilityHandler(Brawl plugin) {
         this.plugin = plugin;
 
+        this.registerAbilities(
+                new Stomper(plugin),
+                new SilverfishSwarm(plugin),
+                new Charger(plugin),
+                new WaterGun(plugin),
+                new HealthBooster(),
+                new Fisherman()
+        );
         this.load();
 
-        this.registerAbilities(new Stomper(plugin));
     }
 
     private void load() {
         File file = getFile();
 
         try (FileReader reader = new FileReader(file)) {
-            JsonArray array = new JsonParser().parse(reader).getAsJsonArray();
-            for (Object object : array) {
-                JsonObject jsonObject = (JsonObject) object;
-                Ability ability = Preconditions.checkNotNull(this.getAbilityByName(jsonObject.get("name").getAsString()));
-                ability.fromJson(jsonObject);
+            JsonElement element = new JsonParser().parse(reader);
+            if (element != null && element.isJsonArray()) {
+                JsonArray array = element.getAsJsonArray();
+                for (Object object : array) {
+                    JsonObject jsonObject = (JsonObject) object;
+                    Ability ability = Preconditions.checkNotNull(this.getAbilityByName(jsonObject.get("name").getAsString()));
+                    ability.fromJson(jsonObject);
+                }
+            } else {
+                plugin.getLogger().severe("Could not load " + file.getName() + " as it isn't an array.");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,7 +102,7 @@ public class AbilityHandler {
     }
 
     private File getFile() {
-        File file = new File(Brawl.getInstance().getDataFolder() + File.separator + "type.json");
+        File file = new File(Brawl.getInstance().getDataFolder() + File.separator + "abilities.json");
         if (!file.exists()) {
             try {
                 file.createNewFile();
