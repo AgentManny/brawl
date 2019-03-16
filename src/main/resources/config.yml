@@ -1,11 +1,11 @@
 MONGO:
-  DATABASE: "Brawl"
+  DATABASE: "EAT_MY_ASS_BABY"
   HOST: "127.0.0.1"
   PORT: 27017
   AUTHENTICATION:
-    ENABLED: false
-    USERNAME: ""
-    PASSWORD: ""
+    ENABLED: true
+    USERNAME: "kobi"
+    PASSWORD: "ilovekobi"
 TEAM:
   SIZE: 5
 LANGUAGE:
@@ -33,16 +33,27 @@ LANGUAGE:
         META: DUEL_ARENA
   SCOREBOARD:
     SPAWN:
-      TITLE: "&5&lKITPVP"
+      TITLE: "&5&lTHE CRAFT"
       LINES:
         - "{LINE}"
         - "&5Kills: &d{KILLS:ROUNDED}"
         - "&5Deaths: &d{DEATHS:ROUNDED}"
         - "&5Killstreak: &d{KILLSTREAK:ROUNDED}"
         - "&4{ABILITY}: &c{ABILITY:TIME}"
-        - "&2{ABILITY:ACTIVE:KEY}: &a{ABILITY:ACTIVE:VALUE}"
+        - "&6{ABILITY:ACTIVE:KEY}: &e{ABILITY:ACTIVE:VALUE}"
         - "&f{LINE}"
     GAME:
+      LOBBY:
+        TITLE: "&5&l{NAME:CAPITALISE}"
+        LINES:
+          - "{LINE}"
+          - "&5Event: &d{NAME:SHORT}"
+          - "&5Players: &d{ALIVE}/{TOTAL}"
+          - "&5Starting in &f{TIME}"
+          - " "
+          - "&5Map Vote"
+          - "&5{COUNT}. &d{MAP} &f{MAP:VOTE_COUNT}"
+          - "&f{LINE}"
       OTHER:
         TITLE: "&5&l{NAME:CAPITALISE}"
         LINES:
@@ -57,7 +68,45 @@ LANGUAGE:
   GAME:
     START_TIMER: "&d&lEvent &7| &f{NAME}&e will start in &d{TIME}&e."
     START: "&d&lEvent &7| &f{NAME}&e has now started."
-  DISABLED: "&cThis interface is currently disabled. Please try again later."
+    TEAM:
+      REMOVED: "&c&lEvent &7| &cTeam disbanded as {0} left."
+    MAP:
+      CREATED: "&aCreated map &f{0}&a for {1}."
+      REMOVED: "&aRemoved map &f{0}&a for {1}."
+      LOCATIONS_LEFT: "&7Locations Remaining: &f{0}"
+      LOCATION_ADDED: "&aAdded location &f{0} &afor &f{1} &a{2} game."
+      LOCATION_REMOVED: "&aRemoved location &f{0} &afor &f{1} &a{2} game."
+      TELEPORTED: "&aTeleported to &f{0} &afor &f{1} &a{2} game."
+      ERROR:
+        NOT_FOUND: "&cMap {0} for {1} not found."
+        LOCATION_NOT_FOUND: "&cLocation for {0} doesn't exist for {1} game."
+        ALREADY_EXISTS: "&cMap {0} for {1} already exists."
+    LOBBY:
+      JOIN: "&d&lEvent &7| &f{0}&e has joined the event. &7({1}/{2})"
+      ERROR:
+        ALREADY_VOTED: "&cYou've already voted for this map."
+      INVENTORY:
+        LEAVE_EVENT:
+          TYPE: INK_SACK
+          DATA: 1
+          NAME: "&7\u00bb &c&lLeave Event &7\u00ab"
+          META: EVENT_LEAVE
+        VOTE:
+          TYPE: 395
+          NAME: "&7\u00bb &b&l{MAP_NAME} &7\u00ab"
+          META: EVENT_VOTE
+        VOTE_SELECTED:
+          TYPE: MAP
+          NAME: "&7\u00bb &a&l{MAP_NAME} &7\u00ab"
+          META: EVENT_VOTE_SELECTED
+  DISABLED: "&cNo permission."
+  COINS:
+    DEDUCTED: "&d{0}&e has been &cdeducted&e from your account."
+    ERROR:
+      INSUFFICIENT_FUNDS: "&dYou don't have enough to purchase this item."
+  SHOP:
+    PURCHASED: "&aPurchased &f{0}x &a{1}."
+    ENCHANTED: "&aUpgraded item &f{0}&a."
   TELEPORT:
     ERROR:
       ENDERPEARL: "&cYou cannot enderpearl into spawn, used enderpearl has been refunded."
@@ -105,7 +154,7 @@ LANGUAGE:
       - "&7&m{0}"
     INFO:
       - "&7&m{LINE}"
-      - "&b{TEAM}&7[{ONLINE}/{SIZE}]"
+      - "&b{NAME}&7[{ONLINE}/{SIZE}]"
       - "&eLeader: &d{LEADER}"
       - "&eColeaders: &d{COLEADERS}"
       - "&eCaptains: &d{CAPTAINS}"
@@ -146,6 +195,8 @@ LANGUAGE:
       RANK: "&eUpdated rank for kit &d{0}&e."
       RARITY: "&eUpdated rarity for kit &d{0}&e."
       ABILITY: "&e{0} &eability &d{1}&e for kit &d{2}&e."
+    ERROR:
+      INVENTORY_FULL: "&cYour inventory is full."
     REGION:
       SAVE: "&eSaved regions in &d{0}ms&e."
       LIST:
