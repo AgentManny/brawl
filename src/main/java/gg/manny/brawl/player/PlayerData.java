@@ -40,6 +40,7 @@ public class PlayerData {
     private boolean teamChat = false;
 
     private Map<String, Long> kitRentals = new HashMap<>();
+    private Map<String, Long> gameRentals = new HashMap<>();
 
     private Map<GameType, GameStatistic> gameStatistics = new HashMap<>();
     private Map<Kit, KitStatistic> kitStatistics = new HashMap<>();
@@ -69,6 +70,7 @@ public class PlayerData {
                 .append("gameStatistic", gameStatistic)
                 .append("kitStatistic", kitStatistic)
                 .append("rentals", this.kitRentals)
+                .append("gameRentals", this.gameRentals)
                 .append("statistic", this.statistic.toJSON());
     }
 
@@ -88,6 +90,10 @@ public class PlayerData {
 
         if(document.containsKey("rentals")) {
             this.kitRentals.putAll((Map<String, Long>) document.get("rentals"));
+        }
+
+        if(document.containsKey("gameRentals")) {
+            this.gameRentals.putAll((Map<String, Long>) document.get("gameRentals"));
         }
 
         if(document.containsKey("statistic")) {
@@ -136,6 +142,14 @@ public class PlayerData {
         return this.toPlayer().isOp() || kit.isFree() || this.toPlayer().hasPermission("kit." + kit.getName().toLowerCase()) ||  (kitRentals.containsKey(kit.getName()) && kitRentals.get(kit.getName()) > System.currentTimeMillis());
     }
 
+    public boolean hasGame(GameType gameType) {
+        if (this.gameRentals.containsKey(gameType.getName()) && this.gameRentals.get(gameType.getName()) < System.currentTimeMillis()) {
+            this.gameRentals.remove(gameType.getName());
+        }
+
+        return this.toPlayer().isOp() || this.toPlayer().hasPermission("game." + gameType.getName().toLowerCase()) ||  (gameRentals.containsKey(gameType.getName()) && gameRentals.get(gameType.getName()) > System.currentTimeMillis());
+    }
+
     public void setSelectedKit(Kit selectedKit) {
         if (this.selectedKit != null) {
             this.selectedKit.getAbilities().forEach(ability -> ability.onRemove(this.toPlayer()));
@@ -173,7 +187,7 @@ public class PlayerData {
         return this.getCooldown(cooldownName.toUpperCase()) != null;
     }
 
-     Player toPlayer() {
+     public Player toPlayer() {
         return Bukkit.getPlayer(this.uniqueId);
     }
 
