@@ -37,7 +37,9 @@ public class AbilityHandler {
                 new Charger(plugin),
                 new WaterGun(plugin),
                 new HealthBooster(),
-                new Fisherman()
+                new Fisherman(),
+                new FlameThrower(plugin),
+                new IceSpikes()
         );
         this.load();
 
