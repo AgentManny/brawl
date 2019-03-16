@@ -17,7 +17,7 @@ public enum CustomEntityType {
     private final int id;
     private final Class<? extends Entity> clazz;
 
-    CustomEntityType(String name, int id, Class<CustomEntitySilverfish> clazz) {
+    CustomEntityType(String name, int id, Class<? extends Entity> clazz) {
         this.name = name;
         this.id = id;
         this.clazz = clazz;
@@ -31,6 +31,7 @@ public enum CustomEntityType {
 
     public static void spawn(Entity entity, Location location) {
         entity.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+
         ((CraftWorld)location.getWorld()).getHandle().addEntity(entity);
     }
 
