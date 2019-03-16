@@ -32,4 +32,10 @@ public class SpawnCommand {
         plugin.setLocationByName(this.spawnName, ((Player)sender).getLocation());
     }
 
+    @Command(names = "setspawn", permission = "brawl.command.setspawn")
+    public void setspawn(CommandSender sender, String spawnType) {
+        sender.sendMessage(Locale.LOCATION_SET.format(spawnName));
+        plugin.setLocationByName(spawnName, ((Player)sender).getLocation());
+    }
+
 }
