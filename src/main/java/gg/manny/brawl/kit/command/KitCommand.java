@@ -119,6 +119,12 @@ public class KitCommand {
         kit.setIcon(player.getItemInHand() == null ? new ItemStack(Material.AIR) : player.getItemInHand());
     }
 
+    @Command(names =  { "kit save", "k save" }, permission = "op")
+    public void save(Player player) {
+        brawl.getKitHandler().save();
+        player.sendMessage(CC.GREEN + "Saved all kits");
+    }
+
     @Command(names =  { "kit update", "k update" }, permission = "op")
     public void update(Player player, Kit kit) {
         PlayerInventory inventory = player.getInventory();

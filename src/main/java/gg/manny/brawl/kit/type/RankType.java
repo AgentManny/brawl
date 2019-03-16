@@ -22,4 +22,9 @@ public enum RankType {
     public String getDisplayName() {
         return this.colour + WordUtils.capitalizeFully(this.name().toLowerCase());
     }
+
+    public String getName() {
+        return WordUtils.capitalizeFully(this.name().toLowerCase());
+    }
+
 }
