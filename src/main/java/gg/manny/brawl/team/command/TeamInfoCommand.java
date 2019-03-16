@@ -12,7 +12,7 @@ public class TeamInfoCommand {
 
     private final Brawl brawl;
 
-    @Command(names = { "team info", "t info", "faction info", "f info", "team who", "t who", "faction who", "f who" })
+    @Command(names = { "team info", "t info", "faction info", "f info", "team who", "t who", "faction who", "f who" }, async = true)
     public void execute(CommandSender sender, @Parameter(value = "self") Team team) {
         team.sendTeamInfo(sender);
     }

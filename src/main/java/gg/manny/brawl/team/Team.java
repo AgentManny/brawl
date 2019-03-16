@@ -33,7 +33,7 @@ public class Team {
 
     private Set<UUID> invitations = new HashSet<>();
 
-    private String announcement = null;
+    private String announcement = "";
 
     private boolean loaded = false;
 
@@ -89,11 +89,14 @@ public class Team {
     }
 
     public List<Player> getOnlinePlayers() {
-        return this.getPlayers()
-                .stream()
-                .map(Brawl.getInstance().getServer()::getPlayer)
-                .filter(Objects::isNull)
-                .collect(Collectors.toList());
+        List<Player> players = new ArrayList<>();
+        for (UUID uuid : this.getPlayers()) {
+            Player player = Brawl.getInstance().getServer().getPlayer(uuid);
+            if (player != null) {
+                players.add(player);
+            }
+        }
+        return players;
     }
 
     public void broadcast(String message) {
@@ -102,7 +105,8 @@ public class Team {
 
     public void sendTeamInfo(CommandSender sender) {
         Player leader = Brawl.getInstance().getServer().getPlayer(this.leader);
-        String leaderName = (leader == null ? CC.GRAY : leader.hasMetadata("hidden") ? CC.GRAY : CC.GREEN) + Pivot.getPlugin().getUuidCache().getName(this.uniqueId);
+
+        String leaderName = (leader == null ? CC.GRAY : leader.hasMetadata("hidden") ? CC.GRAY : CC.GREEN) + Pivot.getPlugin().getUuidCache().getName(this.leader);
 
         StringBuilder coleaders = new StringBuilder(CC.YELLOW + "Coleaders: ");
         StringBuilder captains = new StringBuilder(CC.YELLOW + "Captains: ");
@@ -125,8 +129,9 @@ public class Team {
             members.append(name).append(CC.YELLOW).append(" ");
         }
 
+        String announcement = this.announcement == null || this.announcement.isEmpty() ? "" : this.announcement;
         for (String entry : Locale.TEAM_INFO.toList()) {
-            if (entry.contains("{ANNOUNCEMENT") && this.announcement == null || entry.contains("{COLEADERS}") && this.coleaders.isEmpty() || entry.contains("{CAPTAINS}") && this.captains.isEmpty() || entry.contains("{MEMBERS}") && this.members.isEmpty()) continue;
+            if (entry.contains("{ANNOUNCEMENT") && announcement.isEmpty() || entry.contains("{COLEADERS}") && this.coleaders.isEmpty() || entry.contains("{CAPTAINS}") && this.captains.isEmpty() || entry.contains("{MEMBERS}") && this.members.isEmpty()) continue;
 
             String line = entry.replace("{LINE}", CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 51))
                     .replace("{NAME}", this.name)
@@ -136,7 +141,7 @@ public class Team {
                     .replace("{COLEADERS}", StringUtils.join(coleaders.toString().split(" "), ", "))
                     .replace("{CAPTAINS}", StringUtils.join(captains.toString().split(" "), ", "))
                     .replace("{MEMBERS}", StringUtils.join(members.toString().split(" "), ", "))
-                    .replace("{ANNOUNCEMENT}", this.announcement);
+                    .replace("{ANNOUNCEMENT}", announcement);
             sender.sendMessage(line);
         }
     }

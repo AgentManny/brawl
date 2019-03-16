@@ -8,9 +8,13 @@ import com.mongodb.client.model.ReplaceOptions;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.player.PlayerData;
 import gg.manny.brawl.team.command.*;
+import gg.manny.brawl.team.command.adapter.TeamTypeAdapter;
+import gg.manny.brawl.util.BrawlUtil;
 import gg.manny.pivot.Pivot;
 import gg.manny.quantum.Quantum;
 import org.bson.Document;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -46,7 +50,7 @@ public class TeamHandler {
                 UUID uniqueId = UUID.fromString(document.getString("uniqueId"));
                 UUID leader = UUID.fromString(document.getString("leader"));
 
-                Team team = new Team(name, uniqueId, leader);
+                Team team = new Team(name, leader, uniqueId);
                 team.fromJson(document);
 
                 if (team.isLoaded()) {
@@ -55,6 +59,7 @@ public class TeamHandler {
             }
         }
         Quantum quantum = Pivot.getPlugin().getQuantum();
+        quantum.registerParameterType(Team.class, new TeamTypeAdapter(brawl));
         Arrays.asList(
                 new TeamAcceptCommand(brawl),
                 new TeamAnnouncementCommand(brawl),
@@ -84,7 +89,7 @@ public class TeamHandler {
             this.playerTeamMap.put(playerUuid, playerUuid);
         }
         if (save) {
-            brawl.getServer().getScheduler().runTaskAsynchronously(brawl, this::save);
+            brawl.getServer().getScheduler().runTaskAsynchronously(brawl, () -> save(team));
         }
     }
 
@@ -104,12 +109,19 @@ public class TeamHandler {
         return uuid == null ? null : teamUniqueIdMap.get(uuid);
     }
 
+    public Team getTeamByPlayer(String search) {
+        OfflinePlayer target = BrawlUtil.isUUID(search) ? Bukkit.getOfflinePlayer(UUID.fromString(search)) : Bukkit.getOfflinePlayer(search);
+        return target.hasPlayedBefore() || target.isOnline() ? this.getTeamByUuid(target.getUniqueId()) : null;
+    }
+
     public Team getTeam(UUID teamUniqueId) {
         return teamUniqueIdMap.get(teamUniqueId);
     }
 
     public Team getTeamByUuid(UUID playerUniqueId) {
-        return this.teamUniqueIdMap.get(this.playerTeamMap.get(playerUniqueId));
+        UUID uuid = playerTeamMap.get(playerUniqueId);
+        Team team = uuid == null ? null : teamUniqueIdMap.get(uuid);
+        return team;
     }
 
     public Team getTeamByPlayerData(PlayerData playerData) {

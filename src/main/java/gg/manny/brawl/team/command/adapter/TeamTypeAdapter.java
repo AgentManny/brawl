@@ -20,13 +20,20 @@ public class TeamTypeAdapter implements CommandTypeAdapter<Team> {
     @Override
     public Team transform(CommandSender sender, String source) {
         if (sender instanceof Player && source.equalsIgnoreCase("self")) {
-            return plugin.getTeamHandler().getTeamByPlayer((Player)sender);
+            Team team = plugin.getTeamHandler().getTeamByPlayer((Player)sender);
+            if (team == null) {
+                sender.sendMessage(CC.RED + "You are not in a team.");
+            }
+            return team;
         }
         Team team = plugin.getTeamHandler().getTeam(source);
         if (team == null) {
-            sender.sendMessage(CC.RED + "Team " + source + " not found.");
+            team = plugin.getTeamHandler().getTeamByPlayer(source);
         }
 
+        if (team == null) {
+            sender.sendMessage(CC.RED + "Team " + source + " not found.");
+        }
         return team;
     }
 
