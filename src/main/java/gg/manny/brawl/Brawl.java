@@ -13,6 +13,7 @@ import gg.manny.brawl.ability.command.adapter.AbilityTypeAdapter;
 import gg.manny.brawl.command.BrawlCommand;
 import gg.manny.brawl.command.BuildCommand;
 import gg.manny.brawl.command.SpawnCommand;
+import gg.manny.brawl.game.GameHandler;
 import gg.manny.brawl.item.ItemHandler;
 import gg.manny.brawl.kit.Kit;
 import gg.manny.brawl.kit.KitHandler;
@@ -75,6 +76,8 @@ public class Brawl extends JavaPlugin {
 
     private AbilityHandler abilityHandler;
 
+    private GameHandler gameHandler;
+
     private TeamHandler teamHandler;
 
     private RegionHandler regionHandler;
@@ -123,6 +126,7 @@ public class Brawl extends JavaPlugin {
         this.teamHandler.save();
         this.kitHandler.save();
         this.abilityHandler.save();
+        this.gameHandler.save();
     }
 
     private void registerCommands() {
@@ -147,7 +151,8 @@ public class Brawl extends JavaPlugin {
         this.abilityHandler = new AbilityHandler(this);
         this.kitHandler = new KitHandler(this);
         this.playerDataHandler = new PlayerDataHandler(this);
-        this.teamHandler = new TeamHandler(this);
+        this.gameHandler = new GameHandler(this);
+      //  this.teamHandler = new TeamHandler(this); //Todo Fix teams :(
 
         Plugin worldEditPlugin = getServer().getPluginManager().getPlugin("WorldEdit");
         this.worldEdit = worldEditPlugin instanceof WorldEditPlugin && worldEditPlugin.isEnabled() ? (WorldEditPlugin) worldEditPlugin : null;
@@ -162,7 +167,7 @@ public class Brawl extends JavaPlugin {
     }
 
     private NametagProvider registerNametag() {
-        return new NametagProvider("KitPvP", 50) {
+        return new NametagProvider("Brawl", 50) {
             @Override
             public Nametag fetchNametag(Player toRefresh, Player refreshFor) {
                 Scoreboard scoreboard = toRefresh.getScoreboard();
