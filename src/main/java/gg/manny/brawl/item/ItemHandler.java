@@ -2,6 +2,7 @@ package gg.manny.brawl.item;
 
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.Locale;
+import gg.manny.brawl.game.menu.GameSelectorMenu;
 import gg.manny.brawl.item.type.InventoryType;
 import gg.manny.brawl.item.type.MetadataType;
 import gg.manny.brawl.kit.Kit;
@@ -113,6 +114,7 @@ public class ItemHandler implements Listener {
             builder.lore(configurationSection.getStringList(key + "LORE"));
         }
 
+
         if (configurationSection.get(key + ".ENCHANTMENTS") != null) {
             Map<Enchantment, Integer> enchantmentMap = new HashMap<>();
             ConfigurationSection enchantmentConfigurationSection = configurationSection.getConfigurationSection(key + ".ENCHANTMENTS");
@@ -150,6 +152,14 @@ public class ItemHandler implements Listener {
                     switch (metadataType) {
                         case KIT_SELECTOR: {
                             new KitSelectorMenu(plugin).openMenu(player);
+                            break;
+                        }
+                        case EVENT_SELECTOR: {
+                            new GameSelectorMenu(plugin).openMenu(player);
+                            break;
+                        }
+                        case EVENT_VOTE_SELECTED: {
+                            player.sendMessage(Locale.GAME_LOBBY_ERROR_ALREADY_VOTED.format());
                             break;
                         }
                         case PREVIOUS_KIT: {

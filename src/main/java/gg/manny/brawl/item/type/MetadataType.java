@@ -7,6 +7,9 @@ public enum MetadataType {
     KIT_SELECTOR,
     PREVIOUS_KIT,
     EVENT_SELECTOR,
+    EVENT_LEAVE,
+    EVENT_VOTE,
+    EVENT_VOTE_SELECTED,
     SHOP,
     DUEL_ARENA;
 
