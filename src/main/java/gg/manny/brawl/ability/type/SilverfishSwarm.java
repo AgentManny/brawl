@@ -21,8 +21,8 @@ public class SilverfishSwarm extends Ability implements Listener {
     private final Brawl brawl;
 
     public SilverfishSwarm(Brawl brawl) {
-        super("Silverfish Swarm", new ItemBuilder(Material.INK_SACK)
-                .data((byte) 12)
+        super("SilverfishSwarm", new ItemBuilder(Material.INK_SACK)
+                .data((byte) 6)
                 .name(CC.GRAY + "\u00bb " + CC.DARK_AQUA + CC.BOLD + "Silverfish Swarm" + CC.GRAY + " \u00ab")
                 .create()
         );
@@ -38,8 +38,9 @@ public class SilverfishSwarm extends Ability implements Listener {
         for (int i = 0; i < 5; i++) {
             Silverfish entity = (Silverfish) player.getWorld().spawnEntity(player.getLocation(), EntityType.SILVERFISH);
             entity.setMetadata("swarm", new FixedMetadataValue(brawl, player.getUniqueId().toString()));
-            entity.setHealth(40);
-            entity.setMaxHealth(40);
+            entity.setMaxHealth(20);
+            entity.setHealth(20);
+
         }
 
     }

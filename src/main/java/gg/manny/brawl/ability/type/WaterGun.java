@@ -48,7 +48,7 @@ public class WaterGun extends Ability implements Listener  {
     private int delay = 5;
 
     public WaterGun(Brawl brawl) {
-        super("Water Gun", new ItemBuilder(Material.INK_SACK)
+        super("WaterGun", new ItemBuilder(Material.INK_SACK)
                 .data((byte) 12)
                 .name(CC.GRAY + "\u00bb " + CC.AQUA + CC.BOLD + "Water Gun" + CC.GRAY + " \u00ab")
                 .create()
