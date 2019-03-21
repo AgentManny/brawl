@@ -96,6 +96,7 @@ public enum Locale {
 
     PLAYER_ABILITY_COOLDOWN("ABILITY.COOLDOWN"),
     PLAYER_ABILITY_EXPIRED("ABILITY.EXPIRED"),
+    PLAYER_ABILITY_ERROR_SAFEZONE("ABILITY.ERROR.SAFEZONE"),
 
     PLAYER_PROTECTION_REMOVED("PLAYER.PROTECTION.REMOVED"),
     PLAYER_PROTECTION_DAMAGE("PLAYER.PROTECTION.DAMAGE"),
@@ -107,7 +108,11 @@ public enum Locale {
     private String path;
 
     public String format(Object... objects) {
-        return new MessageFormat(ChatColor.translateAlternateColorCodes('&', Brawl.getInstance().getMainConfig().getString("LANGUAGE." + path).replace("|", "\u2758"))).format(objects);
+        String message = Brawl.getInstance().getMainConfig().getString("LANGUAGE." + path);
+        if (message == null) {
+            message = "Uh oh! Your configuration is out of date.";
+        }
+        return new MessageFormat(ChatColor.translateAlternateColorCodes('&', message.replace("|", "\u2758"))).format(objects);
     }
 
     public String get() {

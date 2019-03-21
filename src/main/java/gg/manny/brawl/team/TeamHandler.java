@@ -111,25 +111,25 @@ public class TeamHandler {
 
     public Team getTeamByPlayer(String search) {
         OfflinePlayer target = BrawlUtil.isUUID(search) ? Bukkit.getOfflinePlayer(UUID.fromString(search)) : Bukkit.getOfflinePlayer(search);
-        return target.hasPlayedBefore() || target.isOnline() ? this.getTeamByUuid(target.getUniqueId()) : null;
+        return target.hasPlayedBefore() || target.isOnline() ? this.getTeamByPlayer(target.getUniqueId()) : null;
     }
 
     public Team getTeam(UUID teamUniqueId) {
         return teamUniqueIdMap.get(teamUniqueId);
     }
 
-    public Team getTeamByUuid(UUID playerUniqueId) {
+    public Team getTeamByPlayer(UUID playerUniqueId) {
         UUID uuid = playerTeamMap.get(playerUniqueId);
         Team team = uuid == null ? null : teamUniqueIdMap.get(uuid);
         return team;
     }
 
     public Team getTeamByPlayerData(PlayerData playerData) {
-        return this.getTeamByUuid(playerData.getUniqueId());
+        return this.getTeamByPlayer(playerData.getUniqueId());
     }
 
     public Team getTeamByPlayer(Player player) {
-        return this.getTeamByUuid(player.getUniqueId());
+        return this.getTeamByPlayer(player.getUniqueId());
     }
 
     public ImmutableList<Team> getTeams() {

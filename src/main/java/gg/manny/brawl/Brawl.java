@@ -152,7 +152,7 @@ public class Brawl extends JavaPlugin {
         this.kitHandler = new KitHandler(this);
         this.playerDataHandler = new PlayerDataHandler(this);
         this.gameHandler = new GameHandler(this);
-      //  this.teamHandler = new TeamHandler(this); //Todo Fix teams :(
+        this.teamHandler = new TeamHandler(this); //Todo Fix teams :(
 
         Plugin worldEditPlugin = getServer().getPluginManager().getPlugin("WorldEdit");
         this.worldEdit = worldEditPlugin instanceof WorldEditPlugin && worldEditPlugin.isEnabled() ? (WorldEditPlugin) worldEditPlugin : null;

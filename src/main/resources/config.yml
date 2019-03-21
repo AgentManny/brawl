@@ -116,6 +116,8 @@ LANGUAGE:
   ABILITY:
     COOLDOWN: "&cYou must wait &l{0}&c before using this again."
     EXPIRED: "&aYou can now use &l{0}&a again."
+    ERROR:
+      SAFEZONE: "&cYou cannot use abilities in spawn."
   PLAYER:
     KIT:
       SELECTED: "&eYou have chosen the &d{0}&e kit."

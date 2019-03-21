@@ -6,6 +6,7 @@ import gg.manny.brawl.ability.Ability;
 import gg.manny.brawl.item.type.InventoryType;
 import gg.manny.brawl.kit.Kit;
 import gg.manny.brawl.player.PlayerData;
+import gg.manny.brawl.region.RegionType;
 import gg.manny.brawl.util.BrawlUtil;
 import gg.manny.pivot.util.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +64,10 @@ public class PlayerListener implements Listener {
             if (kit != null) {
                 for (Ability ability : kit.getAbilities()) {
                     if (BrawlUtil.match(ability.getIcon(), event.getItem())) {
+                        if (RegionType.SAFEZONE.containsLocation(player.getLocation())) {
+                            player.sendMessage(Locale.PLAYER_ABILITY_ERROR_SAFEZONE.format());
+                            return;
+                        }
                         ability.onActivate(player);
                         break;
                     }

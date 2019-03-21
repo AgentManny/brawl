@@ -2,6 +2,7 @@ package gg.manny.brawl.ability.type;
 
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.ability.Ability;
+import gg.manny.pivot.util.PivotUtil;
 import gg.manny.pivot.util.inventory.ItemBuilder;
 import gg.manny.spigot.util.chatcolor.CC;
 import org.bukkit.Material;
@@ -40,7 +41,11 @@ public class SilverfishSwarm extends Ability implements Listener {
             entity.setMetadata("swarm", new FixedMetadataValue(brawl, player.getUniqueId().toString()));
             entity.setMaxHealth(20);
             entity.setHealth(20);
-
+            PivotUtil.runLater(() -> {
+                if (entity != null) {
+                    entity.remove();
+                }
+            }, 300L, false);
         }
 
     }

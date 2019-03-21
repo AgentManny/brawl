@@ -4,6 +4,7 @@ import gg.manny.brawl.Brawl;
 import gg.manny.brawl.game.lobby.GameLobby;
 import gg.manny.brawl.game.map.GameMapHandler;
 import lombok.Getter;
+import org.bukkit.entity.Player;
 
 @Getter
 public class GameHandler {
@@ -22,5 +23,9 @@ public class GameHandler {
 
     public void save() {
         this.mapHandler.save();
+    }
+
+    public void start(Player hoster, GameType type) {
+
     }
 }
