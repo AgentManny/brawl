@@ -1,13 +1,12 @@
 package gg.manny.brawl.command;
 
 import gg.manny.brawl.Brawl;
-import gg.manny.brawl.Locale;
 import gg.manny.brawl.util.BrawlUtil;
 import gg.manny.quantum.command.Command;
-import gg.manny.spigot.GenericSpigot;
-import gg.manny.spigot.GenericSpigotConfig;
-import gg.manny.spigot.util.chatcolor.CC;
+import gg.manny.server.config.MineConfig;
+import gg.manny.server.util.chatcolor.CC;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 
@@ -24,15 +23,14 @@ public class BrawlCommand {
         sender.sendMessage(CC.GOLD + "Created by " + CC.WHITE + String.join(", ", plugin.getDescription().getAuthors()));
     }
 
-    @Command(names = "brawl optimise")
+    @Command(names = "brawl optimise", permission = "op")
     public void optimise(CommandSender sender) {
         sender.sendMessage(CC.GOLD + "Optimising workload suited towards Brawl");
-        if (BrawlUtil.isGeneric()) {
+        if (BrawlUtil.isMineSpigot()) {
 
-            sender.sendMessage(CC.GREEN + "Injected GenericSpigot optimisations");
+            sender.sendMessage(CC.GREEN + "Injected mSpigot optimisations");
             long time = System.currentTimeMillis();
-            GenericSpigot spigot = GenericSpigot.INSTANCE;
-            GenericSpigotConfig config = spigot.getConfig();
+            MineConfig config = MineConfig.get();
 
             header(sender, "Timings", () -> {
                 execute(sender, "Block Tick", "false", () -> config.setDisableBlockTick(true));
@@ -93,9 +91,9 @@ public class BrawlCommand {
             plugin.getMainConfig().getConfiguration().load(plugin.getMainConfig().getFile());
         } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
-            sender.sendMessage(Locale.COMMAND_RELOAD_ERROR.format());
+            sender.sendMessage(ChatColor.RED + "Failed to reload Brawl.");
         } finally {
-            sender.sendMessage(Locale.COMMAND_RELOAD_SUCCESS.format());
+            sender.sendMessage(ChatColor.GREEN + "Reloaded Brawl.");
         }
     }
 }

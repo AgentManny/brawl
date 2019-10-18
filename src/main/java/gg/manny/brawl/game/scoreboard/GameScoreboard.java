@@ -2,8 +2,8 @@ package gg.manny.brawl.game.scoreboard;
 
 import gg.manny.brawl.game.Game;
 import gg.manny.brawl.game.GameState;
-import gg.manny.brawl.game.team.GameTeam;
-import gg.manny.spigot.util.chatcolor.CC;
+import gg.manny.brawl.game.team.GamePlayer;
+import gg.manny.server.util.chatcolor.CC;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +16,7 @@ import java.util.List;
  */
 @Deprecated
 public class GameScoreboard {
+
     private static String PRIMARILY_COLOUR = CC.DARK_PURPLE;
     private static String SECONDARY_COLOUR = CC.LIGHT_PURPLE;
     private static String WARNING_COLOUR = CC.RED;
@@ -26,25 +27,26 @@ public class GameScoreboard {
 
     public static List<String> getDefault(Game game) {
         List<String> toReturn = new ArrayList<>();
-        toReturn.add(CC.SCOREBAORD_SEPARATOR);
         toReturn.add(PRIMARILY_COLOUR + "Event: " + SECONDARY_COLOUR + game.getType().getShortName());
         toReturn.add(PRIMARILY_COLOUR + "Players: " + SECONDARY_COLOUR + game.getAlivePlayers().size() + "/" + game.getPlayers().size());
         toReturn.addAll(getState(game));
-        toReturn.add(CC.GRAY + CC.STRIKETHROUGH);
         return toReturn;
     }
 
     private static List<String> getState(Game game) {
         List<String> toReturn = new ArrayList<>();
         if (game.getState() == GameState.GRACE_PERIOD) {
-            toReturn.add(CC.GREEN + CC.SCOREBAORD_SEPARATOR);
-            toReturn.add(PRIMARILY_COLOUR + "Starting in " + SECONDARY_COLOUR + game.getTime() + "s");
+            toReturn.add(CC.BLUE + CC.SCOREBAORD_SEPARATOR);
+
+            long seconds = game.getTime();
+
+            toReturn.add(PRIMARILY_COLOUR + "Starting in " + SECONDARY_COLOUR + seconds + "s");
         } else if (game.getState() == GameState.FINISHED) {
             toReturn.add(CC.GREEN + CC.STRIKETHROUGH);
             boolean winners = game.getWinners().size() > 1;
             if (winners) {
                 toReturn.add(PRIMARILY_COLOUR + "Winners: ");
-                for (GameTeam.GamePlayer player : game.getWinners()) {
+                for (GamePlayer player : game.getWinners()) {
                     toReturn.add(SECONDARY_COLOUR + "  " + player.getName());
                 }
             } else if (!game.getWinners().isEmpty()) {

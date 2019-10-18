@@ -11,7 +11,21 @@ public enum MetadataType {
     EVENT_VOTE,
     EVENT_VOTE_SELECTED,
     SHOP,
-    DUEL_ARENA;
+
+    DUEL_ARENA,
+    DUEL_ARENA_LEAVE,
+    DUEL_ARENA_RANKED,
+    DUEL_ARENA_UNRANKED,
+    DUEL_ARENA_QUICK_QUEUE,
+
+    QUEUE_LEAVE,
+
+    SPECTATOR_LEAVE,
+
+    LEADERBOARDS,
+    LEADERBOARDS_ELO,
+
+    DISABLED;
 
     @Getter
     private boolean cancellable;

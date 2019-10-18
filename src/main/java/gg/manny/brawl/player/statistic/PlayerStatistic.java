@@ -1,52 +1,133 @@
 package gg.manny.brawl.player.statistic;
 
 import gg.manny.brawl.Brawl;
+import gg.manny.brawl.duelarena.loadout.MatchLoadout;
+import gg.manny.brawl.game.GameType;
+import gg.manny.brawl.game.statistic.GameStatistic;
 import gg.manny.brawl.kit.Kit;
 import gg.manny.brawl.kit.statistic.KitStatistic;
+import gg.manny.brawl.player.PlayerData;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
+@RequiredArgsConstructor
 public class PlayerStatistic {
 
-    private Map<StatisticType, Double> statisticMap = new HashMap<>();
-    private Map<String, KitStatistic> kitStatisticMap = new HashMap<>();
+    private final PlayerData playerData;
 
+    private Map<StatisticType, Double> spawnStatistics = new HashMap<>();
+    private Map<String, KitStatistic> kitStatistics = new HashMap<>();
+    private Map<GameType, GameStatistic> gameStatistics = new HashMap<>();
 
-    public void fromJSON(Document document) {
-        Document statisticDocument = (Document) document.get("statistic");
-        for(StatisticType statisticType : StatisticType.values()) {
-            if(statisticDocument.containsKey(statisticType.name())) {
-                this.statisticMap.put(statisticType, document.getDouble(statisticType.name()));
+    private int globalElo = 1000;
+    private Map<MatchLoadout, Integer> arenaStatistics = new HashMap<>();
+
+    public void load(Document document) {
+        if (document == null) {
+            for (StatisticType statisticType : StatisticType.values()) {
+                this.spawnStatistics.put(statisticType, 0.0);
             }
+
+            for (MatchLoadout loadout : Brawl.getInstance().getMatchHandler().getLoadouts()) {
+                arenaStatistics.put(loadout, 1000);
+            }
+            return;
+        }
+        Document spawnDocument = (Document) document.get("spawn");
+        for (StatisticType statisticType : StatisticType.values()) {
+            this.spawnStatistics.put(statisticType, spawnDocument.get(statisticType.name(), statisticType == StatisticType.LEVEL ? 1 : 0.0));
         }
 
-        Document kitStatisticDocument = (Document) document.get("kitStatistic");
-        for(Kit kit : Brawl.getInstance().getKitHandler().getKits()) {
-            if(kitStatisticDocument.containsKey(kit.getName())) {
+        if (document.containsKey("arena")) {
+            Document arenaDocument = (Document) document.get("arena");
+            for (MatchLoadout loadout : Brawl.getInstance().getMatchHandler().getLoadouts()) {
+                arenaStatistics.put(loadout, arenaDocument.containsKey(loadout.getName().toLowerCase()) ? arenaDocument.getInteger(loadout.getName().toLowerCase(), 1000) : 1000);
+            }
+            this.globalElo = arenaDocument.getInteger("global", 1000);
+        }
+
+        Document kitDocument = (Document) document.get("kit");
+        for (Kit kit : Brawl.getInstance().getKitHandler().getKits()) {
+            if (kitDocument.containsKey(kit.getName())) {
                 Document statistic = (Document) document.get(kit.getName());
 
-                this.kitStatisticMap.putIfAbsent(kit.getName(), new KitStatistic(statistic));
+                this.kitStatistics.putIfAbsent(kit.getName(), new KitStatistic(statistic));
             }
         }
 
+        Map<String, Document> gameStatistic = (Map<String, Document>) document.get("game");
+        for (Map.Entry<String, Document> entry : gameStatistic.entrySet()) {
+            String name = entry.getKey();
+            Document gameDocument = entry.getValue();
+            this.gameStatistics.put(GameType.valueOf(name), new GameStatistic(gameDocument));
+        }
     }
 
-    public Document toJSON() {
-        Document statisticDocument = new Document();
-        this.statisticMap.forEach(((statisticType, amount) -> statisticDocument.append(statisticType.name(), amount)));
+    public int get(MatchLoadout loadout) {
+        return this.arenaStatistics.getOrDefault(loadout, 1000);
+    }
 
-        Document kitStatisticDocument = new Document();
-        this.kitStatisticMap.forEach((kitName, kitStatistic) -> kitStatisticDocument.append(kitName, kitStatistic.toJSON()));
+    public void set(MatchLoadout loadout, int newElo) {
+        this.arenaStatistics.put(loadout, newElo);
+        this.updateElo();
+    }
 
-        return new Document("statistic", statisticDocument)
-                .append("kitStatistic", kitStatisticDocument);
+    public void updateElo() {
+        int elo = 0;
+        int count = 0;
+        for (Map.Entry<MatchLoadout, Integer> entry : this.arenaStatistics.entrySet()) {
+            MatchLoadout loadout = entry.getKey();
+            if (loadout.isRanked()) {
+                elo += entry.getValue();
+                count++;
+            }
+        }
+
+        this.globalElo = Math.round(elo / Math.max(1, count));
+        this.playerData.markForSave();
+    }
+
+    public Document getSpawnData() {
+        Document spawnDocument = new Document();
+        this.spawnStatistics.forEach(((statisticType, amount) -> spawnDocument.put(statisticType.name(), amount)));
+        return spawnDocument;
+    }
+
+    public Document getKitData() {
+        Document kitDocument = new Document();
+        this.kitStatistics.forEach(((kit, stats) -> kitDocument.put(kit, stats.toJSON())));
+        return kitDocument;
+    }
+
+    public Document getArenaData() {
+        Document arenaDocument = new Document();
+        this.arenaStatistics.forEach(((kit, elo) -> arenaDocument.put(kit.getName().toLowerCase(), elo)));
+
+        arenaDocument.put("global", this.globalElo);
+        return arenaDocument;
+    }
+
+    public Document getGameData() {
+        Document gameDocument = new Document();
+        this.gameStatistics.forEach((game, statistic) -> gameDocument.put(game.name(), statistic.toJSON()));
+        return gameDocument;
+    }
+
+    public Document getData() {
+        return new Document("spawn", getSpawnData())
+                .append("kit", getKitData())
+                .append("game", getGameData())
+                .append("arena", getArenaData());
     }
 
     public KitStatistic get(Kit kit) {
-        this.kitStatisticMap.putIfAbsent(kit.getName(), new KitStatistic( ));
-        return this.kitStatisticMap.get(kit.getName());
+        this.kitStatistics.putIfAbsent(kit.getName(), new KitStatistic( ));
+        return this.kitStatistics.get(kit.getName());
     }
 
     public double get(StatisticType statisticType) {
@@ -54,18 +135,24 @@ public class PlayerStatistic {
             return this.get(StatisticType.KILLS) / Math.max(this.get(StatisticType.DEATHS), 1);
         }
 
-        this.statisticMap.putIfAbsent(statisticType, 0.0D);
-        return this.statisticMap.getOrDefault(statisticType, 0.0D);
+        this.spawnStatistics.putIfAbsent(statisticType, 0.0D);
+        return this.spawnStatistics.getOrDefault(statisticType, 0.0D);
     }
 
     public double set(StatisticType statisticType, double newValue) {
-        this.statisticMap.putIfAbsent(statisticType, 0.0D);
-        return this.statisticMap.put(statisticType, newValue);
+        this.spawnStatistics.putIfAbsent(statisticType, 0.0D);
+        this.spawnStatistics.put(statisticType, newValue);
+        this.playerData.markForSave();
+        return newValue;
     }
 
     public double add(StatisticType statisticType, double value) {
-        this.statisticMap.putIfAbsent(statisticType, 0.0D);
-        return this.statisticMap.put(statisticType, this.get(statisticType) + value);
+        this.spawnStatistics.putIfAbsent(statisticType, 0.0D);
+
+        double newValue = this.get(statisticType) + value;
+        this.spawnStatistics.put(statisticType, newValue);
+        this.playerData.markForSave();
+        return newValue;
     }
 
     public double add(StatisticType statisticType) {

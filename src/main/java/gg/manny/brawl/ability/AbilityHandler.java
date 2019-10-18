@@ -7,10 +7,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.ability.type.*;
+import gg.manny.brawl.ability.type.chemist.Chemist;
+import gg.manny.brawl.ability.type.chemist.SmokeBomb;
 import gg.manny.pivot.Pivot;
-import gg.manny.spigot.GenericSpigot;
-import gg.manny.spigot.handler.PacketHandler;
-import gg.manny.spigot.handler.SimpleMovementHandler;
+import gg.manny.server.MineServer;
+import gg.manny.server.handler.PacketHandler;
+import gg.manny.server.handler.SimpleMovementHandler;
 import lombok.Getter;
 import org.bukkit.event.Listener;
 
@@ -32,14 +34,35 @@ public class AbilityHandler {
         this.plugin = plugin;
 
         this.registerAbilities(
+                new Chemist(),
+                new SmokeBomb(),
+
+                new Fireball(),
+                new Toss(),
+
+                new FluffyHandcuffs(),
+
                 new Stomper(plugin),
                 new SilverfishSwarm(plugin),
                 new Charger(plugin),
                 new WaterGun(plugin),
                 new HealthBooster(),
                 new Fisherman(),
-                new FlameThrower(plugin),
-                new IceSpikes()
+                new FlameThrower(),
+                new IceSpikes(),
+                new Vortex(plugin),
+                new Detonator(plugin),
+                new Vampire(plugin),
+                new Rider(plugin),
+                new WebShooter(plugin),
+                new Dash(),
+                new Archer(),
+                new Switcher(),
+                new Grappler(),
+                new Medic(),
+                new Rapid(),
+                new ShadowShift(),
+                new Smite()
         );
         this.load();
 
@@ -90,11 +113,11 @@ public class AbilityHandler {
             }
 
             if (ability instanceof SimpleMovementHandler) {
-                GenericSpigot.INSTANCE.addMovementHandler((SimpleMovementHandler) ability);
+                MineServer.getInstance().addMovementHandler((SimpleMovementHandler) ability);
             }
 
             if (ability instanceof PacketHandler) {
-                GenericSpigot.INSTANCE.addPacketHandler((PacketHandler) ability);
+                MineServer.getInstance().addPacketHandler((PacketHandler) ability);
             }
         }
     }

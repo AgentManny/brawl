@@ -3,9 +3,10 @@ package gg.manny.brawl.ability.type;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.ability.Ability;
 import gg.manny.brawl.region.RegionType;
+import gg.manny.pivot.util.ItemBuilder;
 import gg.manny.pivot.util.PivotUtil;
-import gg.manny.pivot.util.inventory.ItemBuilder;
-import gg.manny.spigot.util.chatcolor.CC;
+import gg.manny.server.util.chatcolor.CC;
+import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,6 +14,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,10 +33,19 @@ public class IceSpikes extends Ability {
     private int time = 15;
     private Material spikes = Material.PACKED_ICE;
 
-    public IceSpikes() {
-        super("Ice Spikes", new ItemBuilder(Material.ICE)
-                .name(CC.GRAY + "\u00bb " + CC.AQUA + CC.BOLD + "Ice Spikes" + CC.GRAY + " \u00ab")
-                .create());
+    @Override
+    public String getName() {
+        return "Ice Spikes";
+    }
+
+    @Override
+    public Material getType() {
+        return Material.ICE;
+    }
+
+    @Override
+    public ChatColor getColor() {
+        return ChatColor.AQUA;
     }
 
     @Override
@@ -62,10 +73,10 @@ public class IceSpikes extends Ability {
             for (int chZ = 0 -chunkRadius; chZ <= chunkRadius; chZ++) {
                 int x = (int) location.getX(), y = (int) location.getY(), z = (int) location.getZ();
                 for (Entity e : new Location(location.getWorld(), x + (chX * 16), y, z + (chZ * 16)).getChunk().getEntities()) {
-                    if (e.getLocation().distance(location) <= radius && e.getLocation().getBlock() != location.getBlock() && !RegionType.SAFEZONE.containsLocation(e.getLocation())) {
+                    if (e.getLocation().distance(location) <= radius && e.getLocation().getBlock() != location.getBlock() && !RegionType.SAFEZONE.appliesTo(e.getLocation())) {
                         if (e instanceof Player) {
                             Player p = (Player) e;
-                            p.damage(4D);
+                            p.damage(4.5D);
                         }
                     }
                 }
@@ -79,7 +90,7 @@ public class IceSpikes extends Ability {
 
         for (int i = 0; i < height; i ++) {
             Block b = location.add(0, 1, 0).getBlock();
-            if (!RegionType.SAFEZONE.containsLocation(b.getLocation())) {
+            if (!RegionType.SAFEZONE.appliesTo(b.getLocation())) {
                 if (b.getType() == Material.AIR) {
                     b.setType(this.spikes);
                     b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
@@ -93,7 +104,7 @@ public class IceSpikes extends Ability {
             Location base = cloned.getBlock().getRelative(rad).getLocation();
             for (int i = 0; i < height - 3; i ++) {
                 Block b = base.add(0, 1, 0).getBlock();
-                if (!RegionType.SAFEZONE.containsLocation(b.getLocation())) {
+                if (!RegionType.SAFEZONE.appliesTo(b.getLocation())) {
                     if (b.getType() == Material.AIR) {
                         b.setType(this.spikes);
                         b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
@@ -107,7 +118,7 @@ public class IceSpikes extends Ability {
             Location base = cloned.getBlock().getRelative(rad).getLocation();
             for (int i = 0; i < height - 6; i ++) {
                 Block b = base.add(0, 1, 0).getBlock();
-                if (!RegionType.SAFEZONE.containsLocation(b.getLocation())) {
+                if (!RegionType.SAFEZONE.appliesTo(b.getLocation())) {
                     if (b.getType() == Material.AIR) {
                         changed.add(b);
                         b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());

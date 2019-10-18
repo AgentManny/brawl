@@ -1,18 +1,24 @@
 package gg.manny.brawl.item;
 
 import gg.manny.brawl.Brawl;
-import gg.manny.brawl.Locale;
+import gg.manny.brawl.duelarena.DuelArena;
+import gg.manny.brawl.duelarena.match.queue.QueueType;
+import gg.manny.brawl.duelarena.menu.LoadoutMenu;
+import gg.manny.brawl.game.lobby.GameLobby;
 import gg.manny.brawl.game.menu.GameSelectorMenu;
 import gg.manny.brawl.item.type.InventoryType;
 import gg.manny.brawl.item.type.MetadataType;
 import gg.manny.brawl.kit.Kit;
 import gg.manny.brawl.kit.menu.KitSelectorMenu;
+import gg.manny.brawl.leaderboard.menu.LeaderboardEloMenu;
+import gg.manny.brawl.leaderboard.menu.LeaderboardMenu;
 import gg.manny.brawl.player.PlayerData;
 import gg.manny.brawl.util.HiddenStringUtils;
+import gg.manny.pivot.util.ItemBuilder;
 import gg.manny.pivot.util.PlayerUtils;
 import gg.manny.pivot.util.file.type.BasicConfigurationFile;
-import gg.manny.pivot.util.inventory.ItemBuilder;
-import gg.manny.spigot.util.chatcolor.CC;
+import gg.manny.server.util.chatcolor.CC;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -23,6 +29,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -59,6 +66,7 @@ public class ItemHandler implements Listener {
 
                 ItemBuilder itemBuilder = new ItemBuilder()
                         .material(material)
+                        .data((byte) configurationSection.getInt(key + ".DATA", 0))
                         .amount(amount);
 
                 String displayName = configurationSection.getString(key + ".NAME");
@@ -94,24 +102,26 @@ public class ItemHandler implements Listener {
         if (configurationSection == null) {
             return new ItemStack(Material.AIR);
         }
-        ItemBuilder builder = new ItemBuilder();
+        Material material = Material.matchMaterial(configurationSection.getString(key + ".TYPE"));
+        ItemBuilder builder = new ItemBuilder(material)
+                .data((byte) configurationSection.getInt(key + ".DATA", 0))
+                .amount(configurationSection.getInt(key + ".AMOUNT", 1));
 
-        builder.material(Material.matchMaterial(configurationSection.getString(key + ".TYPE")));
-
-        if(configurationSection.get(key + ".AMOUNT") != null) {
-            builder.amount(configurationSection.getInt(key + ".AMOUNT", 1));
+        String displayName = configurationSection.getString(key + ".NAME");
+        if (displayName != null || displayName.isEmpty()) {
+            builder.name(CC.translate(displayName));
         }
 
-        if (configurationSection.get(key + ".DATA") != null) {
-            builder.data((byte) configurationSection.getInt(key + ".DATA", 0));
-        }
-
-        if (configurationSection.get(key + ".NAME") != null) {
-            builder.name(CC.translate(configurationSection.getString(key + ".NAME")));
+        if(configurationSection.get(key + ".META") != null) {
+            String metaData = configurationSection.getString(key + ".META");
+            if (!MetadataType.isMetadata(metaData)) {
+                plugin.getLogger().severe("Item " + material.name() + " encoded " + metaData + " but doesn't exist");
+            }
+            builder.lore(Collections.singletonList(HiddenStringUtils.encodeString(metaData)));
         }
 
         if (configurationSection.get(key + ".LORE") != null) {
-            builder.lore(configurationSection.getStringList(key + "LORE"));
+            builder.lore(configurationSection.getStringList(key + ".LORE"));
         }
 
 
@@ -139,7 +149,6 @@ public class ItemHandler implements Listener {
             List<String> lore = meta.getLore();
             Player player = event.getPlayer();
             PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
-
             if (lore != null && lore.size() > 0 && HiddenStringUtils.hasHiddenString(lore.get(0))) {
                 String metaData = HiddenStringUtils.extractHiddenString(lore.get(0));
                 if (MetadataType.isMetadata(metaData)) {
@@ -159,7 +168,8 @@ public class ItemHandler implements Listener {
                             break;
                         }
                         case EVENT_VOTE_SELECTED: {
-                            player.sendMessage(Locale.GAME_LOBBY_ERROR_ALREADY_VOTED.format());
+                            player.sendMessage(ChatColor.RED + "You've already voted for this map.");
+                            player.updateInventory();
                             break;
                         }
                         case PREVIOUS_KIT: {
@@ -167,9 +177,79 @@ public class ItemHandler implements Listener {
                             kit.apply(player, true, true);
                             break;
                         }
+                        case EVENT_LEAVE: {
+                            GameLobby lobby = plugin.getGameHandler().getLobby();
+                            if (lobby != null && lobby.getPlayers().contains(player.getUniqueId())) {
+                                lobby.leave(player.getUniqueId());
+                            }
+                            break;
+                        }
+                        case SPECTATOR_LEAVE: {
+                            if (Brawl.getInstance().getSpectatorManager().inSpectator(player)) {
+                                //todo improve spec
+                                Brawl.getInstance().getSpectatorManager().removeSpectator(player.getUniqueId(), Brawl.getInstance().getGameHandler().getActiveGame(), false);
+                            }
+                            break;
+                        }
+                        case EVENT_VOTE: {
+                            if (playerData.getLastAction() > System.currentTimeMillis()) {
+                                player.sendMessage(ChatColor.RED + "Please wait before doing this again.");
+                                return;
+                            }
 
+                            GameLobby lobby = plugin.getGameHandler().getLobby();
+                            if (lobby != null && lobby.getPlayers().contains(player.getUniqueId())) {
+                                String name = CC.strip(meta.getDisplayName().split(" ")[1]);
+                                if (lobby.getVoteMap().containsKey(name)) {
+                                    lobby.removeVote(player.getUniqueId());
+                                    lobby.getVoteMap().get(name).add(player.getUniqueId());
+
+                                    player.sendMessage(ChatColor.GREEN + "Voted for " + ChatColor.LIGHT_PURPLE + name + ChatColor.GREEN + " map on " + lobby.getGameType().getName() + ".");
+                                    lobby.updateVotes();
+                                    player.updateInventory();
+                                    playerData.setLastAction(System.currentTimeMillis() + 250L);
+                                }
+                            }
+                            break;
+                        }
+                        case DUEL_ARENA: {
+                            DuelArena.join(player);
+                            break;
+                        }
+                        case DUEL_ARENA_LEAVE: {
+                            DuelArena.leave(player);
+                            break;
+                        }
+                        case LEADERBOARDS: {
+                            new LeaderboardMenu().openMenu(player);
+                            break;
+                        }
+                        case LEADERBOARDS_ELO: {
+                            new LeaderboardEloMenu().openMenu(player);
+                            break;
+                        }
+//                        case SHOP: {
+//                            new MarketMenu().openMenu(player);
+//                            break;
+//                        }
+                        case DUEL_ARENA_RANKED: {
+                            new LoadoutMenu(plugin, QueueType.RANKED).openMenu(player);
+                            break;
+                        }
+                        case DUEL_ARENA_UNRANKED: {
+                            new LoadoutMenu(plugin, QueueType.UNRANKED).openMenu(player);
+                            break;
+                        }
+                        case DUEL_ARENA_QUICK_QUEUE: {
+                            plugin.getMatchHandler().joinQuickQueue(player);
+                            break;
+                        }
+                        case QUEUE_LEAVE: {
+                            plugin.getMatchHandler().leaveQueue(player);
+                            break;
+                        }
                         default: {
-                            player.sendMessage(Locale.DISABLED.format());
+                            player.sendMessage(ChatColor.RED + "This feature has been temporarily disabled. Please try again later.");
                         }
                     }
                 }
@@ -181,11 +261,22 @@ public class ItemHandler implements Listener {
     public void apply(Player player, ItemStack[] items) {
         PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
         player.getInventory().setContents(items);
+        if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
+            player.getOpenInventory().getTopInventory().clear();
+        }
+        player.updateInventory();
+        player.closeInventory();
     }
 
     public void apply(Player player, InventoryType inventoryType) {
         PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
+        if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
+            player.getOpenInventory().getTopInventory().clear();
+        }
         player.getInventory().setContents(this.getItems(inventoryType.getPath()));
+        player.updateInventory();
+        player.closeInventory();
+
     }
 
 

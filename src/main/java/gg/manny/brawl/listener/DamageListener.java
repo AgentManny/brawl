@@ -1,17 +1,22 @@
 package gg.manny.brawl.listener;
 
 import gg.manny.brawl.Brawl;
-import gg.manny.brawl.Locale;
+import gg.manny.brawl.item.type.InventoryType;
 import gg.manny.brawl.kit.Kit;
 import gg.manny.brawl.player.PlayerData;
+import gg.manny.brawl.player.PlayerState;
+import gg.manny.brawl.player.simple.SimpleOfflinePlayer;
 import gg.manny.brawl.player.statistic.PlayerStatistic;
 import gg.manny.brawl.player.statistic.StatisticType;
-import gg.manny.brawl.item.type.InventoryType;
+import gg.manny.brawl.region.RegionType;
 import gg.manny.pivot.util.PivotUtil;
+import gg.manny.pivot.util.chatcolor.CC;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -23,6 +28,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 @RequiredArgsConstructor
 public class DamageListener implements Listener {
 
@@ -32,22 +39,35 @@ public class DamageListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
         PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
+        SimpleOfflinePlayer offlinePlayer = SimpleOfflinePlayer.getByUuid(player.getUniqueId());
+        if (offlinePlayer != null) {
+            offlinePlayer.addDeaths();
+        }
 
+        event.setDroppedExp(0);
+        playerData.setLastLocation(player.getLocation());
         switch(playerData.getPlayerState()) {
+            case MATCH: {
+                plugin.getMatchHandler().getMatch(player).eliminated(player);
+                break;
+            }
             case SPAWN: {
                 player.setHealth(20.0D);
                 break;
             }
             case FIGHTING: {
                 int i = 0;
-                for (ItemStack it : event.getDrops()) {
-                    if (this.shouldFilter(it)) {
-                        Item item = player.getWorld().dropItem(player.getLocation().add(Brawl.RANDOM.nextInt(2) - 1, 0, Brawl.RANDOM.nextInt(2) - 1), it);
-                        plugin.getServer().getScheduler().runTaskLater(plugin, item::remove, 15L + (4 * i++));
+                if (!RegionType.SAFEZONE.appliesTo(event.getEntity().getLocation())) {
+                    for (ItemStack it : event.getDrops()) {
+                        if (this.shouldFilter(it)) {
+                            Item item = player.getWorld().dropItem(player.getLocation().add(Brawl.RANDOM.nextInt(2) - 1, 0, Brawl.RANDOM.nextInt(2) - 1), it);
+                            plugin.getServer().getScheduler().runTaskLater(plugin, item::remove, 15L + (4 * i++));
+                        }
                     }
                 }
-                event.getDrops().clear();
                 PlayerStatistic statistic = playerData.getStatistic();
+
+
                 statistic.add(StatisticType.DEATHS);
                 statistic.set(StatisticType.KILLSTREAK, 0.0D);
 
@@ -58,50 +78,78 @@ public class DamageListener implements Listener {
                     playerData.setPreviousKit(selectedKit);
                     playerData.setSelectedKit(null);
                 }
-
+                player.teleport(plugin.getLocationByName("SPAWN"));
                 break;
             }
         }
 
         Player killer = player.getKiller();
-        if(killer != null) {
+        if(killer != null && killer != player) {
             PlayerData killerData = plugin.getPlayerDataHandler().getPlayerData(killer);
 
             switch(killerData.getPlayerState()) {
                 case FIGHTING: {
 
-                    PlayerStatistic statistic = killerData.getStatistic();
-                    statistic.add(StatisticType.KILLS);
-                    statistic.add(StatisticType.KILLSTREAK);
-
-                    Kit selectedKit = playerData.getSelectedKit();
-                    if (selectedKit != null) {
-                        statistic.get(selectedKit).addKills();
-                        playerData.setSelectedKit(null);
+                    if (killerData.getPreviousKill() != null) {
+                        if (player.getUniqueId() == killerData.getPreviousKill()) {
+                            killerData.setKillTracker(killerData.getKillTracker() + 1);
+                            if (killerData.getKillTracker() >= 3) {
+                                killer.sendMessage(CC.RED + CC.BOLD + "Boosting! " + CC.YELLOW + "Your statistics aren't being updated.");
+                                break;
+                            }
+                        } else {
+                            killerData.setKillTracker(0);
+                        }
                     }
-                    playerData.setSpawnProtection(true);
+
+                    if (killerData.getSelectedKit() != null) {
+                        killerData.getSelectedKit().getAbilities().forEach(ability -> ability.onKill(killer));
+                    }
+
+                    killerData.getSpawnData().killed(player);
+                    killerData.getLevel().addExp(killer, ThreadLocalRandom.current().nextInt(2, (int) Math.min(50, 10 + (killerData.getStatistic().get(StatisticType.KILLSTREAK) * 2))), "Killed " + player.getDisplayName());
+                    playerData.getSpawnData().applyAssists(killer, playerData.getSpawnData().getWorth());
+
+                    SimpleOfflinePlayer offlineKiller = SimpleOfflinePlayer.getByUuid(killer.getUniqueId());
+                    if (offlineKiller != null) {
+                        offlineKiller.addKills();
+                    }
+
+                    killerData.setPreviousKill(player.getUniqueId());
+
+                    player.sendMessage(ChatColor.RED + "You have been killed by " + CC.WHITE + killer.getDisplayName() + CC.RED + " [" + (Math.round((killer.getHealth() * 10) / 2) / 10) + "\u2764] using " + CC.WHITE + (killerData.getSelectedKit() == null ? "None" : killerData.getSelectedKit().getName()) + CC.RED + " kit.");
                     break;
                 }
             }
 
         }
 
-        player.setVelocity(new Vector(0, 0, 0));
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-            if(player.isDead()) {
-                player.spigot().respawn();
-            }
-        }, 2L);
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> player.spigot().respawn(), 4L);
 
+        player.setVelocity(new Vector(0, 0, 0));
         event.setDeathMessage(null);
-    }
+        event.getDrops().clear();}
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
         PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
-
+        playerData.getSpawnData().getDamageReceived().clear();
+        playerData.setCombatTaggedTil(-1);
+        player.setFireTicks(0);
+        player.setVelocity(new Vector());
         switch(playerData.getPlayerState()) {
+            case MATCH: {
+                event.setRespawnLocation(playerData.getLastLocation() != null ? playerData.getLastLocation().add(0, 1, 0) :  plugin.getMatchHandler().getMatch(player).getArena().getLocations()[0]);
+                break;
+            }
+            case ARENA: {
+                plugin.getItemHandler().apply(player, InventoryType.ARENA);
+                playerData.setSpawnProtection(false);
+                playerData.setDuelArena(true);
+                event.setRespawnLocation(plugin.getLocationByName("DUEL_ARENA"));
+                break;
+            }
             default: {
                 plugin.getItemHandler().apply(player, InventoryType.SPAWN);
                 playerData.setSpawnProtection(true);
@@ -138,6 +186,7 @@ public class DamageListener implements Listener {
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (event.isCancelled()) return;
 
+
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
             PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
@@ -152,29 +201,60 @@ public class DamageListener implements Listener {
 
                 PlayerData damagerData = plugin.getPlayerDataHandler().getPlayerData(damager);
 
+                if (playerData.isDuelArena() || damagerData.isDuelArena()) {
+                    event.setCancelled(true);
+                }
+
                 if (damagerData.isSpawnProtection()) {
-                    damager.sendMessage(Locale.PLAYER_PROTECTION_DAMAGE.format());
+                    damager.sendMessage(ChatColor.RED + "You still have spawn protection.");
                     event.setCancelled(true);
                     return;
                 }
 
                 if(playerData.isSpawnProtection()) {
                     event.setCancelled(true);
-                    damager.sendMessage(Locale.PLAYER_PROTECTION_DAMAGE_OTHER.format(player.getDisplayName()));
+                    damager.sendMessage(player.getDisplayName() + ChatColor.RED + " still has spawn protection.");
                 }
 
+                if (damagerData.getPlayerState() == PlayerState.GAME_LOBBY || playerData.getPlayerState() == PlayerState.GAME_LOBBY) {
+                    event.setCancelled(true);
+                }
             }
         }
     }
 
     @EventHandler
-    public void onEntityDamage(EntityDamageEvent entity) {
-        if (entity.getEntity() instanceof Player) {
-            Player player = (Player) entity.getEntity();
+    public void onEntityDamage(EntityDamageEvent e) {
+        if (e.getEntity() instanceof Player) {
+            Player player = (Player) e.getEntity();
             PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
-            if (playerData.isSpawnProtection()) {
-                entity.setCancelled(true);
+            if (playerData.isSpawnProtection() || playerData.isDuelArena() || playerData.getPlayerState() == PlayerState.GAME_LOBBY) {
+                e.setCancelled(true);
+            } else if (playerData.isNoFallDamage() && e.getCause() == EntityDamageEvent.DamageCause.FALL) {
+                e.setCancelled(true);
+                playerData.setNoFallDamage(false);
             }
+
+            Player damager = null;
+
+            if (e instanceof EntityDamageByEntityEvent) {
+                EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
+                if (event.getDamager() instanceof Player) {
+                    damager = (Player) event.getDamager();
+
+                } else if (event.getDamager() instanceof Projectile) {
+                    if (!(((Projectile) event.getDamager()).getShooter() instanceof Player)) {
+                        return;
+                    }
+                    damager = ((Player) ((Projectile) event.getDamager()).getShooter());
+                }
+
+                if (damager == player) {
+                    return;
+                }
+
+            }
+            playerData.getSpawnData().damagedBy(damager, e.getDamage());
         }
     }
 
@@ -193,7 +273,7 @@ public class DamageListener implements Listener {
                         if (shooterData.isSpawnProtection()) {
                             event.setCancelled(true);
                             event.setIntensity(entity, 0.0D);
-                            player.sendMessage(Locale.PLAYER_PROTECTION_DAMAGE_OTHER.format(playerEntity.getDisplayName()));
+                            player.sendMessage(player.getDisplayName() + ChatColor.RED + " still has spawn protection.");
                         }
                     }
                 }

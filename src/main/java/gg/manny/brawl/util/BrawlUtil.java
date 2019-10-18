@@ -15,10 +15,7 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -26,6 +23,8 @@ public class BrawlUtil {
 
     public final static Type MAP_INTEGER_STRING = new TypeToken<Map<Integer, String>>(){}.getType();
     public final static Type MAP_STRING_LOCATION = new TypeToken<Map<String, Location>>(){}.getType();
+
+    public final static Type TREE_STRING_LOCATION = new TypeToken<TreeMap<String, Location>>(){}.getType();
 
     public final static Pattern ALPHA_NUMERIC_PATTERN = Pattern.compile("[^a-zA-Z0-9]");
     private static final Pattern UUID_PATTERN = Pattern.compile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}");
@@ -49,6 +48,8 @@ public class BrawlUtil {
         return item1.getType() == item2.getType() && (item1.hasItemMeta() && item1.getItemMeta().hasDisplayName() && item2.hasItemMeta() && item2.getItemMeta().hasDisplayName() && item1.getItemMeta().getDisplayName().equalsIgnoreCase(item2.getItemMeta().getDisplayName()));
     }
 
+
+
     public static UUID getUUID(String id) {
         return UUID.fromString(id.substring(0, 8) + "-" + id.substring(8, 12) + "-" + id.substring(12, 16) + "-" + id.substring(16, 20) + "-" + id.substring(20, 32));
     }
@@ -62,7 +63,8 @@ public class BrawlUtil {
     }
 
     public static boolean has(JsonObject jsonObject, String key) {
-        return jsonObject != null && !jsonObject.isJsonNull() && jsonObject.has(key) && jsonObject.get(key) != null && !jsonObject.isJsonNull();
+        return jsonObject != null && !jsonObject.isJsonNull() && jsonObject.has(key) &&
+                jsonObject.get(key) != null && !jsonObject.get(key).isJsonNull() && jsonObject.has(key) && jsonObject.get(key) != null;
     }
 
     public static boolean isJson(String test) {
@@ -78,9 +80,9 @@ public class BrawlUtil {
         return true;
     }
 
-    public static boolean isGeneric() {
+    public static boolean isMineSpigot() {
         try {
-            Class.forName("gg.manny.spigot.GenericSpigot");
+            Class.forName("gg.manny.server.MineServer");
         } catch (ClassNotFoundException ignored) {
             return false;
         }

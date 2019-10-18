@@ -1,6 +1,6 @@
 package gg.manny.brawl.kit.type;
 
-import gg.manny.spigot.util.chatcolor.CC;
+import gg.manny.server.util.chatcolor.CC;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.WordUtils;
 
@@ -11,8 +11,8 @@ public enum RankType {
     BASIC(CC.YELLOW),
     VIP(CC.GREEN),
     PRO(CC.GOLD),
-    ELITE(CC.BLUE),
-    EPIC(CC.DARK_PURPLE),
+    ELITE(CC.AQUA),
+    EPIC(CC.BLUE),
     LEGEND(CC.LIGHT_PURPLE),
     CRAFTER(CC.DARK_PURPLE),
     CRAFTER_PLUS(CC.DARK_RED);

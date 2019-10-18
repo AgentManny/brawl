@@ -2,13 +2,22 @@ package gg.manny.brawl.ability;
 
 import com.google.gson.JsonObject;
 import gg.manny.brawl.Brawl;
-import gg.manny.brawl.Locale;
+import gg.manny.brawl.duelarena.match.Match;
+import gg.manny.brawl.kit.Kit;
 import gg.manny.brawl.player.PlayerData;
 import gg.manny.brawl.region.RegionType;
 import gg.manny.pivot.util.Cooldown;
-import gg.manny.pivot.util.serialization.ItemStackAdapter;
-import lombok.Data;
+import gg.manny.pivot.util.ItemBuilder;
+import gg.manny.server.util.chatcolor.CC;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -16,18 +25,38 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-@Data
+@Getter
+@RequiredArgsConstructor
 public abstract class Ability {
 
-    private String name;
+    protected int cooldown = 25;
 
-    private ItemStack icon;
-    private int cooldown = 25;
-
-    public Ability(String name, ItemStack icon) {
-        this.name = name;
-        this.icon = icon;
+    public String getName() {
+        return getClass().getSimpleName();
     }
+
+    public Material getType() {
+        return null;
+    }
+
+    public byte getData() {
+        return 0;
+    }
+
+    public ItemStack getIcon() {
+        if (getType() == null) return null;
+
+        return new ItemBuilder(getType())
+                .name(CC.GRAY + "\u00bb " + getColor() + CC.BOLD + getName() + CC.GRAY + " \u00ab")
+                .data(getData())
+                .create();
+
+    }
+
+    public ChatColor getColor() {
+        return ChatColor.DARK_PURPLE;
+    }
+
 
     public void onApply(Player player) {
 
@@ -45,32 +74,48 @@ public abstract class Ability {
 
     }
 
+    /**
+     * Called upon killing a player
+     * @param player Killer
+     */
+    public void onKill(Player player) {
+
+    }
+
+    /**
+     * Triggers when a projectile is launched
+     * @param player Attacked
+     * @param entityType Attacked by
+     * @return Whether or not it should be cancelled
+     */
+    public boolean onProjectileLaunch(Player player, EntityType entityType) {
+        return false;
+    }
+
+    public boolean onProjectileHit(Player shooter, Player victim, EntityDamageByEntityEvent event) {
+        return false;
+    }
+
     public Map<String, String> getProperties(Player player) {
         return new HashMap<>();
     }
 
     public JsonObject toJson() {
         JsonObject object = new JsonObject();
-//        JsonArray sidebarArray = new JsonArray();
-//        for (String entry : this.getSidebar()) {
-//            sidebarArray.add(new JsonPrimitive(entry));
-//        }
-        object.addProperty("name", this.name);
+        object.addProperty("name", this.getName());
         object.addProperty("cooldown", this.cooldown);
-        object.add("icon", ItemStackAdapter.serialize(this.icon));
         return object;
     }
 
     public void fromJson(JsonObject object) {
-        this.name = object.get("name").getAsString();
         this.cooldown = object.get("cooldown").getAsInt();
-        this.icon = ItemStackAdapter.deserialize(object.get("icon"));
-        //object.get("sidebar").getAsJsonArray().forEach(element -> this.getSidebar().add(element.getAsString()));
     }
 
     public boolean hasEquipped(Player player) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
-        return !RegionType.SAFEZONE.containsLocation(player.getLocation()) && playerData.getSelectedKit() != null && playerData.getSelectedKit().getAbilities().contains(this);
+        Match match = Brawl.getInstance().getMatchHandler().getMatch(player);
+        Kit selectedKit = match != null && match.getKit() != null ? match.getKit() : playerData.getSelectedKit();
+        return !RegionType.SAFEZONE.appliesTo(player.getLocation()) && selectedKit != null && selectedKit.getAbilities().contains(this) ;
     }
 
     private long getCooldown() {
@@ -80,33 +125,40 @@ public abstract class Ability {
     public boolean hasCooldown(Player player, boolean notify) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
 
-        String key = "ABILITY_" + this.name;
+        String key = "ABILITY_" + this.getName();
         Cooldown cooldown = playerData.getCooldown(key);
         boolean active = playerData.hasCooldown(key);
 
         if (active && notify) {
-            player.sendMessage(Locale.PLAYER_ABILITY_COOLDOWN.format(cooldown.getTimeLeft()));
+            player.sendMessage(ChatColor.RED + "You must wait " + ChatColor.BOLD + cooldown.getTimeLeft() + ChatColor.RED + " before using this again.");
         }
         return active;
     }
 
     public void addCooldown(Player player) {
+        addCooldown(player, getCooldown());
+    }
+
+    public void addCooldown(Player player, long countdown) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
-        playerData.addCooldown("ABILITY_" + this.name, this.getCooldown());
+        playerData.addCooldown("ABILITY_" + this.getName(), countdown);
         if (playerData.getEnderpearlTask() == null) {
             playerData.setEnderpearlTask(new BukkitRunnable() {
 
-                final int playerLevel = player.getLevel();
                 final Cooldown cooldown = toCooldown(playerData);
 
                 @Override
                 public void run() {
+                    if (playerData.getEnderpearlTask() == null) {
+                        cancel();
+                        return;
+                    }
 
                     int timeLeft = (int) TimeUnit.MILLISECONDS.toSeconds(cooldown.getRemaining());
                     if (timeLeft <= 0 && playerData.getEnderpearlTask() != null) {
                         if (!cooldown.isNotified()) {
                             cooldown.setNotified(true);
-                            player.sendMessage(Locale.PLAYER_ABILITY_EXPIRED.format(getName()));
+                            player.sendMessage(ChatColor.GREEN + "You can now use " + ChatColor.BOLD + getName() + ChatColor.GREEN + " again.");
                         }
                         this.cancel();
                         return;
@@ -117,7 +169,8 @@ public abstract class Ability {
                 @Override
                 public synchronized void cancel() throws IllegalStateException {
                     super.cancel();
-                    player.setLevel(playerLevel);
+                    player.setLevel(0);
+                    player.setExp(0);
                     playerData.setEnderpearlTask(null);
                 }
             }.runTaskTimer(Brawl.getInstance(), 10L, 10L));
@@ -125,7 +178,7 @@ public abstract class Ability {
     }
 
     public Cooldown toCooldown(PlayerData playerData) {
-        return playerData.getCooldown("ABILITY_" + this.name);
+        return playerData.getCooldown("ABILITY_" + this.getName());
     }
 
 }

@@ -3,57 +3,55 @@ package gg.manny.brawl.ability.type;
 import com.google.gson.JsonObject;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.ability.Ability;
-import gg.manny.pivot.util.inventory.ItemBuilder;
-import gg.manny.pivot.util.serialization.PotionEffectAdapter;
-import gg.manny.spigot.util.chatcolor.CC;
+import gg.manny.brawl.util.ParticleEffect;
+import gg.manny.pivot.serialization.PotionEffectAdapter;
+import lombok.RequiredArgsConstructor;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockFromToEvent;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.inventivetalent.particle.ParticleEffect;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
+@RequiredArgsConstructor
 public class WaterGun extends Ability implements Listener  {
 
-    private final Brawl brawl;
+    private final Brawl plugin;
 
     private PotionEffect potionEffect = new PotionEffect(PotionEffectType.SLOW, 120, 4);
 
-    private ParticleEffect landParticle = ParticleEffect.WATER_SPLASH;
+    private ParticleEffect landParticle = ParticleEffect.SPLASH;
     private Sound landSound = Sound.SPLASH2;
 
-    private ParticleEffect activateParticle = ParticleEffect.WATER_SPLASH;
+    private ParticleEffect activateParticle = ParticleEffect.SPLASH;
     private Sound activateSound = Sound.SPLASH;
-
-
-
 
     private double radius = 1.6;
     private int delay = 5;
 
-    public WaterGun(Brawl brawl) {
-        super("WaterGun", new ItemBuilder(Material.INK_SACK)
-                .data((byte) 12)
-                .name(CC.GRAY + "\u00bb " + CC.AQUA + CC.BOLD + "Water Gun" + CC.GRAY + " \u00ab")
-                .create()
-        );
-        this.brawl = brawl;
+    @Override
+    public Material getType() {
+        return Material.INK_SACK;
+    }
+
+    @Override
+    public byte getData() {
+        return 12;
+    }
+
+    @Override
+    public ChatColor getColor() {
+        return ChatColor.AQUA;
     }
 
     @Override
@@ -62,61 +60,49 @@ public class WaterGun extends Ability implements Listener  {
         this.addCooldown(player);
 
         FallingBlock block = player.getWorld().spawnFallingBlock(player.getEyeLocation(), Material.WATER, (byte)0);
-        block.setMetadata("watergun", new FixedMetadataValue(brawl, player.getUniqueId()));
+        block.setMetadata("watergun", new FixedMetadataValue(plugin, player.getUniqueId()));
         block.setDropItem(false);
-        block.setVelocity(player.getEyeLocation().getDirection().multiply(2));
-    }
+        block.setVelocity(player.getEyeLocation().getDirection().multiply(1.5));
 
-    @EventHandler
-    public void onEntityChangeBlockEvent(EntityChangeBlockEvent event) {
-        if (event.getEntityType() == EntityType.FALLING_BLOCK && event.getEntity().hasMetadata("watergun")) {
-            event.getEntity().remove();
-            event.setCancelled(true);
+        new BukkitRunnable() {
 
-            Location location = event.getEntity().getLocation().clone();
-            if (location.getBlock().isLiquid()) {
-                location.add(0, 1, 0);
+            long timestamp = System.currentTimeMillis();
+            Player hit;
+
+            @Override
+            public void run() {
+                if ((System.currentTimeMillis() - timestamp) > 750L) {
+                    cancel();
+                    return;
+                }
+
+                if (block.isDead()) {
+                    cancel();
+                    stuck(hit != null ? hit.getLocation() : block.getLocation());
+                    return;
+                }
+
+                block.getNearbyEntities(1, 2, 1).stream().filter(other -> other instanceof Player && !player.equals(other)).findAny().ifPresent(player -> {
+                    hit = (Player) player;
+                    stuck(hit != null ? hit.getLocation() : block.getLocation());
+                    cancel();
+                });
+
             }
-            List<BlockState> blockData = new ArrayList<>();
-            for (Location loc : this.getLocations(location)) {
-                for(Entity entity : event.getEntity().getNearbyEntities(radius, radius + .5, radius)) {
-                    if(entity instanceof Player) {
-                        ((Player)entity).addPotionEffect(potionEffect);
-                    }
-                }
 
-                if (loc.getBlock().getType() == Material.AIR) {
-                    blockData.add(loc.getBlock().getState());
-                    loc.getBlock().setType(Material.STATIONARY_WATER);
-                    loc.getBlock().setMetadata("watergun", new FixedMetadataValue(brawl, null));
+            @Override
+            public synchronized void cancel() throws IllegalStateException {
+                if (block == null || block.isDead() || !block.isValid()) {
+                    block.remove();
                 }
+                super.cancel();
             }
-            new BukkitRunnable() {
+        }.runTaskTimer(plugin, 2L, 2L);
 
-                @Override
-                public void run() {
-                    blockData.forEach(blockData -> {
-                        Block block = blockData.getBlock();
-                        block.setType(Material.AIR);
-                        block.removeMetadata("watergun", brawl);
-                    });
-                }
-
-            }.runTaskLater(brawl, (delay * 20L));
-
-        }
     }
 
-    @EventHandler
-    public void onBlockFromTo(BlockFromToEvent event) {
-        Block block = event.getBlock();
-        if (block.isLiquid() && block.hasMetadata("watergun")) {
-            event.setCancelled(true);
-        }
-    }
-
-    private ArrayList<Location> getLocations(Location location) {
-        ArrayList<Location> locations = new ArrayList<>();
+    private void stuck(Location location) {
+        List<Location> locations = new ArrayList<>();
         locations.add(location.clone().add(1.0D, 1.0D, -1.0D));
         locations.add(location.clone().add(-1.0D, 1.0D, -1.0D));
         locations.add(location.clone().add(1.0D, 1.0D, 1.0D));
@@ -126,7 +112,26 @@ public class WaterGun extends Ability implements Listener  {
         locations.add(location.clone().add(1.0D, 1.0D, 0.0D));
         locations.add(location.clone().add(0.0D, 1.0D, -1.0D));
         locations.add(location.clone().add(0.0D, 1.0D, 1.0D));
-        return locations;
+
+        for (Location loc : locations) {
+            Block state = loc.getBlock();
+
+            if (state.getType() == Material.AIR || state.getType() == Material.WATER || state.isLiquid() ) {
+                state.setMetadata("watergun", new FixedMetadataValue(plugin, state.getType().name()));
+                state.setType(Material.WATER);
+            }
+        }
+
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            for (Location loc : locations) {
+                Block state = loc.getBlock();
+
+                if (state.hasMetadata("watergun")) {
+                    state.setType(Material.valueOf(state.getMetadata("watergun").get(0).asString()));
+                }
+            }
+        }, 120L);
+
     }
 
     @Override

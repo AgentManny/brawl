@@ -8,13 +8,9 @@ public class HealthBooster extends Ability {
 
     private double boost = 40;
 
-    public HealthBooster() {
-        super("HealthBooster", null);
-    }
-
     @Override
     public void onApply(Player player) {
-        player.setMaxHealth(boost);
+        player.setMaxHealth(24);
         player.setHealth(player.getMaxHealth());
     }
 
@@ -22,6 +18,15 @@ public class HealthBooster extends Ability {
     public void onRemove(Player player) {
         player.setMaxHealth(20);
         player.setHealth(player.getMaxHealth());
+    }
+
+    @Override
+    public void onKill(Player player) {
+        double newHealth = player.getMaxHealth() + 4;
+
+        if (newHealth <= boost) {
+            player.setMaxHealth(newHealth);
+        }
     }
 
     @Override

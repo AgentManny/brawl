@@ -2,9 +2,8 @@ package gg.manny.brawl.ability.type;
 
 import gg.manny.brawl.ability.Ability;
 import gg.manny.pivot.util.PivotUtil;
-import gg.manny.pivot.util.inventory.ItemBuilder;
-import gg.manny.spigot.util.chatcolor.CC;
-import org.bukkit.Material;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,10 +12,12 @@ import org.bukkit.util.Vector;
 
 public class Fisherman extends Ability implements Listener {
 
-    public Fisherman() {
-        super("Fisherman", new ItemBuilder(Material.FISHING_ROD)
-                .name(CC.GRAY + "\u00bb " + CC.BLUE + CC.BOLD + "Fishing Hook" + CC.GRAY + " \u00ab")
-                .create());
+    private double range = 15;
+    private double speed = 0.425;
+
+    @Override
+    public ChatColor getColor() {
+        return ChatColor.BLUE;
     }
 
     @EventHandler
@@ -28,7 +29,16 @@ public class Fisherman extends Ability implements Listener {
                 this.addCooldown(player);
 
                 Player caught = (Player) event.getCaught();
-                caught.teleport(player);
+
+                float yaw = caught.getLocation().getYaw();
+                float pitch = caught.getLocation().getPitch();
+
+                Location loc  = player.getLocation().clone();
+                loc.setYaw(yaw);
+                loc.setPitch(pitch);
+
+                caught.teleport(loc);
+
                 caught.damage(0, player);
                 PivotUtil.run(() ->  caught.setVelocity(new Vector()), false);
             }

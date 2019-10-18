@@ -5,9 +5,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import gg.manny.brawl.util.BrawlUtil;
 import gg.manny.pivot.Pivot;
-import gg.manny.pivot.util.inventory.ItemUtil;
-import gg.manny.pivot.util.serialization.ItemStackAdapter;
-import gg.manny.spigot.util.chatcolor.CC;
+import gg.manny.pivot.serialization.ItemStackAdapter;
+import gg.manny.pivot.util.ItemUtil;
+import gg.manny.server.util.chatcolor.CC;
 import lombok.Getter;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -26,6 +26,8 @@ public class Items {
     public Items() {
         this.items = new ItemStack[] { };
     }
+
+
 
     @Deprecated
     public Items(JsonObject jsonObject) {

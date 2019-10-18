@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 public enum  RefillType {
 
     SOUP(false, new ItemStack(Material.MUSHROOM_SOUP)),
-    POTION(true, new ItemStack(Material.POTION, 1, (byte)16421)),
+    POTION(true, new ItemStack(Material.POTION, 1, (short)16421)),
     NONE(false, new ItemStack(Material.AIR));
 
     private final boolean hunger;

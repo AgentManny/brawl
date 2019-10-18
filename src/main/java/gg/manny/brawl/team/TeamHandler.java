@@ -1,139 +1,185 @@
 package gg.manny.brawl.team;
 
-import com.google.common.collect.ImmutableList;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
 import gg.manny.brawl.Brawl;
-import gg.manny.brawl.player.PlayerData;
-import gg.manny.brawl.team.command.*;
-import gg.manny.brawl.team.command.adapter.TeamTypeAdapter;
-import gg.manny.brawl.util.BrawlUtil;
+import gg.manny.brawl.team.adapter.TeamTypeAdapter;
+import gg.manny.brawl.team.command.TeamCommand;
+import gg.manny.brawl.team.command.general.TeamAcceptCommand;
+import gg.manny.brawl.team.command.general.TeamChatCommand;
+import gg.manny.brawl.team.command.general.TeamCreateCommand;
+import gg.manny.brawl.team.command.general.TeamLeaveCommand;
+import gg.manny.brawl.team.command.info.TeamInfoCommand;
+import gg.manny.brawl.team.command.info.TeamListCommand;
+import gg.manny.brawl.team.command.leader.*;
+import gg.manny.brawl.team.command.manager.*;
+import gg.manny.brawl.team.command.staff.*;
 import gg.manny.pivot.Pivot;
+import gg.manny.pivot.util.chatcolor.CC;
 import gg.manny.quantum.Quantum;
+import lombok.Getter;
 import org.bson.Document;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+import org.bson.types.ObjectId;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-
+@Getter
 public class TeamHandler {
 
-    private final Brawl brawl;
+    private volatile ConcurrentHashMap<ObjectId, Team> teamUniqueIdMap = new ConcurrentHashMap<>();
+    private volatile ConcurrentHashMap<String, Team> teamNameMap = new ConcurrentHashMap<>();
+    private volatile ConcurrentHashMap<UUID, Team> uuidTeamMap = new ConcurrentHashMap<>();
 
-    private MongoCollection collection;
+    private MongoCollection<Document> collection;
+    private boolean loading = false;
 
-    private Map<UUID, Team> teamUniqueIdMap = new ConcurrentHashMap<>();
-    private Map<String, UUID> teamNameMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-    private Map<UUID, UUID> playerTeamMap = new ConcurrentHashMap<>();
+    public TeamHandler() {
+        this.collection = Brawl.getInstance().getMongoDatabase().getCollection("teams");
 
-    public TeamHandler(Brawl brawl) {
-        this.brawl = brawl;
+        this.registerCommands();
+        this.loadTeams();
 
-        this.collection = brawl.getMongoDatabase().getCollection("teams");
-        this.load();
+        new TeamSaveTask().runTaskTimerAsynchronously(Brawl.getInstance(), 6000L, 6000L);
     }
 
-    private void load() {
-        try (MongoCursor<Document> cursor = this.collection.find().iterator()) {
-            while (cursor.hasNext()) {
-                Document document = cursor.next();
+    public void registerCommands() {
+        Quantum quantum = Pivot.getInstance().getQuantum();
 
-                String name = document.getString("name");
-                UUID uniqueId = UUID.fromString(document.getString("uniqueId"));
-                UUID leader = UUID.fromString(document.getString("leader"));
+        quantum.registerParameterType(Team.class, new TeamTypeAdapter());
 
-                Team team = new Team(name, leader, uniqueId);
-                team.fromJson(document);
-
-                if (team.isLoaded()) {
-                    this.create(team, false);
-                }
-            }
-        }
-        Quantum quantum = Pivot.getPlugin().getQuantum();
-        quantum.registerParameterType(Team.class, new TeamTypeAdapter(brawl));
         Arrays.asList(
-                new TeamAcceptCommand(brawl),
-                new TeamAnnouncementCommand(brawl),
-                new TeamChatCommand(brawl),
-                new TeamCommand(brawl),
-                new TeamCreateCommand(brawl),
-                new TeamDemoteCommand(brawl),
-                new TeamDisbandCommand(brawl),
-                new TeamInfoCommand(brawl)
+                new ForceDisbandAllCommand(),
+                new ForceDisbandCommand(),
+                new ForceJoinCommand(),
+                new ForceKickCommand(),
+                new ForceLeaveCommand(),
+                new ForceLeaveCommand(),
+                new ForceNameCommand(),
+                new SaveTeamCommand(),
+
+                new TeamPasswordCommand(),
+
+                new TeamManagerCommand(),
+
+                new TeamAcceptCommand(),
+                new TeamAnnouncementCommand(),
+                new TeamChatCommand(),
+                new TeamCommand(),
+                new TeamCreateCommand(),
+                new TeamDemoteCommand(),
+                new TeamDisbandCommand(),
+                new TeamCommand(),
+                new TeamInfoCommand(),
+                new TeamInviteCommand(),
+                new TeamInvitesCommand(),
+                new TeamKickCommand(),
+                new TeamLeaderCommand(),
+                new TeamLeaveCommand(),
+                new TeamListCommand(),
+                new TeamPromoteCommand(),
+                new TeamRenameCommand(),
+                new TeamUninviteCommand()
+
         ).forEach(quantum::registerCommand);
     }
 
-    public void save() {
-        for (Team team : this.teamUniqueIdMap.values()) {
-            this.save(team);
-        }
+    public List<Team> getTeams() {
+        return new ArrayList<>(this.teamNameMap.values());
     }
 
-    public void save(Team team) {
-        this.collection.replaceOne(Filters.eq("uniqueId", team.getUniqueId()), team.toJson(), new ReplaceOptions().upsert(true));
-    }
-
-    public void create(Team team, boolean save) {
-        this.teamUniqueIdMap.put(team.getUniqueId(), team);
-        this.teamNameMap.put(team.getName(), team.getUniqueId());
-        for (UUID playerUuid : team.getPlayers()) {
-            this.playerTeamMap.put(playerUuid, playerUuid);
-        }
-        if (save) {
-            brawl.getServer().getScheduler().runTaskAsynchronously(brawl, () -> save(team));
-        }
-    }
-
-    public void remove(Team team) {
-        brawl.getServer().getScheduler().runTaskAsynchronously(brawl, () -> {
-            this.teamUniqueIdMap.remove(team.getUniqueId());
-            this.teamNameMap.remove(team.getName());
-            for (UUID playerUuid : team.getPlayers()) {
-                this.playerTeamMap.remove(playerUuid);
-            }
-            this.collection.deleteOne(Filters.eq("uniqueId", team.getUniqueId()));
-        });
+    public void setTeam(UUID uniqueId, Team team) {
+        this.uuidTeamMap.put(uniqueId, team);
     }
 
     public Team getTeam(String teamName) {
-        UUID uuid = teamNameMap.get(teamName);
-        return uuid == null ? null : teamUniqueIdMap.get(uuid);
+        return this.teamNameMap.get(teamName.toLowerCase());
     }
 
-    public Team getTeamByPlayer(String search) {
-        OfflinePlayer target = BrawlUtil.isUUID(search) ? Bukkit.getOfflinePlayer(UUID.fromString(search)) : Bukkit.getOfflinePlayer(search);
-        return target.hasPlayedBefore() || target.isOnline() ? this.getTeamByPlayer(target.getUniqueId()) : null;
+    public Team getTeam(ObjectId teamUniqueId) {
+        if (teamUniqueId == null) return null;
+        return this.teamUniqueIdMap.get(teamUniqueId);
     }
 
-    public Team getTeam(UUID teamUniqueId) {
-        return teamUniqueIdMap.get(teamUniqueId);
+    private void loadTeams() {
+        loading = true;
+        long now = System.nanoTime();
+
+        collection.find().iterator().forEachRemaining(data -> {
+            ObjectId id = data.getObjectId("_id");
+
+            Team team = new Team(id, data);
+            teamNameMap.put(team.getName().toLowerCase(), team);
+            teamUniqueIdMap.put(team.getUniqueId(), team);
+            for (UUID member : team.getMembers()) {
+                uuidTeamMap.put(member, team);
+            }
+        });
+
+        loading = false;
+
+        String nanosFancy = new DecimalFormat("#.##").format((System.nanoTime() - now) / 1E6D);
+        System.out.println("{" + Brawl.getInstance().getName() + "} Successfully loaded "
+                + this.getTeams().size() + " teams in " + nanosFancy + "ms");
     }
 
-    public Team getTeamByPlayer(UUID playerUniqueId) {
-        UUID uuid = playerTeamMap.get(playerUniqueId);
-        Team team = uuid == null ? null : teamUniqueIdMap.get(uuid);
-        return team;
+    public Team getPlayerTeam(UUID uuid) {
+        if (!this.uuidTeamMap.containsKey(uuid)) {
+            return null;
+        }
+        return this.uuidTeamMap.get(uuid);
     }
 
-    public Team getTeamByPlayerData(PlayerData playerData) {
-        return this.getTeamByPlayer(playerData.getUniqueId());
+    public Team getPlayerTeam(Player player) {
+        return this.getPlayerTeam(player.getUniqueId());
     }
 
-    public Team getTeamByPlayer(Player player) {
-        return this.getTeamByPlayer(player.getUniqueId());
+    public void addTeam(Team team) {
+        team.flagForSave();
+        this.teamNameMap.put(team.getName().toLowerCase(), team);
+        this.teamUniqueIdMap.put(team.getUniqueId(), team);
+        for (UUID member : team.getMembers()) {
+            this.uuidTeamMap.put(member, team);
+        }
     }
 
-    public ImmutableList<Team> getTeams() {
-        return ImmutableList.copyOf(this.teamUniqueIdMap.values());
+
+    public int save(boolean forceAll) {
+        System.out.println("Saving teams to Mongo...");
+        int saved = 0;
+        long startMs = System.currentTimeMillis();
+
+        for (Team team : this.getTeams()) {
+            if (team.isNeedsSave() || forceAll) {
+                saved++;
+                team.setNeedsSave(false);
+                this.collection.replaceOne(Filters.eq("_id", team.getUniqueId()), team.serialize(), new ReplaceOptions().upsert(true));
+            }
+        }
+
+        int time = (int) (System.currentTimeMillis() - startMs);
+        if (saved > 0) {
+            Brawl.broadcastOps(ChatColor.LIGHT_PURPLE + "Updated " + saved + " teams (Completed: " + CC.YELLOW + time + "ms" + CC.LIGHT_PURPLE + ")");
+            System.out.println("Saved " + saved + " teams to Mongo in " + time + "ms.");
+        }
+        return saved;
+    }
+
+    private class TeamSaveTask extends BukkitRunnable {
+
+        @Override
+        public void run() {
+            save(false);
+        }
+
     }
 
 }

@@ -1,58 +1,70 @@
 package gg.manny.brawl;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import gg.manny.brawl.ability.Ability;
 import gg.manny.brawl.ability.AbilityHandler;
 import gg.manny.brawl.ability.command.AbilityCommand;
 import gg.manny.brawl.ability.command.adapter.AbilityTypeAdapter;
-import gg.manny.brawl.command.BrawlCommand;
-import gg.manny.brawl.command.BuildCommand;
-import gg.manny.brawl.command.SpawnCommand;
+import gg.manny.brawl.chat.BrawlChatFormat;
+import gg.manny.brawl.command.*;
+import gg.manny.brawl.duelarena.DuelArenaHandler;
+import gg.manny.brawl.duelarena.arena.Arena;
+import gg.manny.brawl.duelarena.command.ArenaCommand;
+import gg.manny.brawl.duelarena.command.DuelCommand;
+import gg.manny.brawl.duelarena.command.ViewMatchInvCommand;
+import gg.manny.brawl.duelarena.command.adapter.ArenaCommandAdapter;
+import gg.manny.brawl.event.EventHandler;
 import gg.manny.brawl.game.GameHandler;
 import gg.manny.brawl.item.ItemHandler;
+import gg.manny.brawl.killstreak.KillstreakHandler;
 import gg.manny.brawl.kit.Kit;
 import gg.manny.brawl.kit.KitHandler;
 import gg.manny.brawl.kit.command.KitCommand;
 import gg.manny.brawl.kit.command.adapter.KitTypeAdapter;
-import gg.manny.brawl.listener.DamageListener;
-import gg.manny.brawl.listener.MovementListener;
-import gg.manny.brawl.listener.PlayerListener;
-import gg.manny.brawl.listener.SoupListener;
+import gg.manny.brawl.leaderboard.Leaderboard;
+import gg.manny.brawl.listener.*;
 import gg.manny.brawl.player.PlayerData;
 import gg.manny.brawl.player.PlayerDataHandler;
 import gg.manny.brawl.player.adapter.PlayerDataTypeAdapter;
+import gg.manny.brawl.player.cps.ClickTracker;
+import gg.manny.brawl.player.simple.SimpleOfflinePlayer;
+import gg.manny.brawl.player.simple.adapter.SimpleOfflinePlayerAdapter;
+import gg.manny.brawl.rail.Rail;
 import gg.manny.brawl.region.RegionHandler;
-import gg.manny.brawl.region.command.RegionCommand;
+import gg.manny.brawl.region.command.RegionCommands;
 import gg.manny.brawl.scoreboard.ScoreboardAdapter;
+import gg.manny.brawl.spectator.SpectatorManager;
 import gg.manny.brawl.task.SoupTask;
-import gg.manny.brawl.team.Team;
 import gg.manny.brawl.team.TeamHandler;
-import gg.manny.brawl.team.command.adapter.TeamTypeAdapter;
+import gg.manny.brawl.util.EntityHider;
+import gg.manny.brawl.warp.WarpManager;
 import gg.manny.construct.Construct;
 import gg.manny.pivot.Pivot;
 import gg.manny.pivot.nametag.Nametag;
+import gg.manny.pivot.nametag.NametagHandler;
 import gg.manny.pivot.nametag.NametagProvider;
-import gg.manny.pivot.util.EntityHider;
+import gg.manny.pivot.serialization.*;
 import gg.manny.pivot.util.file.type.BasicConfigurationFile;
 import gg.manny.quantum.Quantum;
-import gg.manny.spigot.GenericSpigot;
-import gg.manny.spigot.util.chatcolor.CC;
+import gg.manny.server.MineServer;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.util.BlockVector;
+import org.bukkit.util.Vector;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -66,25 +78,44 @@ public class Brawl extends JavaPlugin {
     @Getter
     public static Brawl instance;
 
+    public static final Gson GSON = new GsonBuilder()
+            .registerTypeHierarchyAdapter(PotionEffect.class, new PotionEffectAdapter())
+            .registerTypeHierarchyAdapter(ItemStack.class, new ItemStackAdapter())
+            .registerTypeHierarchyAdapter(Location.class, new LocationAdapter())
+            .registerTypeHierarchyAdapter(Vector.class, new VectorAdapter())
+            .registerTypeAdapter(BlockVector.class, new BlockVectorAdapter())
+
+            .setPrettyPrinting()
+            .serializeNulls()
+            .create();
+
     public static Random RANDOM = new Random();
 
     private MongoDatabase mongoDatabase;
 
     private PlayerDataHandler playerDataHandler;
 
+    private AbilityHandler abilityHandler;
+    private KillstreakHandler killstreakHandler;
+
     private KitHandler kitHandler;
 
-    private AbilityHandler abilityHandler;
+    private DuelArenaHandler matchHandler;
 
     private GameHandler gameHandler;
+    private EventHandler eventHandler;
 
     private TeamHandler teamHandler;
+
+    private WarpManager warpManager;
+
+    private SpectatorManager spectatorManager;
+
+    private Leaderboard leaderboard;
 
     private RegionHandler regionHandler;
 
     private ItemHandler itemHandler;
-
-    private WorldEditPlugin worldEdit;
 
     private BasicConfigurationFile mainConfig;
 
@@ -94,6 +125,8 @@ public class Brawl extends JavaPlugin {
 
     private Map<String, Location> locationMap = new HashMap<>();
 
+    private BasicConfigurationFile databaseFile;
+
     private boolean loaded = false;
 
     @Override
@@ -101,6 +134,8 @@ public class Brawl extends JavaPlugin {
         instance = this;
 
         this.mainConfig = new BasicConfigurationFile(this, "config");
+        this.databaseFile = new BasicConfigurationFile(this, "database");
+
         this.entityHider = new EntityHider(this, EntityHider.Policy.BLACKLIST);
 
         this.loadDatabase();
@@ -108,14 +143,19 @@ public class Brawl extends JavaPlugin {
         this.registerHandlers();
         this.registerCommands();
 
+
+
+        new Rail();
+
         new SoupTask(this).runTaskTimer(this, 20L, 20L);
 
+        this.getServer().getWorlds().forEach(world -> world.getEntitiesByClass(Item.class).forEach(Item::remove));
+
         MovementListener movementListener = new MovementListener(this);
-        GenericSpigot.INSTANCE.addMovementHandler(movementListener);
+        MineServer.getInstance().addMovementHandler(movementListener);
 
-        Arrays.asList(new PlayerListener(this), new DamageListener(this), new SoupListener(this), movementListener)
+        Arrays.asList(new ClickTracker(this), new AbilityListener(this), new ToolInteractListener(), new ProtectListener(this), new ArenaListener(this), new PlayerListener(this), new DamageListener(this), new SoupListener(this), new TeamListener(this), movementListener)
                 .forEach(listener -> this.getServer().getPluginManager().registerEvents(listener, this));
-
         loaded = true;
     }
 
@@ -123,75 +163,120 @@ public class Brawl extends JavaPlugin {
     public void onDisable() {
         this.playerDataHandler.close();
         this.regionHandler.close();
-        this.teamHandler.save();
+        this.teamHandler.save(true);
+        matchHandler.onDisable();
         this.kitHandler.save();
         this.abilityHandler.save();
         this.gameHandler.save();
+        eventHandler.save();
+
+        try {
+            SimpleOfflinePlayer.save(this);
+            mainConfig.getConfiguration().save(mainConfig.getFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void registerCommands() {
-        Quantum quantum = Pivot.getPlugin().getQuantum();
+        Quantum quantum = Pivot.getInstance().getQuantum();
 
+        quantum.registerParameterType(Arena.class, new ArenaCommandAdapter());
         quantum.registerParameterType(Ability.class, new AbilityTypeAdapter(this));
         quantum.registerParameterType(Kit.class, new KitTypeAdapter(this));
+        quantum.registerParameterType(SimpleOfflinePlayer.class, new SimpleOfflinePlayerAdapter());
         quantum.registerParameterType(PlayerData.class, new PlayerDataTypeAdapter(this));
-        quantum.registerParameterType(Team.class, new TeamTypeAdapter(this));
 
         Arrays.asList(
+
+                new KillstreakCommand(this),
+
+                new ArenaCommand(this),
+                new ViewMatchInvCommand(),
+                new DuelCommand(this),
+
+                new StatsCommand(),
+                new LeaderboardCommand(),
                 new AbilityCommand(),
                 new BuildCommand(this),
                 new BrawlCommand(this),
                 new SpawnCommand(this),
                 new KitCommand(this),
-                new RegionCommand(this)
+                new RegionCommands(this),
+                new ClearkitCommand(this)
         ).forEach(quantum::registerCommand);
     }
 
     private void registerHandlers() {
         this.abilityHandler = new AbilityHandler(this);
-        this.kitHandler = new KitHandler(this);
-        this.playerDataHandler = new PlayerDataHandler(this);
-        this.gameHandler = new GameHandler(this);
-        this.teamHandler = new TeamHandler(this); //Todo Fix teams :(
+        this.killstreakHandler = new KillstreakHandler(this);
 
-        Plugin worldEditPlugin = getServer().getPluginManager().getPlugin("WorldEdit");
-        this.worldEdit = worldEditPlugin instanceof WorldEditPlugin && worldEditPlugin.isEnabled() ? (WorldEditPlugin) worldEditPlugin : null;
+        this.kitHandler = new KitHandler(this);
+
+        spectatorManager = new SpectatorManager(this);
+        this.matchHandler = new DuelArenaHandler();
+
+
+        SimpleOfflinePlayer.load(this);
+        this.playerDataHandler = new PlayerDataHandler(this);
+
+        this.eventHandler = new EventHandler();
+        this.gameHandler = new GameHandler(this);
+        this.teamHandler = new TeamHandler();
+        this.warpManager = new WarpManager();
+
+        this.leaderboard = new Leaderboard(this);
 
         this.regionHandler = new RegionHandler(this);
 
         this.itemHandler = new ItemHandler(this);
 
-        this.construct = new Construct(this, new ScoreboardAdapter(this));
-        this.construct.setUpdateInterval(100L);
-        Pivot.getPlugin().getNametagHandler().registerProvider(this.registerNametag());
+        Construct construct = new Construct(this, new ScoreboardAdapter(this));
+        construct.setUpdateInterval(150L);
+        construct.setShowHealth(true);
+
+
+
+        Pivot.getInstance().getChatHandler().setChatFormat(new BrawlChatFormat(Pivot.getInstance()));
+
+        NametagHandler nh = Pivot.getInstance().getNametagHandler();
+        nh.registerProvider(this.registerNametag());
+
     }
 
     private NametagProvider registerNametag() {
-        return new NametagProvider("Brawl", 50) {
+        return new NametagProvider("Brawl", 99) {
             @Override
             public Nametag fetchNametag(Player toRefresh, Player refreshFor) {
-                Scoreboard scoreboard = toRefresh.getScoreboard();
-                if (scoreboard != null && scoreboard.getObjective("health") != null) {
-                    Objective objective = scoreboard.registerNewObjective("health", "health");
-                    objective.setDisplayName(CC.DARK_RED + "\u2764");
-                    objective.getScore(refreshFor).setScore((int) toRefresh.getHealth());
-                    objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
-                }
-
-                return createNametag(Pivot.getPlugin().getProfileHandler().getProfile(toRefresh).getRank().getColor(), "");
+                return createNametag(Pivot.getInstance().getProfileHandler().getProfile(toRefresh).getRank().getColor(), "");
             }
         };
     }
+
+    public static void broadcastOps(String message) {
+        for (Player onlinePlayer : getInstance().getServer().getOnlinePlayers()) {
+            if (onlinePlayer.isOp()) {
+                onlinePlayer.sendMessage(message);
+            }
+        }
+    }
+
     private void loadDatabase() {
-        if (mainConfig.getBoolean("MONGO.AUTHENTICATION.ENABLED")) {
-            mongoDatabase = new MongoClient(
-                    new ServerAddress(mainConfig.getString("MONGO.HOST"), mainConfig.getInteger("MONGO.PORT")),
-                    MongoCredential.createCredential(mainConfig.getString("MONGO.AUTHENTICATION.USERNAME"), "admin", mainConfig.getString("MONGO.AUTHENTICATION.PASSWORD").toCharArray()),
-                    MongoClientOptions.builder().build()
-            ).getDatabase(mainConfig.getString("MONGO.DATABASE"));
+        String database = this.databaseFile.getString("mongo.database");
+        String[] address = this.databaseFile.getString("mongo.host").split(":");
+        String host = address[0];
+        int port = Integer.parseInt(address[1]);
+        String password = this.databaseFile.getString("mongo.password");
+        String username = this.databaseFile.getString("mongo.username");
+
+        if (password.isEmpty()) {
+            mongoDatabase = new MongoClient(host, port).getDatabase(database);
         } else {
-            mongoDatabase = new MongoClient(mainConfig.getString("MONGO.HOST"), mainConfig.getInteger("MONGO.PORT"))
-                    .getDatabase(mainConfig.getString("MONGO.DATABASE"));
+            mongoDatabase = new MongoClient(
+                    new ServerAddress(host, port),
+                    MongoCredential.createCredential(username, "admin", password.toCharArray()),
+                    MongoClientOptions.builder().build()
+            ).getDatabase(database);
         }
     }
 

@@ -1,76 +1,82 @@
 package gg.manny.brawl.game.type;
 
-import gg.manny.brawl.Locale;
+import gg.manny.brawl.Brawl;
 import gg.manny.brawl.game.Game;
+import gg.manny.brawl.game.GameFlag;
 import gg.manny.brawl.game.GameState;
 import gg.manny.brawl.game.GameType;
 import gg.manny.brawl.game.option.impl.StoreBlockOption;
-import gg.manny.pivot.util.PivotUtil;
-import gg.manny.pivot.util.PlayerUtils;
-import gg.manny.pivot.util.inventory.ItemBuilder;
-import org.bukkit.GameMode;
+import gg.manny.brawl.game.team.GamePlayer;
+import gg.manny.pivot.util.ItemBuilder;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-public class Spleef extends Game {
+public class Spleef extends Game implements Listener {
 
     public Spleef() {
-        super(GameType.SPLEEF);
+        super(GameType.SPLEEF, GameFlag.WATER_ELIMINATE);
+    }
 
-        this.getPlayers().forEach(player -> player.setAlive(true));
+    @Override
+    public void setup() {
         this.getAlivePlayers().forEach(gamePlayer -> {
             Player player = gamePlayer.toPlayer();
-            PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
-
             player.getInventory().addItem(this.getItem());
             player.teleport(this.getRandomLocation());
         });
 
         this.startTimer(5, true);
-
     }
 
     @Override
-    public void onStart() {
-        this.setState(GameState.STARTED);
-        this.setStartedAt(System.currentTimeMillis());
+    public void start() {
+        this.addOption(new StoreBlockOption(Collections.singletonList(Material.SNOW_BLOCK))
+        .range(3)
+        .materials(Material.SNOW_BALL));
 
-        this.broadcast(this.getVariables(Locale.GAME_START.get()));
-
-        this.getOptions().add(new StoreBlockOption(Collections.singletonList(Material.SNOW_BLOCK)));
-        this.getOptions().forEach(option -> option.onStart(this));
+        this.getOptions().values().forEach(option -> option.onStart(this));
     }
 
-    @Override
-    public void onEnd(List<String> winners) {
-        this.setEndedAt(System.currentTimeMillis());
-        this.setState(GameState.FINISHED);
 
-        
-        PivotUtil.runLater(() -> this.getOptions().forEach(option -> option.onEnd(this)), TimeUnit.SECONDS.toMillis(3), false);
+
+    @EventHandler
+    public void onPlayerDamage(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof Player && !(event.getDamager() instanceof Snowball)) {
+            Player player = (Player) event.getEntity();
+            Game game = Brawl.getInstance().getGameHandler().getActiveGame();
+            if (game instanceof Spleef) {
+                if (player != null && this.getGamePlayer(player).isAlive()) {
+                    event.setCancelled(true); // Only allows damage from snowballs
+                }
+            }
+        }
     }
 
-    @Override
-    public void destroy() {
+    @EventHandler
+    public void onProjectileLand(ProjectileHitEvent event) {
+        Entity entity = event.getEntity();
+        if (entity.getLocation().getBlock() != null && event.getEntity().getLocation().getBlock().getType() == Material.SNOW_BLOCK) {
+            if (this.containsOption(StoreBlockOption.class)) {
+                StoreBlockOption option = (StoreBlockOption) this.getOptions().get(StoreBlockOption.class);
+                option.getData().put(event.getEntity().getLocation(), event.getEntity().getLocation().getBlock().getState());
 
+                event.getEntity().getLocation().getBlock().breakNaturally();
+            }
+        }
     }
 
-    @Override
-    public void onEliminate(Player player) {
-
-    }
-
-    @Override
-    public void handleElimination(Player player, Location location, boolean disconnected) {
-
-    }
 
     private ItemStack getItem() {
         return new ItemBuilder(Material.DIAMOND_SPADE)

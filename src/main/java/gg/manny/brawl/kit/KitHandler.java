@@ -4,15 +4,19 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import gg.manny.brawl.Brawl;
-import gg.manny.brawl.kit.command.BukkitCommand;
-import gg.manny.brawl.util.BrawlUtil;
+import gg.manny.brawl.duelarena.match.Match;
 import gg.manny.brawl.item.item.Armor;
 import gg.manny.brawl.item.item.Items;
+import gg.manny.brawl.kit.command.BukkitCommand;
+import gg.manny.brawl.player.PlayerData;
+import gg.manny.brawl.region.RegionType;
+import gg.manny.brawl.util.BrawlUtil;
 import gg.manny.pivot.Pivot;
-import gg.manny.pivot.util.inventory.ItemBuilder;
+import gg.manny.pivot.util.ItemBuilder;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -89,6 +93,7 @@ public class KitHandler {
 
     public void registerKit(Kit kit) {
         this.kits.add(kit);
+        this.kits.sort(Kit::compareTo);
         new BukkitCommand(plugin, kit.getName());
     }
 
@@ -96,6 +101,14 @@ public class KitHandler {
         this.kits.remove(kit);
         //todo unregister command
     }
+
+    public static Kit getEquipped(Player player) {
+        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+        Match match = Brawl.getInstance().getMatchHandler().getMatch(player);
+        Kit selectedKit = match != null && match.getKit() != null ? match.getKit() : playerData.getSelectedKit();
+        return !RegionType.SAFEZONE.appliesTo(player.getLocation()) ? selectedKit : null;
+    }
+
 
     public Kit getDefaultKit() {
         Kit kit = this.getKit("PvP");

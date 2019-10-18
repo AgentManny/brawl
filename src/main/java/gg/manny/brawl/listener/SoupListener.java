@@ -1,9 +1,12 @@
 package gg.manny.brawl.listener;
 
 import gg.manny.brawl.Brawl;
+import gg.manny.brawl.game.Game;
+import gg.manny.brawl.game.GameFlag;
+import gg.manny.brawl.kit.Kit;
 import gg.manny.brawl.player.PlayerData;
 import gg.manny.pivot.util.PivotUtil;
-import gg.manny.spigot.util.chatcolor.CC;
+import gg.manny.server.util.chatcolor.CC;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,7 +21,6 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -41,37 +43,40 @@ public class SoupListener implements Listener {
     public void onFoodLoss(FoodLevelChangeEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = ((Player) event.getEntity());
-            PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
+            Game game = plugin.getGameHandler().getActiveGame();
+            if (game != null && game.getFlags().contains(GameFlag.HUNGER) && game.containsPlayer(player) && game.getGamePlayer(player).isAlive()) return;
 
-            if(playerData.getSelectedKit() != null) {
-                event.setCancelled(true);
-                event.setFoodLevel(20);
-            }
+            event.setCancelled(true);
+            event.setFoodLevel(20);
+            player.setSaturation(20);
         }
-
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+
+            Player player = event.getPlayer();
+
             double health = event.getPlayer().getHealth();
+
             double maxHealth = event.getPlayer().getMaxHealth();
             if (event.hasItem() && event.getItem().getTypeId() == 282 && health < maxHealth) {
                 event.setCancelled(true);
-                Player player = event.getPlayer();
                 player.setHealth(health + 7 > maxHealth ? maxHealth : health + 7);
                 player.getItemInHand().setType(Material.BOWL);
             } else if (event.hasItem() && event.getItem().getTypeId() == 282 && event.getPlayer().getFoodLevel() < 20) {
                 event.setCancelled(true);
-                Player player = event.getPlayer();
                 player.setFoodLevel((player.getFoodLevel() + 7) > 20D ? 20 : player.getFoodLevel() + 7);
                 player.getItemInHand().setType(Material.BOWL);
             } else if (event.hasBlock() && event.getClickedBlock().getState() instanceof Sign) {
                 Sign sign = (Sign) event.getClickedBlock().getState();
                 if(sign.getLine(0).equalsIgnoreCase(ChatColor.DARK_PURPLE + "[Soup]")) {
                     Inventory inventory = Bukkit.createInventory(null, 27, "Soups");
+                    PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
+                    Kit selectedKit = playerData.getSelectedKit();
                     for(int i = 0; i < inventory.getSize(); i++) {
-                        inventory.setItem(i, new ItemStack(Material.MUSHROOM_SOUP));
+                        inventory.setItem(i, selectedKit == null ? new ItemStack(Material.MUSHROOM_SOUP) : selectedKit.getRefillType().getItem());
                     }
                     event.getPlayer().openInventory(inventory);
                 }
@@ -95,16 +100,4 @@ public class SoupListener implements Listener {
         }
     }
 
-
-    @EventHandler
-    public void onPlayerPickupItemEvent(PlayerPickupItemEvent event) {
-        Player player = event.getPlayer();
-        Material type = event.getItem().getItemStack().getType();
-        if (!(type == Material.MUSHROOM_SOUP || player.getInventory().getHelmet() != null && player.getInventory().getChestplate() != null && player.getInventory().getLeggings() != null &&player.getInventory().getBoots() != null &&
-                player.getInventory().getHelmet().getType() == type || player.getInventory().getChestplate().getType() == type ||
-                player.getInventory().getLeggings().getType() == type || player.getInventory().getBoots().getType() == type)) {
-
-            event.setCancelled(true);
-        }
-    }
 }

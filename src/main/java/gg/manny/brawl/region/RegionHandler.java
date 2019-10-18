@@ -1,7 +1,6 @@
 package gg.manny.brawl.region;
 
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
 import gg.manny.brawl.Brawl;
 import lombok.Getter;
@@ -26,13 +25,11 @@ public class RegionHandler implements Closeable {
         this.plugin = plugin;
 
         this.mongoCollection = plugin.getMongoDatabase().getCollection("regions");
-        try (MongoCursor<Document> cursor = this.mongoCollection.find().iterator()) {
-            while (cursor.hasNext()) {
-                Document document = cursor.next();
-                Region region = new Region(document);
-                this.regions.add(region);
-            }
-        }
+        this.mongoCollection.find().iterator().forEachRemaining(object -> {
+            Document document = (Document) object;
+            Region region = new Region(document);
+            this.regions.add(region);
+        });
     }
 
     public void add(Region region) {

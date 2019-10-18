@@ -5,13 +5,14 @@ import gg.manny.brawl.Brawl;
 import gg.manny.brawl.ability.Ability;
 import gg.manny.brawl.util.BrawlUtil;
 import gg.manny.brawl.util.DurationFormatter;
+import gg.manny.brawl.util.ParticleEffect;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.util.Vector;
-import org.inventivetalent.particle.ParticleEffect;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,17 +27,16 @@ public class Charger extends Ability implements Listener {
     private ParticleEffect chargeParticle = ParticleEffect.CLOUD;
     private Sound chargeSound = Sound.CLICK;
 
-    private ParticleEffect activateParticle = ParticleEffect.EXPLOSION_HUGE;
+    private ParticleEffect activateParticle = ParticleEffect.HUGE_EXPLOSION;
     private Sound activateSound = Sound.HORSE_LAND;
 
     private double multiplier = 0.5D;
     private int capacity = 5;
 
     public Charger(Brawl brawl) {
-        super("Charger", null);
-
         this.brawl = brawl;
     }
+
     @Override
     public Map<String, String> getProperties(Player player) {
         Map<String, String> properties = new HashMap<>();
@@ -48,6 +48,11 @@ public class Charger extends Ability implements Listener {
             properties.put("Charge Up", DurationFormatter.getTrailing((time / capacity) * 100) + '%');
         }
         return properties;
+    }
+
+    @Override
+    public ChatColor getColor() {
+        return ChatColor.GOLD;
     }
 
     @EventHandler
@@ -63,7 +68,7 @@ public class Charger extends Ability implements Listener {
                 }
 
                 if (this.chargeParticle != null) {
-                    this.chargeParticle.send(brawl.getServer().getOnlinePlayers(), player.getLocation(), 0, 0, 0, 0, 1);
+                    this.chargeParticle.send(player.getLocation(), 0, 0, 0, 0, 1);
                 }
             } else if(this.chargeup.containsKey(player.getUniqueId())) {
                 long time = System.currentTimeMillis() - this.chargeup.get(player.getUniqueId());
@@ -73,16 +78,18 @@ public class Charger extends Ability implements Listener {
                 double kb = multiplier * (time / 1000.);
                 for (Player nearby : BrawlUtil.getNearbyPlayers(player, kb)) {
                     if (nearby.isSneaking()) {
-                        Vector vector = nearby.getLocation().toVector().subtract(player.getLocation().toVector()).normalize();
-                        nearby.setVelocity(vector.multiply(kb).add(new Vector(0, (time / 1000.) / 4, 0)));
+                        final Vector velocity = nearby.getLocation().subtract(player.getLocation()).toVector();
+                        velocity.setY(velocity.getY() / 3);
+                        nearby.setVelocity(velocity.multiply(kb / (1 + velocity.lengthSquared())));
                     }
                 }
+
                 if (this.activateSound != null) {
                     player.playSound(player.getLocation(), this.activateSound, 1.0F, 0.0F);
                 }
 
                 if (this.activateParticle != null) {
-                    this.activateParticle.send(brawl.getServer().getOnlinePlayers(), player.getLocation(), 0, 0, 0, 0, 1);
+                    this.activateParticle.send(player.getLocation(), 1, 1);
                 }
 
                 this.chargeup.remove(player.getUniqueId());

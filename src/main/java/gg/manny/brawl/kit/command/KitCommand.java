@@ -2,17 +2,17 @@ package gg.manny.brawl.kit.command;
 
 import com.google.common.base.Strings;
 import gg.manny.brawl.Brawl;
-import gg.manny.brawl.Locale;
 import gg.manny.brawl.ability.Ability;
 import gg.manny.brawl.item.item.Armor;
 import gg.manny.brawl.item.item.Items;
 import gg.manny.brawl.kit.Kit;
 import gg.manny.brawl.kit.type.RankType;
-import gg.manny.brawl.kit.type.RarityType;
+import gg.manny.brawl.player.PlayerData;
 import gg.manny.quantum.command.Command;
-import gg.manny.spigot.util.chatcolor.CC;
+import gg.manny.server.util.chatcolor.CC;
 import lombok.RequiredArgsConstructor;
 import mkremins.fanciful.FancyMessage;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -28,7 +28,20 @@ public class KitCommand {
 
     @Command(names = { "kit", "k" })
     public void apply(Player player, Kit kit) {
+        PlayerData playerData = brawl.getPlayerDataHandler().getPlayerData(player);
+        if (!playerData.isSpawnProtection()) {
+            player.sendMessage(ChatColor.RED + "You must have spawn protection to select your kit.");
+            return;
+        }
+
         kit.apply(player, true, true);
+    }
+
+    @Command(names = { "kit weight", "k weight" }, permission = "op")
+    public void weight(Player player, Kit kit, int weight) {
+        kit.setWeight(weight);
+        brawl.getKitHandler().getKits().sort(Kit::compareTo);
+        player.sendMessage(ChatColor.GREEN + kit.getName() + " weight set to " + weight);
     }
 
     @Command(names =  { "kit create", "k create" }, permission = "op")
@@ -42,22 +55,23 @@ public class KitCommand {
         kit.setIcon(player.getItemInHand());
         kit.setWeight(brawl.getKitHandler().getKits().size() + 1);
         kit.setPotionEffects(new ArrayList<>(player.getActivePotionEffects()));
-        kit.setArmor(new Armor(inventory.getHelmet(), inventory.getChestplate(), inventory.getLeggings(), inventory.getLeggings()));
+        kit.setArmor(new Armor(inventory.getHelmet(), inventory.getChestplate(), inventory.getLeggings(), inventory.getBoots()));
         kit.setItems(new Items(inventory.getContents()));
         brawl.getKitHandler().registerKit(kit);
-        player.sendMessage(Locale.COMMAND_KIT_CREATE.format(name));
+
+        player.sendMessage(ChatColor.GREEN + "Created kit " + name + ".");
     }
 
     @Command(names =  { "kit remove", "k remove" }, permission = "op")
     public void remove(Player player, Kit kit) {
         brawl.getKitHandler().unregisterKit(kit);
-        player.sendMessage(Locale.COMMAND_KIT_REMOVE.format(kit.getName()));
+        player.sendMessage(ChatColor.RED + "Removed kit " + kit.getName() + ".");
     }
 
     @Command(names =  { "kit setdescription", "k setdescription" }, permission = "op")
     public void description(Player player, Kit kit, String description) {
+        player.sendMessage(ChatColor.GREEN + "Set description of " + kit.getName() + " from \"" + kit.getDescription() + "\" to \"" + description.trim() + "\".");
         kit.setDescription(description.trim());
-        player.sendMessage(Locale.COMMAND_KIT_DESCRIPTION.format(kit.getName(), description));
     }
 
     @Command(names =  { "kit ability", "k ability" }, permission = "op")
@@ -67,7 +81,7 @@ public class KitCommand {
         } else {
             kit.getAbilities().add(ability);
         }
-        player.sendMessage(Locale.COMMAND_KIT_ABILITY.format((kit.getAbilities().contains(ability) ? "Added" : "Removed"), kit.getName(), ability.getName()));
+        player.sendMessage(ChatColor.GREEN + "Kit " + kit.getName() + (kit.getAbilities().contains(ability) ? "now has" : "no longer has") + " ability " + ChatColor.BOLD + ability.getName() + ChatColor.GREEN + ".");
     }
 
     @Command(names =  { "kit setrank", "k setrank" }, permission = "op")
@@ -77,37 +91,16 @@ public class KitCommand {
             rankType = RankType.valueOf(rank.toUpperCase().replace("_", " "));
         } catch (Exception exception) {
             player.sendMessage(CC.RED + "Rank " + rank + " not found");
-        } finally {
-            if (rankType != null) {
-                kit.setRankType(rankType);
-                player.sendMessage(Locale.COMMAND_KIT_RANK.format(kit.getName(), rankType.getDisplayName()));
-            } else {
-                player.sendMessage(CC.RED + "Rank " + rank + " not found");
-            }
+            return;
         }
-    }
-
-    @Command(names =  { "kit setrarity", "k setrarity" }, permission = "op")
-    public void rarity(Player player, Kit kit, String rarity) {
-        RarityType rarityType = null;
-        try {
-            rarityType = RarityType.valueOf(rarity.toUpperCase().replace("_", " "));
-        } catch (Exception exception) {
-            player.sendMessage(CC.RED + "Rarity " + rarity + " not found");
-        } finally {
-            if (rarityType != null) {
-                kit.setRarityType(rarityType);
-                player.sendMessage(Locale.COMMAND_KIT_RARITY.format(kit.getName(), rarityType.getDisplayName()));
-            } else {
-                player.sendMessage(CC.RED + "Rarity " + rarity + " not found");
-            }
-        }
+        kit.setRankType(rankType);
+        player.sendMessage(ChatColor.GREEN + "Kit " + kit.getName() + " is now restricted to " + rankType.getDisplayName() + ChatColor.GREEN + ".");
     }
 
     @Command(names =  { "kit get", "k get" }, permission = "op")
     public void get(Player player, Kit kit) {
         kit.apply(player, false, false);
-        new FancyMessage(Locale.COMMAND_KIT_RETRIEVE.format(kit.getName()))
+        new FancyMessage(ChatColor.GREEN + "You've been given " + kit.getName() + ChatColor.GREEN + ". Click Here to update this kit.")
                 .tooltip(CC.GRAY + "Click to update this kit")
                 .command("/kit update " + kit.getName())
                 .send(player);
@@ -115,7 +108,7 @@ public class KitCommand {
 
     @Command(names =  { "kit icon", "k icon" }, permission = "op")
     public void icon(Player player, Kit kit) {
-        player.sendMessage(Locale.COMMAND_KIT_ICON.format(kit.getName()));
+        player.sendMessage(ChatColor.GREEN + "Kit " + kit.getName() + " icon is now the item you're holding.");
         kit.setIcon(player.getItemInHand() == null ? new ItemStack(Material.AIR) : player.getItemInHand());
     }
 
@@ -129,9 +122,9 @@ public class KitCommand {
     public void update(Player player, Kit kit) {
         PlayerInventory inventory = player.getInventory();
         kit.setPotionEffects(new ArrayList<>(player.getActivePotionEffects()));
-        kit.setArmor(new Armor(inventory.getHelmet(), inventory.getChestplate(), inventory.getLeggings(), inventory.getLeggings()));
+        kit.setArmor(new Armor(inventory.getHelmet(), inventory.getChestplate(), inventory.getLeggings(), inventory.getBoots()));
         kit.setItems(new Items(inventory.getContents()));
-        new FancyMessage(Locale.COMMAND_KIT_UPDATE.format(kit.getName()))
+        new FancyMessage(ChatColor.GREEN + "Updated kit. Click Here to return back to spawn.")
                 .tooltip(CC.GRAY + "Click to return to spawn.")
                 .command("/spawn")
                 .send(player);
@@ -145,7 +138,6 @@ public class KitCommand {
         player.sendMessage(CC.LIGHT_PURPLE + "  Armor: " + CC.YELLOW + kit.getArmor().info());
 
         player.sendMessage(CC.LIGHT_PURPLE + "  Content: " + CC.YELLOW + kit.getItems().info() + CC.WHITE + " (Refill: " + kit.getRefillType().name() + ")");
-        player.sendMessage(CC.LIGHT_PURPLE + "  Rarity: " + CC.YELLOW + kit.getRarityType().getDisplayName() + CC.WHITE + "[" + kit.getRarityType().name() + "] ");
         player.sendMessage(CC.LIGHT_PURPLE + "  Rank: " + CC.YELLOW + kit.getRankType().getDisplayName() + CC.WHITE + "[" + kit.getRankType().name() + "] ");
         player.sendMessage(CC.LIGHT_PURPLE + "  Abilities: " + CC.YELLOW + kit.getAbilities().stream().map(Ability::getName).collect(Collectors.joining(", ")));
         player.sendMessage(CC.LIGHT_PURPLE + "  Potion Effects:");

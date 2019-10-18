@@ -5,21 +5,22 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mongodb.lang.Nullable;
 import gg.manny.brawl.Brawl;
-import gg.manny.brawl.Locale;
 import gg.manny.brawl.ability.Ability;
-import gg.manny.brawl.kit.type.RankType;
-import gg.manny.brawl.kit.type.RarityType;
-import gg.manny.brawl.kit.type.RefillType;
-import gg.manny.brawl.util.BrawlUtil;
 import gg.manny.brawl.item.item.Armor;
 import gg.manny.brawl.item.item.Items;
+import gg.manny.brawl.kit.type.RankType;
+import gg.manny.brawl.kit.type.RefillType;
+import gg.manny.brawl.player.PlayerData;
+import gg.manny.brawl.util.BrawlUtil;
+import gg.manny.pivot.serialization.ItemStackAdapter;
+import gg.manny.pivot.serialization.PotionEffectAdapter;
 import gg.manny.pivot.util.PlayerUtils;
-import gg.manny.pivot.util.serialization.ItemStackAdapter;
-import gg.manny.pivot.util.serialization.PotionEffectAdapter;
 import lombok.Data;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
@@ -29,7 +30,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Data
-public class Kit implements Comparable<Kit> {
+public class Kit implements Listener, Comparable<Kit> {
 
     private final String name;
 
@@ -38,7 +39,6 @@ public class Kit implements Comparable<Kit> {
 
     private double price = 0;
 
-    private RarityType rarityType = RarityType.NONE;
     private RankType rankType = RankType.NONE;
     private RefillType refillType = RefillType.SOUP;
 
@@ -63,12 +63,11 @@ public class Kit implements Comparable<Kit> {
         this.weight = jsonObject.get("weight").getAsInt();
         this.price = jsonObject.get("price").getAsDouble();
 
-        this.rarityType = jsonObject.has("rarityType") ? RarityType.valueOf(jsonObject.get("rarityType").getAsString()) : RarityType.NONE;
         this.rankType = jsonObject.has("rankType") ? RankType.valueOf(jsonObject.get("rankType").getAsString()) : RankType.NONE;
         this.refillType = jsonObject.has("refillType") ? RefillType.valueOf(jsonObject.get("refillType").getAsString()) : RefillType.SOUP;
         jsonObject.get("potionEffects").getAsJsonArray().forEach(element -> this.potionEffects.add(PotionEffectAdapter.fromJson(element)));
 
-        if (jsonObject.has("abilites") && !jsonObject.get("abilities").isJsonNull()) {
+        if (jsonObject.has("abilities") && !jsonObject.get("abilities").isJsonNull()) {
             jsonObject.get("abilities").getAsJsonArray().forEach(element -> {
                 Ability ability = Brawl.getInstance().getAbilityHandler().getAbilityByName(element.getAsString());
                 if (ability == null) {
@@ -94,7 +93,6 @@ public class Kit implements Comparable<Kit> {
         jsonObject.addProperty("description", this.description);
         jsonObject.addProperty("weight", this.weight);
         jsonObject.addProperty("price", this.price);
-        jsonObject.addProperty("rarityType", this.rarityType.name());
         jsonObject.addProperty("rankType", this.rankType.name());
         jsonObject.addProperty("refillType", this.refillType.name());
 
@@ -108,7 +106,7 @@ public class Kit implements Comparable<Kit> {
         for (String entry : this.abilities.stream().map(Ability::getName).collect(Collectors.toList())) {
             abilitiesArray.add(new JsonPrimitive(entry));
         }
-        jsonObject.add("type", abilitiesArray);
+        jsonObject.add("abilities", abilitiesArray);
 
 //        jsonObject.addProperty("potionEffects", Pivot.GSON.toJson(this.potionEffects.stream().map(PotionEffectAdapter::toJson).collect(Collectors.toList())));
 //        jsonObject.addProperty("type", Pivot.GSON.toJson(this.type.stream().map(Ability::getName).collect(Collectors.toList())));
@@ -121,8 +119,10 @@ public class Kit implements Comparable<Kit> {
     public void apply(Player player, boolean updateProfile, boolean addRefill) {
         PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
         if (updateProfile) {
-            player.sendMessage(Locale.PLAYER_KIT_SELECTED.format(this.name));
-            Brawl.getInstance().getPlayerDataHandler().getPlayerData(player).setSelectedKit(this);
+            player.sendMessage(ChatColor.YELLOW + "You have chosen the " + ChatColor.LIGHT_PURPLE + this.name + ChatColor.YELLOW + " kit.");
+            PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+            playerData.setSelectedKit(this);
+            playerData.getStatistic().get(this).addUses();
         }
 
         this.armor.apply(player);

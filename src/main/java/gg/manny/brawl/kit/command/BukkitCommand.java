@@ -11,7 +11,7 @@ public class BukkitCommand extends Command {
     private final Brawl brawl;
 
     public BukkitCommand(Brawl brawl, String name) {
-        super(name);
+        super(name.toLowerCase());
 
         this.brawl = brawl;
         BrawlUtil.registerCommand(this);

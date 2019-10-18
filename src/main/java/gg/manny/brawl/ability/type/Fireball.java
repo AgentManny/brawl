@@ -1,55 +1,55 @@
 package gg.manny.brawl.ability.type;
 
-import gg.manny.brawl.Brawl;
 import gg.manny.brawl.ability.Ability;
-import gg.manny.pivot.util.inventory.ItemBuilder;
-import gg.manny.spigot.util.chatcolor.CC;
-import org.bukkit.Location;
+import gg.manny.brawl.region.RegionType;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.Random;
+public class Fireball extends Ability implements Listener {
 
-public class Fireball extends Ability {
+    @EventHandler
+    public void onInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
 
-    public Fireball() {
-        super("Fireball", new ItemBuilder(Material.FIREBALL)
-                .name(CC.GRAY + "\u00bb " + CC.GOLD + CC.BOLD + "Fireball" + CC.GRAY + " \u00ab")
-                .create());
+        if (event.hasItem() && event.getItem() != null && hasEquipped(player) && event.getItem().getType() == Material.FIREBALL && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+
+            event.setUseInteractedBlock(Event.Result.DENY);
+            event.setUseItemInHand(Event.Result.DENY);
+
+            if (event.getPlayer().getItemInHand().getAmount() > 1) {
+                event.getPlayer().getItemInHand().setAmount(event.getPlayer().getItemInHand().getAmount() - 1);
+            } else {
+                event.getPlayer().getInventory().remove(event.getPlayer().getItemInHand());
+                //event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
+            }
+            player.updateInventory();
+            player.launchProjectile(org.bukkit.entity.Fireball.class);
+
+        }
     }
 
-    private boolean aimAssist = true;
-    private int duration = 4;
-
     @Override
-    public void onActivate(Player player) {
-        if (this.hasCooldown(player, true)) return;
-        this.addCooldown(player);
+    public void onKill(Player player) {
+        ItemStack fireball = null;
 
-        new BukkitRunnable() {
-
-            final Random r = Brawl.RANDOM;
-            int time = 0;
-
-            @Override
-            public void run() {
-                Location location = player.getLocation();
-
-                if (time++ > duration) {
-                    this.cancel();
-                    return;
-                }
-
-                for (int i = 0; i < 5; i ++) {
-                    FallingBlock block = location.getWorld().spawnFallingBlock(location.clone().add(r.nextInt(2) - 1, r.nextInt(2) - 1, r.nextInt(2) - 1), Material.FIRE, (byte) 0);
-                    block.setVelocity(location.getDirection().multiply(5));
-                    block.setDropItem(false);
-                    block.setFireTicks(200);
-                }
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item == null) continue;
+            if (item.isSimilar(new ItemStack(Material.FIREBALL))) {
+                fireball = item;
+                item.setAmount(item.getAmount() + 2);
             }
+        }
 
-        }.runTaskTimer(Brawl.getInstance(), 4L, 4L);
+        if (fireball == null) {
+            player.getInventory().setItem(8, new ItemStack(Material.FIREWORK, 2));
+        }
+        player.updateInventory();
     }
 }

@@ -1,15 +1,41 @@
-MONGO:
-  DATABASE: "EAT_MY_ASS_BABY"
-  HOST: "127.0.0.1"
-  PORT: 27017
-  AUTHENTICATION:
-    ENABLED: true
-    USERNAME: "kobi"
-    PASSWORD: "ilovekobi"
+ALLOWED_COMMANDS:
+  - "ignore"
+  - "unignore"
+  - "reply"
+  - "r"
+  - "tell"
+  - "msg"
+  - "m"
+  - "pm"
+  - "whisper"
+  - "w"
+  - "togglepm"
+  - "tpm"
+  - "togglesounds"
+  - "sounds"
+  - "list"
+  - "who"
+  - "ping"
+  - "reclaim"
+  - "claim"
+  - "report"
+  - "request"
+  - "helpop"
 TEAM:
   SIZE: 5
 LANGUAGE:
   ITEM:
+    ARENA:
+      '0':
+        TYPE: IRON_SWORD
+        NAME: "&7\u00bb &d&lUnranked Queue &7\u00ab"
+      '1':
+        TYPE: DIAMOND_SWORD
+        NAME: "&7\u00bb &5&lRanked Queue &7\u00ab"
+      '8':
+        TYPE: INK_SACK
+        DATA: 14
+        NAME: "&7\u00bb &cReturn to &lSpawn &7\u00ab"
     SPAWN:
       '0':
         TYPE: BOOK
@@ -31,6 +57,18 @@ LANGUAGE:
         TYPE: 381
         NAME: "&7\u00bb &6&l1v1 &7\u00ab"
         META: DUEL_ARENA
+    QUEUE:
+      '8':
+        TYPE: 351
+        DATA: 1
+        NAME: '&7» &c&lLeave Queue &7«'
+        META: QUEUE_LEAVE
+    SPECTATOR:
+      '8':
+        TYPE: 351
+        DATA: 1
+        NAME: '&7» &c&lLeave Spectator &7«'
+        META: SPECTATOR_LEAVE
   SCOREBOARD:
     SPAWN:
       TITLE: "&5&lTHE CRAFT"
@@ -41,6 +79,14 @@ LANGUAGE:
         - "&5Killstreak: &d{KILLSTREAK:ROUNDED}"
         - "&4{ABILITY}: &c{ABILITY:TIME}"
         - "&6{ABILITY:ACTIVE:KEY}: &e{ABILITY:ACTIVE:VALUE}"
+        - "&f{LINE}"
+    DUEL_ARENA:
+      TITLE: "&5&lTHE CRAFT"
+      LINES:
+        - "{LINE}"
+        - "&5Playing: &d1"
+        - "&5In Fights: &d0"
+        - "&dIn Queue: &d0"
         - "&f{LINE}"
     GAME:
       LOBBY:
@@ -100,7 +146,7 @@ LANGUAGE:
           NAME: "&7\u00bb &a&l{MAP_NAME} &7\u00ab"
           META: EVENT_VOTE_SELECTED
   DISABLED: "&cNo permission."
-  COINS:
+  CREDITS:
     DEDUCTED: "&d{0}&e has been &cdeducted&e from your account."
     ERROR:
       INSUFFICIENT_FUNDS: "&dYou don't have enough to purchase this item."

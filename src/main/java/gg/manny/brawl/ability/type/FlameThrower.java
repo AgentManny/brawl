@@ -2,8 +2,9 @@ package gg.manny.brawl.ability.type;
 
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.ability.Ability;
-import gg.manny.pivot.util.inventory.ItemBuilder;
-import gg.manny.spigot.util.chatcolor.CC;
+import gg.manny.pivot.util.ItemBuilder;
+import gg.manny.server.util.chatcolor.CC;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -12,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -20,19 +22,19 @@ import java.util.Random;
 
 public class FlameThrower extends Ability implements Listener {
 
-    private final Brawl brawl;
-
-    public FlameThrower(Brawl brawl) {
-        super("Flamethrower", new ItemBuilder(Material.FIRE)
-                .name(CC.GRAY + "\u00bb " + CC.GOLD + CC.BOLD + "Flamethrower" + CC.GRAY + " \u00ab")
-                .create());
-
-        this.brawl = brawl;
-    }
-
     private int duration = 10;
 
     private PotionEffect potionEffect = new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 0);
+
+    @Override
+    public Material getType() {
+        return Material.FIREWORK_CHARGE;
+    }
+
+    @Override
+    public ChatColor getColor() {
+        return ChatColor.GOLD;
+    }
 
     @Override
     public void onApply(Player player) {

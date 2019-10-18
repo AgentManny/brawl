@@ -9,19 +9,18 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+@Getter
 @RequiredArgsConstructor
 public class StoreBlockOption implements GameOption {
 
-    @Getter
     @NonNull
     private final List<Material> allowedBlocks;
-
-    @Getter
     private Map<Location, BlockState> data = new HashMap<>();
+
+    private Set<Material> pickable = EnumSet.noneOf(Material.class);
+    private int randomRange = 1;
 
     @Override
     public void onEnd(Game game) {
@@ -31,4 +30,13 @@ public class StoreBlockOption implements GameOption {
         });
     }
 
+    public StoreBlockOption materials(Material... materials) {
+        pickable.addAll(Arrays.asList(materials));
+        return this;
+    }
+
+    public StoreBlockOption range(int range) {
+        this.randomRange = range;
+        return this;
+    }
 }

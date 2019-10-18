@@ -5,17 +5,17 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
 import gg.manny.brawl.Brawl;
 import gg.manny.pivot.Pivot;
+import gg.manny.pivot.util.chatcolor.CC;
 import lombok.Getter;
 import org.bson.Document;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.Closeable;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 @Getter
 public class PlayerDataHandler implements Closeable {
@@ -30,9 +30,30 @@ public class PlayerDataHandler implements Closeable {
         this.plugin = plugin;
 
         this.mongoCollection = plugin.getMongoDatabase().getCollection("playerData");
-
-        new ClearCacheTask().runTaskTimer(plugin, 20L, TimeUnit.MINUTES.toMillis(5L));
     }
+
+    public int save(boolean forceAll) {
+        System.out.println("Saving players to Mongo...");
+        int saved = 0;
+        long startMs = System.currentTimeMillis();
+
+        for (PlayerData playerData : playerMap.values()) {
+            if (playerData.isNeedsSaving() || forceAll) {
+                saved++;
+
+                playerData.setNeedsSaving(false);
+                playerData.save();
+            }
+        }
+
+        int time = (int) (System.currentTimeMillis() - startMs);
+        if (saved > 0) {
+            Brawl.broadcastOps(ChatColor.LIGHT_PURPLE + "Updated " + saved + " players (Completed: " + CC.YELLOW + time + "ms" + CC.LIGHT_PURPLE + ")");
+            System.out.println("Saved " + saved + " players to Mongo in " + time + "ms.");
+        }
+        return saved;
+    }
+
 
     public PlayerData create(PlayerData playerData, boolean cache) {
         if (!cache) {
@@ -46,11 +67,11 @@ public class PlayerDataHandler implements Closeable {
     }
 
     public Document getDocument(UUID uniqueId) {
-        return this.mongoCollection.find(Filters.eq("uniqueId", uniqueId.toString())).first();
+        return this.mongoCollection.find(Filters.eq("uuid", uniqueId.toString())).first();
     }
 
     public void setDocument(Document document, UUID uniqueId) {
-        this.mongoCollection.replaceOne(Filters.eq("uniqueId", uniqueId.toString()), document, new ReplaceOptions().upsert(true));
+        this.mongoCollection.replaceOne(Filters.eq("uuid", uniqueId.toString()), document, new ReplaceOptions().upsert(true));
     }
 
     public PlayerData getPlayerData(UUID uniqueId) {
@@ -69,21 +90,10 @@ public class PlayerDataHandler implements Closeable {
         Player target = Bukkit.getPlayer(name);
         if (target != null) {
             profile = this.getPlayerData(target.getUniqueId());
-        } else if (Pivot.getPlugin().getUuidCache().getUuid(name) != null){
-            profile = new PlayerData(Pivot.getPlugin().getUuidCache().getUuid(name), name);
+        } else if (Pivot.getInstance().getUuidCache().getUuid(name) != null){
+            profile = new PlayerData(Pivot.getInstance().getUuidCache().getUuid(name), name);
         }
         return profile;
-    }
-
-    public class ClearCacheTask extends BukkitRunnable {
-
-        @Override
-        public void run() {
-            playerMap.values().stream().filter(playerData -> playerData.toPlayer() == null).forEach(playerData -> {
-                remove(playerData);
-                System.out.println("Removed Profile '" + playerData.toString() + "' as team is not online.");
-            });
-        }
     }
 
     @Override

@@ -1,74 +1,143 @@
 package gg.manny.brawl.game;
 
 import gg.manny.brawl.Brawl;
-import gg.manny.brawl.Locale;
+import gg.manny.brawl.game.lobby.GameLobby;
 import gg.manny.brawl.game.map.GameMap;
 import gg.manny.brawl.game.option.GameOption;
-import gg.manny.brawl.game.team.GameTeam;
+import gg.manny.brawl.game.scoreboard.GameScoreboard;
+import gg.manny.brawl.game.team.GamePlayer;
+import gg.manny.brawl.util.Tasks;
+import gg.manny.pivot.util.PlayerUtils;
 import gg.manny.pivot.util.TimeUtils;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import mkremins.fanciful.FancyMessage;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.apache.commons.lang.WordUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 @Data
 @RequiredArgsConstructor
 public abstract class Game {
 
+    public static final String PREFIX = ChatColor.DARK_PURPLE + "[Event] " + ChatColor.WHITE;
+    public static final String PREFIX_ERROR = ChatColor.DARK_RED + "[Event] " + ChatColor.WHITE;
+
     private final GameType type;
 
-    private GameState state;
+    protected GameState state;
     private GameMap map;
 
     private long startedAt = -1L;
     private long endedAt = -1L;
 
-    private List<UUID> spectators = new ArrayList<>();
-    private List<GameTeam.GamePlayer> players = new ArrayList<>();
 
-    private List<GameTeam.GamePlayer> winners = new ArrayList<>();
+    private List<UUID> spectators = new CopyOnWriteArrayList<>();
+    private List<GamePlayer> players = new ArrayList<>();
 
-    private List<GameOption> options = new ArrayList<>();
+    protected List<GamePlayer> winners = new ArrayList<>();
+
+    private Map<Class<?>, GameOption> options = new HashMap<>();
+    protected Set<GameFlag> flags = EnumSet.noneOf(GameFlag.class);
 
     private Location defaultLocation;
 
     private int time;
 
-    public abstract void onStart();
+    public Game(GameType type, GameFlag... flags) {
+        this.type = type;
+        this.flags.addAll(Arrays.asList(flags));
+    }
 
-    public abstract void onEnd(List<String> winners);
+    public void init(GameLobby lobby) {
+        state = GameState.GRACE_PERIOD;
+        lobby.getPlayers().forEach(uuid -> {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null) {
+                GamePlayer gamePlayer = new GamePlayer(player);
+                gamePlayer.setAlive(true);
+                this.players.add(gamePlayer);
+                PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
+            }
+        });
+    }
 
-    public abstract void onEliminate(Player player);
+    public void cleanup() {
+        startedAt = -1;
+        endedAt = -1;
 
-    public abstract void handleElimination(Player player, Location location, boolean disconnected);
+        spectators.clear();
+        players.clear();
 
-    public abstract void destroy();
+        winners.clear();
+        map = null;
+        options.clear();
+    }
+
+    public void end() {
+        if (this.state == GameState.FINISHED) return;
+
+        this.endedAt = System.currentTimeMillis();
+        this.state = GameState.FINISHED;
+
+        if(!this.winners.isEmpty()) {
+            String winners = this.winners.stream().map(GamePlayer::getName).collect(Collectors.joining(", ")).trim();
+            Bukkit.broadcastMessage(PREFIX + ChatColor.WHITE + winners + ChatColor.YELLOW + (this.winners.size() <= 1 ? " has" : " have") + " won the " + ChatColor.DARK_PURPLE + getType().getShortName() + ChatColor.YELLOW + " event and received " + ChatColor.LIGHT_PURPLE + "500 credits" + ChatColor.YELLOW + ".");
+        }
+
+        Tasks.schedule(() -> {
+
+            this.options.values().forEach(option -> option.onEnd(this));
+            this.getAlivePlayers().forEach(GamePlayer::spawn);
+            this.spectators.forEach(uuid -> Brawl.getInstance().getSpectatorManager().removeSpectator(uuid, this, false));
+            Brawl.getInstance().getGameHandler().destroy();
+
+        }, 60);
+    }
+
+    public abstract void setup();
+
+    public abstract void start();
+
+    public boolean eliminate(Player player) {
+        GamePlayer eliminated = getGamePlayer(player);
+        if (eliminated == null || !eliminated.isAlive() || this.state == GameState.FINISHED) return false;
+
+        eliminated.setAlive(false); // Died
+
+        return true;
+    }
+
+    public void handleElimination(Player player, Location location, boolean disconnected) {
+        if (eliminate(player)) {
+            broadcast(ChatColor.DARK_RED + player.getName() + ChatColor.RED + (disconnected ? " disconnected" : " has been eliminated") + ".");
+            if (!disconnected) {
+                Brawl.getInstance().getSpectatorManager().addSpectator(player, this);
+                player.teleport(this.getRandomLocation());
+            }
+
+            // Find a winner
+            if (this.getAlivePlayers().size() == 1) {
+                GamePlayer winner = this.getAlivePlayers().get(0);
+                this.winners.add(winner);
+
+                this.end();
+            }
+        }
+    }
 
     public String getSidebarTitle(Player player) {
-        return this.getVariables(Locale.SCOREBOARD_GAME_OTHER_TITLE.format());
+        return this.type.getShortName().toUpperCase();
     }
 
     public List<String> getSidebar(Player player) {
-        List<String> lines = new ArrayList<>();
-        for (String entry : Locale.SCOREBOARD_GAME_OTHER_TITLE.toList()) {
-            if ((entry.contains("{STATE:STARTED}") && this.state != GameState.STARTED) || (entry.contains("{STATE:GRACE_PERIOD}") && this.state != GameState.GRACE_PERIOD) || (entry.contains("{STATE:FINISHED}") && this.state != GameState.FINISHED)) {
-                continue;
-            }
-
-            lines.add(this.getVariables(entry));
-        }
-        return lines;
+        return GameScoreboard.getDefault(this);
     }
 
     public String getVariables(String entry) {
@@ -84,24 +153,26 @@ public abstract class Game {
                 ;
     }
 
-    public void startTimer(int time, boolean sendMessage) {
+    public void startTimer(int time, final boolean sendMessage) {
         this.state = GameState.GRACE_PERIOD;
         this.time = time;
         new BukkitRunnable() {
 
-            private int seconds = time;
-            private final boolean message = sendMessage;
 
             @Override
             public void run() {
-                if (seconds <= 0) {
-                    onStart();
+                if (getTime() <= 0) {
+                    state = GameState.STARTED;
+                    startedAt = System.currentTimeMillis();
+
+                    broadcast(Game.PREFIX + ChatColor.WHITE + type.getName() + ChatColor.YELLOW + " has now started.");
+                    start();
                     playSound(Sound.NOTE_PIANO, 1L, 20L);
                     this.cancel();
                     return;
                 }
 
-                switch (seconds) {
+                switch (getTime()) {
                     case 60:
                     case 30:
                     case 20:
@@ -112,22 +183,22 @@ public abstract class Game {
                     case 3:
                     case 2:
                     case 1:
-                        if (message) {
+                        if (sendMessage) {
                             playSound(Sound.NOTE_PIANO, 1L, 1L);
-                            broadcast(getVariables(Locale.SCOREBOARD_GAME_OTHER_TITLE.get().replace("{TIME}", TimeUtils.formatIntoDetailedString(time))));
+                            broadcast(Game.PREFIX + ChatColor.WHITE + type.getName() + ChatColor.YELLOW + " will start in " + ChatColor.LIGHT_PURPLE + TimeUtils.formatIntoDetailedString(getTime()) + ChatColor.YELLOW + ".");
                         }
                         break;
                 }
-                seconds--;
+                setTime(getTime() - 1);
             }
 
         }.runTaskTimerAsynchronously(Brawl.getInstance(), 20L, 20L);
     }
 
-    public List<GameTeam.GamePlayer> getAlivePlayers() {
+    public List<GamePlayer> getAlivePlayers() {
         return this.getPlayers()
                 .stream()
-                .filter(GameTeam.GamePlayer::isAlive)
+                .filter(GamePlayer::isAlive)
                 .collect(Collectors.toList());
     }
 
@@ -192,6 +263,32 @@ public abstract class Game {
                 player.spigot().sendMessage(component);
             }
         });
+    }
+
+    public boolean containsPlayer(Player player) {
+        for (GamePlayer gamePlayer : this.players) {
+            if (gamePlayer.getUniqueId().equals(player.getUniqueId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public GamePlayer getGamePlayer(Player player) {
+        for (GamePlayer gamePlayer : this.players) {
+            if (gamePlayer.getUniqueId().equals(player.getUniqueId())) {
+                return gamePlayer;
+            }
+        }
+        return null;
+    }
+
+    public boolean containsOption(Class<?> option) {
+        return this.options.containsKey(option);
+    }
+
+    public void addOption(GameOption option) {
+        this.options.put(option.getClass(), option);
     }
 
 }

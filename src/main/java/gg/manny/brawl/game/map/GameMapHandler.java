@@ -9,10 +9,7 @@ import com.google.gson.JsonParser;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.game.GameHandler;
 import gg.manny.brawl.game.GameType;
-import gg.manny.brawl.game.command.GameMapCommand;
-import gg.manny.brawl.game.command.adapter.GameTypeAdapter;
 import gg.manny.pivot.Pivot;
-import gg.manny.quantum.Quantum;
 import lombok.Getter;
 
 import java.io.File;
@@ -33,10 +30,6 @@ public class GameMapHandler {
 
     public GameMapHandler(GameHandler handler) {
         this.handler = handler;
-
-        Quantum quantum = Pivot.getPlugin().getQuantum();
-        quantum.registerParameterType(GameType.class, new GameTypeAdapter());
-        quantum.registerCommand(new GameMapCommand(handler.getBrawl()));
 
         this.load();
     }

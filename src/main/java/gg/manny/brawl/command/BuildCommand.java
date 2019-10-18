@@ -3,7 +3,7 @@ package gg.manny.brawl.command;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.player.PlayerData;
 import gg.manny.quantum.command.Command;
-import gg.manny.spigot.util.chatcolor.CC;
+import gg.manny.server.util.chatcolor.CC;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 

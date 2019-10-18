@@ -2,7 +2,7 @@ package gg.manny.brawl.game.command.adapter;
 
 import gg.manny.brawl.game.GameType;
 import gg.manny.quantum.command.adapter.CommandTypeAdapter;
-import gg.manny.spigot.util.chatcolor.CC;
+import gg.manny.server.util.chatcolor.CC;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;

@@ -1,21 +1,20 @@
 package gg.manny.brawl.game.team;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import mkremins.fanciful.FancyMessage;
 import net.md_5.bungee.api.chat.BaseComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
+@NoArgsConstructor
 @RequiredArgsConstructor
-public class GameTeam<T extends GameTeam.GamePlayer> {
+public class GameTeam<T extends GamePlayer> {
 
     @NonNull
     private T leader;
@@ -23,7 +22,7 @@ public class GameTeam<T extends GameTeam.GamePlayer> {
     private List<T> gamePlayers = new ArrayList<>();
 
     public boolean isLeader(Player player) {
-        return this.leader.getUniqueId().equals(player.getUniqueId());
+        return this.leader != null && this.leader.getUniqueId().equals(player.getUniqueId());
     }
 
     public boolean containsPlayer(Player player) {
@@ -140,30 +139,4 @@ public class GameTeam<T extends GameTeam.GamePlayer> {
     }
 
 
-    @RequiredArgsConstructor
-    @Getter
-    public class GamePlayer {
-
-        private final UUID uniqueId;
-        private final String name;
-
-        @Setter
-        private boolean alive = false;
-
-        public GamePlayer(Player player) {
-            this.uniqueId = player.getUniqueId();
-            this.name = player.getName();
-        }
-
-        public Player toPlayer() {
-            return Bukkit.getPlayer(this.getUniqueId());
-        }
-
-        public String getDisplayName() {
-            final Player player = this.toPlayer();
-
-            return player == null ? this.getName() : player.getDisplayName();
-        }
-
-    }
 }

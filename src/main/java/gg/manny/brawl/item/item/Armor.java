@@ -2,9 +2,9 @@ package gg.manny.brawl.item.item;
 
 import com.google.gson.JsonObject;
 import gg.manny.brawl.util.BrawlUtil;
-import gg.manny.pivot.util.inventory.ItemUtil;
-import gg.manny.pivot.util.serialization.ItemStackAdapter;
-import gg.manny.spigot.util.chatcolor.CC;
+import gg.manny.pivot.serialization.ItemStackAdapter;
+import gg.manny.pivot.util.ItemUtil;
+import gg.manny.server.util.chatcolor.CC;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang.StringUtils;
@@ -34,6 +34,14 @@ public class Armor {
         this.boots = null;
     }
 
+    public Armor(Player player) {
+        ItemStack[] armor = player.getInventory().getArmorContents();
+        this.helmet = armor[0];
+        this.chestplate = armor[1];
+        this.leggings = armor[2];
+        this.boots = armor[3];
+    }
+
     public JsonObject toJson() {
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("helmet", this.helmet == null ? null : ItemStackAdapter.serialize(this.helmet));
@@ -44,6 +52,13 @@ public class Armor {
     }
 
     public Armor(JsonObject jsonObject) {
+        if (jsonObject == null || jsonObject.isJsonNull()) {
+            this.helmet = null;
+            this.chestplate = null;
+            this.leggings = null;
+            this.boots = null;
+            return;
+        }
         this.helmet = BrawlUtil.has(jsonObject, "helmet") ? ItemStackAdapter.deserialize(jsonObject.get("helmet")) : null;
         this.chestplate = BrawlUtil.has(jsonObject, "chestplate") ? ItemStackAdapter.deserialize(jsonObject.get("chestplate")) : null;
         this.leggings = BrawlUtil.has(jsonObject, "leggings") ? ItemStackAdapter.deserialize(jsonObject.get("leggings")) : null;
@@ -135,4 +150,5 @@ public class Armor {
 
         return ad;
     }
+
 }

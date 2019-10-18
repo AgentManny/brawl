@@ -1,7 +1,7 @@
 package gg.manny.brawl.game.lobby;
 
 import gg.manny.brawl.Brawl;
-import gg.manny.brawl.Locale;
+import gg.manny.brawl.game.Game;
 import gg.manny.brawl.game.GameType;
 import gg.manny.brawl.game.map.GameMap;
 import gg.manny.brawl.game.team.GameTeam;
@@ -9,23 +9,26 @@ import gg.manny.brawl.item.type.InventoryType;
 import gg.manny.brawl.player.PlayerData;
 import gg.manny.pivot.Pivot;
 import gg.manny.pivot.util.PlayerUtils;
+import gg.manny.pivot.util.TimeUtils;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang.WordUtils;
+import mkremins.fanciful.FancyMessage;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 
 @Getter
-@RequiredArgsConstructor
 public class GameLobby {
 
     private final Brawl brawl;
@@ -34,55 +37,195 @@ public class GameLobby {
     @NonNull
     private final GameType gameType;
 
-    private int startTime = 45;
+    @Setter private int startTime = 45;
 
-    private List<UUID> players = new ArrayList<>();
+    private List<UUID> players = new CopyOnWriteArrayList<>();
 
     private List<GameTeam> teams = new CopyOnWriteArrayList<>();
     private Set<GamePlayerInvite> invites = new HashSet<>();
 
-    private Map<UUID, GameMap> playerMap = new HashMap<>();
+    private Map<String, List<UUID>> voteMap = new HashMap<>();
+
+    public GameLobby(Brawl brawl, GameType gameType) {
+        this.brawl = brawl;
+        this.gameType = gameType;
+
+        this.voteMap.put("Random", new ArrayList<>());
+        for (GameMap map : brawl.getGameHandler().getMapHandler().getMaps(gameType)) {
+            this.voteMap.put(map.getName(), new ArrayList<>());
+        }
+
+        startTask();
+    }
 
     public void join(Player player) {
         this.players.add(player.getUniqueId());
 
-        this.broadcast(Locale.GAME_LOBBY_JOIN.format(player.getDisplayName(), this.players.size(), gameType.getMaxPlayers()));
+        PlayerData playerData = brawl.getPlayerDataHandler().getPlayerData(player);
+        playerData.setSpawnProtection(false);
+        playerData.setDuelArena(false);
+        playerData.setEvent(true);
+
+        this.broadcast(Game.PREFIX + ChatColor.WHITE + player.getDisplayName() + ChatColor.YELLOW + " has joined the event." + ChatColor.GRAY + " (" + this.players.size() + "/" + gameType.getMaxPlayers() + ")");
 
         player.teleport(this.getLocation());
         PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
-        int i = 0;
 
-        GameMap selectedVote = this.playerMap.get(player.getUniqueId());
-        for (GameMap map : brawl.getGameHandler().getMapHandler().getMaps(gameType)) {
-            ItemStack item = brawl.getItemHandler().toItemStack("LANGUAGE.GAME.LOBBY.INVENTORY." + (selectedVote != null && selectedVote == map ? "VOTE_SELECTED" : "VOTE"), brawl.getMainConfig().getConfiguration());
-            if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
-                ItemMeta meta = item.getItemMeta();
-                meta.setDisplayName(meta.getDisplayName().replace("{MAP_NAME}", WordUtils.capitalizeFully(map.getName().replace("_", " ").toLowerCase())));
-                item.setItemMeta(meta);
+        updateVotes();
+        player.getInventory().setItem(8, brawl.getItemHandler().toItemStack("LANGUAGE.ITEM.GAME.LOBBY.LEAVE_ITEM", brawl.getMainConfig().getConfiguration()));
+        Pivot.getInstance().getNametagHandler().reloadPlayer(player);
+        player.updateInventory();
+    }
+
+    public void updateVotes() {
+        for (UUID uuid : players) {
+            int i = 0;
+            Player player = Bukkit.getPlayer(uuid);
+            if (player == null) continue;
+
+            for (Map.Entry<String, List<UUID>> entry : voteMap.entrySet()) {
+                String map = entry.getKey();
+
+                boolean selected = entry.getValue().contains(player.getUniqueId());
+                ItemStack item = brawl.getItemHandler().toItemStack("LANGUAGE.GAME.LOBBY.INVENTORY." + (selected ? "VOTE_SELECTED" : "VOTE"), brawl.getMainConfig().getConfiguration());
+                if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+                    ItemMeta meta = item.getItemMeta();
+                    meta.setDisplayName(meta.getDisplayName().replace("{MAP_NAME}", map));
+                    item.setItemMeta(meta);
+                }
+                item.setAmount(Math.max(entry.getValue().size(), 1));
+                player.getInventory().setItem(i, item);
+                player.updateInventory();
+                i++;
             }
-            player.getInventory().setItem(i, item);
-            i++;
+
         }
-        player.getInventory().setItem(8, brawl.getItemHandler().toItemStack("LANGUAGE.GAME.LOBBY.INVENTORY.LEAVE_ITEM", brawl.getMainConfig().getConfiguration()));
-        Pivot.getPlugin().getNametagHandler().reloadPlayer(player);
+    }
+
+    public void removeVote(UUID uuid) {
+        for (Map.Entry<String, List<UUID>> entry : voteMap.entrySet()) {
+            entry.getValue().remove(uuid);
+        }
     }
 
     public void leave(UUID uuid) {
         this.players.remove(uuid);
         Player player = brawl.getServer().getPlayer(uuid);
         if (player != null) {
-            Pivot.getPlugin().getNametagHandler().reloadPlayer(player);
+            Pivot.getInstance().getNametagHandler().reloadPlayer(player);
             PlayerData playerData = brawl.getPlayerDataHandler().getPlayerData(player);
             playerData.setSpawnProtection(true);
+            playerData.setEvent(false);
             player.teleport(brawl.getLocationByName("SPAWN"));
             brawl.getItemHandler().apply(player, InventoryType.SPAWN);
         }
-
+        removeVote(uuid);
         GameTeam team = this.getTeamByPlayer(uuid);
         if (team != null) {
-            team.broadcast(Locale.GAME_TEAM_REMOVED.format(player == null ? "someone" : player.getName()));
+            team.broadcast(Game.PREFIX_ERROR + ChatColor.RED + "Team disbanded as " + (player == null ? "someone" : player.getDisplayName()) + " left.");
             this.teams.remove(team);
         }
+    }
+
+    public Map<String, Integer> getSortedVotes() {
+        return voteMap.entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size())).entrySet().stream()
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                .collect(
+                        Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,
+                                LinkedHashMap::new));
+    }
+
+    public void start() {
+        if (this.players.size() < gameType.getMinPlayers()) {
+            Bukkit.broadcastMessage(Game.PREFIX + ChatColor.WHITE + gameType.getName() + ChatColor.YELLOW + " did not reach its required players.");
+            stop();
+            return;
+        }
+
+        Bukkit.broadcastMessage(Game.PREFIX + ChatColor.WHITE + gameType.getName() + ChatColor.YELLOW + " has started." + ChatColor.GRAY + " (" + getPlayers().size() + "/" + gameType.getMaxPlayers() + ")");
+        Game game = brawl.getGameHandler().getGames().get(gameType);
+
+        if (game == null) {
+            stop();
+            return;
+        }
+
+        game.cleanup(); // Prevents any supposed memory leaks
+
+        GameMap map;
+        String highestMap = getSortedVotes().keySet().iterator().next();
+        if (highestMap.equals("Random")) {
+            Collection<GameMap> maps = brawl.getGameHandler().getMapHandler().getMaps(gameType);
+            map = maps.stream().skip((int) (maps.size() * Math.random())).findFirst().orElse(null);
+
+        } else {
+            map = brawl.getGameHandler().getMapHandler().getMapByName(gameType, highestMap);
+        }
+
+        if (map == null) {
+            stop();
+            Bukkit.broadcastMessage(Game.PREFIX_ERROR + "No maps found.");
+            return;
+        }
+
+        for (Location location : map.getLocations().values()) {
+            if (!location.getChunk().isLoaded()) {
+                location.getChunk().load();
+            }
+        }
+
+        game.setMap(map);
+        game.init(this);
+
+        brawl.getGameHandler().setActiveGame(game);
+        brawl.getGameHandler().setLobby(null);
+
+        game.setup();
+
+    }
+
+
+    public void stop() {
+        this.players.forEach(this::leave);
+        brawl.getGameHandler().setLobby(null);
+    }
+
+    public void startTask() {
+        new BukkitRunnable() {
+            public void run() {
+                if (startTime == 0) {
+                    start();
+                    this.cancel();
+                }
+                switch (startTime) {
+                    case 5 * 60:
+                    case 4 * 60:
+                    case 3 * 60:
+                    case 2 * 60:
+                    case 60:
+                    case 30:
+                    case 20:
+                    case 15:
+                    case 10:
+                    case 5:
+                    case 4:
+                    case 3:
+                    case 2:
+                    case 1:
+                        for(Player player : brawl.getServer().getOnlinePlayers()) {
+                            new FancyMessage(Game.PREFIX + ChatColor.WHITE + gameType.getName() + ChatColor.YELLOW + " will be starting in " + ChatColor.LIGHT_PURPLE + TimeUtils.formatIntoDetailedString(startTime) + ChatColor.YELLOW + "." + ChatColor.GRAY + " (Click to join)").tooltip(Arrays.asList(ChatColor.YELLOW + "Click to join " + ChatColor.BLUE + gameType.getName() + ChatColor.YELLOW + ".")).command("/join").send(player);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
+                startTime--;
+            }
+
+        }.runTaskTimer(brawl, 20L, 20L);
     }
 
     private GameTeam getTeamByPlayer(UUID uuid) {
@@ -101,17 +244,7 @@ public class GameLobby {
                 .forEach(player -> player.sendMessage(message));
     }
 
-    public Location getLocation() {
-        String key = gameType.name() + "_LOBBY";
-        Location location = brawl.getLocationByName(key);
-        if (location == null) {
-            brawl.getLogger().severe("Location " + key + " could not be found, falling back to default game location.");
-            return this.getFallbackLocation();
-        }
-        return location;
-    }
-
-    private Location getFallbackLocation() {
+    private Location getLocation() {
         String key = "GAME_LOBBY";
         Location location = brawl.getLocationByName(key);
         if (location == null) {

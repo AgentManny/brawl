@@ -17,7 +17,7 @@ public enum RegionType {
                 .collect(Collectors.toList());
     }
 
-    public boolean containsLocation(Location location) {
+    public boolean appliesTo(Location location) {
         return this.getRegions().stream().anyMatch(region -> region.contains(location));
     }
 

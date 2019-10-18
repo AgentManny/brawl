@@ -4,10 +4,10 @@ import com.google.common.base.Strings;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.game.GameType;
 import gg.manny.brawl.player.PlayerData;
-import gg.manny.pivot.util.inventory.ItemBuilder;
-import gg.manny.pivot.util.menu.Button;
-import gg.manny.pivot.util.menu.Menu;
-import gg.manny.spigot.util.chatcolor.CC;
+import gg.manny.pivot.menu.Button;
+import gg.manny.pivot.menu.Menu;
+import gg.manny.pivot.util.ItemBuilder;
+import gg.manny.server.util.chatcolor.CC;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -80,6 +80,7 @@ public class GameSelectorMenu extends Menu {
             if(playerData.hasGame(gameType)) {
 
                 //TODO CREATE GAME kit.apply(player, true, true);
+                plugin.getGameHandler().start(player, gameType);
             } else {
                 player.sendMessage(CC.RED  + "You don't have permission to use this game.");
             }

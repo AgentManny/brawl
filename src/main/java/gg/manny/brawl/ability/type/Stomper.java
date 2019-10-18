@@ -3,19 +3,21 @@ package gg.manny.brawl.ability.type;
 import com.google.gson.JsonObject;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.ability.Ability;
+import gg.manny.brawl.util.BlockUtil;
 import gg.manny.brawl.util.BrawlUtil;
-import gg.manny.pivot.util.inventory.BlockUtil;
-import gg.manny.pivot.util.inventory.ItemBuilder;
-import gg.manny.spigot.util.chatcolor.CC;
+import gg.manny.brawl.util.ParticleEffect;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.inventivetalent.particle.ParticleEffect;
 
 public class Stomper extends Ability implements Listener {
 
@@ -24,9 +26,9 @@ public class Stomper extends Ability implements Listener {
     private ParticleEffect activateParticle = ParticleEffect.FOOTSTEP;
     private Sound activateSound = Sound.BAT_TAKEOFF;
 
-    private ParticleEffect movementParticle = ParticleEffect.SMOKE_NORMAL;
+    private Effect movementEffect = Effect.SMOKE;
 
-    private ParticleEffect landParticle = ParticleEffect.EXPLOSION_HUGE;
+    private ParticleEffect landParticle = ParticleEffect.HUGE_EXPLOSION;
     private Sound landSound = Sound.ANVIL_LAND;
 
     private ParticleEffect sneakParticle = ParticleEffect.CLOUD;
@@ -36,12 +38,17 @@ public class Stomper extends Ability implements Listener {
     private double multiplier = 1.25;
 
     public Stomper(Brawl brawl) {
-        super("Stomper", new ItemBuilder(Material.ANVIL)
-                .name(CC.GRAY + "\u00bb " + CC.YELLOW + CC.BOLD + "Stomper" + CC.GRAY + " \u00ab")
-                .create()
-        );
-
         this.brawl = brawl;
+    }
+
+    @Override
+    public Material getType() {
+        return Material.ANVIL;
+    }
+
+    @Override
+    public ChatColor getColor() {
+        return ChatColor.YELLOW;
     }
 
     @Override
@@ -56,7 +63,7 @@ public class Stomper extends Ability implements Listener {
         }
 
         if (this.activateParticle != null) {
-            this.activateParticle.send(brawl.getServer().getOnlinePlayers(), player.getLocation(), 0, 0, 0, 0, 1);
+            this.activateParticle.send(player.getLocation(), 0, 0, 0, 0, 1);
         }
 
         this.brawl.getServer().getScheduler().runTaskLater(this.brawl, () -> new StomperTask(player).runTaskTimer(this.brawl, 2L, 2L), 10L);
@@ -66,14 +73,14 @@ public class Stomper extends Ability implements Listener {
     @Override
     public JsonObject toJson() {
         JsonObject object = super.toJson();
-        object.addProperty("activateParticle", this.activateParticle == null ? null : this.activateParticle.name());
-        object.addProperty("activateSound", this.activateSound == null ? null : this.activateSound.name());
+        object.addProperty("activate-particle", this.activateParticle == null ? null : this.activateParticle.name());
+        object.addProperty("activate-sound", this.activateSound == null ? null : this.activateSound.name());
 
-        object.addProperty("movementParticle", this.movementParticle == null ? null : this.movementParticle.name());
-        object.addProperty("landParticle", this.landParticle == null ? null : this.landParticle.name());
-        object.addProperty("landSound", this.landSound == null ? null : this.landSound.name());
-        object.addProperty("sneakParticle", this.sneakParticle == null ? null : this.sneakParticle.name());
-        object.addProperty("sneakSound", this.sneakSound == null ? null : this.sneakSound.name());
+        object.addProperty("movement-particle", this.movementEffect == null ? null : this.movementEffect.name());
+        object.addProperty("land-particle", this.landParticle == null ? null : this.landParticle.name());
+        object.addProperty("land-sound", this.landSound == null ? null : this.landSound.name());
+        object.addProperty("sneak-particle", this.sneakParticle == null ? null : this.sneakParticle.name());
+        object.addProperty("sneak-sound", this.sneakSound == null ? null : this.sneakSound.name());
         object.addProperty("boost", this.boost);
         object.addProperty("multiplier", this.multiplier);
         return object;
@@ -81,16 +88,16 @@ public class Stomper extends Ability implements Listener {
 
     @Override
     public void fromJson(JsonObject object) {
-        this.activateParticle = object.get("activateParticle") == null ? null : ParticleEffect.valueOf(object.get("activateParticle").getAsString());
-        this.activateSound = object.get("activateSound") == null ? null : Sound.valueOf(object.get("activateSound").getAsString());
+        this.activateParticle = object.get("activate-particle") == null ? null : ParticleEffect.valueOf(object.get("activate-particle").getAsString());
+        this.activateSound = object.get("activate-sound") == null ? null : Sound.valueOf(object.get("activate-sound").getAsString());
 
-        this.movementParticle = object.get("movementParticle") == null ? null : ParticleEffect.valueOf(object.get("movementParticle").getAsString());
+        this.movementEffect = object.get("movement-effect") == null ? null : Effect.valueOf(object.get("movement-effect").getAsString());
 
-        this.landParticle = object.get("landParticle") == null ? null : ParticleEffect.valueOf(object.get("landParticle").getAsString());
-        this.landSound = object.get("landSound") == null ? null : Sound.valueOf(object.get("landSound").getAsString());
+        this.landParticle = object.get("land-particle") == null ? null : ParticleEffect.valueOf(object.get("land-particle").getAsString());
+        this.landSound = object.get("land-sound") == null ? null : Sound.valueOf(object.get("land-sound").getAsString());
 
-        this.sneakParticle = object.get("sneakParticle") == null ? null : ParticleEffect.valueOf(object.get("sneakParticle").getAsString());
-        this.sneakSound = object.get("sneakSound") == null ? null : Sound.valueOf(object.get("sneakSound").getAsString());
+        this.sneakParticle = object.get("sneak-particle") == null ? null : ParticleEffect.valueOf(object.get("sneak-particle").getAsString());
+        this.sneakSound = object.get("sneak-sound") == null ? null : Sound.valueOf(object.get("sneak-sound").getAsString());
 
         this.boost = object.get("boost").getAsDouble();
         this.multiplier = object.get("multiplier").getAsDouble();
@@ -100,7 +107,7 @@ public class Stomper extends Ability implements Listener {
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
             Player player = (Player) event.getEntity();
-            if (this.hasEquipped(player)) {
+            if (this.hasEquipped(player) && !brawl.getPlayerDataHandler().getPlayerData(player).isNoFallDamage()) {
                 double damage = event.getDamage();
                 for (Player nearby : BrawlUtil.getNearbyPlayers(player, Math.min(5, player.getFallDistance()))) {
                     nearby.damage(nearby.isSneaking() ? ((damage / (this.multiplier + this.boost) < 10) ? 10 : (damage / (this.multiplier + this.boost))) : (damage / this.multiplier), event.getEntity());
@@ -111,18 +118,33 @@ public class Stomper extends Ability implements Listener {
         }
     }
 
+    @EventHandler
+    public void onSneak(PlayerToggleSneakEvent event) {
+        if (event.isSneaking()) {
+
+        }
+    }
+
+    @Data
     @RequiredArgsConstructor
     private class StomperTask extends BukkitRunnable {
+
+        private long startedAt = System.currentTimeMillis();
 
         private final Player player;
         private boolean sneaked = false;
 
         @Override
         public void run() {
-            if (BlockUtil.isOnGround(player.getLocation(), 1)) {
+            if (brawl.getPlayerDataHandler().getPlayerData(player).isNoFallDamage()) {
+                cancel();
+                return;
+            }
+
+            if ((System.currentTimeMillis() - startedAt > 200) && BlockUtil.isOnGround(player.getLocation(), 1)) {
                 cancel();
                 if (landParticle != null) {
-                    landParticle.send(brawl.getServer().getOnlinePlayers(), player.getLocation(), 0, 0, 0, 0, 1);
+                    landParticle.send(player.getLocation(), 0, 0, 0, 0, 1);
                 }
 
                 if (landSound != null) {
@@ -133,18 +155,18 @@ public class Stomper extends Ability implements Listener {
 
             if (!sneaked && player.isSneaking()) {
                 sneaked = true; //prevent spam sneak.
-                player.setVelocity(player.getLocation().getDirection().setY(player.getVelocity().getY() - boost).multiply(multiplier));
+                player.setVelocity(player.getLocation().getDirection().setY(player.getVelocity().getY() - boost).multiply(multiplier + 0.75));
                 if (sneakSound != null) {
                     player.playSound(player.getLocation(), sneakSound, 1.0F, 0.0F);
                 }
                 if (sneakParticle != null) {
-                    sneakParticle.send(brawl.getServer().getOnlinePlayers(), player.getLocation(), 0, 0, 0, 0, 1);
+                    sneakParticle.send(player.getLocation(), 0, 0, 0, 0, 1);
                 }
                 return;
             }
 
-            if (movementParticle != null) {
-                movementParticle.send(brawl.getServer().getOnlinePlayers(), player.getLocation(), 0, 0, 0, 0, 1);
+            if (movementEffect != null) {
+                ParticleEffect.send(movementEffect, player.getLocation(), 1);
             }
         }
 
