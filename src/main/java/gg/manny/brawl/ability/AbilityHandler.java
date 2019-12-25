@@ -62,7 +62,10 @@ public class AbilityHandler {
                 new Medic(),
                 new Rapid(),
                 new ShadowShift(),
-                new Smite()
+                new Smite(),
+
+
+                new NinjaStars()
         );
         this.load();
 

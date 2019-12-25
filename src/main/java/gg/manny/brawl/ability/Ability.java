@@ -13,11 +13,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -90,6 +89,10 @@ public abstract class Ability {
      */
     public boolean onProjectileLaunch(Player player, EntityType entityType) {
         return false;
+    }
+
+    public void onInteractItem(Player player, Action action, ItemStack item) {
+
     }
 
     public boolean onProjectileHit(Player shooter, Player victim, EntityDamageByEntityEvent event) {

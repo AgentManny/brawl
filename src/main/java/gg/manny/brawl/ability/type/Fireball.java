@@ -1,37 +1,22 @@
 package gg.manny.brawl.ability.type;
 
 import gg.manny.brawl.ability.Ability;
-import gg.manny.brawl.region.RegionType;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class Fireball extends Ability implements Listener {
+public class Fireball extends Ability {
 
-    @EventHandler
-    public void onInteract(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-
-        if (event.hasItem() && event.getItem() != null && hasEquipped(player) && event.getItem().getType() == Material.FIREBALL && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
-
-            event.setUseInteractedBlock(Event.Result.DENY);
-            event.setUseItemInHand(Event.Result.DENY);
-
-            if (event.getPlayer().getItemInHand().getAmount() > 1) {
-                event.getPlayer().getItemInHand().setAmount(event.getPlayer().getItemInHand().getAmount() - 1);
+    @Override
+    public void onInteractItem(Player player, Action action, ItemStack item) {
+        if (item.getType() == Material.FIREBALL) {
+            if (player.getItemInHand().getAmount() > 1) {
+                player.getItemInHand().setAmount(player.getItemInHand().getAmount() - 1);
             } else {
-                event.getPlayer().getInventory().remove(event.getPlayer().getItemInHand());
-                //event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
+                player.getInventory().remove(player.getItemInHand());
             }
-            player.updateInventory();
             player.launchProjectile(org.bukkit.entity.Fireball.class);
-
         }
     }
 

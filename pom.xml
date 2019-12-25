@@ -105,7 +105,8 @@
             <groupId>rip.thecraft</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.7.10-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/spigot-server.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>rip.thecraft</groupId>

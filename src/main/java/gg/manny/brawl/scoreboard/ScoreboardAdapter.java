@@ -82,18 +82,20 @@ public class ScoreboardAdapter implements ConstructAdapter {
         Kit kit = playerData.getSelectedKit();
         Level level = playerData.getLevel();
 
-        toReturn.add(CC.DARK_PURPLE + "Kills: " + CC.LIGHT_PURPLE + (int) statistic.get(StatisticType.KILLS));
+        toReturn.add(CC.DARK_PURPLE  + "Kills: " + CC.LIGHT_PURPLE + (int) statistic.get(StatisticType.KILLS));
         toReturn.add(CC.DARK_PURPLE + "Deaths: " + CC.LIGHT_PURPLE + (int) statistic.get(StatisticType.DEATHS));
         toReturn.add(CC.DARK_PURPLE + "Killstreak: " + CC.LIGHT_PURPLE + (int) statistic.get(StatisticType.KILLSTREAK));
         if (playerData.isSpawnProtection()) {
-            toReturn.add(CC.DARK_PURPLE + "Highest Killstreak: " + CC.LIGHT_PURPLE + (int) statistic.get(StatisticType.HIGHEST_KILLSTREAK));
-            toReturn.add(CC.DARK_PURPLE + "KDR: " + CC.LIGHT_PURPLE + (int) statistic.get(StatisticType.KDR));
-            toReturn.add(CC.DARK_PURPLE + "Credits: " + CC.LIGHT_PURPLE + (int) statistic.get(StatisticType.CREDITS));
+            toReturn.add(CC.DARK_PURPLE  + "Highest Killstreak: " + CC.LIGHT_PURPLE  + (int) statistic.get(StatisticType.HIGHEST_KILLSTREAK));
+            toReturn.add(CC.DARK_PURPLE + "KDR: " + CC.LIGHT_PURPLE  + (int) statistic.get(StatisticType.KDR));
+            toReturn.add(CC.DARK_PURPLE + "Credits: " + CC.LIGHT_PURPLE  + (int) statistic.get(StatisticType.CREDITS));
         }
-        toReturn.add(CC.DARK_PURPLE + "Level: " + CC.LIGHT_PURPLE + level.getCurrentLevel() + " (" + level.getCurrentExp() + "/" + level.getMaxExperience() + " XP)");
+
+        // Remove for beta for now
+        //toReturn.add(CC.DARK_PURPLE + "Level: " + CC.WHITE + level.getCurrentLevel() + " (" + level.getCurrentExp() + "/" + level.getMaxExperience() + " XP)");
 
         if (playerData.hasCooldown("ENDERPEARL")) {
-            toReturn.add(CC.BLUE + "Enderpearl: " + CC.RED + DurationFormatter.getRemaining(playerData.getCooldown("ENDERPEARL").getRemaining()));
+            toReturn.add(CC.YELLOW + "Enderpearl: " + CC.RED + DurationFormatter.getRemaining(playerData.getCooldown("ENDERPEARL").getRemaining()));
         }
 
         if (kit != null) {

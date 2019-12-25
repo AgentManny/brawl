@@ -97,7 +97,7 @@ public class WaterGun extends Ability implements Listener  {
                 }
                 super.cancel();
             }
-        }.runTaskTimer(plugin, 2L, 2L);
+        }.runTaskTimer(plugin, 5L, 5L);
 
     }
 

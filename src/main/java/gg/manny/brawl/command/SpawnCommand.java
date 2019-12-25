@@ -7,6 +7,7 @@ import gg.manny.brawl.game.GameHandler;
 import gg.manny.brawl.game.team.GamePlayer;
 import gg.manny.brawl.item.type.InventoryType;
 import gg.manny.brawl.player.PlayerData;
+import gg.manny.brawl.util.BrawlUtil;
 import gg.manny.quantum.command.Command;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
@@ -47,7 +48,13 @@ public class SpawnCommand {
             return;
         }
 
-        playerData.warp("spawn", spawn, 10, () -> {
+        if (!sender.isOnGround()) {
+            sender.sendMessage(ChatColor.RED + "You need to be on the ground to warp to spawn.");
+            return;
+        }
+
+
+        playerData.warp("spawn", spawn, BrawlUtil.getNearbyPlayers(sender, 15).isEmpty() ? 1 : 5, () -> {
             playerData.setSpawnProtection(true);
             playerData.setDuelArena(false);
             if (playerData.getSelectedKit() == null) {

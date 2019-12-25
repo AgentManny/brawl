@@ -79,7 +79,7 @@ public class WebShooter extends Ability {
                 }
                 super.cancel();
             }
-        }.runTaskTimer(plugin, 2L, 2L);
+        }.runTaskTimer(plugin, 5L, 5L);
 
     }
 

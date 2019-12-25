@@ -8,12 +8,15 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 
@@ -31,6 +34,20 @@ public class AbilityListener implements Listener {
                 arrow.setMetadata("ShotFrom", new FixedMetadataValue(plugin, event.getEntity().getLocation()));
                 arrow.setMetadata("Force", new FixedMetadataValue(plugin, event.getForce()));
             }
+        }
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        Kit selectedKit = KitHandler.getEquipped(player);
+        if (event.hasItem() && event.getItem() != null && selectedKit != null && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+            event.setUseInteractedBlock(Event.Result.DENY);
+            event.setUseItemInHand(Event.Result.DENY);
+            event.setCancelled(true);
+
+            selectedKit.getAbilities().forEach(ability -> ability.onInteractItem(player, event.getAction(), event.getItem()));
+            player.updateInventory(); // prevent stupid glitches
         }
     }
 
