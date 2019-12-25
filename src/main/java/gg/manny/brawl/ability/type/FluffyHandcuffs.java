@@ -7,8 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -38,35 +36,16 @@ public class FluffyHandcuffs extends Ability {
     @Override
     public void onActivate(Player player) {
         if (this.hasCooldown(player, true)) return;
+
+        if (!player.isOnGround()) {
+            player.sendMessage(ChatColor.RED + "You must be on the ground to activate this ability.");
+            return;
+        }
+
         this.addCooldown(player);
 
-        List<BlockState> generatedBlocks = generateSphere(player.getLocation(), 5);
+        generateSphere(player.getLocation(), 5);
         player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 5, 1));
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                for (BlockState blockState : generatedBlocks) {
-                    if (blockState instanceof Sign) {
-                        final Sign sign = (Sign)blockState;
-                        final Location location = sign.getLocation();
-
-                        location.getWorld().getBlockAt(location).setType(blockState.getType());
-
-                        final Sign sign2 = (Sign)location.getWorld().getBlockAt(location).getState();
-                        for (int i = 0; i < 4; ++i) {
-                            sign2.setLine(i, sign.getLines()[i]);
-                        }
-
-                        sign2.update(true);
-                    }
-                    else {
-                        blockState.update(true);
-                    }
-                }
-            }
-
-        }.runTaskLater(Brawl.getInstance(), 20L * 6);
     }
 
     /**
@@ -74,7 +53,7 @@ public class FluffyHandcuffs extends Ability {
      * @param radius      Radius of your sphere
      * @return Returns the locations of the blocks in the sphere
      */
-    private List<BlockState> generateSphere(Location centerBlock, int radius) {
+    private void generateSphere(Location centerBlock, int radius) {
 
         List<Block> circleBlocks = new ArrayList<>();
 
@@ -96,7 +75,9 @@ public class FluffyHandcuffs extends Ability {
 
                             Location l = new Location(centerBlock.getWorld(), x, y, z);
                             Block block = l.getBlock();
-                            circleBlocks.add(block);
+                            if (block.getType() == Material.AIR) {
+                                circleBlocks.add(block);
+                            }
                         }
 
                     }
@@ -129,20 +110,36 @@ public class FluffyHandcuffs extends Ability {
             for (int z = cz - radius; z <= cz + radius; z++) {
                 if ((cx - x) * (cx - x) + (cz - z) * (cz - z) <= rSquared) {
                     Block block = centerBlock.getWorld().getBlockAt(x, by - 1, z);
-                    if (!circleBlocks.contains(block)) {
-                        circleBlocks.add(block);
+                    if (block.getType() == Material.AIR) {
+                        if (!circleBlocks.contains(block)) {
+                            circleBlocks.add(block);
+                        }
                     }
                 }
             }
         }
 
-        List<BlockState> toReturn = new ArrayList<>();
         for (Block state : circleBlocks) {
-            toReturn.add(state.getState());
-            state.setType(Material.ICE);
+            if (state.getType() == Material.AIR) {
+
+                state.setType(Material.ICE);
+            }
         }
 
-        return toReturn;
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                for (Block state : circleBlocks) {
+                    if (state.getType() == Material.ICE) {
+                        state.setType(Material.AIR);
+                    }
+                }
+
+            }
+
+        }.runTaskLater(Brawl.getInstance(), 20L * 5);
+
     }
 
 }

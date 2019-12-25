@@ -25,8 +25,8 @@ public class KillstreakCommand {
 
         if (handler.getStreaks().containsKey(newStreak)) {
             Killstreak killstreak = handler.getStreaks().get(newStreak);
+            killstreak.onKill(player, playerData);
             for (Player online : Bukkit.getOnlinePlayers()) {
-                killstreak.onKill(player, playerData);
                 online.sendMessage(gg.manny.pivot.util.chatcolor.CC.WHITE + player.getDisplayName() + gg.manny.pivot.util.chatcolor.CC.YELLOW + " has gotten a killstreak of " + ChatColor.LIGHT_PURPLE + newStreak + CC.YELLOW + " and received " + killstreak.getColor() + killstreak.getName() + gg.manny.pivot.util.chatcolor.CC.YELLOW + ".");
             }
         }

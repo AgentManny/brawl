@@ -95,9 +95,16 @@ public class SoupListener implements Listener {
                 PivotUtil.runLater(() -> event.getItemDrop().remove(), 5L, false);
                 break;
             default: {
+                if (event.getItemDrop() != null && event.getItemDrop().getItemStack() != null) {
+                    ItemStack item = event.getItemDrop().getItemStack();
+                    if (item.getItemMeta() != null && item.getItemMeta().hasLore() && item.getItemMeta().getLore().contains(ChatColor.DARK_GRAY + "PvP Loot")) {
+                        return;
+                    }
+                }
                 event.setCancelled(true);
             }
         }
     }
+    //PlayerPickupItemEvent
 
 }

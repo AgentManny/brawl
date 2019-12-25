@@ -11,6 +11,7 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -39,6 +40,25 @@ public class SpectatorManager implements Listener {
     }
 
     @EventHandler
+    public void onPlayerDamage(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            Game game = Brawl.getInstance().getGameHandler().getActiveGame();
+            if (game == null) return;
+            if (game.getSpectators().contains(player.getUniqueId()) && spectators.contains(player.getUniqueId())) {
+                event.setCancelled(true);
+            }
+
+            if (event.getDamager() instanceof Player) {
+                Player damager = (Player) event.getDamager();
+                if (game.getSpectators().contains(damager.getUniqueId()) && spectators.contains(damager.getUniqueId()) ) {
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         for (UUID uuid : spectators) {
             Player player = Bukkit.getPlayer(uuid);
@@ -48,10 +68,18 @@ public class SpectatorManager implements Listener {
         }
     }
 
+
+    public void bug(Game game) {
+        for (UUID spectator : this.spectators) {
+            removeSpectator(spectator, game, Bukkit.getPlayer(spectator) == null);
+        }
+    }
+
     public void removeSpectator(UUID uuid, Game game, boolean disconnected) {
         Player player = Bukkit.getPlayer(uuid);
         if (inSpectator(uuid)) {
-            if (!disconnected) {
+            if (!disconnected && player != null) {
+
                 player.setAllowFlight(false);
                 player.setFlying(false);
 
@@ -71,10 +99,11 @@ public class SpectatorManager implements Listener {
                 Brawl.getInstance().getItemHandler().apply(player, InventoryType.SPAWN);
 
             }
-            spectators.remove(player.getUniqueId());
-            game.getSpectators().remove(player.getUniqueId());
 
-
+        }
+        spectators.remove(uuid);
+        if (game != null) {
+            game.getSpectators().remove(uuid);
 
         }
     }

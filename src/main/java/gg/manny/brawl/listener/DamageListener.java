@@ -1,6 +1,8 @@
 package gg.manny.brawl.listener;
 
 import gg.manny.brawl.Brawl;
+import gg.manny.brawl.game.Game;
+import gg.manny.brawl.game.GameFlag;
 import gg.manny.brawl.item.type.InventoryType;
 import gg.manny.brawl.kit.Kit;
 import gg.manny.brawl.player.PlayerData;
@@ -13,6 +15,7 @@ import gg.manny.pivot.util.PivotUtil;
 import gg.manny.pivot.util.chatcolor.CC;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -25,9 +28,12 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @RequiredArgsConstructor
@@ -47,6 +53,11 @@ public class DamageListener implements Listener {
         event.setDroppedExp(0);
         playerData.setLastLocation(player.getLocation());
         switch(playerData.getPlayerState()) {
+            case GAME: {
+                Game game = Brawl.getInstance().getGameHandler().getActiveGame();
+                game.handleElimination(player, player.getLocation(), false);
+                break;
+            }
             case MATCH: {
                 plugin.getMatchHandler().getMatch(player).eliminated(player);
                 break;
@@ -57,8 +68,15 @@ public class DamageListener implements Listener {
             }
             case FIGHTING: {
                 int i = 0;
-                if (!RegionType.SAFEZONE.appliesTo(event.getEntity().getLocation())) {
+                if (!RegionType.SAFEZONE.appliesTo(event.getEntity().getLocation()) && playerData.getSelectedKit() != null) {
                     for (ItemStack it : event.getDrops()) {
+                        if (it.getType() != Material.MUSHROOM_SOUP && it.getType() != Material.BOWL) {
+                            ItemMeta meta = it.getItemMeta();
+                            List<String> lore = new ArrayList<>();
+                            lore.add(CC.DARK_GRAY + "PvP Loot");
+                            lore.add(CC.DARK_GRAY + playerData.getSelectedKit().getName());
+                            it.setItemMeta(meta);
+                        }
                         if (this.shouldFilter(it)) {
                             Item item = player.getWorld().dropItem(player.getLocation().add(Brawl.RANDOM.nextInt(2) - 1, 0, Brawl.RANDOM.nextInt(2) - 1), it);
                             plugin.getServer().getScheduler().runTaskLater(plugin, item::remove, 15L + (4 * i++));
@@ -143,6 +161,13 @@ public class DamageListener implements Listener {
                 event.setRespawnLocation(playerData.getLastLocation() != null ? playerData.getLastLocation().add(0, 1, 0) :  plugin.getMatchHandler().getMatch(player).getArena().getLocations()[0]);
                 break;
             }
+            case GAME: {
+                if (Brawl.getInstance().getGameHandler().getActiveGame().getFlags().contains(GameFlag.PLAYER_ELIMINATE)) {
+                    event.setRespawnLocation(playerData.getLastLocation());
+                    Brawl.getInstance().getSpectatorManager().addSpectator(player, Brawl.getInstance().getGameHandler().getActiveGame());
+                }
+                break;
+            }
             case ARENA: {
                 plugin.getItemHandler().apply(player, InventoryType.ARENA);
                 playerData.setSpawnProtection(false);
@@ -160,6 +185,8 @@ public class DamageListener implements Listener {
 
     }
 
+
+
     private boolean shouldFilter(ItemStack itemStack) {
         switch(itemStack.getType()) {
             case DIAMOND_HELMET:
@@ -174,7 +201,7 @@ public class DamageListener implements Listener {
             case LEATHER_BOOTS:
             case BOWL:
             case MUSHROOM_SOUP:
-                return Brawl.RANDOM.nextBoolean();
+                return Math.random() * 100 < 70;
             default: {
                 return false;
             }
@@ -233,6 +260,11 @@ public class DamageListener implements Listener {
             } else if (playerData.isNoFallDamage() && e.getCause() == EntityDamageEvent.DamageCause.FALL) {
                 e.setCancelled(true);
                 playerData.setNoFallDamage(false);
+            }
+
+            Game game = plugin.getGameHandler().getActiveGame();
+            if (game != null && game.containsPlayer(player) && game.getGamePlayer(player).isAlive() && game.getFlags().contains(GameFlag.NO_FALL) && e.getCause() == EntityDamageEvent.DamageCause.FALL) {
+                e.setCancelled(true);
             }
 
             Player damager = null;

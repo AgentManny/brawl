@@ -3,13 +3,9 @@ package gg.manny.brawl.game.type;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.game.Game;
 import gg.manny.brawl.game.GameFlag;
-import gg.manny.brawl.game.GameState;
 import gg.manny.brawl.game.GameType;
 import gg.manny.brawl.game.option.impl.StoreBlockOption;
-import gg.manny.brawl.game.team.GamePlayer;
 import gg.manny.pivot.util.ItemBuilder;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
@@ -26,7 +22,7 @@ import java.util.Collections;
 public class Spleef extends Game implements Listener {
 
     public Spleef() {
-        super(GameType.SPLEEF, GameFlag.WATER_ELIMINATE);
+        super(GameType.SPLEEF, GameFlag.WATER_ELIMINATE, GameFlag.NO_FALL);
     }
 
     @Override
@@ -57,7 +53,7 @@ public class Spleef extends Game implements Listener {
             Player player = (Player) event.getEntity();
             Game game = Brawl.getInstance().getGameHandler().getActiveGame();
             if (game instanceof Spleef) {
-                if (player != null && this.getGamePlayer(player).isAlive()) {
+                if (player != null && this.containsPlayer(player) && this.getGamePlayer(player).isAlive()) {
                     event.setCancelled(true); // Only allows damage from snowballs
                 }
             }

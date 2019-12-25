@@ -8,7 +8,10 @@ import gg.manny.brawl.game.command.JoinCommand;
 import gg.manny.brawl.game.command.adapter.GameTypeAdapter;
 import gg.manny.brawl.game.lobby.GameLobby;
 import gg.manny.brawl.game.map.GameMapHandler;
+import gg.manny.brawl.game.type.FFA;
 import gg.manny.brawl.game.type.Spleef;
+import gg.manny.brawl.game.type.Sumo;
+import gg.manny.brawl.game.type.Tag;
 import gg.manny.pivot.Pivot;
 import gg.manny.quantum.Quantum;
 import gg.manny.server.MineServer;
@@ -41,7 +44,12 @@ public class GameHandler {
 
         this.mapHandler = new GameMapHandler(this);
 
-        register(new Spleef());
+        Arrays.asList(
+                new Spleef(),
+                new Sumo(),
+                new FFA(),
+                new Tag()
+        ).forEach(this::register);
 
         Quantum quantum = Pivot.getInstance().getQuantum();
         quantum.registerParameterType(GameType.class, new GameTypeAdapter());

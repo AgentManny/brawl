@@ -41,6 +41,11 @@ public class BlizzardBlaster extends Ability {
     public void onActivate(Player player) {
         if (this.hasCooldown(player, true)) return;
 
+        if (!player.isOnGround()) {
+            player.sendMessage(ChatColor.RED + "You must be on the ground to activate this ability.");
+            return;
+        }
+
         this.addCooldown(player);
 
 

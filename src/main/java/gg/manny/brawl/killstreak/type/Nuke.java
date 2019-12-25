@@ -42,7 +42,7 @@ public class Nuke extends Killstreak implements Listener {
     @Override
     public void onActivate(Player player, PlayerData playerData) {
 
-        List<Player> affectedPlayers =  BrawlUtil.getNearbyPlayers(player, 50)
+        List<Player> affectedPlayers =  BrawlUtil.getNearbyPlayers(player, 100)
                 .stream().filter(rip -> !RegionType.SAFEZONE.appliesTo(rip.getLocation()))
                 .collect(Collectors.toList());
 
@@ -55,7 +55,7 @@ public class Nuke extends Killstreak implements Listener {
             final Location loc = deadmen.getLocation();
             final World world = loc.getWorld();
 
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < 2; i++) {
                 for (int x = -10; x <= 10; x += 5) {
                     for (int z = -10; z <= 10; z += 5) {
                         TNTPrimed tnt = world.spawn(new Location(world, loc.getBlockX() + x, world.getHighestBlockYAt(loc) + 64, loc.getBlockZ() + z), TNTPrimed.class);

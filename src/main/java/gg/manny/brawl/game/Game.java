@@ -6,6 +6,7 @@ import gg.manny.brawl.game.map.GameMap;
 import gg.manny.brawl.game.option.GameOption;
 import gg.manny.brawl.game.scoreboard.GameScoreboard;
 import gg.manny.brawl.game.team.GamePlayer;
+import gg.manny.brawl.item.type.InventoryType;
 import gg.manny.brawl.util.Tasks;
 import gg.manny.pivot.util.PlayerUtils;
 import gg.manny.pivot.util.TimeUtils;
@@ -39,7 +40,7 @@ public abstract class Game {
 
 
     private List<UUID> spectators = new CopyOnWriteArrayList<>();
-    private List<GamePlayer> players = new ArrayList<>();
+    protected List<GamePlayer> players = new ArrayList<>();
 
     protected List<GamePlayer> winners = new ArrayList<>();
 
@@ -68,11 +69,16 @@ public abstract class Game {
         });
     }
 
+
     public void cleanup() {
         startedAt = -1;
         endedAt = -1;
 
         spectators.clear();
+
+        //todo buggy
+        Brawl.getInstance().getSpectatorManager().bug(this);
+
         players.clear();
 
         winners.clear();
@@ -101,16 +107,24 @@ public abstract class Game {
         }, 60);
     }
 
-    public abstract void setup();
+    public void setup() {
+        this.getAlivePlayers().forEach(gamePlayer -> {
+            Player player = gamePlayer.toPlayer();
+            player.teleport(this.getRandomLocation());
+        });
 
-    public abstract void start();
+        this.startTimer(5, true);
+    }
+
+    public void start() {
+        this.getOptions().values().forEach(option -> option.onStart(this));
+    }
 
     public boolean eliminate(Player player) {
         GamePlayer eliminated = getGamePlayer(player);
         if (eliminated == null || !eliminated.isAlive() || this.state == GameState.FINISHED) return false;
 
         eliminated.setAlive(false); // Died
-
         return true;
     }
 
@@ -118,6 +132,7 @@ public abstract class Game {
         if (eliminate(player)) {
             broadcast(ChatColor.DARK_RED + player.getName() + ChatColor.RED + (disconnected ? " disconnected" : " has been eliminated") + ".");
             if (!disconnected) {
+
                 Brawl.getInstance().getSpectatorManager().addSpectator(player, this);
                 player.teleport(this.getRandomLocation());
             }
@@ -219,7 +234,13 @@ public abstract class Game {
 
 
     public void playSound(Sound sound, float one, float two) {
-        this.getPlayers().forEach(player -> player.toPlayer().playSound(player.toPlayer().getLocation(), sound, one, two));
+        this.getAlivePlayers().forEach(player -> {
+            if (!this.spectators.contains(player.getUniqueId())) {
+                if (player.toPlayer() != null) {
+                    player.toPlayer().playSound(player.toPlayer().getLocation(), sound, one, two);
+                }
+            }
+        });
 
         this.getSpectators().forEach(spectator -> {
             Player player = Bukkit.getPlayer(spectator);
@@ -230,7 +251,13 @@ public abstract class Game {
     }
 
     public void broadcast(String message) {
-        this.getPlayers().forEach(player -> player.toPlayer().sendMessage(message));
+        this.getAlivePlayers().forEach(player -> {
+            if (!this.spectators.contains(player.getUniqueId())) {
+                if (player.toPlayer() != null) {
+                    player.toPlayer().sendMessage(message);
+                }
+            }
+        });
 
         this.getSpectators()
                 .forEach(spectator -> {
@@ -242,19 +269,28 @@ public abstract class Game {
     }
 
     public void broadcast(FancyMessage message) {
-        this.getPlayers().forEach(player -> message.send(player.toPlayer()));
+        this.getAlivePlayers().forEach(player -> {
+            if (!this.spectators.contains(player.getUniqueId())) {
+                if (player.toPlayer() != null) {
+                    message.send(player.toPlayer());
+                }
+            }
+        });
 
         this.getSpectators().forEach(spectator -> {
             Player player = Bukkit.getPlayer(spectator);
             if(player != null) {
+
                 message.send(player);
             }
         });
     }
 
     public void broadcast(BaseComponent... component) {
-        this.getPlayers().forEach(player -> {
-            player.toPlayer().spigot().sendMessage(component);
+        this.getAlivePlayers().forEach(player -> {
+            if (!this.spectators.contains(player.getUniqueId())) {
+                player.toPlayer().spigot().sendMessage(component);
+            }
         });
 
         this.getSpectators().forEach(spectator -> {

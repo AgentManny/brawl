@@ -8,10 +8,7 @@ import gg.manny.brawl.util.BrawlUtil;
 import gg.manny.brawl.util.ParticleEffect;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -136,11 +133,10 @@ public class Stomper extends Ability implements Listener {
 
         @Override
         public void run() {
-            if (brawl.getPlayerDataHandler().getPlayerData(player).isNoFallDamage()) {
+            if (player == null || Bukkit.getPlayer(player.getName()) == null || brawl.getPlayerDataHandler().getPlayerData(player) == null || brawl.getPlayerDataHandler().getPlayerData(player).isNoFallDamage()) {
                 cancel();
                 return;
             }
-
             if ((System.currentTimeMillis() - startedAt > 200) && BlockUtil.isOnGround(player.getLocation(), 1)) {
                 cancel();
                 if (landParticle != null) {

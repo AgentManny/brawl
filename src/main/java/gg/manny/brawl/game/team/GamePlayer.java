@@ -3,6 +3,7 @@ package gg.manny.brawl.game.team;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.item.type.InventoryType;
 import gg.manny.brawl.player.PlayerData;
+import gg.manny.brawl.player.cps.ClickTracker;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -60,6 +61,24 @@ public class GamePlayer {
         final Player player = this.toPlayer();
 
         return player == null ? this.getName() : player.getDisplayName();
+    }
+
+    public int getCPS() {
+        Player player = toPlayer();
+        if (player == null) {
+            return 0;
+        }
+
+        return ClickTracker.getCPS(player);
+    }
+
+    public int getPing() {
+        Player player = toPlayer();
+        if (player == null) {
+            return -1;
+        }
+
+        return player.getPing();
     }
 
 }

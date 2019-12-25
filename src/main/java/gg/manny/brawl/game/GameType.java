@@ -24,11 +24,11 @@ public enum GameType {
 
 	FFA(
 			"Free For All", "FFA",
-			new ItemBuilder(Material.DIAMOND_SPADE).build(),
+			new ItemBuilder(Material.DIAMOND_SWORD).build(),
 			RankType.BASIC,
 			"Fight opponents. Last man standing wins.",
 			2,
-			40,
+			50,
 			new ArrayList<>()
 	),
 
@@ -37,8 +37,17 @@ public enum GameType {
 			RankType.LEGEND,
 			"Fight opponents on a platform. Last man standing wins.",
 			2,
-			40,
+			50,
 			Arrays.asList("SpectatorLobby", "Lobby", "ArenaLocation1", "ArenaLocation2")
+	),
+
+	TNT_TAG("TNT Tag", "Tag",
+			new ItemBuilder(Material.TNT).build(),
+			RankType.CRAFTER,
+			"Tag with a twist, don't blow up! Last man standing wins!",
+			2,
+			50,
+			Arrays.asList("Lobby")
 	);
 
 	private final String name;

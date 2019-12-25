@@ -142,7 +142,7 @@ public class PlayerData {
     public PlayerState getPlayerState() {
         if (Brawl.getInstance().getGameHandler().getLobby() != null && Brawl.getInstance().getGameHandler().getLobby().getPlayers().contains(this.uniqueId)) {
             return PlayerState.GAME_LOBBY;
-        } else if (event) {
+        } else if (Brawl.getInstance().getGameHandler().getActiveGame() != null && Brawl.getInstance().getGameHandler().getActiveGame().containsPlayer(this.getPlayer()) && Brawl.getInstance().getGameHandler().getActiveGame().getGamePlayer(this.getPlayer()).isAlive()) {
             return PlayerState.GAME;
         } else if (Brawl.getInstance().getMatchHandler().isInMatch(this.getPlayer())) {
             return PlayerState.MATCH;

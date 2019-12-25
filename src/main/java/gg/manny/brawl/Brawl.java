@@ -20,6 +20,7 @@ import gg.manny.brawl.duelarena.command.DuelCommand;
 import gg.manny.brawl.duelarena.command.ViewMatchInvCommand;
 import gg.manny.brawl.duelarena.command.adapter.ArenaCommandAdapter;
 import gg.manny.brawl.event.EventHandler;
+import gg.manny.brawl.game.Game;
 import gg.manny.brawl.game.GameHandler;
 import gg.manny.brawl.item.ItemHandler;
 import gg.manny.brawl.killstreak.KillstreakHandler;
@@ -35,7 +36,6 @@ import gg.manny.brawl.player.adapter.PlayerDataTypeAdapter;
 import gg.manny.brawl.player.cps.ClickTracker;
 import gg.manny.brawl.player.simple.SimpleOfflinePlayer;
 import gg.manny.brawl.player.simple.adapter.SimpleOfflinePlayerAdapter;
-import gg.manny.brawl.rail.Rail;
 import gg.manny.brawl.region.RegionHandler;
 import gg.manny.brawl.region.command.RegionCommands;
 import gg.manny.brawl.scoreboard.ScoreboardAdapter;
@@ -54,6 +54,7 @@ import gg.manny.pivot.util.file.type.BasicConfigurationFile;
 import gg.manny.quantum.Quantum;
 import gg.manny.server.MineServer;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -145,7 +146,7 @@ public class Brawl extends JavaPlugin {
 
 
 
-        new Rail();
+//        new Rail();
 
         new SoupTask(this).runTaskTimer(this, 20L, 20L);
 
@@ -161,6 +162,16 @@ public class Brawl extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            PlayerData playerData = playerDataHandler.getPlayerData(player);
+            playerData.save();
+        }
+
+        Game game = gameHandler.getActiveGame();
+        if (game != null) {
+            game.end();
+        }
+
         this.playerDataHandler.close();
         this.regionHandler.close();
         this.teamHandler.save(true);

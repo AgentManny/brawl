@@ -24,7 +24,7 @@ public class Smite extends Ability implements Listener {
         this.addCooldown(player);
 
         for (int i = 0; i < 3; i++) {
-            player.getWorld().strikeLightning(player.getTargetBlock(null, 256).getLocation());
+            player.getWorld().spigot().strikeLightning(player.getTargetBlock(null, 256).getLocation(), true);
         }
     }
 }

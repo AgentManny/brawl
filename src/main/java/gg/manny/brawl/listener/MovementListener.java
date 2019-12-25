@@ -1,6 +1,7 @@
 package gg.manny.brawl.listener;
 
 import gg.manny.brawl.Brawl;
+import gg.manny.brawl.duelarena.DuelArena;
 import gg.manny.brawl.duelarena.match.Match;
 import gg.manny.brawl.duelarena.match.MatchState;
 import gg.manny.brawl.game.Game;
@@ -168,6 +169,10 @@ public class MovementListener implements SimpleMovementHandler, Listener {
                     event.setCancelled(true);
                     player.setVelocity(from.toVector().subtract(to.toVector()).normalize().multiply(1.25).add(new Vector(0, 0.5, 0)).setY(.1));
                 }
+            }
+
+            if (playerData.isDuelArena() && RegionType.SAFEZONE.appliesTo(to)) {
+                DuelArena.leave(player);
             }
         }
     }

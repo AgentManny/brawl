@@ -3,9 +3,7 @@ package gg.manny.brawl.ability.type;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.ability.Ability;
 import gg.manny.brawl.region.RegionType;
-import gg.manny.pivot.util.ItemBuilder;
 import gg.manny.pivot.util.PivotUtil;
-import gg.manny.server.util.chatcolor.CC;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -14,7 +12,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +48,12 @@ public class IceSpikes extends Ability {
     @Override
     public void onActivate(Player player) {
         if (this.hasCooldown(player, true)) return;
+
+        if (!player.isOnGround()) {
+            player.sendMessage(ChatColor.RED + "You must be on the ground to activate this ability.");
+            return;
+        }
+
         this.addCooldown(player);
         Block loc = player.getTargetBlock(null, 9);
 

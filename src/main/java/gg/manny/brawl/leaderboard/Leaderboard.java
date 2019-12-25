@@ -25,7 +25,7 @@ public class Leaderboard {
         plugin.getServer().getScheduler().runTaskTimer(plugin, this::update, 20L, TimeUnit.MINUTES.toMillis(15));
     }
 
-    private void update() {
+    public void update() {
         spawnLeaderboards.clear();
         for (StatisticType type : StatisticType.values()) {
             spawnLeaderboards.put(type, data(type));

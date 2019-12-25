@@ -4,6 +4,7 @@ import gg.manny.brawl.Brawl;
 import gg.manny.brawl.duelarena.DuelArena;
 import gg.manny.brawl.duelarena.match.queue.QueueType;
 import gg.manny.brawl.duelarena.menu.LoadoutMenu;
+import gg.manny.brawl.game.Game;
 import gg.manny.brawl.game.lobby.GameLobby;
 import gg.manny.brawl.game.menu.GameSelectorMenu;
 import gg.manny.brawl.item.type.InventoryType;
@@ -185,9 +186,11 @@ public class ItemHandler implements Listener {
                             break;
                         }
                         case SPECTATOR_LEAVE: {
-                            if (Brawl.getInstance().getSpectatorManager().inSpectator(player)) {
-                                //todo improve spec
-                                Brawl.getInstance().getSpectatorManager().removeSpectator(player.getUniqueId(), Brawl.getInstance().getGameHandler().getActiveGame(), false);
+                            //todo improve spec
+                            Brawl.getInstance().getSpectatorManager().removeSpectator(player.getUniqueId(), Brawl.getInstance().getGameHandler().getActiveGame(), false);
+                            Game game = plugin.getGameHandler().getActiveGame();
+                            if (game != null) {
+                                game.getSpectators().remove(player.getUniqueId());
                             }
                             break;
                         }

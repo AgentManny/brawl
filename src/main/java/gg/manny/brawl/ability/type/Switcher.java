@@ -1,6 +1,7 @@
 package gg.manny.brawl.ability.type;
 
 import gg.manny.brawl.ability.Ability;
+import gg.manny.brawl.region.RegionType;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -33,6 +34,14 @@ public class Switcher extends Ability {
     public boolean onProjectileHit(Player shooter, Player victim, EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Snowball) {
             if (this.hasCooldown(shooter, true)) return true;
+
+            if (RegionType.SAFEZONE.appliesTo(shooter.getLocation()) || RegionType.SAFEZONE.appliesTo(victim.getLocation())) {
+                shooter.sendMessage(ChatColor.RED + "You cannot use abilities in spawn.");
+                shooter.getInventory().addItem(new ItemStack(Material.SNOW_BALL));
+                shooter.updateInventory();
+                return true;
+            }
+
             addCooldown(shooter);
 
             Location shooterLoc = shooter.getLocation().clone();

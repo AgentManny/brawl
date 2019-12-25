@@ -113,21 +113,23 @@ public class WaterGun extends Ability implements Listener  {
         locations.add(location.clone().add(0.0D, 1.0D, -1.0D));
         locations.add(location.clone().add(0.0D, 1.0D, 1.0D));
 
+        List<Location> changedBlocks = new ArrayList<>();
         for (Location loc : locations) {
             Block state = loc.getBlock();
 
-            if (state.getType() == Material.AIR || state.getType() == Material.WATER || state.isLiquid() ) {
+            if (state.getType() == Material.AIR) {
                 state.setMetadata("watergun", new FixedMetadataValue(plugin, state.getType().name()));
                 state.setType(Material.WATER);
+                changedBlocks.add(loc);
             }
         }
 
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-            for (Location loc : locations) {
+            for (Location loc : changedBlocks) {
                 Block state = loc.getBlock();
 
-                if (state.hasMetadata("watergun")) {
-                    state.setType(Material.valueOf(state.getMetadata("watergun").get(0).asString()));
+                if (state.getType() == Material.WATER) {
+                    state.setType(Material.AIR);
                 }
             }
         }, 120L);

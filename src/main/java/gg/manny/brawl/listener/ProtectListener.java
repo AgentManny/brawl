@@ -10,10 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
@@ -113,17 +113,20 @@ public class ProtectListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onCraft(PrepareItemCraftEvent event) {
         Recipe recipe = event.getRecipe();
-        for (HumanEntity he : event.getViewers()) {
-            if (he instanceof Player) {
-                Player player = (Player) he;
-                Game game = plugin.getGameHandler().getActiveGame();
-                if (game != null && game.getFlags().contains(GameFlag.CRAFTING) && game.containsPlayer(player) && game.getGamePlayer(player).isAlive()) return;
 
-                recipe.getResult().setType(Material.AIR);
-            }
+        if (recipe.getResult().getType() == Material.SNOW_BLOCK) {
+            recipe.getResult().setType(Material.AIR);
+            return;
+        }
+        if (event.getView().getPlayer() instanceof Player) {
+            Player player = (Player) event.getView().getPlayer();
+            Game game = plugin.getGameHandler().getActiveGame();
+            if (game != null && game.getFlags().contains(GameFlag.CRAFTING) && game.containsPlayer(player) && game.getGamePlayer(player).isAlive()) return;
+
+            recipe.getResult().setType(Material.AIR);
         }
     }
 
