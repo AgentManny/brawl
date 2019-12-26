@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class Gambler extends Ability {
 
     public Material getType() {
-        return Material.GLASS_BOTTLE;
+        return Material.GOLD_INGOT;
     }
 
     public ChatColor getColor() {
