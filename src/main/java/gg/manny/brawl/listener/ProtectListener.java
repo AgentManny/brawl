@@ -1,5 +1,8 @@
 package gg.manny.brawl.listener;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.game.Game;
 import gg.manny.brawl.game.GameFlag;
@@ -8,6 +11,7 @@ import gg.manny.brawl.game.option.impl.StoreBlockOption;
 import gg.manny.brawl.player.PlayerData;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -23,6 +27,8 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.material.Cauldron;
+import org.bukkit.material.MaterialData;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -30,6 +36,42 @@ import java.util.concurrent.ThreadLocalRandom;
 public class ProtectListener implements Listener {
 
     private final Brawl plugin;
+
+    private static final ImmutableMultimap<Material, Material> ITEM_ON_BLOCK_RIGHT_CLICK_DENY = ImmutableMultimap.<Material, Material>builder().
+            put(Material.DIAMOND_HOE, Material.GRASS).
+            put(Material.GOLD_HOE, Material.GRASS).
+            put(Material.IRON_HOE, Material.GRASS).
+            put(Material.STONE_HOE, Material.GRASS).
+            put(Material.WOOD_HOE, Material.GRASS).
+            build();
+
+    // List of materials a player can not right click in enemy territory.
+    private static final ImmutableSet<Material> BLOCK_RIGHT_CLICK_DENY = Sets.immutableEnumSet(
+            Material.BED,
+            Material.BED_BLOCK,
+            Material.BEACON,
+            Material.FENCE_GATE,
+            Material.IRON_DOOR,
+            Material.TRAP_DOOR,
+            Material.WOOD_DOOR,
+            Material.WOODEN_DOOR,
+            Material.IRON_DOOR_BLOCK,
+            Material.CHEST,
+            Material.TRAPPED_CHEST,
+            Material.FURNACE,
+            Material.BURNING_FURNACE,
+            Material.BREWING_STAND,
+            Material.HOPPER,
+            Material.DROPPER,
+            Material.DISPENSER,
+            Material.STONE_BUTTON,
+            Material.WOOD_BUTTON,
+            Material.ENCHANTMENT_TABLE,
+            Material.WORKBENCH,
+            Material.ANVIL,
+            Material.LEVER,
+            Material.FIRE
+    );
 
     @EventHandler
     public void onBlockFromTo(BlockFromToEvent event) {
@@ -76,8 +118,44 @@ public class ProtectListener implements Listener {
                 event.setCancelled(true);
                 event.getPlayer().updateInventory();
             }
+        }
 
-            return;
+        if (!event.hasBlock()) return;
+
+        Block block = event.getClickedBlock();
+        Action action = event.getAction();
+        if (action == Action.PHYSICAL) { // Prevent players from trampling on crops or pressure plates, etc.
+            if (!pd.isBuild()) {
+                event.setCancelled(true);
+            }
+        } else if (action == Action.RIGHT_CLICK_BLOCK) {
+            boolean canRightClick;
+            MaterialData blockData;
+            Material blockType = block.getType();
+
+            // Firstly, check if this block is not on the explicit blacklist.
+            canRightClick = !BLOCK_RIGHT_CLICK_DENY.contains(blockType);
+            if (canRightClick) {
+                Material itemType = event.hasItem() ? event.getItem().getType() : null;
+
+                if (Material.EYE_OF_ENDER == itemType && Material.ENDER_PORTAL_FRAME == blockType && block.getData() != 4) {
+                    // If the player is right clicking an Ender Portal Frame with an Ender Portal Eye and it is empty.
+                    canRightClick = false;
+
+                } else if (Material.GLASS_BOTTLE == itemType && (blockData = block.getState().getData()) instanceof Cauldron && !((Cauldron) blockData).isEmpty()) {
+                    // If the player is right clicking a Cauldron that contains liquid with a Glass Bottle.
+                    canRightClick = false;
+
+                } else if (itemType != null && ITEM_ON_BLOCK_RIGHT_CLICK_DENY.get(itemType).contains(block.getType())) {
+                    // Finally, check if this block is not blacklisted with the item the player right clicked it with.
+                    canRightClick = false;
+
+                }
+            }
+
+            if (!canRightClick && !pd.isBuild()) {
+                event.setCancelled(true);
+            }
         }
     }
 
@@ -112,6 +190,8 @@ public class ProtectListener implements Listener {
             return;
         }
     }
+
+
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCraft(PrepareItemCraftEvent event) {

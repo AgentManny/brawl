@@ -67,7 +67,8 @@ public class AbilityHandler {
 
                 new NinjaStars(),
                 new Dragon(),
-                new Gambler()
+                new Gambler(),
+                new Assassin()
         );
         this.load();
 
