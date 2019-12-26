@@ -64,6 +64,6 @@ public class Dragon extends Ability implements Listener {
                     cancel();
             }
 
-        }.runTaskTimer(plugin, 1L, 6L);
+        }.runTaskTimer(plugin, 1L, 5L);
     }
 }
