@@ -26,11 +26,13 @@ public class Phantom extends Ability {
     public void onActivate(Player player) {
         if (this.hasCooldown(player, true)) return;
         this.addCooldown(player);
+        player.setAllowFlight(true);
         player.setFlying(true);
         new BukkitRunnable() {
             @Override
             public void run() {
                 player.setFlying(false);
+                player.setAllowFlight(false);
             }
         }.runTaskLater(plugin, MathUtil.convertSecondstoTicks(MathUtil.getRandomInt(5, 10)));
     }
