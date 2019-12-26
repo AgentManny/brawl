@@ -36,7 +36,7 @@ public class Dragon extends Ability implements Listener {
     @Override
     public void onActivate(Player player) {
         if (this.hasCooldown(player, true)) return;
-
+        this.addCooldown(player, 15000);
         new BukkitRunnable() {
 
             @Override
