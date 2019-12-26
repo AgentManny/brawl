@@ -12,6 +12,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +22,6 @@ import java.util.Set;
 public class Dragon extends Ability implements Listener {
 
     private final Brawl plugin = Brawl.getInstance();
-    private final int MAX_USAGES = 20;
 
     @Override
     public Material getType() {
@@ -34,49 +34,44 @@ public class Dragon extends Ability implements Listener {
     }
 
     @Override
-    public Map<String, String> getProperties(Player player) {
-        Map<String, String> usages = new HashMap<>();
-        usages.put("usages", player.getMetadata("dragon.usages").get(0).asString());
-        return usages;
-    }
-
-    @Override
-    public void onApply(Player player) {
-        player.setMetadata("dragon.usages", new FixedMetadataValue(plugin, 0));
-    }
-
-    @Override
-    public void onRemove(Player player) {
-        player.removeMetadata("dragon.usages", plugin);
-    }
-
-    @Override
     public void onActivate(Player player) {
         if (this.hasCooldown(player, true)) return;
-        int usages = player.getMetadata("dragon.usages").get(0).asInt();
-        if(usages == MAX_USAGES) {
-            this.addCooldown(player, 15000);
-            player.setMetadata("dragon.usages", new FixedMetadataValue(plugin, 0));
-            return;
-        }
 
-        List<Block> blocks = player.getLineOfSight(null, 10);
-        List<Player> nearbyPlayers = null;
-        for(Block block : blocks) {
-            Location blockLoc = block.getLocation();
-            if(nearbyPlayers == null) {
-                nearbyPlayers = BrawlUtil.getNearbyPlayers(player, 10);
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                int times;
+                if(player.hasMetadata("dragon.timer")) {
+                    times = player.getMetadata("dragon.timer").get(0).asInt();
+                }
+                else {
+                    times = 4;
+                    player.setMetadata("dragon.timer", new FixedMetadataValue(plugin, times));
+                }
+                List<Block> blocks = player.getLineOfSight(null, 10);
+                List<Player> nearbyPlayers = null;
+                for(Block block : blocks) {
+                    Location blockLoc = block.getLocation();
+                    if(nearbyPlayers == null) {
+                        nearbyPlayers = BrawlUtil.getNearbyPlayers(player, 10);
+                    }
+
+                    ParticleEffect.FLAME.send(blockLoc, 0.1f, 1);
+                    for(Player target : nearbyPlayers) {
+                        Location targetLoc = target.getLocation();
+                        if(targetLoc.getBlockX() == blockLoc.getBlockX()
+                                && targetLoc.getBlockZ() == blockLoc.getBlockZ())
+                            target.setFireTicks(60);
+                    }
+                }
+                player.setMetadata("dragon.timer", new FixedMetadataValue(plugin, times - 1));
+                if(player.getMetadata("dragon.timer").get(0).asInt() == 0) {
+                    player.removeMetadata("dragon.timer", plugin);
+                    cancel();
+                }
             }
 
-            ParticleEffect.FLAME.send(blockLoc, 0.1f, 1);
-            for(Player target : nearbyPlayers) {
-                Location targetLoc = target.getLocation();
-                if(targetLoc.getBlockX() == blockLoc.getBlockX()
-                && targetLoc.getBlockZ() == blockLoc.getBlockZ())
-                    target.setFireTicks(60);
-            }
-        }
-
-        player.setMetadata("dragon.usages", new FixedMetadataValue(plugin, usages + 1));
+        }.runTaskTimer(plugin, 1L, 20L);
     }
 }
