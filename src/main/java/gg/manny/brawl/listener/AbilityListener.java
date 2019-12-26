@@ -42,12 +42,20 @@ public class AbilityListener implements Listener {
         Player player = event.getPlayer();
         Kit selectedKit = KitHandler.getEquipped(player);
         if (event.hasItem() && event.getItem() != null && selectedKit != null && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
-            event.setUseInteractedBlock(Event.Result.DENY);
-            event.setUseItemInHand(Event.Result.DENY);
-            event.setCancelled(true);
 
-            selectedKit.getAbilities().forEach(ability -> ability.onInteractItem(player, event.getAction(), event.getItem()));
-            player.updateInventory(); // prevent stupid glitches
+            boolean cancelled = false;
+            for (Ability ability : selectedKit.getAbilities()) {
+                if (!cancelled && ability.onInteractItem(player, event.getAction(), event.getItem())) {
+                    cancelled = true; // Allow continue iteration but also cancel if found a match
+                }
+            }
+
+            if (cancelled) {
+                event.setUseInteractedBlock(Event.Result.DENY);
+                event.setUseItemInHand(Event.Result.DENY);
+                event.setCancelled(true);
+                player.updateInventory(); // prevent stupid glitches
+            }
         }
     }
 

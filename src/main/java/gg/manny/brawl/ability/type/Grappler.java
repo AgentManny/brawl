@@ -4,9 +4,8 @@ import gg.manny.brawl.ability.Ability;
 import net.minecraft.server.v1_7_R4.EntityFishingHook;
 import net.minecraft.server.v1_7_R4.EntityHuman;
 import net.minecraft.server.v1_7_R4.WorldServer;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -17,34 +16,48 @@ import org.bukkit.util.Vector;
 
 public class Grappler extends Ability implements Listener {
 
-    private double range = 15;
-    private double speed = 0.425;
-
-    @Override
-    public Material getType() {
-        return Material.FISHING_ROD;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.GOLD;
-    }
+    private double hookThreshold = 0.25;
+    private double hForceMult = 0.3;
+    private double hForceMax = 5;
+    private double vForceMult = 0.25;
+    private double vForceBonus = 0.5;
+    private double vForceMax = 1.5;
 
     @EventHandler
     public void onPlayerFish(PlayerFishEvent event) {
         Player player = event.getPlayer();
-        if(this.hasEquipped(player)) {
-            if (event.getCaught() instanceof Player) {
-                if (this.hasCooldown(player, true)) return;
-                this.addCooldown(player);
+        if (event.isCancelled()) return;
 
-                Player hook = (Player) event.getCaught();
-                if (hook.getLocation().subtract(player.getLocation()).length() <= this.range) {
-                    Vector speed = hook.getLocation().subtract(player.getLocation()).toVector().multiply(this.speed);
-                    speed.setY(speed.getY() / 2);
-                    speed.setY(speed.getY() + 0.3);
-                    player.setVelocity(speed);
+        if (this.hasEquipped(player)) {
+            if (this.hasCooldown(player, true)) return;
+            if (event.getState() == PlayerFishEvent.State.IN_GROUND || event.getState() == PlayerFishEvent.State.FAILED_ATTEMPT) {
+                Entity entityHook = event.getHook();
+                Block block = entityHook.getWorld().getBlockAt(entityHook.getLocation().add(0, -hookThreshold, 0));
+                if (!block.isEmpty() && !block.isLiquid()) {
+                    Vector vectorDistance = entityHook.getLocation().subtract(player.getLocation()).toVector();
+                    if (vectorDistance.getY() < 0.0) {
+                        vectorDistance.setY(0.0);
+                    }
+
+                    vectorDistance
+                            .setX(vectorDistance.getX() * hForceMult)
+                            .setY(vectorDistance.getY() * vForceMult + vForceBonus)
+                            .setZ(vectorDistance.getZ() * hForceMult);
+
+                    double distance = hForceMax * hForceMax;
+                    if (vectorDistance.clone().setY(0.0).lengthSquared() > distance) {
+                        distance = distance / vectorDistance.lengthSquared();
+                        vectorDistance.setX(vectorDistance.getX() * distance);
+                        vectorDistance.setZ(vectorDistance.getZ() * distance);
+                    }
+
+                    if (vectorDistance.getY() > vForceMax) {
+                        vectorDistance.setY(vForceMax);
+                    }
+                    this.addCooldown(player, 15);
+                    player.setVelocity(vectorDistance);
                 }
+
             }
         }
     }

@@ -91,8 +91,8 @@ public abstract class Ability {
         return false;
     }
 
-    public void onInteractItem(Player player, Action action, ItemStack item) {
-
+    public boolean onInteractItem(Player player, Action action, ItemStack item) {
+        return false; // True to cancel
     }
 
     public boolean onProjectileHit(Player shooter, Player victim, EntityDamageByEntityEvent event) {

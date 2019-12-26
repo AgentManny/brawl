@@ -18,9 +18,9 @@ public class NinjaStars extends Ability {
 
 
     @Override
-    public void onInteractItem(Player player, Action action, ItemStack itemStack) {
+    public boolean onInteractItem(Player player, Action action, ItemStack itemStack) {
         if (itemStack.getType() == Material.NETHER_STAR) {
-            if (this.hasCooldown(player, true)) return;
+            if (this.hasCooldown(player, true)) return true;
             this.addCooldown(player, 1);
 
             if (player.getItemInHand().getAmount() > 1) {
@@ -81,7 +81,10 @@ public class NinjaStars extends Ability {
                 }
             }.runTaskTimer(Brawl.getInstance(), 4L, 4L);
 
+            return true;
         }
+
+        return false;
     }
 
 

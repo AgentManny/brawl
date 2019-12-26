@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 public class Fireball extends Ability {
 
     @Override
-    public void onInteractItem(Player player, Action action, ItemStack item) {
+    public boolean onInteractItem(Player player, Action action, ItemStack item) {
         if (item.getType() == Material.FIREBALL) {
             if (player.getItemInHand().getAmount() > 1) {
                 player.getItemInHand().setAmount(player.getItemInHand().getAmount() - 1);
@@ -17,7 +17,10 @@ public class Fireball extends Ability {
                 player.getInventory().remove(player.getItemInHand());
             }
             player.launchProjectile(org.bukkit.entity.Fireball.class);
+            return true;
         }
+
+        return false;
     }
 
     @Override
