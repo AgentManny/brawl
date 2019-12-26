@@ -65,7 +65,9 @@ public class AbilityHandler {
                 new Smite(),
 
 
-                new NinjaStars()
+                new NinjaStars(),
+                new Dragon(),
+                new Gambler()
         );
         this.load();
 

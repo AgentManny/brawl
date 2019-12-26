@@ -50,6 +50,7 @@ import gg.manny.pivot.nametag.Nametag;
 import gg.manny.pivot.nametag.NametagHandler;
 import gg.manny.pivot.nametag.NametagProvider;
 import gg.manny.pivot.serialization.*;
+import gg.manny.pivot.util.Lang;
 import gg.manny.pivot.util.file.type.BasicConfigurationFile;
 import gg.manny.quantum.Quantum;
 import gg.manny.server.MineServer;
@@ -147,6 +148,11 @@ public class Brawl extends JavaPlugin {
 
 
 //        new Rail();
+        try {
+            Lang.initialize(null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         new SoupTask(this).runTaskTimer(this, 20L, 20L);
 
