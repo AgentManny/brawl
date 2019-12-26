@@ -39,16 +39,10 @@ public class Dragon extends Ability implements Listener {
         this.addCooldown(player, 15000);
         new BukkitRunnable() {
 
+            private int times = 0;
+
             @Override
             public void run() {
-                int times;
-                if(player.hasMetadata("dragon.timer")) {
-                    times = player.getMetadata("dragon.timer").get(0).asInt();
-                }
-                else {
-                    times = 4;
-                    player.setMetadata("dragon.timer", new FixedMetadataValue(plugin, times));
-                }
                 List<Block> blocks = player.getLineOfSight(null, 10);
                 List<Player> nearbyPlayers = null;
                 for(Block block : blocks) {
@@ -65,13 +59,11 @@ public class Dragon extends Ability implements Listener {
                             target.setFireTicks(60);
                     }
                 }
-                player.setMetadata("dragon.timer", new FixedMetadataValue(plugin, times - 1));
-                if(player.getMetadata("dragon.timer").get(0).asInt() == 0) {
-                    player.removeMetadata("dragon.timer", plugin);
+                times++;
+                if(times == 5)
                     cancel();
-                }
             }
 
-        }.runTaskTimer(plugin, 1L, 20L);
+        }.runTaskTimer(plugin, 1L, 6L);
     }
 }
