@@ -2,4 +2,4 @@ name: ${name}
 main: gg.manny.brawl.Brawl
 version: ${brawl.desc}
 depend: [Pivot, ProtocolLib]
-author: Manny
+authors: [manny, ghose]

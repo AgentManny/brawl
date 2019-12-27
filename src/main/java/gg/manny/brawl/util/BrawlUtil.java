@@ -1,7 +1,7 @@
 package gg.manny.brawl.util;
 
-import com.google.common.reflect.TypeToken;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import gg.manny.brawl.Brawl;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -9,9 +9,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -67,18 +64,6 @@ public class BrawlUtil {
                 jsonObject.get(key) != null && !jsonObject.get(key).isJsonNull() && jsonObject.has(key) && jsonObject.get(key) != null;
     }
 
-    public static boolean isJson(String test) {
-        try {
-            new JSONObject(test);
-        } catch (JSONException ex) {
-            try {
-                new JSONArray(test);
-            } catch (JSONException ex1) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     public static boolean isMineSpigot() {
         try {

@@ -102,14 +102,13 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>rip.thecraft</groupId>
+            <groupId>gg.manny.minespigot</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.7.10-R0.1-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/spigot-server.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>rip.thecraft</groupId>
+            <groupId>gg.manny.minespigot</groupId>
             <artifactId>spigot-server</artifactId>
             <version>1.7.10-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
