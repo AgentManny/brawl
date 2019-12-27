@@ -71,6 +71,12 @@ public class PlayerListener implements Listener {
                             player.sendMessage(ChatColor.RED + "You cannot use abilities in spawn.");
                             return;
                         }
+
+                        if (!ability.bypassAbilityPreventZone() && RegionType.NO_ABILITY_ZONE.appliesTo(player.getLocation())) {
+                            player.sendMessage(ChatColor.RED + "You cannot use abilities in area.");
+                            return;
+                        }
+
                         ability.onActivate(player);
                         event.setUseItemInHand(Event.Result.DENY);
                         event.setUseInteractedBlock(Event.Result.DENY);

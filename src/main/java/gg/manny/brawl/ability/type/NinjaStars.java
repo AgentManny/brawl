@@ -13,15 +13,20 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 public class NinjaStars extends Ability {
 
+    @Override
+    public boolean bypassAbilityPreventZone() {
+        return true;
+    }
 
     @Override
     public boolean onInteractItem(Player player, Action action, ItemStack itemStack) {
         if (itemStack.getType() == Material.NETHER_STAR) {
             if (this.hasCooldown(player, true)) return true;
-            this.addCooldown(player, 1);
+            this.addCooldown(player, TimeUnit.SECONDS.toMillis(10));
 
             if (player.getItemInHand().getAmount() > 1) {
                 player.getItemInHand().setAmount(player.getItemInHand().getAmount() - 1);

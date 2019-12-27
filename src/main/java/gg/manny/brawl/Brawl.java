@@ -65,6 +65,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
@@ -172,6 +173,9 @@ public class Brawl extends JavaPlugin {
             PlayerData playerData = playerDataHandler.getPlayerData(player);
             playerData.save();
         }
+
+        getServer().getScheduler().getPendingTasks().forEach(BukkitTask::cancel);
+
 
         Game game = gameHandler.getActiveGame();
         if (game != null) {

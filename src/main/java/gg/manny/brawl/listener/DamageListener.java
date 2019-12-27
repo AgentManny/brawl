@@ -15,7 +15,6 @@ import gg.manny.pivot.util.PivotUtil;
 import gg.manny.pivot.util.chatcolor.CC;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -70,15 +69,15 @@ public class DamageListener implements Listener {
                 int i = 0;
                 if (!RegionType.SAFEZONE.appliesTo(event.getEntity().getLocation()) && playerData.getSelectedKit() != null) {
                     for (ItemStack it : event.getDrops()) {
-                        if (it.getType() != Material.MUSHROOM_SOUP && it.getType() != Material.BOWL) {
-                            ItemMeta meta = it.getItemMeta();
-                            List<String> lore = new ArrayList<>();
-                            lore.add(CC.DARK_GRAY + "PvP Loot");
-                            lore.add(CC.DARK_GRAY + playerData.getSelectedKit().getName());
-                            it.setItemMeta(meta);
-                        }
                         if (this.shouldFilter(it)) {
-                            Item item = player.getWorld().dropItem(player.getLocation().add(Brawl.RANDOM.nextInt(2) - 1, 0, Brawl.RANDOM.nextInt(2) - 1), it);
+                            ItemStack toDrop = it.clone();
+                                ItemMeta meta = toDrop.getItemMeta();
+                                List<String> lore = new ArrayList<>();
+                                lore.add("PvPLoot");
+                                lore.add(CC.DARK_GRAY + playerData.getSelectedKit().getName());
+                                toDrop.setItemMeta(meta);
+
+                            Item item = player.getWorld().dropItem(player.getLocation().add(Brawl.RANDOM.nextInt(2) - 1, 0, Brawl.RANDOM.nextInt(2) - 1), toDrop);
                             plugin.getServer().getScheduler().runTaskLater(plugin, item::remove, 15L + (4 * i++));
                         }
                     }

@@ -25,7 +25,6 @@ public class AbilityListener implements Listener {
 
     private final Brawl plugin;
 
-
     @EventHandler
     public void onProject(EntityShootBowEvent event) {
         if (event.getEntity() instanceof Player) {

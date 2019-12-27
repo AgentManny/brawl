@@ -35,8 +35,15 @@ public class Switcher extends Ability {
         if (event.getDamager() instanceof Snowball) {
             if (this.hasCooldown(shooter, true)) return true;
 
-            if (RegionType.SAFEZONE.appliesTo(shooter.getLocation()) || RegionType.SAFEZONE.appliesTo(victim.getLocation())) {
+            if ((RegionType.SAFEZONE.appliesTo(shooter.getLocation()) || RegionType.SAFEZONE.appliesTo(victim.getLocation()))) {
                 shooter.sendMessage(ChatColor.RED + "You cannot use abilities in spawn.");
+                shooter.getInventory().addItem(new ItemStack(Material.SNOW_BALL));
+                shooter.updateInventory();
+                return true;
+            }
+
+            if (RegionType.NO_ABILITY_ZONE.appliesTo(shooter.getLocation()) || RegionType.NO_ABILITY_ZONE.appliesTo(victim.getLocation())) {
+                shooter.sendMessage(ChatColor.RED + "You cannot use abilities in this area.");
                 shooter.getInventory().addItem(new ItemStack(Material.SNOW_BALL));
                 shooter.updateInventory();
                 return true;

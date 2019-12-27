@@ -121,6 +121,10 @@ public abstract class Ability {
         return !RegionType.SAFEZONE.appliesTo(player.getLocation()) && selectedKit != null && selectedKit.getAbilities().contains(this) ;
     }
 
+    public boolean bypassAbilityPreventZone() {
+        return false;
+    }
+
     private long getCooldown() {
         return TimeUnit.SECONDS.toMillis(this.cooldown);
     }
@@ -131,6 +135,8 @@ public abstract class Ability {
         String key = "ABILITY_" + this.getName();
         Cooldown cooldown = playerData.getCooldown(key);
         boolean active = playerData.hasCooldown(key);
+
+
 
         if (active && notify) {
             player.sendMessage(ChatColor.RED + "You must wait " + ChatColor.BOLD + cooldown.getTimeLeft() + ChatColor.RED + " before using this again.");
@@ -152,7 +158,7 @@ public abstract class Ability {
 
                 @Override
                 public void run() {
-                    if (playerData.getEnderpearlTask() == null) {
+                    if (playerData == null || cooldown == null || playerData.getEnderpearlTask() == null) {
                         cancel();
                         return;
                     }

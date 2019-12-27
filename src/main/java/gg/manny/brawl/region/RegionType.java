@@ -8,7 +8,8 @@ import java.util.stream.Collectors;
 
 public enum RegionType {
 
-    SAFEZONE;
+    SAFEZONE,
+    NO_ABILITY_ZONE;
 
     public List<Region> getRegions() {
         return Brawl.getInstance().getRegionHandler().getRegions()
