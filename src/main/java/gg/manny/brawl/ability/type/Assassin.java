@@ -2,7 +2,6 @@ package gg.manny.brawl.ability.type;
 
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.ability.Ability;
-import gg.manny.brawl.player.protection.Protection;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -32,11 +31,11 @@ public class Assassin extends Ability implements Listener {
 
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 200, 0));
-        Brawl.getInstance().getServer().getOnlinePlayers().forEach(online  -> {
-            if (!Protection.isAlly(online, player)) {
-                Brawl.getInstance().getEntityHider().hideEntity(online, player);
-            }
-        });
+//        Brawl.getInstance().getServer().getOnlinePlayers().forEach(online  -> {
+//            if (!Protection.isAlly(online, player)) {
+//                Brawl.getInstance().getEntityHider().hideEntity(online, player);
+//            }
+//        });
         player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 150, 1));
 
         int taskId = new BukkitRunnable() {
@@ -51,7 +50,7 @@ public class Assassin extends Ability implements Listener {
                         player.removeMetadata("assassin_id", Brawl.getInstance());
                         player.sendMessage(ChatColor.GREEN + "You've returned to your normal state.");
                     }
-                    Brawl.getInstance().getServer().getOnlinePlayers().forEach(online  -> Brawl.getInstance().getEntityHider().showEntity(online, player));
+//                    Brawl.getInstance().getServer().getOnlinePlayers().forEach(online  -> Brawl.getInstance().getEntityHider().showEntity(online, player));
                 }
 
             }
