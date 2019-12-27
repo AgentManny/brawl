@@ -42,6 +42,7 @@ public class FluffyHandcuffs extends Ability {
             return;
         }
 
+
         this.addCooldown(player);
 
         generateSphere(player.getLocation(), 5);
@@ -138,6 +139,15 @@ public class FluffyHandcuffs extends Ability {
 
             }
 
+            @Override
+            public synchronized void cancel() throws IllegalStateException {
+                for (Block state : circleBlocks) {
+                    if (state.getType() == Material.ICE) {
+                        state.setType(Material.AIR);
+                    }
+                }
+                super.cancel();
+            }
         }.runTaskLater(Brawl.getInstance(), 20L * 5);
 
     }
