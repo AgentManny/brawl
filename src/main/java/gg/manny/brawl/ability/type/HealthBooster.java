@@ -2,6 +2,7 @@ package gg.manny.brawl.ability.type;
 
 import com.google.gson.JsonObject;
 import gg.manny.brawl.ability.Ability;
+import gg.manny.pivot.util.PivotUtil;
 import org.bukkit.entity.Player;
 
 public class HealthBooster extends Ability {
@@ -16,8 +17,12 @@ public class HealthBooster extends Ability {
 
     @Override
     public void onRemove(Player player) {
-        player.setMaxHealth(20);
-        player.setHealth(player.getMaxHealth());
+        PivotUtil.runLater(() -> {
+            if (player != null) {
+                player.setMaxHealth(20);
+                player.setHealth(player.getMaxHealth());
+            }
+        }, 10L, false);
     }
 
     @Override
