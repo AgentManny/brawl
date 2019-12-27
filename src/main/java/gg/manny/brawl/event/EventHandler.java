@@ -23,7 +23,8 @@ import java.util.Map;
 public class EventHandler {
 
     private final Map<String, KOTH> KOTHS = new HashMap<>();
-    private final Map<String, KillTheKing> KINGS = new HashMap<>();
+    //private final Map<String, KillTheKing> KINGS = new HashMap<>();
+    private KillTheKing currentKingGame = null;
 
     @Setter
     private KOTH activeKOTH;
