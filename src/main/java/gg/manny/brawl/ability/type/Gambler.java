@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class Gambler extends Ability {
 
     public Material getType() {
-        return Material.GLASS_BOTTLE;
+        return Material.POTION;
     }
 
     public ChatColor getColor() {
@@ -29,8 +29,8 @@ public class Gambler extends Ability {
 
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
-        PotionEffectType randomPotionEffect = PotionEffectType.values()[random.nextInt(0, PotionEffectType.values().length)];
-        int duration = random.nextInt(100, 300);
+        PotionEffectType randomPotionEffect = PotionEffectType.values()[random.nextInt(0, PotionEffectType.values().length - 1)];
+        int duration = random.nextInt(80, 300);
         int amplifier = random.nextInt(0, 3);
 
         PotionEffect chosenEffect = new PotionEffect(randomPotionEffect, duration, amplifier);

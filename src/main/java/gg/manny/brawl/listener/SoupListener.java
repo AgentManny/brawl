@@ -24,6 +24,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 public class SoupListener implements Listener {
 
@@ -98,8 +100,16 @@ public class SoupListener implements Listener {
                 PivotUtil.runLater(() -> event.getItemDrop().remove(), 5L, false);
                 break;
             default: {
-                if (item.hasItemMeta() && item.getItemMeta().hasLore() && item.getItemMeta().getLore().get(0).equals("PvPLoot")) {
-                        return;
+                if (item.hasItemMeta() && item.getItemMeta().hasLore()) {
+                    PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(event.getPlayer());
+                    if (playerData.getSelectedKit() != null) {
+                        List<String> lore = item.getItemMeta().getLore();
+                        boolean canDrop = lore.contains(ChatColor.GRAY + "PvP Loot") && lore.contains(ChatColor.DARK_GRAY + playerData.getSelectedKit().getName());
+                        if (canDrop) {
+                            PivotUtil.runLater(() -> event.getItemDrop().remove(), 5L, false);
+                            return;
+                        }
+                    }
                 }
 
                 event.setCancelled(true);
