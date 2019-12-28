@@ -6,7 +6,8 @@ import gg.manny.brawl.game.map.GameMap;
 import gg.manny.brawl.game.option.GameOption;
 import gg.manny.brawl.game.scoreboard.GameScoreboard;
 import gg.manny.brawl.game.team.GamePlayer;
-import gg.manny.brawl.item.type.InventoryType;
+import gg.manny.brawl.player.PlayerData;
+import gg.manny.brawl.player.statistic.StatisticType;
 import gg.manny.brawl.util.Tasks;
 import gg.manny.pivot.util.PlayerUtils;
 import gg.manny.pivot.util.TimeUtils;
@@ -94,7 +95,13 @@ public abstract class Game {
 
         if(!this.winners.isEmpty()) {
             String winners = this.winners.stream().map(GamePlayer::getName).collect(Collectors.joining(", ")).trim();
-            Bukkit.broadcastMessage(PREFIX + ChatColor.WHITE + winners + ChatColor.YELLOW + (this.winners.size() <= 1 ? " has" : " have") + " won the " + ChatColor.DARK_PURPLE + getType().getShortName() + ChatColor.YELLOW + " event and received " + ChatColor.LIGHT_PURPLE + "500 credits" + ChatColor.YELLOW + ".");
+            for (GamePlayer winner : this.winners) {
+                PlayerData playerData = winner.toPlayerData();
+                if (playerData != null) {
+                    playerData.getStatistic().add(StatisticType.CREDITS, 250);
+                }
+            }
+            Bukkit.broadcastMessage(PREFIX + ChatColor.WHITE + winners + ChatColor.YELLOW + (this.winners.size() <= 1 ? " has" : " have") + " won the " + ChatColor.DARK_PURPLE + getType().getShortName() + ChatColor.YELLOW + " event and received " + ChatColor.LIGHT_PURPLE + "250 credits" + ChatColor.YELLOW + ".");
         }
 
         Tasks.schedule(() -> {

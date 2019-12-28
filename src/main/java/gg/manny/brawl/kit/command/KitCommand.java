@@ -34,7 +34,11 @@ public class KitCommand {
             return;
         }
 
-        kit.apply(player, true, true);
+        if (playerData.hasKit(kit)) {
+            kit.apply(player, true, true);
+        } else {
+            player.sendMessage(CC.RED + "You don't have permission to use this kit.");
+        }
     }
 
     @Command(names = { "kit weight", "k weight" }, permission = "op")
@@ -42,6 +46,13 @@ public class KitCommand {
         kit.setWeight(weight);
         brawl.getKitHandler().getKits().sort(Kit::compareTo);
         player.sendMessage(ChatColor.GREEN + kit.getName() + " weight set to " + weight);
+    }
+
+
+    @Command(names = { "kit price", "k price" }, permission = "op")
+    public void price(Player player, Kit kit, int price) {
+        kit.setPrice(price);
+        player.sendMessage(ChatColor.GREEN + kit.getName() + " price set to " + price);
     }
 
     @Command(names =  { "kit create", "k create" }, permission = "op")

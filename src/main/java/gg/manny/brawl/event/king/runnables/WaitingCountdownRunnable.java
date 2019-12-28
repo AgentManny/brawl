@@ -17,7 +17,7 @@ public class WaitingCountdownRunnable extends BukkitRunnable {
     public void run() {
         switch (secondsLeft) {
             case 30:
-                brawl.getServer().broadcastMessage("")
+                brawl.getServer().broadcastMessage("");
                 break;
             case 10:
                 break;

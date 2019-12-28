@@ -30,6 +30,7 @@ import gg.manny.brawl.kit.command.KitCommand;
 import gg.manny.brawl.kit.command.adapter.KitTypeAdapter;
 import gg.manny.brawl.leaderboard.Leaderboard;
 import gg.manny.brawl.listener.*;
+import gg.manny.brawl.market.MarketHandler;
 import gg.manny.brawl.player.PlayerData;
 import gg.manny.brawl.player.PlayerDataHandler;
 import gg.manny.brawl.player.adapter.PlayerDataTypeAdapter;
@@ -43,6 +44,7 @@ import gg.manny.brawl.spectator.SpectatorManager;
 import gg.manny.brawl.task.SoupTask;
 import gg.manny.brawl.team.TeamHandler;
 import gg.manny.brawl.util.EntityHider;
+import gg.manny.brawl.util.Lang;
 import gg.manny.brawl.warp.WarpManager;
 import gg.manny.construct.Construct;
 import gg.manny.pivot.Pivot;
@@ -50,7 +52,6 @@ import gg.manny.pivot.nametag.Nametag;
 import gg.manny.pivot.nametag.NametagHandler;
 import gg.manny.pivot.nametag.NametagProvider;
 import gg.manny.pivot.serialization.*;
-import gg.manny.pivot.util.Lang;
 import gg.manny.pivot.util.file.type.BasicConfigurationFile;
 import gg.manny.quantum.Quantum;
 import gg.manny.server.MineServer;
@@ -101,6 +102,7 @@ public class Brawl extends JavaPlugin {
     private AbilityHandler abilityHandler;
     private KillstreakHandler killstreakHandler;
 
+    private MarketHandler marketHandler;
     private KitHandler kitHandler;
 
     private DuelArenaHandler matchHandler;
@@ -241,6 +243,7 @@ public class Brawl extends JavaPlugin {
         SimpleOfflinePlayer.load(this);
         this.playerDataHandler = new PlayerDataHandler(this);
 
+        this.marketHandler = new MarketHandler();
         this.eventHandler = new EventHandler();
         this.gameHandler = new GameHandler(this);
         this.teamHandler = new TeamHandler();

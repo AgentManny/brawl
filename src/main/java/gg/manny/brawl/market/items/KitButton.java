@@ -1,28 +1,31 @@
 package gg.manny.brawl.market.items;
 
+import gg.manny.brawl.kit.Kit;
 import gg.manny.brawl.player.PlayerData;
 import gg.manny.brawl.player.statistic.PlayerStatistic;
 import gg.manny.brawl.player.statistic.StatisticType;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-public class StatsResetButton extends MarketItem {
+public class KitButton extends MarketItem {
 
-    public StatsResetButton() {
-        super("Stats Reset", Material.SIGN, 5000);
+    private final Kit kit;
 
+    public KitButton(Kit kit, double storeMultiplier) {
+        super("Rent " + kit.getName(), kit.getIcon().getType(), (int) (kit.getPrice() * storeMultiplier));
+
+        this.kit = kit;
         setConfirm(true);
     }
 
     @Override
     public int getWeight() {
-        return 8;
+        return 9;
     }
 
     @Override
     public String getDescription() {
-        return "Resets your statistics";
+        return "Rent this kit for 24 hours";
     }
 
     @Override

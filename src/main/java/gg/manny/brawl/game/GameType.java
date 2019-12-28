@@ -41,12 +41,20 @@ public enum GameType {
 			Arrays.asList("SpectatorLobby", "Lobby", "ArenaLocation1", "ArenaLocation2")
 	),
 
+	OITC(
+			new ItemBuilder(Material.BOW).build(),
+			RankType.ELITE,
+			"Sniper. One shot, one kill! Last man standing wins!",
+			2,
+			50
+	),
+
 	TNT_TAG("TNT Tag", "Tag",
 			new ItemBuilder(Material.TNT).build(),
 			RankType.CRAFTER,
 			"Tag with a twist, don't blow up! Last man standing wins!",
 			2,
-			50,
+			25,
 			Arrays.asList("Lobby")
 	);
 

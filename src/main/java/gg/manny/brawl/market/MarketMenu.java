@@ -13,12 +13,17 @@ import java.util.List;
 import java.util.Map;
 
 public class MarketMenu extends Menu {
+    {
+        setAutoUpdate(true);
+        setUpdateAfterClick(true);
+    }
 
     private List<MarketItem> items = new ArrayList<>();
 
     public MarketMenu() {
         items.add(new InventoryFillButton());
         items.add(new StatsResetButton());
+
     }
 
     @Override

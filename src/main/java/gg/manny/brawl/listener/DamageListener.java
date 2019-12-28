@@ -11,6 +11,7 @@ import gg.manny.brawl.player.simple.SimpleOfflinePlayer;
 import gg.manny.brawl.player.statistic.PlayerStatistic;
 import gg.manny.brawl.player.statistic.StatisticType;
 import gg.manny.brawl.region.RegionType;
+import gg.manny.pivot.util.ItemBuilder;
 import gg.manny.pivot.util.PivotUtil;
 import gg.manny.pivot.util.chatcolor.CC;
 import lombok.RequiredArgsConstructor;
@@ -68,16 +69,12 @@ public class DamageListener implements Listener {
             case FIGHTING: {
                 int i = 0;
                 if (!RegionType.SAFEZONE.appliesTo(event.getEntity().getLocation()) && playerData.getSelectedKit() != null) {
-                    for (ItemStack it : event.getDrops()) {
-                        if (this.shouldFilter(it)) {
-                            ItemStack toDrop = it.clone();
-                                ItemMeta meta = toDrop.getItemMeta();
-                                List<String> lore = new ArrayList<>();
-                                lore.add("PvPLoot");
-                                lore.add(CC.DARK_GRAY + playerData.getSelectedKit().getName());
-                                toDrop.setItemMeta(meta);
-
-                            Item item = player.getWorld().dropItem(player.getLocation().add(Brawl.RANDOM.nextInt(2) - 1, 0, Brawl.RANDOM.nextInt(2) - 1), toDrop);
+                    for (ItemStack itemStack : event.getDrops()) {
+                        ItemStack newItemStack = new ItemBuilder(itemStack)
+                                .lore(new String[] { "Test"})
+                                .create();
+                        if (this.shouldFilter(newItemStack)) {
+                            Item item = player.getWorld().dropItem(player.getLocation().add(Brawl.RANDOM.nextInt(2) - 1, 0, Brawl.RANDOM.nextInt(2) - 1), newItemStack);
                             plugin.getServer().getScheduler().runTaskLater(plugin, item::remove, 15L + (4 * i++));
                         }
                     }

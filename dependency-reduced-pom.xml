@@ -76,7 +76,7 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.4</version>
+      <version>1.16.10</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -96,14 +96,13 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>rip.thecraft</groupId>
+      <groupId>gg.manny.minespigot</groupId>
       <artifactId>spigot-api</artifactId>
       <version>1.7.10-R0.1-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>C:\Users\ItsAy\Desktop\Projects\The Craft\brawl/lib/spigot-server.jar</systemPath>
+      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>rip.thecraft</groupId>
+      <groupId>gg.manny.minespigot</groupId>
       <artifactId>spigot-server</artifactId>
       <version>1.7.10-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
