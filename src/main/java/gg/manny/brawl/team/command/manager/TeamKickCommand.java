@@ -2,6 +2,7 @@ package gg.manny.brawl.team.command.manager;
 
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.player.simple.SimpleOfflinePlayer;
+import gg.manny.brawl.scoreboard.NametagAdapter;
 import gg.manny.brawl.team.Team;
 import gg.manny.pivot.Pivot;
 import gg.manny.quantum.command.Command;
@@ -47,6 +48,7 @@ public class TeamKickCommand {
                 }
                 Brawl.getInstance().getTeamHandler().getUuidTeamMap().remove(uuid);
                 if (player != null) {
+
                     Pivot.getInstance().getNametagHandler().reloadPlayer(player);
                     Pivot.getInstance().getNametagHandler().reloadOthersFor(player);
                 }

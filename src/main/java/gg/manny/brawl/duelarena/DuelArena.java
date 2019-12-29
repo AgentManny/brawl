@@ -4,6 +4,7 @@ import gg.manny.brawl.Brawl;
 import gg.manny.brawl.item.type.InventoryType;
 import gg.manny.brawl.player.PlayerData;
 import gg.manny.brawl.player.PlayerState;
+import gg.manny.brawl.scoreboard.NametagAdapter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -35,6 +36,8 @@ public class DuelArena {
             Brawl.getInstance().getItemHandler().apply(player, InventoryType.ARENA);
             playerData.getQueueData().updateQuickQueue(player);
             player.getInventory().setHeldItemSlot(0);
+            NametagAdapter.reloadPlayer(player);
+            NametagAdapter.reloadOthersFor(player);
         }
 
         player.teleport(Brawl.getInstance().getLocationByName("DUEL_ARENA"));

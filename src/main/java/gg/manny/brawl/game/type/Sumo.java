@@ -1,10 +1,8 @@
 package gg.manny.brawl.game.type;
 
+import com.sun.webkit.dom.ElementImpl;
 import gg.manny.brawl.Brawl;
-import gg.manny.brawl.game.Game;
-import gg.manny.brawl.game.GameFlag;
-import gg.manny.brawl.game.GameState;
-import gg.manny.brawl.game.GameType;
+import gg.manny.brawl.game.*;
 import gg.manny.brawl.game.team.GamePlayer;
 import gg.manny.pivot.util.PlayerUtils;
 import gg.manny.pivot.util.TimeUtils;
@@ -108,10 +106,11 @@ public class Sumo extends Game implements Listener {
         }.runTaskTimerAsynchronously(Brawl.getInstance(), 20L, 20L);
     }
 
-    public void handleElimination(Player player, Location location, boolean disconnected) {
+    @Override
+    public void handleElimination(Player player, Location location, GameElimination elimination) {
         if (eliminate(player)) {
-            broadcast(ChatColor.DARK_RED + player.getName() + ChatColor.RED + (disconnected ? " disconnected" : " has been eliminated") + ".");
-            if (!disconnected) {
+            broadcast(ChatColor.DARK_RED + player.getName() + ChatColor.RED + (elimination == GameElimination.QUIT ? " disconnected" : " has been eliminated") + ".");
+            if (elimination != GameElimination.QUIT) {
                 Brawl.getInstance().getSpectatorManager().addSpectator(player, this);
                 player.teleport(this.getRandomLocation());
             }

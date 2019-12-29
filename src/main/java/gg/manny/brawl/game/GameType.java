@@ -42,11 +42,13 @@ public enum GameType {
 	),
 
 	OITC(
+			"One in the Chamber", "OITC",
 			new ItemBuilder(Material.BOW).build(),
 			RankType.ELITE,
 			"Sniper. One shot, one kill! Last man standing wins!",
 			2,
-			50
+			50,
+			new ArrayList<>()
 	),
 
 	TNT_TAG("TNT Tag", "Tag",
@@ -127,5 +129,6 @@ public enum GameType {
 			this.randomLocations = true;
 		}
 	}
+
 	
 }

@@ -4,6 +4,7 @@ import gg.manny.brawl.Brawl;
 import gg.manny.brawl.ability.Ability;
 import gg.manny.brawl.duelarena.match.Match;
 import gg.manny.brawl.game.Game;
+import gg.manny.brawl.game.GameElimination;
 import gg.manny.brawl.item.type.InventoryType;
 import gg.manny.brawl.killstreak.Killstreak;
 import gg.manny.brawl.kit.Kit;
@@ -11,6 +12,7 @@ import gg.manny.brawl.player.PlayerData;
 import gg.manny.brawl.player.simple.SimpleOfflinePlayer;
 import gg.manny.brawl.region.RegionType;
 import gg.manny.brawl.util.BrawlUtil;
+import gg.manny.pivot.Pivot;
 import gg.manny.pivot.util.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
@@ -117,6 +119,8 @@ public class PlayerListener implements Listener {
         player.setMaxHealth(20.0D);
         player.setHealth(20.0D);
         player.teleport(plugin.getLocationByName("SPAWN"));
+
+     //   player.setPlayerListName(player.getDisplayName());
         plugin.getItemHandler().apply(player, InventoryType.SPAWN);
 
         SimpleOfflinePlayer.init(player);
@@ -137,7 +141,7 @@ public class PlayerListener implements Listener {
         if (playerData.isEvent()) {
             Game game = Brawl.getInstance().getGameHandler().getActiveGame();
             if (game != null && game.containsPlayer(player)) {
-                game.handleElimination(player, event.getPlayer().getLocation(), true);
+                game.handleElimination(player, event.getPlayer().getLocation(), GameElimination.QUIT);
             }
         }
 

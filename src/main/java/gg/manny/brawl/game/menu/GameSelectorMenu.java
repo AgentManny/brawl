@@ -9,6 +9,7 @@ import gg.manny.pivot.menu.Menu;
 import gg.manny.pivot.util.ItemBuilder;
 import gg.manny.server.util.chatcolor.CC;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -77,6 +78,10 @@ public class GameSelectorMenu extends Menu {
         @Override
         public void clicked(Player player, int slot, ClickType clickType, int hotbarButton) {
             PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
+            if (gameType == GameType.TNT_TAG && !(player.getName().equals("Mannys"))) {
+                player.sendMessage(ChatColor.RED + "This game is currently disabled. Please try again later.");
+                return;
+            }
             if(playerData.hasGame(gameType)) {
 
                 //TODO CREATE GAME kit.apply(player, true, true);

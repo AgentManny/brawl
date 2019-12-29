@@ -36,7 +36,7 @@ public class Fireball extends Ability {
         }
 
         if (fireball == null) {
-            player.getInventory().setItem(8, new ItemStack(Material.FIREWORK, 2));
+            player.getInventory().setItem(8, new ItemStack(Material.FIREBALL, 2));
         }
         player.updateInventory();
     }

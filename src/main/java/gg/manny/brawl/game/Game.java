@@ -8,9 +8,11 @@ import gg.manny.brawl.game.scoreboard.GameScoreboard;
 import gg.manny.brawl.game.team.GamePlayer;
 import gg.manny.brawl.player.PlayerData;
 import gg.manny.brawl.player.statistic.StatisticType;
+import gg.manny.brawl.scoreboard.NametagAdapter;
 import gg.manny.brawl.util.Tasks;
 import gg.manny.pivot.util.PlayerUtils;
 import gg.manny.pivot.util.TimeUtils;
+import gg.manny.pivot.util.chatcolor.CC;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import mkremins.fanciful.FancyMessage;
@@ -66,6 +68,8 @@ public abstract class Game {
                 gamePlayer.setAlive(true);
                 this.players.add(gamePlayer);
                 PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
+                NametagAdapter.reloadPlayer(player);
+                NametagAdapter.reloadOthersFor(player);
             }
         });
     }
@@ -135,11 +139,10 @@ public abstract class Game {
         return true;
     }
 
-    public void handleElimination(Player player, Location location, boolean disconnected) {
+    public void handleElimination(Player player, Location location, GameElimination elimination) {
         if (eliminate(player)) {
-            broadcast(ChatColor.DARK_RED + player.getName() + ChatColor.RED + (disconnected ? " disconnected" : " has been eliminated") + ".");
-            if (!disconnected) {
-
+            broadcast(ChatColor.DARK_RED + player.getName() + ChatColor.RED + (elimination == GameElimination.QUIT ? " disconnected" : " has been eliminated") + ".");
+            if (elimination != GameElimination.QUIT) {
                 Brawl.getInstance().getSpectatorManager().addSpectator(player, this);
                 player.teleport(this.getRandomLocation());
             }
@@ -160,6 +163,14 @@ public abstract class Game {
 
     public List<String> getSidebar(Player player) {
         return GameScoreboard.getDefault(this);
+    }
+
+    public String handleNametag(Player toRefresh, Player refreshFor) {
+        if (spectators.contains(toRefresh.getUniqueId())) {
+            return CC.GRAY;
+        }
+
+        return CC.LIGHT_PURPLE;
     }
 
     public String getVariables(String entry) {
@@ -309,15 +320,18 @@ public abstract class Game {
     }
 
     public boolean containsPlayer(Player player) {
-        for (GamePlayer gamePlayer : this.players) {
-            if (gamePlayer.getUniqueId().equals(player.getUniqueId())) {
-                return true;
+        if (player != null) {
+            for (GamePlayer gamePlayer : this.players) {
+                if (gamePlayer.getUniqueId().equals(player.getUniqueId())) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
     public GamePlayer getGamePlayer(Player player) {
+        if (player == null) return null;
         for (GamePlayer gamePlayer : this.players) {
             if (gamePlayer.getUniqueId().equals(player.getUniqueId())) {
                 return gamePlayer;

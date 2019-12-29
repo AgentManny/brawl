@@ -1,10 +1,7 @@
 package gg.manny.brawl.game.type;
 
 import gg.manny.brawl.Brawl;
-import gg.manny.brawl.game.Game;
-import gg.manny.brawl.game.GameFlag;
-import gg.manny.brawl.game.GameState;
-import gg.manny.brawl.game.GameType;
+import gg.manny.brawl.game.*;
 import gg.manny.brawl.game.team.GamePlayer;
 import gg.manny.brawl.kit.Kit;
 import org.bukkit.ChatColor;
@@ -32,10 +29,11 @@ public class FFA extends Game implements Listener {
         });
     }
 
-    public void handleElimination(Player player, Location location, boolean disconnected) {
+    @Override
+    public void handleElimination(Player player, Location location, GameElimination elimination) {
         if (eliminate(player)) {
-            broadcast(ChatColor.DARK_RED + player.getName() + ChatColor.RED + (disconnected ? " disconnected" : " has been eliminated") + ".");
-            if (!disconnected) {
+            broadcast(ChatColor.DARK_RED + player.getName() + ChatColor.RED + (elimination == GameElimination.QUIT ? " disconnected" : " has been eliminated") + ".");
+            if (elimination != GameElimination.QUIT) {
                 player.teleport(location);
                 Brawl.getInstance().getSpectatorManager().addSpectator(player, this);
                 Brawl.getInstance().getServer().getScheduler().runTaskLater(Brawl.getInstance(), () -> {

@@ -39,6 +39,7 @@ import gg.manny.brawl.player.simple.SimpleOfflinePlayer;
 import gg.manny.brawl.player.simple.adapter.SimpleOfflinePlayerAdapter;
 import gg.manny.brawl.region.RegionHandler;
 import gg.manny.brawl.region.command.RegionCommands;
+import gg.manny.brawl.scoreboard.NametagAdapter;
 import gg.manny.brawl.scoreboard.ScoreboardAdapter;
 import gg.manny.brawl.spectator.SpectatorManager;
 import gg.manny.brawl.task.SoupTask;
@@ -264,7 +265,7 @@ public class Brawl extends JavaPlugin {
         Pivot.getInstance().getChatHandler().setChatFormat(new BrawlChatFormat(Pivot.getInstance()));
 
         NametagHandler nh = Pivot.getInstance().getNametagHandler();
-        nh.registerProvider(this.registerNametag());
+        nh.registerProvider(new NametagAdapter(this));
 
     }
 

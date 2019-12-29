@@ -3,10 +3,13 @@ package gg.manny.brawl.command;
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.duelarena.DuelArena;
 import gg.manny.brawl.game.Game;
+import gg.manny.brawl.game.GameElimination;
 import gg.manny.brawl.game.GameHandler;
 import gg.manny.brawl.game.team.GamePlayer;
 import gg.manny.brawl.item.type.InventoryType;
 import gg.manny.brawl.player.PlayerData;
+import gg.manny.brawl.scoreboard.NametagAdapter;
+import gg.manny.brawl.spectator.SpectatorManager;
 import gg.manny.brawl.util.BrawlUtil;
 import gg.manny.quantum.command.Command;
 import lombok.RequiredArgsConstructor;
@@ -32,14 +35,25 @@ public class SpawnCommand {
         PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(sender);
         if (playerData.isEvent()) {
             GameHandler gh = plugin.getGameHandler();
+            SpectatorManager sm = plugin.getSpectatorManager();
             if (gh.getLobby() != null && gh.getLobby().getPlayers().contains(sender.getUniqueId())) {
                 gh.getLobby().leave(sender.getUniqueId());
-            } else if (gh.getActiveGame() != null && gh.getActiveGame().containsPlayer(sender)) {
-                Game game = gh.getActiveGame();
-                GamePlayer gamePlayer = game.getGamePlayer(sender);
-                if (gamePlayer.isAlive()) {
-                    sender.sendMessage(ChatColor.RED + "Are you sure you want to leave? You'll get eliminated.");
+            }
+
+            Game game = gh.getActiveGame();
+            if (game != null) {
+                if (game.containsPlayer(sender)) {
+                    GamePlayer gamePlayer = game.getGamePlayer(sender);
+                    if (gamePlayer.isAlive()) {
+                        game.handleElimination(sender, sender.getLocation(), GameElimination.OTHER);
+                    }
                 }
+
+                if (sm.inSpectator(sender)) {
+                    sm.removeSpectator(sender.getUniqueId(), game, false);
+                }
+                NametagAdapter.reloadPlayer(sender);
+                NametagAdapter.reloadOthersFor(sender);
             }
             return;
         }
@@ -60,6 +74,8 @@ public class SpawnCommand {
             if (playerData.getSelectedKit() == null) {
                 if (!sender.hasMetadata("staffmode")) {
                     plugin.getItemHandler().apply(sender, InventoryType.SPAWN);
+                    NametagAdapter.reloadPlayer(sender);
+                    NametagAdapter.reloadOthersFor(sender);
                 }
             } else {
                 sender.sendMessage(ChatColor.YELLOW + "Clear your kit by using " + ChatColor.LIGHT_PURPLE + "/clearkit" + ChatColor.YELLOW + ".");

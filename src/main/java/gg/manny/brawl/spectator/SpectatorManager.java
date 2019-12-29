@@ -4,6 +4,7 @@ import gg.manny.brawl.Brawl;
 import gg.manny.brawl.game.Game;
 import gg.manny.brawl.item.type.InventoryType;
 import gg.manny.brawl.player.PlayerData;
+import gg.manny.brawl.scoreboard.NametagAdapter;
 import gg.manny.pivot.staff.StaffMode;
 import gg.manny.pivot.util.PlayerUtils;
 import org.bukkit.Bukkit;
@@ -98,6 +99,9 @@ public class SpectatorManager implements Listener {
                 PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
                 Brawl.getInstance().getItemHandler().apply(player, InventoryType.SPAWN);
 
+                NametagAdapter.reloadPlayer(player);
+                NametagAdapter.reloadOthersFor(player);
+
             }
 
         }
@@ -116,10 +120,15 @@ public class SpectatorManager implements Listener {
             player.setFlying(true);
 
             for (Player online : Bukkit.getOnlinePlayers()) {
+                if (online == player) continue;
                 online.hidePlayer(player); // Spectator mode
             }
 
             Brawl.getInstance().getItemHandler().apply(player, InventoryType.SPECTATOR);
+
+            NametagAdapter.reloadPlayer(player);
+            NametagAdapter.reloadOthersFor(player);
+
             game.getSpectators().add(player.getUniqueId());
             spectators.add(player.getUniqueId());
         }

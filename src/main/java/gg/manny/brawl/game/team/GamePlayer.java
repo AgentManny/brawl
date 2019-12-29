@@ -4,6 +4,7 @@ import gg.manny.brawl.Brawl;
 import gg.manny.brawl.item.type.InventoryType;
 import gg.manny.brawl.player.PlayerData;
 import gg.manny.brawl.player.cps.ClickTracker;
+import gg.manny.brawl.scoreboard.NametagAdapter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -55,6 +56,9 @@ public class GamePlayer {
 
         player.teleport(Brawl.getInstance().getLocationByName("SPAWN"));
         Brawl.getInstance().getItemHandler().apply(player, InventoryType.SPAWN);
+
+        NametagAdapter.reloadPlayer(player);
+        NametagAdapter.reloadOthersFor(player);
     }
 
     public String getDisplayName() {

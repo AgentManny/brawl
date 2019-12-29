@@ -8,6 +8,7 @@ public enum GameFlag {
     CRAFTING,
     HUNGER,
 
-    NO_FALL
+    NO_FALL,
+    NO_PVP
 
 }

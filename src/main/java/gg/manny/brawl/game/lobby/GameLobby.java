@@ -7,6 +7,7 @@ import gg.manny.brawl.game.map.GameMap;
 import gg.manny.brawl.game.team.GameTeam;
 import gg.manny.brawl.item.type.InventoryType;
 import gg.manny.brawl.player.PlayerData;
+import gg.manny.brawl.scoreboard.NametagAdapter;
 import gg.manny.pivot.Pivot;
 import gg.manny.pivot.util.PlayerUtils;
 import gg.manny.pivot.util.TimeUtils;
@@ -73,7 +74,10 @@ public class GameLobby {
 
         updateVotes();
         player.getInventory().setItem(8, brawl.getItemHandler().toItemStack("LANGUAGE.ITEM.GAME.LOBBY.LEAVE_ITEM", brawl.getMainConfig().getConfiguration()));
-        Pivot.getInstance().getNametagHandler().reloadPlayer(player);
+
+        NametagAdapter.reloadPlayer(player);
+        NametagAdapter.reloadOthersFor(player);
+
         player.updateInventory();
     }
 
@@ -118,6 +122,9 @@ public class GameLobby {
             playerData.setEvent(false);
             player.teleport(brawl.getLocationByName("SPAWN"));
             brawl.getItemHandler().apply(player, InventoryType.SPAWN);
+
+            NametagAdapter.reloadPlayer(player);
+            NametagAdapter.reloadOthersFor(player);
         }
         removeVote(uuid);
         GameTeam team = this.getTeamByPlayer(uuid);
@@ -125,6 +132,8 @@ public class GameLobby {
             team.broadcast(Game.PREFIX_ERROR + ChatColor.RED + "Team disbanded as " + (player == null ? "someone" : player.getDisplayName()) + " left.");
             this.teams.remove(team);
         }
+
+
     }
 
     public Map<String, Integer> getSortedVotes() {

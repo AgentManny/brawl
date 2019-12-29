@@ -2,6 +2,7 @@ package gg.manny.brawl.listener;
 
 import gg.manny.brawl.Brawl;
 import gg.manny.brawl.game.Game;
+import gg.manny.brawl.game.GameElimination;
 import gg.manny.brawl.game.GameFlag;
 import gg.manny.brawl.item.type.InventoryType;
 import gg.manny.brawl.kit.Kit;
@@ -55,7 +56,7 @@ public class DamageListener implements Listener {
         switch(playerData.getPlayerState()) {
             case GAME: {
                 Game game = Brawl.getInstance().getGameHandler().getActiveGame();
-                game.handleElimination(player, player.getLocation(), false);
+                game.handleElimination(player, player.getLocation(), player.getKiller() != null ? GameElimination.PLAYER : GameElimination.DEATH);
                 break;
             }
             case MATCH: {
@@ -263,8 +264,10 @@ public class DamageListener implements Listener {
             }
 
             Game game = plugin.getGameHandler().getActiveGame();
-            if (game != null && game.containsPlayer(player) && game.getGamePlayer(player).isAlive() && game.getFlags().contains(GameFlag.NO_FALL) && e.getCause() == EntityDamageEvent.DamageCause.FALL) {
-                e.setCancelled(true);
+            if (game != null && game.containsPlayer(player) && game.getGamePlayer(player).isAlive()) {
+                if (game.getFlags().contains(GameFlag.NO_FALL) && e.getCause() == EntityDamageEvent.DamageCause.FALL) {
+                    e.setCancelled(true);
+                }
             }
 
             Player damager = null;

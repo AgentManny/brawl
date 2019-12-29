@@ -5,6 +5,7 @@ import gg.manny.brawl.duelarena.DuelArena;
 import gg.manny.brawl.duelarena.match.Match;
 import gg.manny.brawl.duelarena.match.MatchState;
 import gg.manny.brawl.game.Game;
+import gg.manny.brawl.game.GameElimination;
 import gg.manny.brawl.game.GameFlag;
 import gg.manny.brawl.game.team.GamePlayer;
 import gg.manny.brawl.kit.Kit;
@@ -83,7 +84,7 @@ public class MovementListener implements SimpleMovementHandler, Listener {
                 GamePlayer gamePlayer = game.getGamePlayer(player);
                 if (gamePlayer.isAlive() && game.getFlags().contains(GameFlag.WATER_ELIMINATE)) {
                     if (to.getBlock().isLiquid()) {
-                        game.handleElimination(player, to, false);
+                        game.handleElimination(player, to, GameElimination.WATER);
                     }
                 }
             }

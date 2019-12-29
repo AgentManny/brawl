@@ -1,11 +1,7 @@
 package gg.manny.brawl.game.type;
 
-import com.sun.org.apache.bcel.internal.generic.FADD;
 import gg.manny.brawl.Brawl;
-import gg.manny.brawl.game.Game;
-import gg.manny.brawl.game.GameFlag;
-import gg.manny.brawl.game.GameState;
-import gg.manny.brawl.game.GameType;
+import gg.manny.brawl.game.*;
 import gg.manny.brawl.game.team.GamePlayer;
 import gg.manny.brawl.util.ParticleEffect;
 import gg.manny.pivot.util.ItemBuilder;
@@ -59,6 +55,7 @@ public class Tag extends Game implements Listener {
             player.teleport(this.getLocationByName("Lobby"));
         });
 
+        state = GameState.STARTED;
         Bukkit.getScheduler().runTaskLater(Brawl.getInstance(), this::startRound, 60L);
     }
 
@@ -126,16 +123,21 @@ public class Tag extends Game implements Listener {
 
             if (gamePlayer.toPlayer() != null) {
                 Player player = gamePlayer.toPlayer();
+
                 player.getWorld().createExplosion(player.getLocation(), 0F, false);
                 player.sendMessage(Game.PREFIX + ChatColor.YELLOW + "You have started as IT.");
                 updatePlayer(player, true);
             }
         }
 
+        if (this.taggers.isEmpty()) {
+            end();
+            return;
+        }
 
+        state = GameState.STARTED;
         this.broadcast(Game.PREFIX + ChatColor.YELLOW + "Taggers: " + ChatColor.LIGHT_PURPLE + StringUtils.join(playersFormat, ", "));
         this.startExplosionTimer();
-        state = GameState.STARTED;
     }
 
     public void startExplosionTimer() {
@@ -181,6 +183,15 @@ public class Tag extends Game implements Listener {
         }.runTaskTimerAsynchronously(Brawl.getInstance(), 20L, 20L);
     }
 
+    @Override
+    public String handleNametag(Player toRefresh, Player refreshFor) {
+        if (taggers != null && containsPlayer(toRefresh) && taggers.contains(getGamePlayer(toRefresh))) {
+            return CC.RED;
+        }
+
+        return super.handleNametag(toRefresh, refreshFor);
+    }
+
     public void explode() {
 
         Iterator<GamePlayer> iterator = taggers.iterator();
@@ -191,9 +202,7 @@ public class Tag extends Game implements Listener {
             Arrays.asList(ParticleEffect.LARGE_SMOKE, ParticleEffect.HUGE_EXPLOSION, ParticleEffect.LAVA).forEach(effect -> effect.send(player.getLocation(), 0, 0, 0, 1.0f, 1));
 
             player.sendMessage(Game.PREFIX + ChatColor.YELLOW + "You blew up.");
-
-            this.handleElimination(player, player.getLocation(), false);
-
+            player.setHealth(0);
             iterator.remove();
         }
 
@@ -201,10 +210,11 @@ public class Tag extends Game implements Listener {
         this.playSound(Sound.EXPLODE, 1.0F, 1.0F);
     }
 
-    public void handleElimination(Player player, Location location, boolean disconnected) {
+    @Override
+    public void handleElimination(Player player, Location location, GameElimination elimination) {
         if (eliminate(player)) {
-            broadcast(ChatColor.DARK_RED + player.getName() + ChatColor.RED + (disconnected ? " disconnected" : " has been eliminated") + ".");
-            if (!disconnected) {
+            broadcast(ChatColor.DARK_RED + player.getName() + ChatColor.RED + (elimination == GameElimination.QUIT ? " disconnected" : " blew up.") + ".");
+            if (elimination != GameElimination.QUIT) {
                 Brawl.getInstance().getSpectatorManager().addSpectator(player, this);
                 player.teleport(this.getRandomLocation());
             }
@@ -215,10 +225,6 @@ public class Tag extends Game implements Listener {
                 this.winners.add(winner);
 
                 this.end();
-            } else {
-                if (taggers.isEmpty() && explosionTask != null) {
-                    this.startRound();
-                }
             }
         }
     }
@@ -285,7 +291,7 @@ public class Tag extends Game implements Listener {
         }
     }
 
-                         @Override
+    @Override
     public List<String> getSidebar(Player player) {
         List<String> toReturn = new ArrayList<>();
         toReturn.add(CC.DARK_PURPLE + "Event: " + CC.LIGHT_PURPLE + getType().getShortName());

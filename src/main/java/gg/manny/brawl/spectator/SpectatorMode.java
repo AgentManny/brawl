@@ -5,6 +5,7 @@ import gg.manny.brawl.duelarena.match.Match;
 import gg.manny.brawl.game.Game;
 import gg.manny.brawl.game.lobby.GameLobby;
 import gg.manny.brawl.item.type.InventoryType;
+import gg.manny.brawl.scoreboard.NametagAdapter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -59,7 +60,9 @@ public class SpectatorMode {
         mode.setSpectating(type);
 
         Brawl.getInstance().getItemHandler().apply(spectator, InventoryType.SPECTATOR);
-
+        NametagAdapter.reloadPlayer(spectator);
+        NametagAdapter.reloadOthersFor(spectator);
+        
         return mode;
     }
 
