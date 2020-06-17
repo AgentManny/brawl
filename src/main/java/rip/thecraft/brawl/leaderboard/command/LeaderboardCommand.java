@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.leaderboard.menu.LeaderboardMenu;
+import rip.thecraft.brawl.visual.VisualManager;
 import rip.thecraft.spartan.command.Command;
 
 public class LeaderboardCommand {
@@ -21,7 +22,7 @@ public class LeaderboardCommand {
 
     @Command(names = { "leaderboards holoset", "lb holoset" }, permission = "op")
     public void holoSet(Player sender) {
-        Brawl.getInstance().setLocationByName("LB_HOLO", sender.getLocation());
+        Brawl.getInstance().setLocationByName(VisualManager.PLAYER_HOLO_STATS, sender.getLocation());
         sender.sendMessage(ChatColor.GREEN + "Set leaderboard holograms");
     }
 

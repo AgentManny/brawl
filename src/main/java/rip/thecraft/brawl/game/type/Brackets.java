@@ -12,6 +12,7 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.*;
 import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.kit.Kit;
+import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.PlayerUtils;
 import rip.thecraft.spartan.util.TimeUtils;
@@ -75,7 +76,7 @@ public class Brackets extends Game implements Listener {
 
             player.sendMessage(Game.PREFIX + ChatColor.YELLOW + "Your opponent is " + ChatColor.LIGHT_PURPLE + getOpposite(gamePlayer).getName() + ChatColor.YELLOW + ".");
             player.playSound(player.getLocation(), Sound.FIREWORK_TWINKLE, 1.0F, 1.0F);
-            PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
+            PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
         }
 
         setTime(3);

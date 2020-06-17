@@ -32,7 +32,7 @@ import rip.thecraft.brawl.duelarena.command.adapter.ArenaCommandAdapter;
 import rip.thecraft.brawl.event.EventHandler;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameHandler;
-import rip.thecraft.brawl.hologram.HologramManager;
+import rip.thecraft.brawl.visual.VisualManager;
 import rip.thecraft.brawl.item.ItemHandler;
 import rip.thecraft.brawl.killstreak.KillstreakHandler;
 import rip.thecraft.brawl.kit.Kit;
@@ -96,7 +96,7 @@ public class Brawl extends JavaPlugin {
     private SpectatorManager spectatorManager;
 
     private Leaderboard leaderboard;
-    private HologramManager hologramManager;
+    private VisualManager visualManager;
 
     private RegionHandler regionHandler;
 
@@ -210,7 +210,7 @@ public class Brawl extends JavaPlugin {
         this.warpManager = new WarpManager();
 
         this.leaderboard = new Leaderboard(this);
-        this.hologramManager = new HologramManager(this);
+        this.visualManager = new VisualManager(this);
 
         this.regionHandler = new RegionHandler(this);
 
