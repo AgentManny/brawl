@@ -168,6 +168,8 @@ public class Brawl extends JavaPlugin {
         MCommandHandler.registerParameterType(PlayerData.class, new PlayerDataTypeAdapter(this));
 
         Arrays.asList(
+                new HelpCommand(),
+                new SetRefillCommand(),
 
                 new ExpModifyCommand(),
 
