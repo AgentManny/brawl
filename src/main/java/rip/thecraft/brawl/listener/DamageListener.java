@@ -121,10 +121,12 @@ public class DamageListener implements Listener {
 
                     killerData.getSpawnData().killed(player);
 
-                    int killstreak = (int) killerData.getStatistic().get(StatisticType.KILLSTREAK);
-                    int killstreakMultiplier = killstreak > 5 ? (int) Math.min(15, (killstreak * 0.2)) : 0;
-                    
-                    killerData.getLevel().addExp(killer, (int) Math.min(15, (killerData.getStatistic().get(StatisticType.KILLSTREAK) * 0.2)), "Killed " + player.getDisplayName());
+                    int killExp = 5; // You always get 5 exp per kill
+                    if (killerData.getStatistic().get(StatisticType.KILLSTREAK) > 5) {
+                        killExp += (int) Math.min(50, (killerData.getStatistic().get(StatisticType.KILLSTREAK) * 0.75)); // Killstreak multiplier only takes effect after 5 kills
+                    }
+
+                    killerData.getLevel().addExp(killer, killExp, "Killed " + player.getDisplayName());
                     playerData.getSpawnData().applyAssists(killer, playerData.getSpawnData().getWorth());
 
                     killerData.setPreviousKill(player.getUniqueId());

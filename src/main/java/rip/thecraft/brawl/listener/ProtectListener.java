@@ -3,12 +3,6 @@ package rip.thecraft.brawl.listener;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.game.Game;
-import rip.thecraft.brawl.game.GameFlag;
-import rip.thecraft.brawl.game.GameHandler;
-import rip.thecraft.brawl.game.option.impl.StoreBlockOption;
-import rip.thecraft.brawl.player.PlayerData;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -29,6 +23,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.material.Cauldron;
 import org.bukkit.material.MaterialData;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.game.Game;
+import rip.thecraft.brawl.game.GameFlag;
+import rip.thecraft.brawl.game.GameHandler;
+import rip.thecraft.brawl.game.option.impl.StoreBlockOption;
+import rip.thecraft.brawl.player.PlayerData;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -87,7 +87,7 @@ public class ProtectListener implements Listener {
     public void onEntity(EntityDeathEvent event) {
         if (!(event.getEntity() instanceof Player)) {
             event.setDroppedExp(0);
-            event.getDrops().clear();;
+            event.getDrops().clear();
         }
     }
 
@@ -108,15 +108,15 @@ public class ProtectListener implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        PlayerData pd = plugin.getPlayerDataHandler().getPlayerData(event.getPlayer());
+        Player player = event.getPlayer();
 
-        if (event.getClickedBlock() != null && !pd.isBuild()) {
+        if (event.getClickedBlock() != null && !player.hasMetadata("build")) {
 
             if (event.getItem() != null && (event.getItem().getType() == Material.CHEST || event.getItem().getType() == Material.TRAPPED_CHEST)) {
                 event.setUseInteractedBlock(Event.Result.DENY);
                 event.setUseItemInHand(Event.Result.DENY);
                 event.setCancelled(true);
-                event.getPlayer().updateInventory();
+                player.updateInventory();
             }
         }
 
@@ -125,7 +125,7 @@ public class ProtectListener implements Listener {
         Block block = event.getClickedBlock();
         Action action = event.getAction();
         if (action == Action.PHYSICAL) { // Prevent players from trampling on crops or pressure plates, etc.
-            if (!pd.isBuild()) {
+            if (!player.hasMetadata("build")) {
                 event.setCancelled(true);
             }
         } else if (action == Action.RIGHT_CLICK_BLOCK) {
@@ -153,7 +153,7 @@ public class ProtectListener implements Listener {
                 }
             }
 
-            if (!canRightClick && !pd.isBuild()) {
+            if (!canRightClick && !player.hasMetadata("build")) {
                 event.setCancelled(true);
             }
         }
@@ -166,15 +166,12 @@ public class ProtectListener implements Listener {
     }
 
     @EventHandler
-    public void onBlockBreak(final BlockPlaceEvent event) {
-        PlayerData pd = plugin.getPlayerDataHandler().getPlayerData(event.getPlayer());
-        if (!pd.isBuild()) {
+    public void onBlockBreak(BlockPlaceEvent event) {
+        if (!event.getPlayer().hasMetadata("build")) {
             event.setBuild(false);
             event.setCancelled(true);
             return;
         }
-
-
     }
 
     @EventHandler
@@ -183,9 +180,7 @@ public class ProtectListener implements Listener {
             return;
         }
 
-        PlayerData pd = plugin.getPlayerDataHandler().getPlayerData((Player) event.getRemover());
-
-        if (!pd.isBuild()) {
+        if (!event.getRemover().hasMetadata("build")) {
             event.setCancelled(true);
             return;
         }
@@ -225,7 +220,7 @@ public class ProtectListener implements Listener {
         }
         PlayerData pd = plugin.getPlayerDataHandler().getPlayerData(event.getPlayer());
 
-        if (!pd.isBuild()) {
+        if (!event.getPlayer().hasMetadata("build")) {
             event.setCancelled(true);
             return;
         }
@@ -263,7 +258,7 @@ public class ProtectListener implements Listener {
             }
         }
 
-        if (!playerData.isBuild()) {
+        if (!player.hasMetadata("build")) {
             event.setCancelled(true);
             event.setExpToDrop(0);
         }
