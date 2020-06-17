@@ -34,7 +34,6 @@ import rip.thecraft.spartan.util.PlayerUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 @RequiredArgsConstructor
 public class DamageListener implements Listener {
@@ -121,7 +120,11 @@ public class DamageListener implements Listener {
                     }
 
                     killerData.getSpawnData().killed(player);
-                    killerData.getLevel().addExp(killer, ThreadLocalRandom.current().nextInt(2, (int) Math.min(50, 10 + (killerData.getStatistic().get(StatisticType.KILLSTREAK) * 2))), "Killed " + player.getDisplayName());
+
+                    int killstreak = (int) killerData.getStatistic().get(StatisticType.KILLSTREAK);
+                    int killstreakMultiplier = killstreak > 5 ? (int) Math.min(15, (killstreak * 0.2)) : 0;
+                    
+                    killerData.getLevel().addExp(killer, (int) Math.min(15, (killerData.getStatistic().get(StatisticType.KILLSTREAK) * 0.2)), "Killed " + player.getDisplayName());
                     playerData.getSpawnData().applyAssists(killer, playerData.getSpawnData().getWorth());
 
                     killerData.setPreviousKill(player.getUniqueId());
