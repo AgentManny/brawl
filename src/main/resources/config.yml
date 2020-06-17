@@ -1,3 +1,8 @@
+mongo:
+  database: "brawl"
+  host: "127.0.0.1:27017"
+  username: ""
+  password: ""
 ALLOWED_COMMANDS:
   - "ignore"
   - "unignore"

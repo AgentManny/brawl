@@ -38,6 +38,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib</artifactId>
+            <version>3.6.5-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Other -->
         <dependency>
             <groupId>org.projectlombok</groupId>
