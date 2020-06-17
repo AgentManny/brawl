@@ -6,6 +6,8 @@ import lombok.Setter;
 import org.bson.Document;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.levels.task.LevelFlashTask;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.util.MathUtil;
@@ -14,7 +16,7 @@ import rip.thecraft.brawl.util.MathUtil;
 @RequiredArgsConstructor
 public class Level {
 
-    public static final int BASE_EXPERIENCE = 15;
+    public static final int BASE_EXPERIENCE = 25;
 
     private final PlayerData playerData;
 
@@ -46,8 +48,7 @@ public class Level {
 
         if (player != null) {
             player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "LEVEL UNLOCKED! " + ChatColor.GRAY + "You've ranked up to level " + ChatColor.GREEN + getCurrentLevel() + ChatColor.GRAY + "!");
-            player.setLevel(getCurrentLevel());
-            player.setExp(0); // Resets back to normal
+            new LevelFlashTask(player, this).runTaskTimer(Brawl.getInstance(), 0, 7); // Run cool animation :D
         }
         playerData.markForSave();
     }
@@ -56,14 +57,16 @@ public class Level {
         return (int) Math.max(1, playerData.getStatistic().get(StatisticType.LEVEL));
     }
 
-    public void load(Document document) {
-        this.currentExp = document.getInteger("exp", 0);
-
-        Player player = playerData.getPlayer();
+    public void updateExp(Player player) {
         if (player != null) {
             player.setLevel(getCurrentLevel());
             player.setExp((float) (getPercentage() * 0.01F));
         }
+    }
+
+    public void load(Document document) {
+        this.currentExp = document.getInteger("exp", 0);
+        updateExp(getPlayerData().getPlayer());
     }
 
     public Document toDocument() {

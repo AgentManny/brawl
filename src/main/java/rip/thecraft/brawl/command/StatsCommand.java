@@ -3,6 +3,7 @@ package rip.thecraft.brawl.command;
 import com.google.common.base.Strings;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import rip.thecraft.brawl.levels.Level;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.player.statistic.StatisticType;
@@ -18,7 +19,13 @@ public class StatsCommand {
         sender.sendMessage(ChatColor.YELLOW + "Stats for " + ChatColor.LIGHT_PURPLE + player.getName());
         sender.sendMessage(line);
         for (StatisticType type : StatisticType.values()) {
-            sender.sendMessage(ChatColor.YELLOW + type.getName() + ChatColor.GRAY + ": " + ChatColor.LIGHT_PURPLE + Math.round(player.getStatistic().get(type)));
+            String displayValue =  String.valueOf(Math.round(player.getStatistic().get(type)));
+            if (type == StatisticType.LEVEL) {
+                Level level = player.getLevel();
+                displayValue += " (" + level.getCurrentExp() + "/" + level.getMaxExperience() + ")";
+                sender.sendMessage(ChatColor.YELLOW + type.getName() + ChatColor.GRAY + ": " + ChatColor.LIGHT_PURPLE + Math.round(player.getStatistic().get(type)));
+            }
+            sender.sendMessage(ChatColor.YELLOW + type.getName() + ChatColor.GRAY + ": " + ChatColor.LIGHT_PURPLE +  displayValue);
         }
         sender.sendMessage(line);
     }

@@ -46,6 +46,8 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
     @Override
     public void getLines(LinkedList<String> lines, Player player) {
         PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
+        if (playerData == null) return;
+
         lines.add(LINE_SEPARATOR);
         switch (playerData.getPlayerState()) {
             case GAME: {
@@ -72,7 +74,6 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
                 break;
             }
         }
-        lines.add(" ");
         lines.add(ChatColor.WHITE + LINE_SEPARATOR);
     }
 
@@ -88,9 +89,8 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
             toReturn.add(ChatColor.DARK_PURPLE  + "Highest Killstreak: " + ChatColor.LIGHT_PURPLE  + (int) statistic.get(StatisticType.HIGHEST_KILLSTREAK));
             toReturn.add(ChatColor.DARK_PURPLE + "KDR: " + ChatColor.LIGHT_PURPLE  + (int) statistic.get(StatisticType.KDR));
             toReturn.add(ChatColor.DARK_PURPLE + "Credits: " + ChatColor.LIGHT_PURPLE  + (int) statistic.get(StatisticType.CREDITS));
+            toReturn.add(ChatColor.DARK_PURPLE + "Level: " + ChatColor.LIGHT_PURPLE + level.getCurrentLevel() + " (" + level.getCurrentExp() + "/" + level.getMaxExperience() + " XP)");
         }
-
-        toReturn.add(ChatColor.DARK_PURPLE + "Level: " + ChatColor.LIGHT_PURPLE + level.getCurrentLevel() + " (" + level.getCurrentExp() + "/" + level.getMaxExperience() + " XP)");
 
         if (playerData.hasCooldown("ENDERPEARL")) {
             toReturn.add(ChatColor.DARK_RED + "Enderpearl: " + ChatColor.RED + DurationFormatter.getRemaining(playerData.getCooldown("ENDERPEARL").getRemaining()));
