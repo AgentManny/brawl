@@ -17,6 +17,7 @@ import rip.thecraft.brawl.duelarena.queue.QueueData;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.type.RankType;
+import rip.thecraft.brawl.kit.type.RefillType;
 import rip.thecraft.brawl.levels.Level;
 import rip.thecraft.brawl.player.data.SpawnData;
 import rip.thecraft.brawl.player.statistic.PlayerStatistic;
@@ -49,6 +50,8 @@ public class PlayerData {
 
     private Kit selectedKit;
     private Kit previousKit;
+
+    private RefillType refillType = RefillType.SOUP;
 
     private long combatTaggedTil;
 
@@ -98,6 +101,7 @@ public class PlayerData {
                 .append("statistic", this.statistic.getData())
                 .append("level", this.level.toDocument())
                 .append("kill-tracker", killTracker)
+                .append("healing-method", refillType.name())
                 .append("previous-kill", previousKill == null ? null : previousKill.toString());
     }
 
@@ -126,6 +130,10 @@ public class PlayerData {
         killTracker = document.getInteger("kill-tracker", 0);
         if (document.containsKey("previous-kill") && document.get("previous-kill") != null) {
             previousKill = BrawlUtil.isUUID("previous-kill") ? UUID.fromString(document.getString("previous-kill")) : null;
+        }
+
+        if (document.containsKey("healing-method")) {
+            refillType = RefillType.valueOf(document.getString("healing-method"));
         }
 
         this.loaded = true;

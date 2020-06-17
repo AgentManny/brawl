@@ -1,15 +1,6 @@
 package rip.thecraft.brawl.kit.command;
 
 import com.google.common.base.Strings;
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.item.item.Armor;
-import rip.thecraft.brawl.item.item.Items;
-import rip.thecraft.brawl.kit.Kit;
-import rip.thecraft.brawl.kit.type.RankType;
-import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.spartan.command.Command;
-import rip.thecraft.server.util.chatcolor.CC;
 import lombok.RequiredArgsConstructor;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.ChatColor;
@@ -17,6 +8,15 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.item.item.Armor;
+import rip.thecraft.brawl.item.item.Items;
+import rip.thecraft.brawl.kit.Kit;
+import rip.thecraft.brawl.kit.type.RankType;
+import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.server.util.chatcolor.CC;
+import rip.thecraft.spartan.command.Command;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -148,7 +148,7 @@ public class KitCommand {
         player.sendMessage(CC.LIGHT_PURPLE + "Kit Information of " + CC.WHITE + kit.getName());
         player.sendMessage(CC.LIGHT_PURPLE + "  Armor: " + CC.YELLOW + kit.getArmor().info());
 
-        player.sendMessage(CC.LIGHT_PURPLE + "  Content: " + CC.YELLOW + kit.getItems().info() + CC.WHITE + " (Refill: " + kit.getRefillType().name() + ")");
+        player.sendMessage(CC.LIGHT_PURPLE + "  Content: " + CC.YELLOW + kit.getItems().info());
         player.sendMessage(CC.LIGHT_PURPLE + "  Rank: " + CC.YELLOW + kit.getRankType().getDisplayName() + CC.WHITE + "[" + kit.getRankType().name() + "] ");
         player.sendMessage(CC.LIGHT_PURPLE + "  Abilities: " + CC.YELLOW + kit.getAbilities().stream().map(Ability::getName).collect(Collectors.joining(", ")));
         player.sendMessage(CC.LIGHT_PURPLE + "  Potion Effects:");

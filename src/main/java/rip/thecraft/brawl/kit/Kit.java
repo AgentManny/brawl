@@ -4,17 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mongodb.lang.Nullable;
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.item.item.Armor;
-import rip.thecraft.brawl.item.item.Items;
-import rip.thecraft.brawl.kit.type.RankType;
-import rip.thecraft.brawl.kit.type.RefillType;
-import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.util.BrawlUtil;
-import rip.thecraft.spartan.serialization.ItemStackAdapter;
-import rip.thecraft.spartan.serialization.PotionEffectAdapter;
-import rip.thecraft.spartan.util.PlayerUtils;
 import lombok.Data;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -23,6 +12,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.item.item.Armor;
+import rip.thecraft.brawl.item.item.Items;
+import rip.thecraft.brawl.kit.type.RankType;
+import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.util.BrawlUtil;
+import rip.thecraft.spartan.serialization.ItemStackAdapter;
+import rip.thecraft.spartan.serialization.PotionEffectAdapter;
+import rip.thecraft.spartan.util.PlayerUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +39,6 @@ public class Kit implements Listener, Comparable<Kit> {
     private double price = 0;
 
     private RankType rankType = RankType.NONE;
-    private RefillType refillType = RefillType.SOUP;
 
     private Armor armor = new Armor();
     private Items items = new Items();
@@ -64,7 +62,6 @@ public class Kit implements Listener, Comparable<Kit> {
         this.price = jsonObject.get("price").getAsDouble();
 
         this.rankType = jsonObject.has("rankType") ? RankType.valueOf(jsonObject.get("rankType").getAsString()) : RankType.NONE;
-        this.refillType = jsonObject.has("refillType") ? RefillType.valueOf(jsonObject.get("refillType").getAsString()) : RefillType.SOUP;
         jsonObject.get("potionEffects").getAsJsonArray().forEach(element -> this.potionEffects.add(PotionEffectAdapter.fromJson(element)));
 
         if (jsonObject.has("abilities") && !jsonObject.get("abilities").isJsonNull()) {
@@ -94,7 +91,6 @@ public class Kit implements Listener, Comparable<Kit> {
         jsonObject.addProperty("weight", this.weight);
         jsonObject.addProperty("price", this.price);
         jsonObject.addProperty("rankType", this.rankType.name());
-        jsonObject.addProperty("refillType", this.refillType.name());
 
         JsonArray potionEffectsArray = new JsonArray();
         for (PotionEffect potionEffect : this.potionEffects) {
@@ -118,9 +114,10 @@ public class Kit implements Listener, Comparable<Kit> {
 
     public void apply(Player player, boolean updateProfile, boolean addRefill) {
         PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
+
+        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
         if (updateProfile) {
             player.sendMessage(ChatColor.YELLOW + "You have chosen the " + ChatColor.LIGHT_PURPLE + this.name + ChatColor.YELLOW + " kit.");
-            PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
             playerData.setSelectedKit(this);
             playerData.getStatistic().get(this).addUses();
         }
@@ -132,10 +129,12 @@ public class Kit implements Listener, Comparable<Kit> {
         this.abilities.forEach(ability -> ability.onApply(player));
         this.potionEffects.forEach(potionEffect -> player.addPotionEffect(potionEffect, true));
 
+
         if (addRefill) {
-            if (this.refillType.getItem().getType() != Material.AIR) {
+            ItemStack item = playerData.getRefillType().getItem();
+            if (item.getType() != Material.AIR) {
                 while (player.getInventory().firstEmpty() != -1) {
-                    player.getInventory().addItem(this.refillType.getItem());
+                    player.getInventory().addItem(item);
                 }
             }
         }

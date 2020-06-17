@@ -19,7 +19,6 @@ import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameFlag;
-import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.SchedulerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
@@ -33,11 +32,10 @@ public class SoupListener implements Listener {
 
     @EventHandler
     public void onSign(SignChangeEvent event) {
-        if (event.getLine(0).equalsIgnoreCase("[Soup]") && event.getPlayer().isOp()) {
-            event.setLine(0, CC.DARK_PURPLE + "[Soup]");
+        if (event.getLine(0).equalsIgnoreCase("[Refill]") && event.getPlayer().isOp()) {
+            event.setLine(0, CC.DARK_PURPLE + "[Refill]");
             event.setLine(1, "Click here");
             event.setLine(2, "to refill");
-            event.setLine(3, "your soups.");
         }
     }
 
@@ -73,12 +71,12 @@ public class SoupListener implements Listener {
                 player.getItemInHand().setType(Material.BOWL);
             } else if (event.hasBlock() && event.getClickedBlock().getState() instanceof Sign) {
                 Sign sign = (Sign) event.getClickedBlock().getState();
-                if(sign.getLine(0).equalsIgnoreCase(ChatColor.DARK_PURPLE + "[Soup]")) {
-                    Inventory inventory = Bukkit.createInventory(null, 27, "Soups");
+                if(sign.getLine(0).equalsIgnoreCase(ChatColor.DARK_PURPLE + "[Refill]")) {
+                    Inventory inventory = Bukkit.createInventory(null, 27, "Refill");
                     PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
-                    Kit selectedKit = playerData.getSelectedKit();
+                    ItemStack item = playerData.getRefillType().getItem();
                     for(int i = 0; i < inventory.getSize(); i++) {
-                        inventory.setItem(i, selectedKit == null ? new ItemStack(Material.MUSHROOM_SOUP) : selectedKit.getRefillType().getItem());
+                        inventory.setItem(i, item);
                     }
                     event.getPlayer().openInventory(inventory);
                 }
