@@ -280,7 +280,7 @@ public class Match {
 
         finished(Bukkit.getPlayer(getOpposite(player.getUniqueId())));
 
-        PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
+        PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
 
 //        player.teleport(Brawl.getInstance().getLocationByName("DUEL_ARENA"));
     }

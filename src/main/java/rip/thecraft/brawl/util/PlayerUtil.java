@@ -5,10 +5,12 @@ import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityStatus;
 import net.minecraft.server.v1_8_R3.PacketPlayOutNamedEntitySpawn;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.falcon.util.EntityUtils;
 
@@ -16,6 +18,46 @@ import java.lang.reflect.Field;
 import java.util.HashSet;
 
 public class PlayerUtil {
+
+    /**
+     * Resets a player's inventory (and other associated data, such as health, food, etc) to their default state.
+     *
+     * @param player The player to reset
+     */
+    public static void resetInventory(Player player) {
+        resetInventory(player, null);
+    }
+
+    /**
+     * Resets a player's inventory (and other associated data, such as health, food, etc) to their default state.
+     *
+     * @param player   The player to reset
+     * @param gameMode The gamemode to reset the player to. null if their current gamemode should be kept.
+     */
+    public static void resetInventory(Player player, GameMode gameMode) {
+        player.setHealth(player.getMaxHealth());
+        player.setFallDistance(0.0f);
+        player.setFoodLevel(20);
+        player.setSaturation(10.0f);
+
+//        player.setLevel(0);
+//        player.setExp(0.0f);
+
+        if (!player.hasMetadata("modmode")) {
+            player.getInventory().clear();
+            player.getInventory().setArmorContents(null);
+        }
+
+        player.setFireTicks(0);
+
+        for (PotionEffect potionEffect : player.getActivePotionEffects()) {
+            player.removePotionEffect(potionEffect.getType());
+        }
+
+        if (gameMode != null && player.getGameMode() != gameMode) {
+            player.setGameMode(gameMode);
+        }
+    }
 
     public static Player getPlayerByEyeLocation(Player player, double distance) {
         Location observerPos = player.getEyeLocation();

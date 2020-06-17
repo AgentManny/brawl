@@ -36,6 +36,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PlayerData {
 
+    public static final int BASE_EXPERIENCE = 25;
+
     private final UUID uuid;
     private final String name;
 

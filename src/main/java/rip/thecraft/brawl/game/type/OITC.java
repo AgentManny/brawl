@@ -20,6 +20,7 @@ import rip.thecraft.brawl.game.*;
 import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.DurationFormatter;
+import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.brawl.util.SchedulerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.Cooldown;
@@ -253,7 +254,7 @@ public class OITC extends Game implements Listener {
         if (player == null) return;
 
         Runnable runnable = () -> {
-            PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
+            PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
             player.teleport(this.getRandomLocation());
             ItemStack item = new ItemStack(Material.BOW);
             ItemMeta meta = item.getItemMeta();

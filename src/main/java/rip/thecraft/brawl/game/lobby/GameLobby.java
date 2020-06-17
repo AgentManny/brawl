@@ -19,6 +19,7 @@ import rip.thecraft.brawl.game.map.GameMap;
 import rip.thecraft.brawl.game.team.GameTeam;
 import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.spartan.nametag.NametagHandler;
 import rip.thecraft.spartan.util.PlayerUtils;
 import rip.thecraft.spartan.util.TimeUtils;
@@ -71,7 +72,7 @@ public class GameLobby {
         this.broadcast(Game.PREFIX + ChatColor.WHITE + player.getDisplayName() + ChatColor.YELLOW + " has joined the event." + ChatColor.GRAY + " (" + this.players.size() + "/" + gameType.getMaxPlayers() + ")");
 
         player.teleport(this.getLocation());
-        PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
+        PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
 
         updateVotes();
         player.getInventory().setItem(8, brawl.getItemHandler().toItemStack("LANGUAGE.ITEM.GAME.LOBBY.LEAVE_ITEM", brawl.getConfig()));

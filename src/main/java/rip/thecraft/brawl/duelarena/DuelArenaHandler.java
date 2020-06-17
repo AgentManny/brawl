@@ -35,9 +35,9 @@ import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
+import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.Spartan;
-import rip.thecraft.spartan.util.PlayerUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -118,7 +118,7 @@ public class DuelArenaHandler {
             PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
             PlayerData opponentData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(opponent);
             playerData.setDuelArena(false);
-            PlayerUtils.resetInventory(player);
+            PlayerUtil.resetInventory(player);
             if (queueType != QueueType.DUEL) {
                 player.sendMessage(CC.YELLOW + CC.BOLD + "Match found! " + CC.GREEN +
                         player.getName() + (queueType == QueueType.RANKED ? " (" + playerData.getStatistic().get(loadout) + ")" : "") +

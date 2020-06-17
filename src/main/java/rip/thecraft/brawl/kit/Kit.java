@@ -19,6 +19,7 @@ import rip.thecraft.brawl.item.item.Items;
 import rip.thecraft.brawl.kit.type.RankType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.BrawlUtil;
+import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.spartan.serialization.ItemStackAdapter;
 import rip.thecraft.spartan.serialization.PotionEffectAdapter;
 import rip.thecraft.spartan.util.PlayerUtils;
@@ -113,7 +114,7 @@ public class Kit implements Listener, Comparable<Kit> {
     }
 
     public void apply(Player player, boolean updateProfile, boolean addRefill) {
-        PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
+        PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
 
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
         if (updateProfile) {

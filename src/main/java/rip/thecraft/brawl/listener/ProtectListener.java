@@ -19,6 +19,7 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupExperienceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.material.Cauldron;
@@ -234,6 +235,10 @@ public class ProtectListener implements Listener {
         event.setCancelled(true);
     }
 
+    @EventHandler
+    public void onPlayerExpPickup(PlayerPickupExperienceEvent event) {
+        event.setCancelled(true); // We use experience as a visual effect
+    }
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {

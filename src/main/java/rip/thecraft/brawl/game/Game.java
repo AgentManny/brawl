@@ -8,6 +8,7 @@ import rip.thecraft.brawl.game.scoreboard.GameScoreboard;
 import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.StatisticType;
+import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.spartan.nametag.NametagHandler;
 import rip.thecraft.brawl.util.Tasks;
 import rip.thecraft.spartan.util.PlayerUtils;
@@ -68,7 +69,7 @@ public abstract class Game {
                 GamePlayer gamePlayer = new GamePlayer(player);
                 gamePlayer.setAlive(true);
                 this.players.add(gamePlayer);
-                PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
+                PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
                 NametagHandler.reloadPlayer(player);
                 NametagHandler.reloadOthersFor(player);
             }

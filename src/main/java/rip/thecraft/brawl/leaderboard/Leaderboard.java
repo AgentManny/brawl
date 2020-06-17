@@ -3,11 +3,11 @@ package rip.thecraft.brawl.leaderboard;
 import com.google.gson.internal.LinkedTreeMap;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Sorts;
+import lombok.Getter;
+import org.bson.Document;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.duelarena.loadout.MatchLoadout;
 import rip.thecraft.brawl.player.statistic.StatisticType;
-import lombok.Getter;
-import org.bson.Document;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;

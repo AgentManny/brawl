@@ -3,6 +3,7 @@ package rip.thecraft.brawl.game.type;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.*;
 import rip.thecraft.brawl.game.team.GamePlayer;
+import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.spartan.util.PlayerUtils;
 import rip.thecraft.spartan.util.TimeUtils;
 import rip.thecraft.server.util.chatcolor.CC;
@@ -70,7 +71,7 @@ public class Sumo extends Game implements Listener {
 
             player.sendMessage(Game.PREFIX + ChatColor.YELLOW + "Your opponent is " + ChatColor.LIGHT_PURPLE + getOpposite(gamePlayer).getName() + ChatColor.YELLOW + ".");
             player.playSound(player.getLocation(), Sound.FIREWORK_TWINKLE, 1.0F, 1.0F);
-            PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
+            PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
         }
 
         setTime(3);
@@ -146,8 +147,8 @@ public class Sumo extends Game implements Listener {
 
         getMatch()[0].toPlayer().teleport(this.getLocationByName("ArenaLocation1"));
         getMatch()[1].toPlayer().teleport(this.getLocationByName("ArenaLocation2"));
-        PlayerUtils.resetInventory(getMatch()[0].toPlayer(), GameMode.SURVIVAL);
-        PlayerUtils.resetInventory(getMatch()[1].toPlayer(), GameMode.SURVIVAL);
+        PlayerUtil.resetInventory(getMatch()[0].toPlayer(), GameMode.SURVIVAL);
+        PlayerUtil.resetInventory(getMatch()[1].toPlayer(), GameMode.SURVIVAL);
 
         this.playSound(Sound.NOTE_PIANO, 1L, 20L);
     }

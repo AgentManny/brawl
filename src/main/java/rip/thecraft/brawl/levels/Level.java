@@ -26,14 +26,14 @@ public class Level {
         return getCurrentLevel() * BASE_EXPERIENCE;
     }
 
-    public double getPercentage() {
+    public double getPercentageExp() {
         return MathUtil.getPercent(currentExp, getMaxExperience());
     }
 
     //float percent = (float)((Utils.getPercent(this.getXP(), Utils.getLevelRequiredXP(this.getLevel() + 1))) * (0.01F));
     public void addExp(Player player, int exp, String action) {
         if (player != null) {
-            player.setExp((float) (getPercentage() * 0.01F));
+            player.setExp((float) (getPercentageExp() * 0.01F));
             player.sendMessage(ChatColor.GREEN + "+" + exp + " exp" + ChatColor.GRAY + " (" + action + ChatColor.GRAY + ")");
         }
         currentExp += exp;
@@ -60,7 +60,7 @@ public class Level {
     public void updateExp(Player player) {
         if (player != null) {
             player.setLevel(getCurrentLevel());
-            player.setExp((float) (getPercentage() * 0.01F));
+            player.setExp((float) (getPercentageExp() * 0.01F));
         }
     }
 

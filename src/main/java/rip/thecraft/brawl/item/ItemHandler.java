@@ -30,6 +30,7 @@ import rip.thecraft.brawl.leaderboard.menu.LeaderboardMenu;
 import rip.thecraft.brawl.market.MarketMenu;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.HiddenStringUtils;
+import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.ItemBuilder;
 import rip.thecraft.spartan.util.PlayerUtils;
@@ -261,7 +262,7 @@ public class ItemHandler implements Listener {
     }
 
     public void apply(Player player, ItemStack[] items) {
-        PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
+        PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
         player.getInventory().setContents(items);
         if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
             player.getOpenInventory().getTopInventory().clear();
@@ -271,7 +272,7 @@ public class ItemHandler implements Listener {
     }
 
     public void apply(Player player, InventoryType inventoryType) {
-        PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
+        PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
         if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
             player.getOpenInventory().getTopInventory().clear();
         }

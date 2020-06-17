@@ -12,6 +12,7 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.falcon.staff.StaffMode;
 import rip.thecraft.spartan.nametag.NametagHandler;
 import rip.thecraft.spartan.util.PlayerUtils;
@@ -103,7 +104,7 @@ public class SpectatorManager implements Listener {
                     }
                 }
 
-                PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
+                PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
                 Brawl.getInstance().getItemHandler().apply(player, InventoryType.SPAWN);
 
                 NametagHandler.reloadPlayer(player);
@@ -122,7 +123,7 @@ public class SpectatorManager implements Listener {
     public void addSpectator(Player player, Game game) {
         if (player != null) {
 
-            PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
+            PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
             player.setAllowFlight(true);
             player.setFlying(true);
 

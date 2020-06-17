@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.command;
+package rip.thecraft.brawl.leaderboard.command;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -17,6 +17,12 @@ public class LeaderboardCommand {
     public void update(Player sender) {
         Brawl.getInstance().getLeaderboard().update();
         sender.sendMessage(ChatColor.GREEN + "Manually updated leaderboards");
+    }
+
+    @Command(names = { "leaderboards holoset", "lb holoset" }, permission = "op")
+    public void holoSet(Player sender) {
+        Brawl.getInstance().setLocationByName("LB_HOLO", sender.getLocation());
+        sender.sendMessage(ChatColor.GREEN + "Set leaderboard holograms");
     }
 
 }

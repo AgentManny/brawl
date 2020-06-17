@@ -19,11 +19,11 @@ public class StatsCommand {
         sender.sendMessage(ChatColor.YELLOW + "Stats for " + ChatColor.LIGHT_PURPLE + player.getName());
         sender.sendMessage(line);
         for (StatisticType type : StatisticType.values()) {
+            if (type.isHidden()) continue;
             String displayValue =  String.valueOf(Math.round(player.getStatistic().get(type)));
             if (type == StatisticType.LEVEL) {
                 Level level = player.getLevel();
-                displayValue += " (" + level.getCurrentExp() + "/" + level.getMaxExperience() + ")";
-                sender.sendMessage(ChatColor.YELLOW + type.getName() + ChatColor.GRAY + ": " + ChatColor.LIGHT_PURPLE + Math.round(player.getStatistic().get(type)));
+                displayValue += " (" + level.getCurrentExp() + "/" + level.getMaxExperience() + " EXP)";
             }
             sender.sendMessage(ChatColor.YELLOW + type.getName() + ChatColor.GRAY + ": " + ChatColor.LIGHT_PURPLE +  displayValue);
         }

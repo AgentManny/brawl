@@ -1,16 +1,16 @@
 package rip.thecraft.brawl.duelarena.loadout;
 
 import com.mongodb.lang.Nullable;
-import rip.thecraft.brawl.duelarena.arena.ArenaType;
-import rip.thecraft.brawl.item.item.Armor;
-import rip.thecraft.brawl.item.item.Items;
-import rip.thecraft.brawl.kit.type.RefillType;
-import rip.thecraft.spartan.util.PlayerUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
+import rip.thecraft.brawl.duelarena.arena.ArenaType;
+import rip.thecraft.brawl.item.item.Armor;
+import rip.thecraft.brawl.item.item.Items;
+import rip.thecraft.brawl.kit.type.RefillType;
+import rip.thecraft.brawl.util.PlayerUtil;
 
 public abstract class MatchLoadout implements Comparable<MatchLoadout> {
 
@@ -50,7 +50,7 @@ public abstract class MatchLoadout implements Comparable<MatchLoadout> {
     public abstract int getWeight();
 
     public void apply(Player player) {
-        PlayerUtils.resetInventory(player, GameMode.SURVIVAL);
+        PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
 
         if (getArmor() != null) {
             getArmor().apply(player);
