@@ -1,5 +1,5 @@
 name: KitPvP
-main: gg.manny.brawl.Brawl
+main: rip.thecraft.brawl.Brawl
 version: ${brawl.desc}
-depend: [Pivot, ProtocolLib]
-authors: [manny, ghose]
+depend: [Falcon, ProtocolLib]
+authors: [Manny]

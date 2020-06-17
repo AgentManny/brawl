@@ -46,7 +46,6 @@ public class PlayerData {
     private boolean noFallDamage = false;
 
     private boolean warping = false;
-    private boolean build = false;
 
     private Kit selectedKit;
     private Kit previousKit;
@@ -80,6 +79,11 @@ public class PlayerData {
 
     private boolean needsSaving;
     private boolean loaded;
+
+    public void load() {
+        Player player = getPlayer();
+        if (player == null) return;
+    }
 
     public Document toDocument() {
         Map<String, Document> cooldownMap = new HashMap<>();
@@ -123,6 +127,7 @@ public class PlayerData {
         if (document.containsKey("previous-kill") && document.get("previous-kill") != null) {
             previousKill = BrawlUtil.isUUID("previous-kill") ? UUID.fromString(document.getString("previous-kill")) : null;
         }
+
         this.loaded = true;
     }
 

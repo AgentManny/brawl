@@ -58,6 +58,7 @@ public class PlayerDataHandler implements Closeable {
     public PlayerData create(PlayerData playerData, boolean cache) {
         if (!cache) {
             this.playerMap.put(playerData.getUuid(), playerData);
+            playerData.load();
         }
         return playerData;
     }

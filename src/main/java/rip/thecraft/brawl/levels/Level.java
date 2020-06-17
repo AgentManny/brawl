@@ -2,11 +2,13 @@ package rip.thecraft.brawl.levels;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.bson.Document;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.StatisticType;
+import rip.thecraft.brawl.util.MathUtil;
 
 @Getter
 @RequiredArgsConstructor
@@ -16,17 +18,22 @@ public class Level {
 
     private final PlayerData playerData;
 
-    private int currentExp = 0;
+    @Setter private int currentExp = 0;
 
     public int getMaxExperience() {
         return getCurrentLevel() * BASE_EXPERIENCE;
     }
 
+    public double getPercentage() {
+        return MathUtil.getPercent(currentExp, getMaxExperience());
+    }
+
+    //float percent = (float)((Utils.getPercent(this.getXP(), Utils.getLevelRequiredXP(this.getLevel() + 1))) * (0.01F));
     public void addExp(Player player, int exp, String action) {
         if (player != null) {
+            player.setExp((float) (getPercentage() * 0.01F));
             player.sendMessage(ChatColor.GREEN + "+" + exp + " exp" + ChatColor.GRAY + " (" + action + ChatColor.GRAY + ")");
         }
-
         currentExp += exp;
         while (currentExp >= getMaxExperience()) {
             addLevel(player);
@@ -39,6 +46,8 @@ public class Level {
 
         if (player != null) {
             player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "LEVEL UNLOCKED! " + ChatColor.GRAY + "You've ranked up to level " + ChatColor.GREEN + getCurrentLevel() + ChatColor.GRAY + "!");
+            player.setLevel(getCurrentLevel());
+            player.setExp(0); // Resets back to normal
         }
         playerData.markForSave();
     }
@@ -49,6 +58,12 @@ public class Level {
 
     public void load(Document document) {
         this.currentExp = document.getInteger("exp", 0);
+
+        Player player = playerData.getPlayer();
+        if (player != null) {
+            player.setLevel(getCurrentLevel());
+            player.setExp((float) (getPercentage() * 0.01F));
+        }
     }
 
     public Document toDocument() {
