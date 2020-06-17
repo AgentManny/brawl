@@ -1,5 +1,8 @@
 package rip.thecraft.brawl.warp.command;
 
+import lombok.RequiredArgsConstructor;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
@@ -8,9 +11,6 @@ import rip.thecraft.brawl.warp.Warp;
 import rip.thecraft.brawl.warp.WarpManager;
 import rip.thecraft.spartan.command.Command;
 import rip.thecraft.spartan.command.Param;
-import lombok.RequiredArgsConstructor;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 @RequiredArgsConstructor
 public class WarpCommand {
@@ -18,7 +18,7 @@ public class WarpCommand {
     private final WarpManager wm;
 
     @Command(names = { "warp", "warps", "go", "goto" })
-    public void execute(Player sender, @Param(name = "list") Warp warp) {
+    public void execute(Player sender, @Param(defaultValue= "list", name = "warp") Warp warp) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(sender);
         if (playerData.getPlayerState() == PlayerState.SPAWN || playerData.getPlayerState() == PlayerState.FIGHTING) {
             playerData.warp(warp.getName(), warp.getLocation(), 10, () -> {
