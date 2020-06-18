@@ -38,6 +38,15 @@ public enum StatisticType {
 
     private boolean hidden = false;
 
+    public StatisticType next() {
+        StatisticType statistic = StatisticType.KILLS; // Fallback
+        try {
+            statistic = values()[(this.ordinal() + 1) % values().length];
+        } catch (EnumConstantNotPresentException ignored) {
+        }
+        return statistic;
+    }
+
     public static StatisticType parse(String input) {
         return Stream.of(values()).filter(s ->
                 s.name().equalsIgnoreCase(input)

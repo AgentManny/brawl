@@ -38,10 +38,10 @@ public class EloButton extends Button {
     @Override
     public List<String> getDescription(Player player) {
         List<String> lines = new ArrayList<>();
-        Map<UUID, Integer> values = Brawl.getInstance().getLeaderboard().getEloLeaderboards().get(type);
+        Map<String, Integer> values = Brawl.getInstance().getLeaderboard().getEloLeaderboards().get(type);
 
         int entries = 0;
-        for (Map.Entry<UUID, Integer> entry : values.entrySet()) {
+        for (Map.Entry<String, Integer> entry : values.entrySet()) {
             String prefix = ChatColor.WHITE.toString();
             switch (++entries) {
                 case 1: {
@@ -57,7 +57,7 @@ public class EloButton extends Button {
                     break;
                 }
             }
-            lines.add(prefix + ChatColor.WHITE + Falcon.getInstance().getProfileHandler().getByUUID(entry.getKey()).getDisplayName() + ChatColor.GRAY + " \u2758 " + ChatColor.WHITE + entry.getValue());
+            lines.add(prefix + ChatColor.WHITE + entry.getKey() + ChatColor.GRAY + " \u2758 " + ChatColor.WHITE + entry.getValue());
         }
 
         lines.add(0, ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat("-", 30));

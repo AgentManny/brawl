@@ -33,10 +33,10 @@ public class StatisticButton extends Button {
     @Override
     public List<String> getDescription(Player player) {
         List<String> lines = new ArrayList<>();
-        Map<UUID, Double> values = Brawl.getInstance().getLeaderboard().getSpawnLeaderboards().get(type);
+        Map<String, Double> values = Brawl.getInstance().getLeaderboard().getSpawnLeaderboards().get(type);
 
         int entries = 0;
-        for (Map.Entry<UUID, Double> entry : values.entrySet()) {
+        for (Map.Entry<String, Double> entry : values.entrySet()) {
             String prefix = ChatColor.WHITE.toString();
             switch (++entries) {
                 case 1: {
@@ -54,7 +54,7 @@ public class StatisticButton extends Button {
             }
             double value = entry.getValue();
             double roundedValue = type == StatisticType.KDR ? Math.round(value * 10.) / 10. : Math.round(value);
-            lines.add(prefix + ChatColor.WHITE + Falcon.getInstance().getProfileHandler().getByUUID(entry.getKey()).getDisplayName() + ChatColor.GRAY + " \u2758 " + ChatColor.WHITE + roundedValue);
+            lines.add(prefix + ChatColor.WHITE + entry.getKey() + ChatColor.GRAY + " \u2758 " + ChatColor.WHITE + roundedValue);
         }
 
         lines.add(0, ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat("-", 30));

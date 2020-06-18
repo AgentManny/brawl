@@ -8,6 +8,8 @@ import org.bson.Document;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.duelarena.loadout.MatchLoadout;
 import rip.thecraft.brawl.player.statistic.StatisticType;
+import rip.thecraft.falcon.Falcon;
+import rip.thecraft.falcon.profile.Profile;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -18,8 +20,8 @@ import java.util.concurrent.TimeUnit;
 @Getter
 public class Leaderboard {
 
-    private final Map<StatisticType, Map<UUID, Double>> spawnLeaderboards = new LinkedHashMap<>();
-    private final Map<MatchLoadout, Map<UUID, Integer>> eloLeaderboards = new LinkedHashMap<>();
+    private final Map<StatisticType, Map<String, Double>> spawnLeaderboards = new LinkedHashMap<>();
+    private final Map<MatchLoadout, Map<String, Integer>> eloLeaderboards = new LinkedHashMap<>();
 
     public Leaderboard(Brawl plugin) {
         plugin.getServer().getScheduler().runTaskTimer(plugin, this::update, 20L, TimeUnit.MINUTES.toMillis(15));
@@ -39,23 +41,23 @@ public class Leaderboard {
         System.out.println("Updated leaderboards");
     }
 
-    private Map<UUID, Double> data(StatisticType statisticType) {
-        Map<UUID, Double> statistics = new LinkedHashMap<>(); // Save order
+    private Map<String, Double> data(StatisticType statisticType) {
+        Map<String, Double> statistics = new LinkedHashMap<>(); // Save order
         MongoCollection<Document> collection = Brawl.getInstance().getPlayerDataHandler().getMongoCollection();
         Iterator<Document> iterator = collection.find().sort(Sorts.descending("statistic.spawn." + statisticType.name())).limit(10).iterator();
         while (iterator.hasNext()) {
             Document doc = iterator.next();
             Document statDocument = (Document) ((Document) doc.get("statistic")).get("spawn");
             if (statDocument != null) {
-                statistics.put(UUID.fromString(doc.getString("uuid")), statDocument.getDouble(statisticType.name()));
-                System.out.println(doc.getString("username") + " (" + statisticType.getName() + "): " + statDocument.getDouble(statisticType.name()));
+                Profile profile = Falcon.getInstance().getProfileHandler().loadProfile(UUID.fromString(doc.getString("uuid")));
+                statistics.put(profile.getDisplayName(), statDocument.getDouble(statisticType.name()));
             }
         }
         return statistics;
     }
 
-    private Map<UUID, Integer> data(MatchLoadout matchLoadout) {
-        Map<UUID, Integer> statistics = new LinkedTreeMap<>(); // Save order
+    private Map<String, Integer> data(MatchLoadout matchLoadout) {
+        Map<String, Integer> statistics = new LinkedTreeMap<>(); // Save order
         MongoCollection<Document> collection = Brawl.getInstance().getPlayerDataHandler().getMongoCollection();
         Iterator<Document> iterator = collection.find().sort(Sorts.descending("statistic.arena." + matchLoadout.getName().toLowerCase())).limit(10).iterator();
         while (iterator.hasNext()) {
@@ -65,7 +67,9 @@ public class Leaderboard {
             if (statDoc != null) {
                 elo = statDoc.getInteger(matchLoadout.getName().toLowerCase(), 1000);
             }
-            statistics.put(UUID.fromString(doc.getString("uuid")), elo);
+
+            Profile profile = Falcon.getInstance().getProfileHandler().loadProfile(UUID.fromString(doc.getString("uuid")));
+            statistics.put(profile.getDisplayName(), elo);
 
         }
         return statistics;

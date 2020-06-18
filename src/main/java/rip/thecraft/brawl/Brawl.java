@@ -23,6 +23,7 @@ import rip.thecraft.brawl.ability.command.AbilityCommand;
 import rip.thecraft.brawl.ability.command.adapter.AbilityTypeAdapter;
 import rip.thecraft.brawl.command.*;
 import rip.thecraft.brawl.command.manage.ExpModifyCommand;
+import rip.thecraft.brawl.command.manage.VisualCommand;
 import rip.thecraft.brawl.duelarena.DuelArenaHandler;
 import rip.thecraft.brawl.duelarena.arena.Arena;
 import rip.thecraft.brawl.duelarena.command.ArenaCommand;
@@ -32,7 +33,6 @@ import rip.thecraft.brawl.duelarena.command.adapter.ArenaCommandAdapter;
 import rip.thecraft.brawl.event.EventHandler;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameHandler;
-import rip.thecraft.brawl.visual.VisualManager;
 import rip.thecraft.brawl.item.ItemHandler;
 import rip.thecraft.brawl.killstreak.KillstreakHandler;
 import rip.thecraft.brawl.kit.Kit;
@@ -55,6 +55,7 @@ import rip.thecraft.brawl.spectator.SpectatorManager;
 import rip.thecraft.brawl.task.SoupTask;
 import rip.thecraft.brawl.team.TeamHandler;
 import rip.thecraft.brawl.util.EntityHider;
+import rip.thecraft.brawl.visual.VisualManager;
 import rip.thecraft.brawl.warp.WarpManager;
 import rip.thecraft.server.CraftServer;
 import rip.thecraft.spartan.command.MCommandHandler;
@@ -174,7 +175,9 @@ public class Brawl extends JavaPlugin {
                 new HelpCommand(),
                 new SetRefillCommand(),
 
+                // Manage commands
                 new ExpModifyCommand(),
+                new VisualCommand(this),
 
                 new KillstreakCommand(this),
 
