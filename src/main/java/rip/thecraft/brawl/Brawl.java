@@ -54,6 +54,7 @@ import rip.thecraft.brawl.scoreboard.BrawlScoreboardAdapter;
 import rip.thecraft.brawl.spectator.SpectatorManager;
 import rip.thecraft.brawl.task.SoupTask;
 import rip.thecraft.brawl.team.TeamHandler;
+import rip.thecraft.brawl.upgrade.UpgradeManager;
 import rip.thecraft.brawl.util.EntityHider;
 import rip.thecraft.brawl.visual.VisualManager;
 import rip.thecraft.brawl.warp.WarpManager;
@@ -80,7 +81,10 @@ public class Brawl extends JavaPlugin {
     private PlayerDataHandler playerDataHandler;
 
     private AbilityHandler abilityHandler;
+
+    // Upgrade section
     private KillstreakHandler killstreakHandler;
+    private UpgradeManager upgradeManager;
 
     private MarketHandler marketHandler;
     private KitHandler kitHandler;
@@ -196,15 +200,16 @@ public class Brawl extends JavaPlugin {
     }
 
     private void registerHandlers() {
-        this.abilityHandler = new AbilityHandler(this);
-        this.killstreakHandler = new KillstreakHandler(this);
-
+        this.playerDataHandler = new PlayerDataHandler(this);
         this.kitHandler = new KitHandler(this);
 
         spectatorManager = new SpectatorManager(this);
         this.matchHandler = new DuelArenaHandler();
 
-        this.playerDataHandler = new PlayerDataHandler(this);
+        this.abilityHandler = new AbilityHandler(this);
+
+        this.killstreakHandler = new KillstreakHandler(this);
+        this.upgradeManager = new UpgradeManager(this);
 
         this.marketHandler = new MarketHandler();
         this.eventHandler = new EventHandler();

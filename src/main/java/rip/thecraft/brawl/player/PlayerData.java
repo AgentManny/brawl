@@ -22,14 +22,12 @@ import rip.thecraft.brawl.levels.Level;
 import rip.thecraft.brawl.player.data.SpawnData;
 import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.region.RegionType;
+import rip.thecraft.brawl.upgrade.perk.Perk;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.Cooldown;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Setter
 @Getter
@@ -54,6 +52,10 @@ public class PlayerData {
     private Kit previousKit;
 
     private RefillType refillType = RefillType.SOUP;
+
+    // Perk data
+    private List<Perk> unlockedPerks = new ArrayList<>();
+    private Perk[] activePerks = new Perk[3]; // You can only have 3 perks
 
     private long combatTaggedTil;
 
@@ -94,9 +96,20 @@ public class PlayerData {
         Map<String, Document> cooldownMap = new HashMap<>();
         this.cooldownMap.forEach((name, cooldown) -> cooldownMap.put(name, cooldown.toDocument()));
 
+        this.unlockedPerks.add(Perk.BULLDOZER);
+        this.activePerks[0] = Perk.BULLDOZER;
+        List<String> unlockedPerks = new ArrayList<>();
+        this.unlockedPerks.forEach(perk -> unlockedPerks.add(perk.name()));
+
+        Map<String, String> activePerks = new HashMap<>();
+        for (int i = 0; i < this.activePerks.length; i++) {
+            Perk perk = this.activePerks[i];
+            activePerks.put(String.valueOf(i), perk == null ? null : perk.name());
+        }
+
         return new Document("uuid", this.uuid.toString())
                 .append("username", this.name)
-                .append("previousKit", this.previousKit == null ? null : this.previousKit.getName())
+                .append("previous-kit", this.previousKit == null ? null : this.previousKit.getName())
                 .append("cooldown", cooldownMap)
                 .append("rentals", this.kitRentals)
                 .append("gameRentals", this.gameRentals)
@@ -104,7 +117,9 @@ public class PlayerData {
                 .append("level", this.level.toDocument())
                 .append("kill-tracker", killTracker)
                 .append("healing-method", refillType.name())
-                .append("previous-kill", previousKill == null ? null : previousKill.toString());
+                .append("previous-kill", previousKill == null ? null : previousKill.toString())
+                .append("unlocked-perks", unlockedPerks)
+                .append("active-perks", activePerks);
     }
 
     public void fromDocument(Document document) {
@@ -115,7 +130,7 @@ public class PlayerData {
             return;
         }
 
-        this.previousKit = Brawl.getInstance().getKitHandler().getKit(document.getString("previousKit"));
+        this.previousKit = Brawl.getInstance().getKitHandler().getKit(document.getString("previous-kit"));
 
         Map<String, Document> cooldowns = (Map<String, Document>) document.get("cooldown");
         cooldowns.forEach((name, cooldownDocument) -> this.cooldownMap.put(name, new Cooldown(cooldownDocument)));
@@ -136,6 +151,20 @@ public class PlayerData {
 
         if (document.containsKey("healing-method")) {
             refillType = RefillType.valueOf(document.getString("healing-method"));
+        }
+
+        if (document.containsKey("unlocked-perks")) {
+            List<String> unlockedPerks = (List<String>) document.get("unlocked-perks");
+            unlockedPerks.forEach(perk -> this.unlockedPerks.add(Perk.valueOf(perk)));
+        }
+
+        if (document.containsKey("active-perks")) {
+            Map<String, String> activePerks = (Map<String, String>) document.get("active-perks");
+            activePerks.forEach((id, perk) -> {
+                if (perk != null) {
+                    this.activePerks[Integer.parseInt(id)] = Perk.valueOf(perk);
+                }
+            });
         }
 
         this.loaded = true;

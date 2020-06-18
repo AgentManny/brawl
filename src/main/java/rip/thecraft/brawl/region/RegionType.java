@@ -1,7 +1,7 @@
 package rip.thecraft.brawl.region;
 
-import rip.thecraft.brawl.Brawl;
 import org.bukkit.Location;
+import rip.thecraft.brawl.Brawl;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,7 +9,8 @@ import java.util.stream.Collectors;
 public enum RegionType {
 
     SAFEZONE,
-    NO_ABILITY_ZONE;
+    NO_ABILITY_ZONE,
+    NO_PERK_ZONE;
 
     public List<Region> getRegions() {
         return Brawl.getInstance().getRegionHandler().getRegions()
