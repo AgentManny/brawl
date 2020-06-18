@@ -28,7 +28,7 @@ public class UpgradeManager {
         this.npc = registry.getById(PERK_ENTITY_ID) == null ? registry.createNPC(EntityType.PLAYER, new UUID(Spartan.RANDOM.nextLong(), 0), PERK_ENTITY_ID, ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "PERKS") : registry.getById(PERK_ENTITY_ID);
         Location loc = plugin.getLocationByName(NPC_UPGRADER_LOC);
         if (loc != null) {
-            if (!npc.isSpawned()) {
+            if (npc.isSpawned()) {
                 npc.despawn();
             }
             npc.spawn(loc);

@@ -54,7 +54,7 @@ public class PlayerData {
     private RefillType refillType = RefillType.SOUP;
 
     // Perk data
-    private List<Perk> unlockedPerks = new ArrayList<>();
+    private Set<Perk> unlockedPerks = new HashSet<>();
     private Perk[] activePerks = new Perk[3]; // You can only have 3 perks
 
     private long combatTaggedTil;
@@ -96,8 +96,6 @@ public class PlayerData {
         Map<String, Document> cooldownMap = new HashMap<>();
         this.cooldownMap.forEach((name, cooldown) -> cooldownMap.put(name, cooldown.toDocument()));
 
-        this.unlockedPerks.add(Perk.BULLDOZER);
-        this.activePerks[0] = Perk.BULLDOZER;
         List<String> unlockedPerks = new ArrayList<>();
         this.unlockedPerks.forEach(perk -> unlockedPerks.add(perk.name()));
 

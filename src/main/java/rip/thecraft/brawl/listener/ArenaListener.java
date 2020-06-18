@@ -123,6 +123,7 @@ public class ArenaListener implements Listener {
     public void onEntitytDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
+
             PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
 
             // todo add check if playuer is in match
