@@ -39,6 +39,8 @@ public class Protection {
      * @return true if the target can be attacked, false otherwise
      */
     public static boolean canAttack(LivingEntity attacker, LivingEntity target, boolean passiveAlly) {
+        if (target.hasMetadata("NPC")) return false;
+
         if (attacker == target) { return false; }
         if (target instanceof Tameable) {
             Tameable entity = (Tameable) target;

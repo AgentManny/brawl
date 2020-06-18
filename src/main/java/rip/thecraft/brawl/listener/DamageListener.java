@@ -248,6 +248,7 @@ public class DamageListener implements Listener {
 
     @EventHandler
     public void onEntityDamage(EntityDamageEvent e) {
+        if (e.getEntity().hasMetadata("NPC")) return;
         if (e.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION) {
             e.setCancelled(true);
         }

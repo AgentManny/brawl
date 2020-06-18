@@ -121,6 +121,7 @@ public class ArenaListener implements Listener {
 
     @EventHandler
     public void onEntitytDamage(EntityDamageEvent event) {
+        if (event.getEntity().hasMetadata("NPC")) return;
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
 
