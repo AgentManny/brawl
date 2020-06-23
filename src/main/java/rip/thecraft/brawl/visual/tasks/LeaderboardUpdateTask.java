@@ -33,11 +33,14 @@ public class LeaderboardUpdateTask extends BukkitRunnable {
                 .at(loc)
                 .addLines(ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Leaderboards", "Loading...", " ")
                 .build();
+        this.hologram.send();
 
         this.updateHologram = Holograms.newHologram()
                 .at(loc.clone().subtract(0, .5, 0))
                 .addLines("Refreshing in")
                 .build();
+        this.updateHologram.send();
+
     }
 
     private StatisticType statType = StatisticType.KILLS;
