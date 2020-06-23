@@ -20,6 +20,11 @@ import java.util.Map;
 public class UpgradeMenu extends Menu {
 
     @Override
+    public String getTitle(Player player) {
+        return "Upgrades";
+    }
+
+    @Override
     public Map<Integer, Button> getButtons(Player player) {
         Map<Integer, Button> buttons = new HashMap<>();
 
@@ -27,12 +32,19 @@ public class UpgradeMenu extends Menu {
 
         buttons.put(11, getPerkPreview());
 
-        int slot = 18;
+        int id = 18;
+        int slot = 0;
         for (Perk perk : playerData.getActivePerks()) {
-            buttons.put(++slot, new PerkInfoButton(1, perk));
+            buttons.put(++id, new PerkInfoButton(++slot, perk));
         }
 
         buttons.put(15, getKillstreakPreview());
+        id = 22;
+        slot = 0;
+        // todo killstreak perk
+        buttons.put(++id, new PerkInfoButton(++slot, null));
+        buttons.put(++id, new PerkInfoButton(++slot, null));
+        buttons.put(++id, new PerkInfoButton(++slot, null));
 
         return buttons;
     }

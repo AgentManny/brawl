@@ -127,7 +127,7 @@ public class ArenaListener implements Listener {
 
             PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
 
-            // todo add check if playuer is in match
+            // todo add check qif playuer is in match
             boolean inMatch = plugin.getMatchHandler().isInMatch(player);
             if (inMatch) {
                 Match match = plugin.getMatchHandler().getMatch(player);

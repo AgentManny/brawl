@@ -9,6 +9,14 @@ public class MathUtil {
         return ThreadLocalRandom.current().nextInt(min, max);
     }
 
+    public static int getRandomInt(int min) {
+        return ThreadLocalRandom.current().nextInt(min, 100);
+    }
+
+    public static int getRandomProbability() {
+        return ThreadLocalRandom.current().nextInt(0, 100);
+    }
+
     public static long convertSecondstoTicks(int seconds) {
         return seconds * 20L;
     }

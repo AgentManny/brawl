@@ -5,11 +5,14 @@ import lombok.AllArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import rip.thecraft.brawl.upgrade.menu.ChoosePerkMenu;
 import rip.thecraft.brawl.upgrade.perk.Perk;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
-import rip.thecraft.spartan.util.ItemBuilder;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @AllArgsConstructor
@@ -20,15 +23,21 @@ public class PerkInfoButton extends Button {
 
     @Override
     public String getName(Player player) {
-        return ChatColor.LIGHT_PURPLE + "Perk Slot #" + slot;
+        return (perk == null ? ChatColor.RED : ChatColor.LIGHT_PURPLE) + "Perk Slot #" + slot;
     }
 
     @Override
     public List<String> getDescription(Player player) {
-        List<String> lines = ItemBuilder.wrap(perk == null ? "You don't have a perk selected for this slot." : perk.getDescription(), CC.GRAY, 30);
+        List<String> lines = new ArrayList<>();
+        if (perk == null) {
+            lines.add(ChatColor.GRAY + "You don't have a perk selected for");
+            lines.add(ChatColor.GRAY + "this slot.");
+        } else {
+            lines.addAll(Arrays.asList(perk.getLore()));
+            lines.add(" ");
+            lines.add(ChatColor.GRAY + "Selected: " + ChatColor.WHITE + perk.getName());
+        }
 
-        lines.add(" ");
-        lines.add(ChatColor.GRAY + "Selected: " + ChatColor.LIGHT_PURPLE + perk.getName());
         lines.add(" ");
         lines.add(CC.GRAY + "\u00bb " + CC.YELLOW + "Click to choose a perk" + CC.GRAY + " \u00ab");
 
@@ -50,6 +59,11 @@ public class PerkInfoButton extends Button {
 
     @Override
     public byte getDamageValue(Player player) {
-        return (byte) (perk == null ? 8  : 0);
+        return (byte) (perk == null ? 8  : perk.getIconData());
+    }
+
+    @Override
+    public void clicked(Player player, int slot, ClickType clickType) {
+        new ChoosePerkMenu(this.slot).openMenu(player);
     }
 }

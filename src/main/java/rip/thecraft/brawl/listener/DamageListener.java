@@ -25,6 +25,7 @@ import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
+import rip.thecraft.brawl.player.event.PlayerKillEvent;
 import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.region.RegionType;
@@ -98,11 +99,11 @@ public class DamageListener implements Listener {
 
         Player killer = player.getKiller();
         if(killer != null && killer != player) {
-            PlayerData killerData = plugin.getPlayerDataHandler().getPlayerData(killer);
 
+            PlayerData killerData = plugin.getPlayerDataHandler().getPlayerData(killer);
+            plugin.getServer().getPluginManager().callEvent(new PlayerKillEvent(killer, killerData.getPlayerState(), player)); // We only use this
             switch(killerData.getPlayerState()) {
                 case FIGHTING: {
-
                     if (killerData.getPreviousKill() != null) {
                         if (player.getUniqueId() == killerData.getPreviousKill()) {
                             killerData.setKillTracker(killerData.getKillTracker() + 1);
@@ -135,6 +136,7 @@ public class DamageListener implements Listener {
                     break;
                 }
             }
+
 
         }
 

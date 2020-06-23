@@ -22,6 +22,7 @@ import rip.thecraft.brawl.levels.Level;
 import rip.thecraft.brawl.player.data.SpawnData;
 import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.region.RegionType;
+import rip.thecraft.brawl.team.Team;
 import rip.thecraft.brawl.upgrade.perk.Perk;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.server.util.chatcolor.CC;
@@ -153,14 +154,14 @@ public class PlayerData {
 
         if (document.containsKey("unlocked-perks")) {
             List<String> unlockedPerks = (List<String>) document.get("unlocked-perks");
-            unlockedPerks.forEach(perk -> this.unlockedPerks.add(Perk.valueOf(perk)));
+            unlockedPerks.forEach(perk -> this.unlockedPerks.add(Perk.getPerk(perk)));
         }
 
         if (document.containsKey("active-perks")) {
             Map<String, String> activePerks = (Map<String, String>) document.get("active-perks");
             activePerks.forEach((id, perk) -> {
                 if (perk != null) {
-                    this.activePerks[Integer.parseInt(id)] = Perk.valueOf(perk);
+                    this.activePerks[Integer.parseInt(id)] = Perk.getPerk(perk);
                 }
             });
         }
@@ -277,6 +278,18 @@ public class PlayerData {
         getPlayer().sendMessage(ChatColor.RED + "Warp cancelled!");
         tpTask.cancel();
         tpTask = null;
+    }
+
+    public Team getTeam() {
+        return Brawl.getInstance().getTeamHandler().getPlayerTeam(getPlayer());
+    }
+
+    public boolean usingPerk(Perk perk) {
+        return perk.contains(activePerks);
+    }
+
+    public boolean hasPerk(Perk perk) {
+        return !unlockedPerks.isEmpty() && unlockedPerks.contains(perk);
     }
 
     public boolean hasKit(Kit kit) {

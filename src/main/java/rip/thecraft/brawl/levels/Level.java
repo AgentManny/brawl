@@ -16,7 +16,7 @@ import rip.thecraft.brawl.util.MathUtil;
 @RequiredArgsConstructor
 public class Level {
 
-    public static final int BASE_EXPERIENCE = 25;
+    public static final int BASE_EXPERIENCE = 5;
 
     private final PlayerData playerData;
 
@@ -30,7 +30,6 @@ public class Level {
         return MathUtil.getPercent(currentExp, getMaxExperience());
     }
 
-    //float percent = (float)((Utils.getPercent(this.getXP(), Utils.getLevelRequiredXP(this.getLevel() + 1))) * (0.01F));
     public void addExp(Player player, int exp, String action) {
         if (player != null) {
             player.setExp((float) (getPercentageExp() * 0.01F));

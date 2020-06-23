@@ -18,11 +18,11 @@ import rip.thecraft.brawl.item.item.Armor;
 import rip.thecraft.brawl.item.item.Items;
 import rip.thecraft.brawl.kit.type.RankType;
 import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.upgrade.perk.Perk;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.spartan.serialization.ItemStackAdapter;
 import rip.thecraft.spartan.serialization.PotionEffectAdapter;
-import rip.thecraft.spartan.util.PlayerUtils;
 
 import java.util.ArrayList;
 import java.util.List;
