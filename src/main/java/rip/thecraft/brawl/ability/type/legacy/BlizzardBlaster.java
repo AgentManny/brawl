@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.ability.type;
+package rip.thecraft.brawl.ability.type.legacy;
 
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
@@ -17,6 +17,7 @@ import org.bukkit.Location;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public class BlizzardBlaster extends Ability {
 
     private int radius = 5;
@@ -71,10 +72,6 @@ public class BlizzardBlaster extends Ability {
                 }
 
                 for (int i = 0; i < 3; i++) {
-//                    EntityZombie zombie = new EntityZombie(((CraftWorld)player.getWorld()).getHandle());
-//                    zombie.setInvisible(true);
-//                    zombie.geta
-//                    UltraCosmeticsData.get().getVersionManager().getEntityUtil().sendBlizzard(getPlayer(), location, affectPlayers, vector);
                 }
 
                 location.add(vector);

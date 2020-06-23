@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.ability.type;
+package rip.thecraft.brawl.ability.type.skylands;
 
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;

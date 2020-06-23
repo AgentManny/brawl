@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.ability.type;
+package rip.thecraft.brawl.ability.type.classic;
 
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.util.BukkitUtil;

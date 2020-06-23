@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.ability.type.chemist;
+package rip.thecraft.brawl.ability.type.skylands.chemist;
 
 import rip.thecraft.brawl.ability.Ability;
 import org.bukkit.Material;

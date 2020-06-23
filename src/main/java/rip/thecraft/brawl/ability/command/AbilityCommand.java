@@ -6,7 +6,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.type.Illusioner;
+import rip.thecraft.brawl.ability.type.legacy.Illusioner;
 import rip.thecraft.brawl.util.Human;
 import rip.thecraft.brawl.util.ParticleEffect;
 import rip.thecraft.spartan.command.Command;

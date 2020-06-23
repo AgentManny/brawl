@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.ability.type;
+package rip.thecraft.brawl.ability.type.skylands;
 
 import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;

@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.ability.type;
+package rip.thecraft.brawl.ability.type.skylands;
 
 import com.google.gson.JsonObject;
 import rip.thecraft.brawl.Brawl;

@@ -1,7 +1,6 @@
-package rip.thecraft.brawl.ability.type;
+package rip.thecraft.brawl.ability.type.skylands;
 
-import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.server.util.chatcolor.CC;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -10,6 +9,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.upgrade.perk.Perk;
+import rip.thecraft.server.util.chatcolor.CC;
 
 public class Archer extends Ability {
 
@@ -21,6 +25,12 @@ public class Archer extends Ability {
                 shooter.sendMessage(CC.RED + CC.BOLD + "Archer! " + CC.YELLOW + "Cannot damage other Archers.");
                 return false;
             }
+
+            PlayerData victimData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(victim);
+//            if (!victimData.getUnlockedPerks().isEmpty() && victimData.usingPerk(Perk.GHOST)) {
+//                shooter.sendMessage(ChatColor.RED + "Your " + ChatColor.YELLOW + getName() + ChatColor.RED + " ability didn't trigger as enemy is using the " + ChatColor.GRAY + "Ghost" + ChatColor.RED + " perk.");
+//                return false;
+//            }
 
             float pullback = (float) damager.getMetadata("Force").get(0).value();
 

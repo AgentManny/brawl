@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.ability.type;
+package rip.thecraft.brawl.ability.type.legacy;
 
 import rip.thecraft.brawl.ability.Ability;
 import org.bukkit.ChatColor;
