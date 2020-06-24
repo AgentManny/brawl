@@ -1,5 +1,6 @@
 package rip.thecraft.brawl.upgrade.perk;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
@@ -18,6 +19,7 @@ import rip.thecraft.brawl.player.event.PlayerKillEvent;
 import rip.thecraft.brawl.team.Team;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.brawl.util.MathUtil;
+import rip.thecraft.spartan.deathmessage.damage.PlayerDamage;
 import rip.thecraft.spartan.deathmessage.event.CustomPlayerDamageEvent;
 import rip.thecraft.spartan.deathmessage.tracker.FallTracker;
 
@@ -48,6 +50,13 @@ public class PerkListener implements Listener {
             if (playerData.usingPerk(LIGHTWEIGHT)) {
                 player.sendMessage(ChatColor.GREEN + "Your " + ChatColor.YELLOW + "Lightweight" + ChatColor.GREEN + " perk reduced your fall damage by 50%.");
                 event.setDamage(event.getDamage() / 2.0); // 50%
+            }
+        } else if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+            Player player = customEvent.getPlayer();
+            if (customEvent.getTrackerDamage() instanceof PlayerDamage) {
+                PlayerDamage tracker = (PlayerDamage) customEvent.getTrackerDamage();
+                Player victim = Bukkit.getPlayer(tracker.getDamaged());
+                if (victim == null) return;
             }
         }
     }

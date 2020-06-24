@@ -35,6 +35,7 @@ public class Level {
             player.setExp((float) (getPercentageExp() * 0.01F));
             player.sendMessage(ChatColor.GREEN + "+" + exp + " exp" + ChatColor.GRAY + " (" + action + ChatColor.GRAY + ")");
         }
+        playerData.getStatistic().add(StatisticType.TOTAL_EXPERIENCE, exp);
         currentExp += exp;
         while (currentExp >= getMaxExperience()) {
             addLevel(player);

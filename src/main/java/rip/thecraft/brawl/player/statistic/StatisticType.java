@@ -19,7 +19,9 @@ public enum StatisticType {
     DEATHS("Deaths", ChatColor.RED, Material.SKULL_ITEM),
 
     KILLSTREAK("Killstreak", ChatColor.AQUA, Material.GOLD_CHESTPLATE),
-    HIGHEST_KILLSTREAK("Highest Killstreak", ChatColor.DARK_AQUA, Material.DIAMOND_CHESTPLATE),
+    HIGHEST_KILLSTREAK("Highest Killstreak", ChatColor.BLUE, Material.DIAMOND_CHESTPLATE),
+
+    TOTAL_EXPERIENCE("Total EXP", ChatColor.DARK_AQUA, Material.LAPIS_ORE, true),
     LEVEL("Level", ChatColor.LIGHT_PURPLE, Material.EXP_BOTTLE),
 
     CREDITS("Credits", ChatColor.GOLD, Material.GOLD_INGOT),

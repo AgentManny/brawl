@@ -80,8 +80,6 @@ public class LeaderboardUpdateTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        updateHologram.setLine(updateHologram.getLines().size() - 1, getProgressBar(refreshTimer, '\u25A0'));
-
         if (refreshTimer++ >= REFRESH_TIMER) {
             refreshTimer = 0;
             statType = statType.next();
@@ -90,6 +88,7 @@ public class LeaderboardUpdateTask extends BukkitRunnable {
             }
             update.accept(statType, hologram); // We only update this every refresh timer
         }
+        updateHologram.setLine(updateHologram.getLines().size() - 1, getProgressBar(refreshTimer, '\u25A0'));
     }
 
     private String getProgressBar(int current, char symbol) {
