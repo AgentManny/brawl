@@ -15,13 +15,15 @@
             <groupId>rip.thecraft.spigot</groupId>
             <artifactId>spigot-server</artifactId>
             <version>1.8.8-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/spigot.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>rip.thecraft.spigot</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.8.8-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/spigot-api.jar</systemPath>
         </dependency>
 
         <dependency>
@@ -35,14 +37,16 @@
             <groupId>rip.thecraft</groupId>
             <artifactId>spartan</artifactId>
             <version>1.0</version>
-            <scope>provided</scope>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/spartan-1.0.jar</systemPath>
         </dependency>
 
         <dependency>
             <groupId>rip.thecraft.falcon</groupId>
             <artifactId>bukkit</artifactId>
             <version>1.0</version>
-            <scope>provided</scope>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/falcon-bukkit-1.0.jar</systemPath>
         </dependency>
 
         <dependency>
@@ -60,6 +64,13 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>dmulloy2-repo</id>
+            <url>https://repo.dmulloy2.net/nexus/repository/public/</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
