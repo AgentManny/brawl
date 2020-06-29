@@ -1,5 +1,9 @@
 package rip.thecraft.brawl.player.data;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.killstreak.Killstreak;
 import rip.thecraft.brawl.killstreak.KillstreakHandler;
@@ -9,10 +13,6 @@ import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.server.util.chatcolor.CC;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.stream.DoubleStream;
@@ -65,7 +65,7 @@ public class SpawnData {
     }
 
     public double getWorth() {
-        double base = 5;
+        double base = 25;
 
         Kit selectedKit = playerData.getSelectedKit();
 

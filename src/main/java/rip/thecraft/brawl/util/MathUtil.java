@@ -13,8 +13,8 @@ public class MathUtil {
         return ThreadLocalRandom.current().nextInt(min, 100);
     }
 
-    public static int getRandomProbability() {
-        return ThreadLocalRandom.current().nextInt(0, 100);
+    public static double getRandomProbability() {
+        return Math.random() * 100;
     }
 
     public static long convertSecondstoTicks(int seconds) {
