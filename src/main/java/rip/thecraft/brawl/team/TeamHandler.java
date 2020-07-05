@@ -74,7 +74,6 @@ public class TeamHandler {
                 new TeamCreateCommand(),
                 new TeamDemoteCommand(),
                 new TeamDisbandCommand(),
-                new TeamCommand(),
                 new TeamInfoCommand(),
                 new TeamInviteCommand(),
                 new TeamInvitesCommand(),

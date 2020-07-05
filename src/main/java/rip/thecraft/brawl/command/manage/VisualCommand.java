@@ -43,8 +43,6 @@ public class VisualCommand {
         }
 
         npc.spawn(loc);
-
-
     }
 
 

@@ -98,10 +98,20 @@ public class EventHandler {
     }
 
     public KOTH getKOTHByName(String name) {
+        for (KOTH koth : KOTHS.values()) {
+            if (koth.getName().equalsIgnoreCase(name)) {
+                return koth;
+            }
+        }
         return KOTHS.get(name);
     }
 
     public KillTheKing getKINGbyName(String name) {
+        for (KillTheKing king : KINGS.values()) {
+            if (king.getName().equalsIgnoreCase(name)) {
+                return king;
+            }
+        }
         return KINGS.get(name);
     }
 
