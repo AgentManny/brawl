@@ -20,6 +20,7 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupExperienceEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.material.Cauldron;
@@ -73,6 +74,11 @@ public class ProtectListener implements Listener {
             Material.LEVER,
             Material.FIRE
     );
+
+    @EventHandler
+    public void onWeatherChange(WeatherChangeEvent event) {
+        event.setCancelled(true);
+    }
 
     @EventHandler
     public void onBlockFromTo(BlockFromToEvent event) {
