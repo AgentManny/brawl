@@ -228,13 +228,13 @@ public class PlayerData {
     public void warp(String name, Location loc, int seconds, Runnable... onTp) {
 
         if (canWarp()) {
-            getPlayer().teleport(loc);
             for (Runnable rb : onTp) {
                 rb.run();
             }
 
             combatTaggedTil = -1;
             getCooldownMap().remove("ENDERPEARL");
+            getPlayer().teleport(loc);
             return;
         }
 
@@ -250,7 +250,6 @@ public class PlayerData {
                 Player player = getPlayer();
 
                 if (player != null && player.isOnline()) {
-                    player.teleport(loc);
                     combatTaggedTil = -1;
                     getCooldownMap().remove("ENDERPEARL");
                     player.sendMessage(ChatColor.YELLOW + "Warped to " + ChatColor.LIGHT_PURPLE + name + ChatColor.YELLOW + ".");
@@ -260,7 +259,9 @@ public class PlayerData {
                             rb.run();
                         }
                     }
+                    getPlayer().teleport(loc);
                 }
+
                 cancel();
                 tpTask = null;
 
