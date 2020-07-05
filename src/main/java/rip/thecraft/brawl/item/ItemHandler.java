@@ -27,13 +27,11 @@ import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.menu.KitSelectorMenu;
 import rip.thecraft.brawl.leaderboard.menu.LeaderboardEloMenu;
 import rip.thecraft.brawl.leaderboard.menu.LeaderboardMenu;
-import rip.thecraft.brawl.market.MarketMenu;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.HiddenStringUtils;
 import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.ItemBuilder;
-import rip.thecraft.spartan.util.PlayerUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -232,7 +230,8 @@ public class ItemHandler implements Listener {
                             break;
                         }
                         case SHOP: {
-                            new MarketMenu().openMenu(player);
+                            player.sendMessage(ChatColor.RED + "Our shop system is still undergoing work. Please try again later");
+                            // new MarketMenu().openMenu(player);
                             break;
                         }
                         case DUEL_ARENA_RANKED: {

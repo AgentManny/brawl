@@ -1,12 +1,8 @@
 package rip.thecraft.brawl.market;
 
+import lombok.Getter;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.kit.Kit;
-import rip.thecraft.brawl.util.MathUtil;
-import lombok.Getter;
-import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,18 +11,20 @@ import java.util.stream.Collectors;
 
 public class MarketHandler {
 
+    //todo rework our shop system
+
     @Getter private List<Kit> sellingKits = new ArrayList<>();
     @Getter private double multiplier = 1.23;
     public MarketHandler() {
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                multiplier = (MathUtil.getRandomInt(25, 100) / 100D) + 1;
-                randomizeKits();
-                Bukkit.broadcastMessage(ChatColor.GREEN + "The item shop has been refreshed.");
-            }
-        }.runTaskTimer(Brawl.getInstance(), 200L, 6000L);
+//        new BukkitRunnable() {
+//
+//            @Override
+//            public void run() {
+//                multiplier = (MathUtil.getRandomInt(25, 100) / 100D) + 1;
+//                randomizeKits();
+//                Bukkit.broadcastMessage(ChatColor.GREEN + "The item shop has been refreshed.");
+//            }
+//        }.runTaskTimer(Brawl.getInstance(), 200L, 6000L);
     }
 
 
