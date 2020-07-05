@@ -37,16 +37,14 @@
             <groupId>rip.thecraft</groupId>
             <artifactId>spartan</artifactId>
             <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/spartan-1.0.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>rip.thecraft.falcon</groupId>
             <artifactId>bukkit</artifactId>
             <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/falcon-bukkit-1.0.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

@@ -1,15 +1,16 @@
 package rip.thecraft.brawl.game.team;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.cps.ClickTracker;
 import rip.thecraft.spartan.nametag.NametagHandler;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
@@ -82,7 +83,7 @@ public class GamePlayer {
             return -1;
         }
 
-        return player.getPing();
+        return ((CraftPlayer)player).getHandle().ping;
     }
 
 }

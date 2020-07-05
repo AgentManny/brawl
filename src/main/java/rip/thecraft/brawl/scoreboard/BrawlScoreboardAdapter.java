@@ -3,6 +3,7 @@ package rip.thecraft.brawl.scoreboard;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
@@ -142,7 +143,7 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
             if (opponent != null) {
                 toReturn.add("  ");
                 toReturn.add(ChatColor.DARK_PURPLE + "(" + ChatColor.LIGHT_PURPLE + ClickTracker.getCPS(player) + "CPS" + ChatColor.DARK_PURPLE + ") vs. (" + ChatColor.LIGHT_PURPLE + ClickTracker.getCPS(opponent) + "CPS" + ChatColor.DARK_PURPLE + ")");
-                toReturn.add(ChatColor.DARK_PURPLE + "(" + ChatColor.LIGHT_PURPLE + player.getPing() + "ms" + ChatColor.DARK_PURPLE + ") vs. (" + ChatColor.LIGHT_PURPLE + opponent.getPing() + "ms" + ChatColor.DARK_PURPLE + ")");
+                toReturn.add(ChatColor.DARK_PURPLE + "(" + ChatColor.LIGHT_PURPLE + ((CraftPlayer)player).getHandle().ping + "ms" + ChatColor.DARK_PURPLE + ") vs. (" + ChatColor.LIGHT_PURPLE + ((CraftPlayer)opponent).getHandle().ping + "ms" + ChatColor.DARK_PURPLE + ")");
             }
         }
         return toReturn;
