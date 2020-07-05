@@ -2,8 +2,8 @@ package rip.thecraft.brawl.command;
 
 import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.duelarena.DuelArena;
@@ -22,13 +22,15 @@ import rip.thecraft.spartan.nametag.NametagHandler;
 public class SpawnCommand {
 
     private final Brawl plugin;
-    private final String spawnName = "SPAWN";
+
+    public static final String SPAWN_LOC = "SPAWN";
+    public static final String ARENA_LOC = "DUEL_ARENA";
 
     @Command(names = "spawn")
     public void execute(Player sender) {
-        Location spawn = plugin.getLocationByName(this.spawnName);
+        Location spawn = plugin.getLocationByName(SPAWN_LOC);
         if(spawn == null) {
-            sender.sendMessage(ChatColor.RED + "Location " + spawnName + " not found.");
+            sender.sendMessage(ChatColor.RED + "Uh oh! It looks like the Spawn hasn't been set. Please contact an administrator.");
             return;
         }
 
@@ -62,7 +64,7 @@ public class SpawnCommand {
             return;
         }
 
-        if (!sender.isOnGround()) {
+        if (sender.getGameMode() != GameMode.CREATIVE && !sender.isOnGround()) {
             sender.sendMessage(ChatColor.RED + "You need to be on the ground to warp to spawn.");
             return;
         }
@@ -86,17 +88,6 @@ public class SpawnCommand {
     @Command(names = { "1v1", "1vs1", "duelarena"})
     public void duelArena(Player sender) {
         DuelArena.join(sender);
-    }
-
-    @Command(names = "setspawn", permission = "brawl.command.setspawn")
-    public void setspawn(CommandSender sender) {
-        this.setspawn(sender, this.spawnName);
-    }
-
-    @Command(names = "setspawn", permission = "brawl.command.setspawn")
-    public void setspawn(CommandSender sender, String spawnType) {
-        sender.sendMessage(ChatColor.YELLOW + "Set location for " + ChatColor.LIGHT_PURPLE + spawnType + ChatColor.YELLOW + ".");
-        plugin.setLocationByName(spawnType, ((Player)sender).getLocation());
     }
 
 }

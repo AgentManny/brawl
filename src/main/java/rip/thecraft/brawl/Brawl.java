@@ -23,6 +23,7 @@ import rip.thecraft.brawl.ability.command.AbilityCommand;
 import rip.thecraft.brawl.ability.command.adapter.AbilityTypeAdapter;
 import rip.thecraft.brawl.command.*;
 import rip.thecraft.brawl.command.manage.ExpModifyCommand;
+import rip.thecraft.brawl.command.manage.SetSpawnCommand;
 import rip.thecraft.brawl.command.manage.VisualCommand;
 import rip.thecraft.brawl.duelarena.DuelArenaHandler;
 import rip.thecraft.brawl.duelarena.arena.Arena;
@@ -182,6 +183,7 @@ public class Brawl extends JavaPlugin {
                 // Manage commands
                 new ExpModifyCommand(),
                 new VisualCommand(this),
+                new SetSpawnCommand(this),
 
                 new KillstreakCommand(this),
 
