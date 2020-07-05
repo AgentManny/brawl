@@ -1,14 +1,8 @@
 package rip.thecraft.brawl.region;
 
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.ReplaceOptions;
-import rip.thecraft.brawl.Brawl;
+import com.google.gson.JsonObject;
 import lombok.Data;
-import org.bson.Document;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 
 import java.util.ArrayList;
@@ -22,6 +16,7 @@ public class Region implements Iterable<Location> {
     private int x1, y1, z1;
     private int x2, y2, z2;
     private RegionType type;
+    private String prefix = "";
     private String name;
 
     /**
@@ -74,16 +69,19 @@ public class Region implements Iterable<Location> {
         this.z2 = Math.max(z1, z2);
     }
 
-    public Region(Document document) {
-        this.worldName = document.getString("worldName");
-        this.x1 = document.getInteger("x1");
-        this.x2 = document.getInteger("x2");
-        this.y1 = document.getInteger("y1");
-        this.y2 = document.getInteger("y2");
-        this.z1 = document.getInteger("z1");
-        this.z2 = document.getInteger("z2");
-        this.name = document.getString("name");
-        this.type = RegionType.valueOf(document.getString("type"));
+    public Region(JsonObject data) {
+        this.worldName = data.get("worldName").getAsString();
+        this.x1 = data.get("x1").getAsInt();
+        this.x2 = data.get("x2").getAsInt();
+        this.y1 = data.get("y1").getAsInt();
+        this.y2 = data.get("y2").getAsInt();
+        this.z1 = data.get("z1").getAsInt();
+        this.z2 = data.get("z2").getAsInt();
+        this.name = data.get("name").getAsString();
+        this.type = RegionType.valueOf(data.get("type").getAsString());
+        if (data.has("prefix")) {
+            this.prefix = ChatColor.translateAlternateColorCodes('&', data.get("prefix").getAsString());
+        }
     }
 
     /**
@@ -308,21 +306,21 @@ public class Region implements Iterable<Location> {
         return chunks;
     }
 
-    public void save() {
-        Brawl.getInstance().getRegionHandler().getMongoCollection().replaceOne(Filters.eq("name", this.name), this.toJSON(), new ReplaceOptions().upsert(true));
-    }
-
-    public Document toJSON() {
-        return new Document("worldName", worldName)
-                .append("x1", x1)
-                .append("x2", x2)
-                .append("y1", y1)
-                .append("y2", y2)
-                .append("z1", z1)
-                .append("z2", z2)
-                .append("name", name)
-                .append("type", type.name());
-
+    public JsonObject toJson() {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("worldName", worldName);
+        jsonObject.addProperty("x1", x1);
+        jsonObject.addProperty("x2", x2);
+        jsonObject.addProperty("y1", y1);
+        jsonObject.addProperty("y2", y2);
+        jsonObject.addProperty("z1", z1);
+        jsonObject.addProperty("z2", z2);
+        jsonObject.addProperty("name", name);
+        jsonObject.addProperty("type", type.name());
+        if (this.prefix != null && !this.prefix.isEmpty()) {
+            jsonObject.addProperty("prefix", this.prefix);
+        }
+        return jsonObject;
     }
 
     /**

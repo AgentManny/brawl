@@ -249,6 +249,9 @@ public class PlayerData {
             public void run() {
                 Player player = getPlayer();
 
+                cancel();
+                tpTask = null;
+
                 if (player != null && player.isOnline()) {
                     combatTaggedTil = -1;
                     getCooldownMap().remove("ENDERPEARL");
@@ -261,9 +264,6 @@ public class PlayerData {
                     }
                     getPlayer().teleport(loc);
                 }
-
-                cancel();
-                tpTask = null;
 
             }
         };

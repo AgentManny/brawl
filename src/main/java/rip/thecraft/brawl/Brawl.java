@@ -222,7 +222,7 @@ public class Brawl extends JavaPlugin {
         this.leaderboard = new Leaderboard(this);
         this.visualManager = new VisualManager(this);
 
-        this.regionHandler = new RegionHandler(this);
+        this.regionHandler = new RegionHandler();
 
         this.itemHandler = new ItemHandler(this);
 

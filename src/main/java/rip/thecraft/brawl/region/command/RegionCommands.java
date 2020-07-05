@@ -29,6 +29,19 @@ public class RegionCommands {
 
     }
 
+    @Command(names = "region setcolor", permission = "op")
+    public void setColor(CommandSender sender, String name) {
+        Region region;
+        if((region = plugin.getRegionHandler().get(name)) == null) {
+            sender.sendMessage(ChatColor.RED + "Region " + name + " not found.");
+            return;
+        }
+
+        region.setPrefix(ChatColor.translateAlternateColorCodes('&', name));
+        sender.sendMessage(ChatColor.GREEN + "Set region " + ChatColor.WHITE + region.getName() + " region to " + region.getPrefix() + region.getName() + ChatColor.GREEN + ".");
+    }
+
+
     @Command(names = "region list", permission = "op")
     public void list(CommandSender sender) {
         plugin.getRegionHandler().getRegions().forEach(region -> {
@@ -74,7 +87,6 @@ public class RegionCommands {
         region.setName(name);
 
         plugin.getRegionHandler().add(region);
-        region.save();
         player.sendMessage(ChatColor.GREEN + "Created region " + name + ".");
     }
 

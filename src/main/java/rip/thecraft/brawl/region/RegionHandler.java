@@ -1,51 +1,77 @@
 package rip.thecraft.brawl.region;
 
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
-import rip.thecraft.brawl.Brawl;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import lombok.Getter;
-import org.bson.Document;
 import org.bukkit.Location;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.spartan.Spartan;
 
-import java.io.Closeable;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RegionHandler implements Closeable {
 
-    private final Brawl plugin;
-
     @Getter
     List<Region> regions = new ArrayList<>();
 
-    @Getter
-    private MongoCollection mongoCollection;
+    public RegionHandler() {
+        this.load();
+    }
 
-    public RegionHandler(Brawl plugin) {
-        this.plugin = plugin;
+    private void load() {
+        File file = getFile();
+        try (FileReader reader = new FileReader(file)) {
+            JsonParser parser = new JsonParser();
+            JsonArray array = parser.parse(reader).getAsJsonArray();
 
-        this.mongoCollection = plugin.getMongoDatabase().getCollection("regions");
-        this.mongoCollection.find().iterator().forEachRemaining(object -> {
-            Document document = (Document) object;
-            Region region = new Region(document);
-            this.regions.add(region);
-        });
+            for (Object object : array) {
+                JsonObject jsonObject = (JsonObject) object;
+                Region region = new Region(jsonObject);
+                this.regions.add(region);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        this.save();
+    }
+
+    public void save() {
+        File file = getFile();
+
+        try (FileWriter writer = new FileWriter(file)) {
+
+            Spartan.GSON.toJson(toJson(), writer);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private JsonArray toJson() {
+        JsonArray jsonArray = new JsonArray();
+        for (Region region : this.regions) {
+            jsonArray.add(region.toJson());
+        }
+        return jsonArray;
     }
 
     public void add(Region region) {
         this.regions.add(region);
+        save();
     }
 
     public void remove(Region region) {
-        if(regions.removeIf(region::equals)) {
-            this.mongoCollection.deleteOne(Filters.eq("name", region.getName()));
-        }
+        regions.removeIf(region::equals);
+        save();
     }
 
     public void remove(String name) {
-        if(regions.removeIf(rg -> rg.getName().equalsIgnoreCase(name))) {
-            this.mongoCollection.deleteOne(Filters.eq("name", name));
-        }
+        regions.removeIf(rg -> rg.getName().equalsIgnoreCase(name));
+        save();
     }
 
     public Region get(Location location) {
@@ -66,8 +92,20 @@ public class RegionHandler implements Closeable {
         return null;
     }
 
+    private File getFile() {
+        File file = new File(Brawl.getInstance().getDataFolder() + File.separator + "regions.json");
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return file;
+    }
+
     @Override
     public void close() {
-        this.regions.forEach(Region::save);
+        save();
     }
 }
