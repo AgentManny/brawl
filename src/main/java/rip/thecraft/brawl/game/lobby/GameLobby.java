@@ -20,8 +20,8 @@ import rip.thecraft.brawl.game.team.GameTeam;
 import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.PlayerUtil;
+import rip.thecraft.brawl.util.location.LocationType;
 import rip.thecraft.spartan.nametag.NametagHandler;
-import rip.thecraft.spartan.util.PlayerUtils;
 import rip.thecraft.spartan.util.TimeUtils;
 
 import java.util.*;
@@ -71,7 +71,7 @@ public class GameLobby {
 
         this.broadcast(Game.PREFIX + ChatColor.WHITE + player.getDisplayName() + ChatColor.YELLOW + " has joined the event." + ChatColor.GRAY + " (" + this.players.size() + "/" + gameType.getMaxPlayers() + ")");
 
-        player.teleport(this.getLocation());
+        player.teleport(LocationType.GAME_LOBBY.getLocation());
         PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
 
         updateVotes();
@@ -255,14 +255,4 @@ public class GameLobby {
                 .filter(Objects::nonNull)
                 .forEach(player -> player.sendMessage(message));
     }
-
-    private Location getLocation() {
-        String key = "GAME_LOBBY";
-        Location location = brawl.getLocationByName(key);
-        if (location == null) {
-            brawl.getLogger().severe("Location " + key + " could not be found!");
-        }
-        return location;
-    }
-
 }

@@ -28,7 +28,7 @@ public class SetSpawnCommand {
         LocationType type = LocationType.parse(location);
         if (type == null) {
             player.sendMessage(ChatColor.RED + "Error: Location " + location + " doesn't exist.");
-            player.sendMessage(ChatColor.GRAY + "Locations: " + ChatColor.WHITE + EnumSet.allOf(LocationType.class).stream().map(LocationType::getName).collect(Collectors.joining("m ")));
+            player.sendMessage(ChatColor.GRAY + "Locations: " + ChatColor.WHITE + EnumSet.allOf(LocationType.class).stream().map(loc -> WordUtils.capitalize(loc.name().replace("_", " "))).collect(Collectors.joining(", ")));
             return;
         }
 

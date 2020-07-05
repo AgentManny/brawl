@@ -9,6 +9,7 @@ import rip.thecraft.brawl.Brawl;
 public enum LocationType {
 
     SPAWN("SPAWN"),
+    GAME_LOBBY("GAME_LOBBY"),
     ARENA("DUEL_ARENA"),
 
     HOLOGRAM_STATS("HOLO_STATS"),
@@ -23,7 +24,8 @@ public enum LocationType {
         return Brawl.getInstance().getLocationByName(name);
     }
 
-    public static LocationType parse(String source) {
+    public static LocationType parse(String value) {
+        String source = value.replace(" ", "_");
         for (LocationType location : values()) {
             if (location.name().equalsIgnoreCase(source) || location.name.equalsIgnoreCase(source)) {
                 return location;
