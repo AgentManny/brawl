@@ -39,17 +39,21 @@ public class RegionCommands {
 
         region.setPrefix(ChatColor.translateAlternateColorCodes('&', name));
         sender.sendMessage(ChatColor.GREEN + "Set region " + ChatColor.WHITE + region.getName() + " region to " + region.getPrefix() + region.getName() + ChatColor.GREEN + ".");
+        plugin.getRegionHandler().save();
     }
 
 
     @Command(names = "region list", permission = "op")
     public void list(CommandSender sender) {
+        sender.sendMessage(" ");
+        sender.sendMessage(ChatColor.DARK_PURPLE + "Regions (" + plugin.getRegionHandler().getRegions().size() + "):");
         plugin.getRegionHandler().getRegions().forEach(region -> {
-            new FancyMessage(ChatColor.GOLD + region.getName() + ChatColor.GRAY + "[" + region.getType().name() + "]" + " (" + region.getX1() + ", " + region.getY1() + ", " + region.getZ1() + ") (" + region.getX2() + ", " + region.getY2() + ", " + region.getZ2() + ")")
+            new FancyMessage(ChatColor.LIGHT_PURPLE + region.getPrefix() + region.getName() + ChatColor.GRAY + "[" + region.getType().name() + "]" + " (" + region.getX1() + ", " + region.getY1() + ", " + region.getZ1() + ") (" + region.getX2() + ", " + region.getY2() + ", " + region.getZ2() + ")")
                     .tooltip(ChatColor.YELLOW + "Click to teleport to this region")
                     .command("/tppos " + region.getCenter().getX() + " " + region.getCenter().getY() + " " + region.getCenter().getZ() + " " + region.getWorldName())
                     .send(sender);
         });
+        sender.sendMessage(" ");
     }
 
     @Command(names = "region wand", permission = "op")
