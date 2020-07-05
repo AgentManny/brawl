@@ -15,6 +15,7 @@ import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.spectator.SpectatorManager;
 import rip.thecraft.brawl.util.BrawlUtil;
+import rip.thecraft.brawl.util.location.LocationType;
 import rip.thecraft.spartan.command.Command;
 import rip.thecraft.spartan.nametag.NametagHandler;
 
@@ -23,12 +24,9 @@ public class SpawnCommand {
 
     private final Brawl plugin;
 
-    public static final String SPAWN_LOC = "SPAWN";
-    public static final String ARENA_LOC = "DUEL_ARENA";
-
     @Command(names = "spawn")
     public void execute(Player sender) {
-        Location spawn = plugin.getLocationByName(SPAWN_LOC);
+        Location spawn = LocationType.SPAWN.getLocation();
         if(spawn == null) {
             sender.sendMessage(ChatColor.RED + "Uh oh! It looks like the Spawn hasn't been set. Please contact an administrator.");
             return;

@@ -275,7 +275,6 @@ public class Brawl extends JavaPlugin {
         if(this.locationMap.containsKey(locationName)) {
             return this.locationMap.get(locationName);
         }
-
         return this.getServer().getWorld("world").getSpawnLocation();
     }
 

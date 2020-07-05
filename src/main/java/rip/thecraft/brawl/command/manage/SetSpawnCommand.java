@@ -1,12 +1,16 @@
 package rip.thecraft.brawl.command.manage;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.command.SpawnCommand;
+import rip.thecraft.brawl.util.location.LocationType;
 import rip.thecraft.spartan.command.Command;
+
+import java.util.EnumSet;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class SetSpawnCommand {
@@ -15,20 +19,23 @@ public class SetSpawnCommand {
 
     @Command(names = "setspawn", permission = "brawl.command.setspawn")
     public void setspawn(Player player) {
-        this.setspawn(player, SpawnCommand.SPAWN_LOC);
+        this.setspawn(player, LocationType.SPAWN.name());
     }
 
     @Command(names = "setspawn", permission = "brawl.command.setspawn")
-    public void setspawn(Player player, String spawnType) {
-        if (!(spawnType.equalsIgnoreCase(SpawnCommand.ARENA_LOC) || spawnType.equalsIgnoreCase(SpawnCommand.SPAWN_LOC))) {
-            player.sendMessage(ChatColor.RED + "Warning! Spawn location " + spawnType + " doesn't exist.");
-            player.sendMessage(ChatColor.RED + "Valid (spawn) locations: [DUEL_ARENA, SPAWN]");
+    public void setspawn(Player player, String location) {
+
+        LocationType type = LocationType.parse(location);
+        if (type == null) {
+            player.sendMessage(ChatColor.RED + "Error: Location " + location + " doesn't exist.");
+            player.sendMessage(ChatColor.GRAY + "Locations: " + ChatColor.WHITE + EnumSet.allOf(LocationType.class).stream().map(LocationType::getName).collect(Collectors.joining("m ")));
+            return;
         }
 
         Location loc = player.getLocation();
 
-        plugin.setLocationByName(spawnType, loc);
-        player.sendMessage(ChatColor.GREEN + "Set location of " + ChatColor.WHITE + spawnType + ChatColor.GREEN + " to " + ChatColor.WHITE + "(" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ")" + ChatColor.GREEN + ".");
+        plugin.setLocationByName(type.getName(), loc);
+        player.sendMessage(ChatColor.GREEN + "Set location of " + ChatColor.WHITE + WordUtils.capitalize(type.name().toLowerCase().replace("_", " ")) + ChatColor.GREEN + " to " + ChatColor.WHITE + "(" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ")" + ChatColor.GREEN + ".");
     }
 
 }

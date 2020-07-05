@@ -13,7 +13,6 @@ import java.util.UUID;
 
 public class UpgradeManager {
 
-    public static final String NPC_UPGRADER_LOC = "NPC_UPGRADER";
     public static final int PERK_ENTITY_ID = 69;
 
     private final Brawl plugin;
