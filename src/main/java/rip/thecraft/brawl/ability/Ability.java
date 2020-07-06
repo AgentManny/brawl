@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -13,6 +14,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.event.AbilityCooldownEvent;
 import rip.thecraft.brawl.duelarena.match.Match;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
@@ -149,6 +151,9 @@ public abstract class Ability {
     public void addCooldown(Player player, long countdown) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
         playerData.addCooldown("ABILITY_" + this.getName(), countdown);
+
+        Bukkit.getServer().getPluginManager().callEvent(new AbilityCooldownEvent(player, this, countdown));
+
         if (playerData.getEnderpearlTask() == null) {
             playerData.setEnderpearlTask(new BukkitRunnable() {
 

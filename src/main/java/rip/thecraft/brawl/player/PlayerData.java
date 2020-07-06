@@ -343,6 +343,17 @@ public class PlayerData {
         return this.cooldownMap.put(cooldownName.toUpperCase(), cooldown);
     }
 
+    public Cooldown setCooldown(String cooldownName, long time) {
+        Cooldown cooldown = this.getCooldown(cooldownName.toUpperCase());
+        if (cooldown != null) {
+            cooldown.setExpire(time);
+        } else {
+            cooldown = new Cooldown(time);
+        }
+
+        return this.cooldownMap.put(cooldownName.toUpperCase(), cooldown);
+    }
+
     public Cooldown getCooldown(String cooldownName) {
         Cooldown cooldown = null;
 

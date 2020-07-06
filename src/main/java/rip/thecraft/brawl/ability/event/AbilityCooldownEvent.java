@@ -4,19 +4,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
+import rip.thecraft.brawl.ability.Ability;
 
-public class AbilityActivateEvent extends PlayerEvent implements Cancellable {
+public class AbilityCooldownEvent extends PlayerEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
 
-    private Player player;
+    private Ability ability;
+    private long cooldown;
     private boolean cancelled;
 
-    public AbilityActivateEvent(Player player) {
+    public AbilityCooldownEvent(Player player, Ability ability, long cooldown) {
         super(player);
 
-        this.player = player;
-
+        this.ability = ability;
+        this.cooldown = cooldown;
     }
 
     @Override
@@ -29,6 +31,21 @@ public class AbilityActivateEvent extends PlayerEvent implements Cancellable {
         this.cancelled = cancelled;
     }
 
+    public Ability getAbility() {
+        return ability;
+    }
+
+    public void setAbility(Ability ability) {
+        this.ability = ability;
+    }
+
+    public long getCooldown() {
+        return cooldown;
+    }
+
+    public void setCooldown(int cooldown) {
+        this.cooldown = cooldown;
+    }
 
     public static HandlerList getHandlerList() {
         return handlers;

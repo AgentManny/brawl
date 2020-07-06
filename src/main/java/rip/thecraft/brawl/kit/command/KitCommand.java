@@ -13,6 +13,8 @@ import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.item.item.Armor;
 import rip.thecraft.brawl.item.item.Items;
 import rip.thecraft.brawl.kit.Kit;
+import rip.thecraft.brawl.kit.editor.menu.KitEditMenu;
+import rip.thecraft.brawl.kit.editor.menu.KitEditorMenu;
 import rip.thecraft.brawl.kit.type.RankType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.server.util.chatcolor.CC;
@@ -39,6 +41,17 @@ public class KitCommand {
         } else {
             player.sendMessage(CC.RED + "You don't have permission to use this kit.");
         }
+    }
+
+    @Command(names = { "kit edit", "k edit" }, permission = "op")
+    public void edit(Player player, Kit kit) {
+        player.sendMessage(CC.GREEN + "Updating kit " + kit.getName() + "...");
+        new KitEditMenu(kit).openMenu(player);
+    }
+
+    @Command(names = { "kit editor", "k editor" }, permission = "op")
+    public void editor(Player player) {
+        new KitEditorMenu().openMenu(player);
     }
 
     @Command(names = { "kit weight", "k weight" }, permission = "op")

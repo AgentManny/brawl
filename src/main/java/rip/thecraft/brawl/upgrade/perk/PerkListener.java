@@ -18,6 +18,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.event.AbilityCooldownEvent;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.player.event.PlayerKillEvent;
@@ -166,8 +167,15 @@ public class PerkListener implements Listener {
                 // player.sendMessage(ChatColor.RED + "Uh oh! It appears you are not in a team, Medic perk did not apply.");
             }
         }
+    }
 
-
+    @EventHandler
+    public void onAbilityActivate(AbilityCooldownEvent event) {
+        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(event.getPlayer().getUniqueId());
+        if (playerData.usingPerk(OVERCLOCK)) {
+            playerData.setCooldown("ABILITY_" + event.getAbility().getName(), (long) (event.getCooldown() * 0.5));
+            event.getPlayer().sendMessage(ChatColor.GREEN + "Your " + ChatColor.YELLOW + "Overclock" + ChatColor.GREEN + " perked reduced your " + event.getAbility().getName() + " cooldown.");
+        }
     }
 
 
