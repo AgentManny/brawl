@@ -15,6 +15,7 @@ import rip.thecraft.brawl.item.item.Items;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.editor.menu.KitEditMenu;
 import rip.thecraft.brawl.kit.editor.menu.KitEditorMenu;
+import rip.thecraft.brawl.kit.menu.KitListMenu;
 import rip.thecraft.brawl.kit.type.RankType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.server.util.chatcolor.CC;
@@ -41,6 +42,11 @@ public class KitCommand {
         } else {
             player.sendMessage(CC.RED + "You don't have permission to use this kit.");
         }
+    }
+
+    @Command(names = { "kit list", "kit list"}, permission = "op")
+    public void list(Player player) {
+        new KitListMenu().openMenu(player);
     }
 
     @Command(names = { "kit edit", "k edit" }, permission = "op")
