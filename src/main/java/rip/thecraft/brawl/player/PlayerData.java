@@ -62,6 +62,9 @@ public class PlayerData {
 
     private boolean teamChat = false;
 
+    // Used for Revenge perk
+    private UUID previousDeath;
+
     private UUID previousKill;
     private int killTracker = 0;
 
@@ -116,6 +119,7 @@ public class PlayerData {
                 .append("level", this.level.toDocument())
                 .append("kill-tracker", killTracker)
                 .append("healing-method", refillType.name())
+                .append("previous-death", previousDeath == null ? null : previousDeath.toString())
                 .append("previous-kill", previousKill == null ? null : previousKill.toString())
                 .append("unlocked-perks", unlockedPerks)
                 .append("active-perks", activePerks);
@@ -144,6 +148,11 @@ public class PlayerData {
         }
 
         killTracker = document.getInteger("kill-tracker", 0);
+
+        if (document.containsKey("previous-death") && document.get("previous-death") != null) {
+            previousDeath = BrawlUtil.isUUID("previous-death") ? UUID.fromString(document.getString("previous-death")) : null;
+        }
+
         if (document.containsKey("previous-kill") && document.get("previous-kill") != null) {
             previousKill = BrawlUtil.isUUID("previous-kill") ? UUID.fromString(document.getString("previous-kill")) : null;
         }
