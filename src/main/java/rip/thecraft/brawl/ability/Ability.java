@@ -19,6 +19,7 @@ import rip.thecraft.brawl.duelarena.match.Match;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.region.RegionType;
+import rip.thecraft.brawl.upgrade.perk.Perk;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.Cooldown;
 import rip.thecraft.spartan.util.ItemBuilder;
@@ -53,6 +54,10 @@ public abstract class Ability {
                 .data(getData())
                 .create();
 
+    }
+
+    public Perk[] getDisabledPerks() {
+        return new Perk[]{ };
     }
 
     public ChatColor getColor() {

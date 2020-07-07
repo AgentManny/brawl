@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.duelarena.queue.QueueData;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.kit.Kit;
@@ -295,6 +296,13 @@ public class PlayerData {
     }
 
     public boolean usingPerk(Perk perk) {
+        for (Ability ability : selectedKit.getAbilities()) {
+            for (Perk disabledPerk : ability.getDisabledPerks()) {
+                if (disabledPerk.equals(perk)) {
+                    return false;
+                }
+            }
+        }
         return perk.contains(activePerks);
     }
 
