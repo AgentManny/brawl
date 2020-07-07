@@ -12,7 +12,7 @@ import java.util.UUID;
 public class TeamLeaderCommand {
 
     @Command(names = { "team transfer", "t transfer", "f transfer", "faction transfer", "fac newleader", "team leader", "t leader", "f leader", "faction leader", "fac leader" })
-    public void execute(Player sender, CacheProfile leader) {
+    public static void transferLeader(Player sender, CacheProfile leader) {
         UUID uuid = leader.getUuid();
 
         Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(sender);

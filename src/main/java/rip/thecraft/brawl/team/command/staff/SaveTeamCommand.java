@@ -11,7 +11,7 @@ import rip.thecraft.spartan.command.Command;
 public class SaveTeamCommand {
 
     @Command(names = { "saveteam"}, permission = "op")
-    public void execute(Player sender, Team team) {
+    public static void saveTeam(Player sender, Team team) {
         Brawl.getInstance().getTeamHandler().getCollection().replaceOne(Filters.eq("_id", team._id), Team.getAsDocument(team), new ReplaceOptions().upsert(true));
         sender.sendMessage(ChatColor.GREEN + "Saved team " + team.getName() + " to mongo.");
     }

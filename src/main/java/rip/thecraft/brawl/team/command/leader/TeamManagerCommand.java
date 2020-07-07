@@ -11,7 +11,7 @@ public class TeamManagerCommand {
 
 
     @Command(names = {"team manager", "t manager", "f manager", "faction manager", "fac manager"})
-    public void execute(Player sender) {
+    public static void teamManager(Player sender) {
         Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(sender);
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
@@ -22,7 +22,7 @@ public class TeamManagerCommand {
     }
 
     @Command(names = {"team manager add", "t manager add", "f manager add", "faction manager add", "fac manager add"})
-    public void add(Player sender, CacheProfile target) {
+    public static void teamManagerAdd(Player sender, CacheProfile target) {
         Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(sender);
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
@@ -46,7 +46,7 @@ public class TeamManagerCommand {
     }
 
     @Command(names = {"team manager remove", "t manager remove", "f manager remove", "faction manager remove", "fac manager remove"})
-    public void remove(Player sender, CacheProfile target) {
+    public static void teamManagerRemove(Player sender, CacheProfile target) {
         Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(sender);
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");

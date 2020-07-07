@@ -7,7 +7,7 @@ import rip.thecraft.spartan.command.Command;
 public class SpectateCommand {
 
     @Command(names = { "spec", "follow", "spectate" })
-    public void spectate(Player sender) {
+    public static void spectate(Player sender) {
         sender.sendMessage(ChatColor.RED + "Spectating is currently disabled.");
     }
 

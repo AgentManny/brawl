@@ -1,16 +1,16 @@
 package rip.thecraft.brawl.team.command.staff;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.team.Team;
 import rip.thecraft.spartan.command.Command;
 import rip.thecraft.spartan.command.Param;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 public class ForceJoinCommand {
 
-    @Command(names = { "forcejoin" }, permission = "brawl.team.forcejoin")
-    public void execute(Player sender, Team team, @Param(defaultValue = "self") Player target) {
+    @Command(names = { "team admin forcejoin" }, permission = "brawl.team.forcejoin")
+    public static void forceJoin(Player sender, Team team, @Param(defaultValue = "self") Player target) {
         if (Brawl.getInstance().getTeamHandler().getPlayerTeam(target) != null) {
             if (target == sender) {
                 sender.sendMessage(ChatColor.RED + "Leave your current team before attempting to forcejoin.");

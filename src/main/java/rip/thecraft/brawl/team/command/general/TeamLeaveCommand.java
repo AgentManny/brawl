@@ -1,18 +1,17 @@
 package rip.thecraft.brawl.team.command.general;
 
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.team.Team;
-import rip.thecraft.spartan.Spartan;
-import rip.thecraft.spartan.command.Command;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.team.Team;
+import rip.thecraft.spartan.command.Command;
 import rip.thecraft.spartan.nametag.NametagHandler;
 
 public class TeamLeaveCommand {
 
     @Command(names = { "team leave", "t leave", "f leave", "faction leave", "fac leave" })
-    public void execute(Player sender) {
+    public static void leave(Player sender) {
         Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(sender);
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");

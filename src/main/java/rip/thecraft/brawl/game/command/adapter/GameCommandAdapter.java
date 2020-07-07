@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.game.command.adapter;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -12,8 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@RequiredArgsConstructor
-public class GameTypeAdapter implements ParameterType<GameType> {
+public class GameCommandAdapter implements ParameterType<GameType> {
 
     @Override
     public GameType transform(CommandSender sender, String source) {

@@ -1,6 +1,5 @@
-package rip.thecraft.brawl.ability.command.adapter;
+package rip.thecraft.brawl.command.adapters;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -13,14 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@RequiredArgsConstructor
-public class AbilityTypeAdapter implements ParameterType<Ability> {
-
-    private final Brawl plugin;
+public class AbilityCommandAdapter implements ParameterType<Ability> {
 
     @Override
     public Ability transform(CommandSender sender, String source) {
-        Ability ability = plugin.getAbilityHandler().getAbilityByName(source);
+        Ability ability = Brawl.getInstance().getAbilityHandler().getAbilityByName(source);
         if (ability == null) {
             sender.sendMessage(ChatColor.RED + "Ability " + source + " not found.");
         }
@@ -30,7 +26,7 @@ public class AbilityTypeAdapter implements ParameterType<Ability> {
     @Override
     public List<String> tabComplete(Player sender, Set<String> flags, String source) {
         List<String> completions = new ArrayList<>();
-        for (Ability ability : plugin.getAbilityHandler().getAbilities().values()) {
+        for (Ability ability : Brawl.getInstance().getAbilityHandler().getAbilities().values()) {
             if (StringUtils.startsWithIgnoreCase(ability.getName(), source)) {
                 completions.add(ability.getName());
             }

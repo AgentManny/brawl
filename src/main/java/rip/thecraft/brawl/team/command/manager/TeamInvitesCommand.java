@@ -13,7 +13,7 @@ import java.util.UUID;
 public class TeamInvitesCommand {
 
     @Command(names = {"team invites", "t invites", "f invites", "faction invites", "fac invites"})
-    public void execute(Player sender) {
+    public static void invitePlayer(Player sender) {
         StringBuilder yourInvites = new StringBuilder();
         for (Team team : Brawl.getInstance().getTeamHandler().getTeams()) {
             if (team.getInvitations().contains(sender.getUniqueId())) {

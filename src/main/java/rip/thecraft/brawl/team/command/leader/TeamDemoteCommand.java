@@ -10,7 +10,7 @@ import rip.thecraft.spartan.command.Command;
 public class TeamDemoteCommand {
 
     @Command(names = {"team demote", "t demote", "f demote", "faction demote", "fac demote"})
-    public void execute(Player sender, CacheProfile player) {
+    public static void execute(Player sender, CacheProfile player) {
         Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(sender.getUniqueId());
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");

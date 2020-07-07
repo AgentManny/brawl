@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.command;
 
-import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
@@ -9,14 +8,11 @@ import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.spartan.command.Command;
 
-@RequiredArgsConstructor
 public class ClearkitCommand {
 
-    private final Brawl plugin;
-
     @Command(names = { "clearkit", "resetkit", "ck", "rk" })
-    public void execute(Player player) {
-        PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
+    public static void execute(Player player) {
+        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
         Kit kit = playerData.getSelectedKit();
         if (kit == null) {
             player.sendMessage(ChatColor.RED + "You don't have a kit equipped.");
@@ -34,8 +30,6 @@ public class ClearkitCommand {
         player.setMaxHealth(20.0D);
         player.setHealth(20.0D);
         playerData.setSpawnProtection(true);
-        plugin.getItemHandler().apply(player, InventoryType.SPAWN);
-
+        Brawl.getInstance().getItemHandler().apply(player, InventoryType.SPAWN);
     }
-
 }

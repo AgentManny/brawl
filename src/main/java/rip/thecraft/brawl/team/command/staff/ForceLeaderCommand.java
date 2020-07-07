@@ -12,7 +12,7 @@ import java.util.UUID;
 public class ForceLeaderCommand {
 
     @Command(names = "forceleader", permission = "brawl.team.forceleader")
-    public void execute(Player sender, @Param(defaultValue= "self") Team team, @Param(defaultValue = "self")CacheProfile cacheProfile) {
+    public static void forceLeader(Player sender, @Param(defaultValue= "self") Team team, @Param(defaultValue = "self")CacheProfile cacheProfile) {
         UUID uuid = cacheProfile.getUuid();
 
         if (uuid == null) {

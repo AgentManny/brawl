@@ -9,8 +9,8 @@ import rip.thecraft.spartan.command.Command;
 
 public class ForceKickCommand {
 
-    @Command(names = "forcekick", permission = "op")
-    public void execute(Player sender, CacheProfile player) {
+    @Command(names = "team admin forcekick", permission = "op")
+    public static void forceKick(Player sender, CacheProfile player) {
         Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(player.getUuid());
         if (team == null) {
             sender.sendMessage(ChatColor.RED + player.getUsername() + " is not on a team!");

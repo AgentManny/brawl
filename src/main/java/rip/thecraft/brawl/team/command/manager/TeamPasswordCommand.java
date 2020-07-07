@@ -1,15 +1,15 @@
 package rip.thecraft.brawl.team.command.manager;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.team.Team;
 import rip.thecraft.spartan.command.Command;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 public class TeamPasswordCommand {
 
     @Command(names = {"team password", "t password", "f password", "faction password", "fac password", "team pass", "t pass", "f pass", "faction pass", "fac pass", "team p", "t p", "f p", "faction p", "fac p"})
-    public void execute(Player sender, String password) {
+    public static void setPassword(Player sender, String password) {
         Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(sender.getUniqueId());
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You're not in a team!");

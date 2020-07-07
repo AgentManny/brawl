@@ -1,6 +1,5 @@
-package rip.thecraft.brawl.region.command;
+package rip.thecraft.brawl.command.manage;
 
-import lombok.RequiredArgsConstructor;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -11,43 +10,40 @@ import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.region.selection.Selection;
 import rip.thecraft.spartan.command.Command;
 
-@RequiredArgsConstructor
 public class RegionCommands {
 
-    private final Brawl plugin;
-
     @Command(names = "region remove", permission = "op")
-    public void remove(CommandSender sender, String name) {
+    public static void remove(CommandSender sender, String name) {
         Region region;
-        if((region = plugin.getRegionHandler().get(name)) == null) {
+        if((region = Brawl.getInstance().getRegionHandler().get(name)) == null) {
             sender.sendMessage(ChatColor.RED + "Region " + name + " not found.");
             return;
         }
 
-        plugin.getRegionHandler().remove(region);
+        Brawl.getInstance().getRegionHandler().remove(region);
         sender.sendMessage(ChatColor.RED + "Removed " + region.getName() + " region.");
 
     }
 
     @Command(names = "region setcolor", permission = "op")
-    public void setColor(CommandSender sender, String name) {
+    public static void setColor(CommandSender sender, String name) {
         Region region;
-        if((region = plugin.getRegionHandler().get(name)) == null) {
+        if((region = Brawl.getInstance().getRegionHandler().get(name)) == null) {
             sender.sendMessage(ChatColor.RED + "Region " + name + " not found.");
             return;
         }
 
         region.setPrefix(ChatColor.translateAlternateColorCodes('&', name));
         sender.sendMessage(ChatColor.GREEN + "Set region " + ChatColor.WHITE + region.getName() + " region to " + region.getPrefix() + region.getName() + ChatColor.GREEN + ".");
-        plugin.getRegionHandler().save();
+        Brawl.getInstance().getRegionHandler().save();
     }
 
 
     @Command(names = "region list", permission = "op")
-    public void list(CommandSender sender) {
+    public static void list(CommandSender sender) {
         sender.sendMessage(" ");
-        sender.sendMessage(ChatColor.DARK_PURPLE + "Regions (" + plugin.getRegionHandler().getRegions().size() + "):");
-        plugin.getRegionHandler().getRegions().forEach(region -> {
+        sender.sendMessage(ChatColor.DARK_PURPLE + "Regions (" + Brawl.getInstance().getRegionHandler().getRegions().size() + "):");
+        Brawl.getInstance().getRegionHandler().getRegions().forEach(region -> {
             new FancyMessage(ChatColor.LIGHT_PURPLE + region.getPrefix() + region.getName() + ChatColor.GRAY + "[" + region.getType().name() + "]" + " (" + region.getX1() + ", " + region.getY1() + ", " + region.getZ1() + ") (" + region.getX2() + ", " + region.getY2() + ", " + region.getZ2() + ")")
                     .tooltip(ChatColor.YELLOW + "Click to teleport to this region")
                     .command("/tppos " + region.getCenter().getX() + " " + region.getCenter().getY() + " " + region.getCenter().getZ() + " " + region.getWorldName())
@@ -57,7 +53,7 @@ public class RegionCommands {
     }
 
     @Command(names = "region wand", permission = "op")
-    public void execute(Player player) {
+    public static void execute(Player player) {
         if (player.getInventory().contains(Selection.SELECTION_WAND)) {
             player.getInventory().remove(Selection.SELECTION_WAND);
         }
@@ -66,7 +62,7 @@ public class RegionCommands {
     }
 
     @Command(names = "region create", permission = "op")
-    public void execute(Player player, String name, String type) {
+    public static void execute(Player player, String name, String type) {
         Selection selection = Selection.createOrGetSelection(player);
 
         if (!selection.isFullObject()) {
@@ -74,7 +70,7 @@ public class RegionCommands {
             return;
         }
 
-        if (plugin.getRegionHandler().get(name) != null) {
+        if (Brawl.getInstance().getRegionHandler().get(name) != null) {
             player.sendMessage(ChatColor.RED + "Region " + name + " already exists.");
             return;
         }
@@ -90,7 +86,7 @@ public class RegionCommands {
         region.setType(regionType);
         region.setName(name);
 
-        plugin.getRegionHandler().add(region);
+        Brawl.getInstance().getRegionHandler().add(region);
         player.sendMessage(ChatColor.GREEN + "Created region " + name + ".");
     }
 

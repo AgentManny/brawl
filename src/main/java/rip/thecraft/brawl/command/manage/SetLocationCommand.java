@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.command.manage;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -8,23 +7,20 @@ import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.util.location.LocationType;
 import rip.thecraft.spartan.command.Command;
+import rip.thecraft.spartan.command.Param;
 
 import java.util.EnumSet;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
-public class SetSpawnCommand {
-
-    private final Brawl plugin;
+public class SetLocationCommand {
 
     @Command(names = "setspawn", permission = "brawl.command.setspawn")
-    public void setspawn(Player player) {
-        this.setspawn(player, LocationType.SPAWN.name());
+    public static void setspawn(Player player) {
+        setLocation(player, LocationType.SPAWN.name());
     }
 
-    @Command(names = "setspawn", permission = "brawl.command.setspawn")
-    public void setspawn(Player player, String location) {
-
+    @Command(names = "setlocation", permission = "brawl.command.setspawn")
+    public static void setLocation(Player player, @Param(name = "type [spawn, game lobby, arena...]") String location) {
         LocationType type = LocationType.parse(location);
         if (type == null) {
             player.sendMessage(ChatColor.RED + "Error: Location " + location + " doesn't exist.");
@@ -33,9 +29,10 @@ public class SetSpawnCommand {
         }
 
         Location loc = player.getLocation();
-
-        plugin.setLocationByName(type.getName(), loc);
+        Brawl.getInstance().setLocationByName(type.getName(), loc);
         player.sendMessage(ChatColor.GREEN + "Set location of " + ChatColor.WHITE + WordUtils.capitalize(type.name().toLowerCase().replace("_", " ")) + ChatColor.GREEN + " to " + ChatColor.WHITE + "(" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ")" + ChatColor.GREEN + ".");
+        if (type.getUpdate() != null) {
+            type.getUpdate().accept(player, loc);
+        }
     }
-
 }

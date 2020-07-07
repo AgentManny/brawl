@@ -6,9 +6,7 @@ import org.apache.commons.io.FileUtils;
 import org.bukkit.Location;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.kit.Kit;
-import rip.thecraft.brawl.warp.command.WarpCommand;
 import rip.thecraft.spartan.Spartan;
-import rip.thecraft.spartan.command.MCommandHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,9 +29,6 @@ public final class WarpManager {
                 e.printStackTrace();
             }
         }
-
-        MCommandHandler.registerParameterType(Warp.class, new WarpTypeAdapter(this));
-        MCommandHandler.registerCommand(new WarpCommand(this));
 
         try {
             List<Warp> warps = Spartan.GSON.fromJson(FileUtils.readFileToString(file), new TypeToken<List<Warp>>() {}.getType());

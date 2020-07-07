@@ -1,13 +1,13 @@
 package rip.thecraft.brawl.team.command.info;
 
+import mkremins.fanciful.FancyMessage;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.team.Team;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.command.Command;
 import rip.thecraft.spartan.command.Param;
-import mkremins.fanciful.FancyMessage;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -17,7 +17,7 @@ import java.util.Map;
 public class TeamListCommand {
 
     @Command(names = { "team list", "t list", "f list", "faction list", "fac list" })
-    public void execute(Player sender,@Param(name = "1") int page) {
+    public static void viewTeams(Player sender,@Param(defaultValue = "1") int page) {
         if (page < 1) {
             sender.sendMessage(ChatColor.RED + "You cannot view a page less than 1");
             return;

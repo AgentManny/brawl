@@ -22,7 +22,6 @@ import java.util.Map;
 @AllArgsConstructor
 public class DuelMenu extends Menu {
 
-    private Brawl plugin;
     private Player target;
 
     @Override
@@ -34,7 +33,7 @@ public class DuelMenu extends Menu {
     public Map<Integer, Button> getButtons(Player player) {
         Map<Integer, Button> buttons = new HashMap<>();
         int i = 0;
-        for (MatchLoadout loadout : plugin.getMatchHandler().getLoadouts()) {
+        for (MatchLoadout loadout : Brawl.getInstance().getMatchHandler().getLoadouts()) {
             buttons.put(i++, new LoadoutButton(loadout));
         }
         return buttons;
@@ -62,7 +61,7 @@ public class DuelMenu extends Menu {
 
         @Override
         public ItemStack getButtonItem(Player player) {
-            PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
+            PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
 //            List<String> lore = ItemBuilder.wrap(CC.AQUA + "Middle Click" + CC.YELLOW + " to customize match values.", CC.YELLOW, 25);
 //            lore.add(0, CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 25));
 //            lore.add(CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 25));
@@ -77,17 +76,17 @@ public class DuelMenu extends Menu {
 
         @Override
         public void clicked(Player player, int slot, ClickType clickType) {
-            PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
+            PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
             if (playerData.getPlayerState() != PlayerState.ARENA) {
                 player.sendMessage(ChatColor.RED + "You must be in the Duel Arena to send duel requests.");
                 return;
             }
 
-            if (target != null || plugin.getPlayerDataHandler().getPlayerData(target).getPlayerState() == PlayerState.ARENA) {
+            if (target != null || Brawl.getInstance().getPlayerDataHandler().getPlayerData(target).getPlayerState() == PlayerState.ARENA) {
                 if (clickType == ClickType.MIDDLE) {
                     player.sendMessage(ChatColor.RED + "Customizable duels have been disabled.");
                 } else {
-                    plugin.getMatchHandler().sendDuel(player, target, loadout);
+                    Brawl.getInstance().getMatchHandler().sendDuel(player, target, loadout);
                     player.closeInventory();
                 }
             } else {

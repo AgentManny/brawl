@@ -11,7 +11,7 @@ import rip.thecraft.spartan.command.Command;
 public class TeamInviteCommand {
 
     @Command(names = { "team invite", "t invite", "f invite", "faction invite", "fac invite" })
-    public void execute(Player sender, CacheProfile target) {
+    public static void invitePlayer(Player sender, CacheProfile player) {
         Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(sender.getUniqueId());
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
@@ -23,16 +23,16 @@ public class TeamInviteCommand {
             return;
         }
         if (team.isOwner(sender.getUniqueId()) || team.isManager(sender.getUniqueId())) {
-            if (!team.isMember(target.getUuid())) {
-                if (team.getInvitations().contains(target.getUuid())) {
+            if (!team.isMember(player.getUuid())) {
+                if (team.getInvitations().contains(player.getUuid())) {
                     sender.sendMessage(ChatColor.RED + "That player has already been invited.");
                     return;
                 }
 
-                team.getInvitations().add(target.getUuid());
+                team.getInvitations().add(player.getUuid());
                 team.flagForSave();
-                if (target.getPlayer() != null) {
-                    final Player targetPlayer = target.getPlayer();
+                if (player.getPlayer() != null) {
+                    final Player targetPlayer = player.getPlayer();
                     targetPlayer.sendMessage(ChatColor.DARK_AQUA + sender.getName() + " invited you to join '" + ChatColor.YELLOW + team.getName() + ChatColor.DARK_AQUA + "'.");
                     new FancyMessage(ChatColor.DARK_AQUA + "Type '" + ChatColor.YELLOW + "/team join " + team.getName() + ChatColor.DARK_AQUA + "' or ")
                             .then(ChatColor.AQUA + "click here")
@@ -40,9 +40,9 @@ public class TeamInviteCommand {
                             .command("/team join " + team.getName())
                             .then(ChatColor.DARK_AQUA + " to join.").send(targetPlayer);
                 }
-                for (final Player player : Brawl.getInstance().getServer().getOnlinePlayers()) {
-                    if (team.isMember(player)) {
-                        player.sendMessage(ChatColor.DARK_AQUA + target.getUsername() + " has been invited to the team!");
+                for (final Player online : Brawl.getInstance().getServer().getOnlinePlayers()) {
+                    if (team.isMember(online)) {
+                        online.sendMessage(ChatColor.DARK_AQUA + player.getUsername() + " has been invited to the team!");
                     }
                 }
             } else {

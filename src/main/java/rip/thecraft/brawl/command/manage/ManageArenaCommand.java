@@ -1,6 +1,5 @@
-package rip.thecraft.brawl.duelarena.command;
+package rip.thecraft.brawl.command.manage;
 
-import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
@@ -11,13 +10,10 @@ import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.command.Command;
 import rip.thecraft.spartan.command.Param;
 
-@RequiredArgsConstructor
-public class ArenaCommand {
-
-    private final Brawl plugin;
+public class ManageArenaCommand {
 
     @Command(names = "arena create", permission = "op")
-    public void create(Player sender, String name, @Param(defaultValue = "NORMAL", name  = "arenaType") String type) {
+    public static void create(Player sender, String name, @Param(defaultValue = "NORMAL", name  = "arenaType") String type) {
         ArenaType arenaType;
         try {
             arenaType = ArenaType.valueOf(type);
@@ -27,7 +23,7 @@ public class ArenaCommand {
         }
 
         Arena arena = Arena.create(name, arenaType, sender.getLocation(), sender.getLocation());
-        DuelArenaHandler ah = plugin.getMatchHandler();
+        DuelArenaHandler ah = Brawl.getInstance().getMatchHandler();
 
         ah.getArenas().add(arena);
         ah.saveArenas();
@@ -40,7 +36,7 @@ public class ArenaCommand {
     }
 
     @Command(names = "arena settype", permission = "op")
-    public void create(Player sender, Arena arena, @Param(defaultValue = "NORMAL", name = "arenaType") String type) {
+    public static void create(Player sender, Arena arena, @Param(defaultValue = "NORMAL", name = "arenaType") String type) {
         ArenaType arenaType;
         try {
             arenaType = ArenaType.valueOf(type);
@@ -54,8 +50,8 @@ public class ArenaCommand {
     }
 
     @Command(names = "arena list", permission = "op")
-    public void list(Player sender) {
-        DuelArenaHandler ah = plugin.getMatchHandler();
+    public static void list(Player sender) {
+        DuelArenaHandler ah = Brawl.getInstance().getMatchHandler();
         sender.sendMessage(CC.DARK_PURPLE + "Arenas (" + ah.getArenas().size() + "):");
         for (Arena arena : ah.getArenas()) {
             arena.getFancyDisplay().send(sender);
@@ -63,8 +59,8 @@ public class ArenaCommand {
     }
 
     @Command(names = "arena remove", permission = "op")
-    public void remove(Player sender, Arena arena) {
-        DuelArenaHandler ah = plugin.getMatchHandler();
+    public static void remove(Player sender, Arena arena) {
+        DuelArenaHandler ah = Brawl.getInstance().getMatchHandler();
 
         ah.getArenas().remove(arena);
         ah.saveArenas();
@@ -73,8 +69,8 @@ public class ArenaCommand {
     }
 
     @Command(names = "arena setfirstloc", permission = "op")
-    public void setfirstloc(Player sender, Arena arena) {
-        DuelArenaHandler ah = plugin.getMatchHandler();
+    public static void setfirstloc(Player sender, Arena arena) {
+        DuelArenaHandler ah = Brawl.getInstance().getMatchHandler();
 
         arena.getLocations()[0] = sender.getLocation();
         ah.saveArenas();
@@ -83,8 +79,8 @@ public class ArenaCommand {
     }
 
     @Command(names = "arena setsecondloc", permission = "op")
-    public void setsecondloc(Player sender, Arena arena) {
-        DuelArenaHandler ah = plugin.getMatchHandler();
+    public static void setsecondloc(Player sender, Arena arena) {
+        DuelArenaHandler ah = Brawl.getInstance().getMatchHandler();
 
         arena.getLocations()[1] = sender.getLocation();
         ah.saveArenas();
@@ -93,7 +89,7 @@ public class ArenaCommand {
     }
 
     @Command(names = "arena toggle", permission = "op")
-    public void toggle(Player sender, Arena arena) {
+    public static void toggle(Player sender, Arena arena) {
         arena.setEnabled(!arena.isEnabled());
         sender.sendMessage(CC.YELLOW + "You have " + (arena.isEnabled() ? CC.GREEN + "enabled" : CC.RED + "disabled") + CC.YELLOW + " arena " + CC.LIGHT_PURPLE + arena.getName() + CC.YELLOW + ".");
     }

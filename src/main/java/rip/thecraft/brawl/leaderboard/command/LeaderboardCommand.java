@@ -9,12 +9,12 @@ import rip.thecraft.spartan.command.Command;
 public class LeaderboardCommand {
 
     @Command(names = { "leaderboards", "lb" })
-    public void execute(Player sender) {
+    public static void execute(Player sender) {
         new LeaderboardMenu().openMenu(sender);
     }
 
     @Command(names = { "leaderboards update", "lb update" }, permission = "op")
-    public void update(Player sender) {
+    public static void update(Player sender) {
         Brawl.getInstance().getLeaderboard().update();
         sender.sendMessage(ChatColor.GREEN + "Manually updated leaderboards");
     }

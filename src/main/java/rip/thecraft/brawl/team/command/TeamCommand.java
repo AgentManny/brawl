@@ -1,13 +1,13 @@
 package rip.thecraft.brawl.team.command;
 
-import rip.thecraft.spartan.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import rip.thecraft.spartan.command.Command;
 
 public class TeamCommand {
 
     @Command(names = { "team", "t", "f", "faction", "fac", "team help", "t help", "f help", "faction help", " fac help" })
-    public static void execute(Player sender) {
+    public static void help(Player sender) {
         sender.sendMessage(ChatColor.DARK_AQUA.toString() + "*** General Commands ***");
         sender.sendMessage(ChatColor.GRAY + "/t accept <teamName> [password] " + ChatColor.GRAY + " - Accept a pending invitation");
         sender.sendMessage(ChatColor.GRAY + "/t create <teamName>" + ChatColor.GRAY + " - Create a new team");

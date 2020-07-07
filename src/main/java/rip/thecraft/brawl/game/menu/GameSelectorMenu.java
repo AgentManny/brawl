@@ -28,8 +28,6 @@ public class GameSelectorMenu extends Menu {
         setAutoUpdate(true);
     }
 
-    private final Brawl plugin;
-
     @Override
     public String getTitle(Player player) {
         return "Game Selector";
@@ -43,7 +41,7 @@ public class GameSelectorMenu extends Menu {
         int y = 1;
 
         for (GameType type : GameType.values()) {
-            buttonMap.put(getSlot(x, y), new GameButton(plugin, type));
+            buttonMap.put(getSlot(x, y), new GameButton(type));
             if (x++ >= 7) {
                 x = 1;
 
@@ -61,17 +59,16 @@ public class GameSelectorMenu extends Menu {
     @RequiredArgsConstructor
     private class GameButton extends Button {
 
-        private final Brawl plugin;
         private final GameType gameType;
 
         @Override
         public ItemStack getButtonItem(Player player) {
-            PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
-            boolean noMaps = plugin.getGameHandler().getMapHandler().getMaps(gameType).isEmpty();
+            PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+            boolean noMaps = Brawl.getInstance().getGameHandler().getMapHandler().getMaps(gameType).isEmpty();
             List<String> lore = ItemBuilder.wrap(gameType.getDescription(), CC.GRAY, 30);
             lore.add(0, CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 31));
             lore.add("");
-            long cooldown = plugin.getGameHandler().getCooldown().getOrDefault(gameType, 0L);
+            long cooldown = Brawl.getInstance().getGameHandler().getCooldown().getOrDefault(gameType, 0L);
             if (System.currentTimeMillis() < cooldown) {
                 lore.add(ChatColor.RED + "Cooldown: " + ChatColor.YELLOW + TimeUtils.formatIntoMMSS((int) TimeUnit.MILLISECONDS.toSeconds(cooldown - System.currentTimeMillis())));
             }
@@ -95,13 +92,13 @@ public class GameSelectorMenu extends Menu {
 
         @Override
         public void clicked(Player player, int slot, ClickType clickType) {
-            PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
-            if (plugin.getGameHandler().getMapHandler().getMaps(gameType).isEmpty()) {
+            PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+            if (Brawl.getInstance().getGameHandler().getMapHandler().getMaps(gameType).isEmpty()) {
                 player.sendMessage(ChatColor.RED + "There aren't any maps available for this game.");
                 return;
             }
 
-            long cooldown = plugin.getGameHandler().getCooldown().getOrDefault(gameType, 0L);
+            long cooldown = Brawl.getInstance().getGameHandler().getCooldown().getOrDefault(gameType, 0L);
             if (!player.hasPermission("brawl.game.bypass") && System.currentTimeMillis() < cooldown) {
                 player.sendMessage(ChatColor.RED + "This game is under cooldown for another " + TimeUtils.formatIntoDetailedString((int) TimeUnit.MILLISECONDS.toSeconds(cooldown - System.currentTimeMillis())) + ".");
                 return;
@@ -110,7 +107,7 @@ public class GameSelectorMenu extends Menu {
             if(playerData.hasGame(gameType)) {
 
                 //TODO CREATE GAME kit.apply(player, true, true);
-                plugin.getGameHandler().start(player, gameType);
+                Brawl.getInstance().getGameHandler().start(player, gameType);
             } else {
                 player.sendMessage(CC.RED  + "You don't have permission to use this game.");
             }

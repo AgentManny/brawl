@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.command;
 
-import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -19,23 +18,20 @@ import rip.thecraft.brawl.util.location.LocationType;
 import rip.thecraft.spartan.command.Command;
 import rip.thecraft.spartan.nametag.NametagHandler;
 
-@RequiredArgsConstructor
 public class SpawnCommand {
 
-    private final Brawl plugin;
-
     @Command(names = "spawn")
-    public void execute(Player sender) {
+    public static void execute(Player sender) {
         Location spawn = LocationType.SPAWN.getLocation();
         if(spawn == null) {
             sender.sendMessage(ChatColor.RED + "Uh oh! It looks like the Spawn hasn't been set. Please contact an administrator.");
             return;
         }
 
-        PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(sender);
+        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(sender);
         if (playerData.isEvent()) {
-            GameHandler gh = plugin.getGameHandler();
-            SpectatorManager sm = plugin.getSpectatorManager();
+            GameHandler gh =  Brawl.getInstance().getGameHandler();
+            SpectatorManager sm =  Brawl.getInstance().getSpectatorManager();
             if (gh.getLobby() != null && gh.getLobby().getPlayers().contains(sender.getUniqueId())) {
                 gh.getLobby().leave(sender.getUniqueId());
             }
@@ -73,7 +69,7 @@ public class SpawnCommand {
             playerData.setDuelArena(false);
             if (playerData.getSelectedKit() == null) {
                 if (!sender.hasMetadata("staffmode")) {
-                    plugin.getItemHandler().apply(sender, InventoryType.SPAWN);
+                    Brawl.getInstance().getItemHandler().apply(sender, InventoryType.SPAWN);
                     NametagHandler.reloadPlayer(sender);
                     NametagHandler.reloadOthersFor(sender);
                 }
@@ -84,7 +80,7 @@ public class SpawnCommand {
     }
 
     @Command(names = { "1v1", "1vs1", "duelarena"})
-    public void duelArena(Player sender) {
+    public static void duelArena(Player sender) {
         DuelArena.join(sender);
     }
 

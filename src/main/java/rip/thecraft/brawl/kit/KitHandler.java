@@ -3,6 +3,12 @@ package rip.thecraft.brawl.kit;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lombok.Getter;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.duelarena.match.Match;
 import rip.thecraft.brawl.item.item.Armor;
@@ -13,12 +19,6 @@ import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.spartan.Spartan;
 import rip.thecraft.spartan.util.ItemBuilder;
-import lombok.Getter;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.io.File;
 import java.io.FileReader;
@@ -94,7 +94,7 @@ public class KitHandler {
     public void registerKit(Kit kit) {
         this.kits.add(kit);
         this.kits.sort(Kit::compareTo);
-        new BukkitCommand(plugin, kit.getName());
+        new BukkitCommand(kit.getName());
     }
 
     public void unregisterKit(Kit kit) {

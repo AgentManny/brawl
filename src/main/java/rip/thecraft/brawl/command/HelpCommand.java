@@ -7,7 +7,7 @@ import rip.thecraft.spartan.command.Command;
 public class HelpCommand {
 
     @Command(names = { "help", "?", "guide" })
-    public void execute(CommandSender sender) {
+    public static void execute(CommandSender sender) {
         sender.sendMessage("");
         sender.sendMessage(ChatColor.DARK_AQUA.toString() + "*** General Commands ***");
         sender.sendMessage(ChatColor.GRAY + "/kit" + ChatColor.GRAY + " - Opens the kit selector.");

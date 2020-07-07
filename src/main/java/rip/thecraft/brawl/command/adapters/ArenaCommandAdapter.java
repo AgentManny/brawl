@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.duelarena.command.adapter;
+package rip.thecraft.brawl.command.adapters;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;

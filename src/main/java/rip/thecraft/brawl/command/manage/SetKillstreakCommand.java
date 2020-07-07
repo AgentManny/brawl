@@ -1,6 +1,5 @@
-package rip.thecraft.brawl.command;
+package rip.thecraft.brawl.command.manage;
 
-import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -11,14 +10,11 @@ import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.spartan.command.Command;
 
-@RequiredArgsConstructor
-public class KillstreakCommand {
+public class SetKillstreakCommand {
 
-    private final Brawl plugin;
-
-    @Command(names = "killstreak", permission = "op")
-    public void execute(Player player, int newStreak) {
-        PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
+    @Command(names = "setkillstreak", permission = "op")
+    public static void execute(Player player, int newStreak) {
+        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
         playerData.getStatistic().set(StatisticType.KILLSTREAK, newStreak);
         KillstreakHandler handler = Brawl.getInstance().getKillstreakHandler();
 
