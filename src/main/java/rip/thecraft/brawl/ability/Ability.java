@@ -19,6 +19,7 @@ import rip.thecraft.brawl.duelarena.match.Match;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.region.RegionType;
+import rip.thecraft.brawl.util.MathUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.Cooldown;
 import rip.thecraft.spartan.util.ItemBuilder;
@@ -176,16 +177,16 @@ public abstract class Ability {
                         return;
                     }
                     player.setLevel(timeLeft);
+                    player.setExp((float) (MathUtil.getPercent(cooldown.getRemaining(), countdown) * 0.01F));
                 }
 
                 @Override
                 public synchronized void cancel() throws IllegalStateException {
                     super.cancel();
-                    player.setLevel(0);
-                    player.setExp(0);
+                    playerData.getLevel().updateExp(player);
                     playerData.setEnderpearlTask(null);
                 }
-            }.runTaskTimer(Brawl.getInstance(), 10L, 10L));
+            }.runTaskTimer(Brawl.getInstance(), 2L, 2L));
         }
     }
 
