@@ -108,7 +108,7 @@ public class Kit implements Listener, Comparable<Kit> {
         }
         jsonObject.add("abilities", abilitiesArray);
 
-//        jsonObject.addProperty("potionEffects", Spartan.GSON.toJson(this.potionEffects.stream().map(PotionEffectAdapter::toJson).collect(Collectors.toList())));
+        jsonObject.addProperty("potionEffects", Spartan.GSON.toJson(this.potionEffects.stream().map(PotionEffectAdapter::toJson).collect(Collectors.toList())));
 //        jsonObject.addProperty("type", Spartan.GSON.toJson(this.type.stream().map(Ability::getName).collect(Collectors.toList())));
         jsonObject.add("armor", this.armor == null ? null : this.armor.toJson());
         jsonObject.add("items", this.items == null ? null : this.items.toJson());
@@ -132,7 +132,6 @@ public class Kit implements Listener, Comparable<Kit> {
         this.abilities.stream().map(Ability::getIcon).filter(Objects::nonNull).forEach(player.getInventory()::addItem);
         this.abilities.forEach(ability -> ability.onApply(player));
         this.potionEffects.forEach(potionEffect -> player.addPotionEffect(potionEffect, true));
-
 
         if (addRefill) {
             ItemStack item = playerData.getRefillType().getItem();
