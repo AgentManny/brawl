@@ -15,7 +15,7 @@ public class BrawlNametagAdapter extends NametagProvider {
 
     private final Brawl plugin;
 
-    public BrawlNametagAdapter(Brawl plugin) {
+    public  BrawlNametagAdapter(Brawl plugin) {
         super("KitPvP", 75);
 
         this.plugin = plugin;
@@ -24,7 +24,7 @@ public class BrawlNametagAdapter extends NametagProvider {
     @Override
     public NametagInfo fetchNametag(Player toRefresh, Player refreshFor) {
         Profile profile = Falcon.getInstance().getProfileHandler().getByPlayer(toRefresh);
-        String color = profile.getRank().getGameColor();
+        String color = ChatColor.translateAlternateColorCodes('&', profile.getRank().getGameColor());
 
         PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(toRefresh);
 
