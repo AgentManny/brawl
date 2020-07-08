@@ -195,13 +195,15 @@ public class Brawl extends JavaPlugin {
     }
 
     private void registerHandlers() {
-        this.playerDataHandler = new PlayerDataHandler(this);
-        this.kitHandler = new KitHandler(this);
+        abilityHandler = new AbilityHandler(this);
+        kitHandler = new KitHandler(this);
+
+        playerDataHandler = new PlayerDataHandler(this);
+
+        regionHandler = new RegionHandler();
 
         spectatorManager = new SpectatorManager(this);
         this.matchHandler = new DuelArenaHandler();
-
-        this.abilityHandler = new AbilityHandler(this);
 
         this.killstreakHandler = new KillstreakHandler(this);
         this.upgradeManager = new UpgradeManager(this);
@@ -214,8 +216,6 @@ public class Brawl extends JavaPlugin {
 
         this.leaderboard = new Leaderboard(this);
         this.visualManager = new VisualManager(this);
-
-        this.regionHandler = new RegionHandler();
 
         this.itemHandler = new ItemHandler(this);
 
