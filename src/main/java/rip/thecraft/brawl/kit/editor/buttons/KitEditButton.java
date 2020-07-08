@@ -13,6 +13,7 @@ import rip.thecraft.brawl.item.item.Armor;
 import rip.thecraft.brawl.item.item.Items;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.editor.action.KitEditAction;
+import rip.thecraft.brawl.kit.editor.menu.KitAbilityEditMenu;
 import rip.thecraft.falcon.Falcon;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
@@ -94,8 +95,8 @@ public class KitEditButton extends Button {
                     player.sendMessage(CC.GREEN + "You have editted " + kit.getName() + "'s " + action.name().toLowerCase() + ".");
                     break;
                 case ABILITY:
-                    player.chat("/kit ability " + kit.getName().toLowerCase() + " " + s);
-                    player.sendMessage(CC.GREEN + "You have editted " + kit.getName() + "'s " + action.name().toLowerCase() + ".");
+                    new KitAbilityEditMenu(kit).openMenu(player);
+                    player.sendMessage(CC.GREEN + "You have opened the ability editor for kit " + kit.getName() + ".");
                     break;
                 case DESCRIPTION:
                     kit.setDescription(CC.translate(s));

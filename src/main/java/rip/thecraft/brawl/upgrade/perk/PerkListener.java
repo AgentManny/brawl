@@ -93,9 +93,15 @@ public class PerkListener implements Listener {
                         player.sendMessage(ChatColor.GREEN + "Your " + ChatColor.DARK_GRAY + "Reaper" + ChatColor.GREEN + " perk  " + ChatColor.WHITE + victim.getDisplayName() + ChatColor.GREEN + ".");
 
                     }
+
                     if (playerData.usingPerk(VENOM)) {
                         victim.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 60, 1)); // Poison II for 3 seconds
                         player.sendMessage(ChatColor.GREEN + "Your " + ChatColor.DARK_GREEN  + "Venom" + ChatColor.GREEN + " perk poisoned " + ChatColor.WHITE + victim.getDisplayName() + ChatColor.GREEN + ".");
+                    }
+
+                    if (playerData.usingPerk(DISTORTION)) {
+                        victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
+                        player.sendMessage(ChatColor.GREEN + "Your " + ChatColor.BLACK + "Distortion" + ChatColor.GREEN + " perk blinded " + ChatColor.WHITE + victim.getDisplayName() + ChatColor.GREEN + ".");
                     }
                 } else if (probability <= 30 && playerData.usingPerk(ADRENALINE)) {
                     if (player.getHealth() <= 7) {
@@ -167,6 +173,7 @@ public class PerkListener implements Listener {
                 // player.sendMessage(ChatColor.RED + "Uh oh! It appears you are not in a team, Medic perk did not apply.");
             }
         }
+
     }
 
     @EventHandler

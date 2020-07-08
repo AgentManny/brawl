@@ -12,6 +12,7 @@ import rip.thecraft.brawl.kit.statistic.KitStatistic;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.player.statistic.StatisticType;
+import rip.thecraft.brawl.upgrade.perk.Perk;
 import rip.thecraft.server.util.chatcolor.CC;
 
 import java.util.*;
@@ -86,10 +87,15 @@ public class SpawnData {
         PlayerData deadPlayer = Brawl.getInstance().getPlayerDataHandler().getPlayerData(dead.getUniqueId());
         double worth = deadPlayer.getSpawnData().getWorth();
 
-        stats.add(StatisticType.CREDITS, worth);
-
         Player player = playerData.getPlayer();
-        Bukkit.getScheduler().runTaskLater(Brawl.getInstance(), () -> player.sendMessage(CC.DARK_PURPLE + "You have killed " + CC.WHITE + dead.getDisplayName() + CC.DARK_PURPLE + " for " + CC.LIGHT_PURPLE + Math.round(worth) + " credits" + CC.DARK_PURPLE + "."), 1L);
+
+        if (playerData.usingPerk(Perk.REVENGE)) {
+            stats.add(StatisticType.CREDITS, worth * 2);
+            Bukkit.getScheduler().runTaskLater(Brawl.getInstance(), () -> player.sendMessage(CC.DARK_PURPLE + "You have killed " + CC.WHITE + dead.getDisplayName() + CC.DARK_PURPLE + " for " + CC.LIGHT_PURPLE + Math.round(worth * 2) + " credits" + CC.DARK_PURPLE + ". " + CC.GRAY + "(Doubled by Revenge perk)"), 1L);
+        } else {
+            stats.add(StatisticType.CREDITS, worth);
+            Bukkit.getScheduler().runTaskLater(Brawl.getInstance(), () -> player.sendMessage(CC.DARK_PURPLE + "You have killed " + CC.WHITE + dead.getDisplayName() + CC.DARK_PURPLE + " for " + CC.LIGHT_PURPLE + Math.round(worth) + " credits" + CC.DARK_PURPLE + "."), 1L);
+        }
 
         if (deadPlayer.getStatistic().get(StatisticType.KILLSTREAK) >= 10) {
             for (Player online : Bukkit.getOnlinePlayers()) {
