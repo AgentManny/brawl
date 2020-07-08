@@ -1,7 +1,7 @@
 package rip.thecraft.brawl.kit;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import lombok.Getter;
 import org.bukkit.Material;
@@ -43,20 +43,17 @@ public class KitHandler {
     private void load() {
         File file = getFile();
         try (FileReader reader = new FileReader(file)) {
-            JsonParser parser = new JsonParser();
-            JsonArray array = parser.parse(reader).getAsJsonArray();
-
-            for (Object object : array) {
-                JsonObject jsonObject = (JsonObject) object;
-                String name = jsonObject.get("name").getAsString();
-                this.registerKit(new Kit(jsonObject));
+            JsonElement parse = new JsonParser().parse(reader);
+            if (parse.isJsonArray()) {
+                JsonArray array = parse.getAsJsonArray();
+                for (JsonElement element : array) {
+                    this.registerKit(new Kit(element.getAsJsonObject()));
+                }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         this.getDefaultKit();
-        this.save();
     }
 
     public void save() {

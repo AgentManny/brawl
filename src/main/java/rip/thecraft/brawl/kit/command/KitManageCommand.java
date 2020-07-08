@@ -23,14 +23,14 @@ import java.util.stream.Collectors;
 
 public class KitManageCommand {
 
-    @Command(names = { "kit manage edit", "k manage edit" }, permission = "op")
-    public void edit(Player player, Kit kit) {
+    @Command(names = { "kit edit", "k edit" }, permission = "op")
+    public static void edit(Player player, Kit kit) {
         player.sendMessage(CC.GREEN + "Updating kit " + kit.getName() + "...");
         new KitEditMenu(kit).openMenu(player);
     }
 
-    @Command(names = { "kit manage editor", "k manage editor" }, permission = "op")
-    public void editor(Player player) {
+    @Command(names = { "kit editor", "k editor" }, permission = "op")
+    public static void editor(Player player) {
         new KitEditorMenu().openMenu(player);
     }
 

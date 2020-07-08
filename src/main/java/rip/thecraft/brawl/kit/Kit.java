@@ -1,6 +1,7 @@
 package rip.thecraft.brawl.kit;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mongodb.lang.Nullable;
@@ -18,9 +19,9 @@ import rip.thecraft.brawl.item.item.Armor;
 import rip.thecraft.brawl.item.item.Items;
 import rip.thecraft.brawl.kit.type.RankType;
 import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.upgrade.perk.Perk;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.brawl.util.PlayerUtil;
+import rip.thecraft.spartan.Spartan;
 import rip.thecraft.spartan.serialization.ItemStackAdapter;
 import rip.thecraft.spartan.serialization.PotionEffectAdapter;
 
@@ -56,7 +57,8 @@ public class Kit implements Listener, Comparable<Kit> {
     public Kit(JsonObject jsonObject) {
         this.name = jsonObject.get("name").getAsString();
 
-        this.icon = BrawlUtil.has(jsonObject, "icon") ? ItemStackAdapter.deserialize(jsonObject.get("icon")) : new ItemStack(Material.AIR);
+        ItemStack icon = BrawlUtil.has(jsonObject, "icon") ? ItemStackAdapter.deserialize(jsonObject.get("icon")) : null;
+        this.icon = icon == null ? new ItemStack(Material.STONE) : icon;
 
         this.description = jsonObject.get("description").getAsString();
         this.weight = jsonObject.get("weight").getAsInt();
@@ -65,8 +67,9 @@ public class Kit implements Listener, Comparable<Kit> {
         this.rankType = jsonObject.has("rankType") ? RankType.valueOf(jsonObject.get("rankType").getAsString()) : RankType.NONE;
         jsonObject.get("potionEffects").getAsJsonArray().forEach(element -> this.potionEffects.add(PotionEffectAdapter.fromJson(element)));
 
-        if (jsonObject.has("abilities") && !jsonObject.get("abilities").isJsonNull()) {
-            jsonObject.get("abilities").getAsJsonArray().forEach(element -> {
+        JsonElement abilities = jsonObject.get("abilities");
+        if (abilities != null && !abilities.isJsonNull() && abilities.isJsonArray()) {
+            abilities.getAsJsonArray().forEach(element -> {
                 Ability ability = Brawl.getInstance().getAbilityHandler().getAbilityByName(element.getAsString());
                 if (ability == null) {
                     Brawl.getInstance().getLogger().severe("[Kit] " + this.name + " failed to register ability " + element.getAsString() + " (Not found!)");
