@@ -1,7 +1,5 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.ability.Ability;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,6 +7,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.Ability;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +17,11 @@ import java.util.UUID;
 public class Toss extends Ability implements Listener {
 
     private Map<UUID, Long> times = new HashMap<>();
+
+    @Override
+    public void onApply(Player player) {
+        player.sendMessage(ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "ABILITY INFO " + ChatColor.GRAY + "Right click players with your fist to pick them up.");
+    }
 
     @EventHandler
     public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event) {
@@ -45,8 +50,7 @@ public class Toss extends Ability implements Listener {
             player.eject();
 
             final Vector vector = player.getEyeLocation().getDirection();
-            vector.multiply(1.75 / vector.length());
-            vector.setY(vector.getY() / 2);
+            vector.multiply(2.5);
             target.setVelocity(vector);
         }
     }
