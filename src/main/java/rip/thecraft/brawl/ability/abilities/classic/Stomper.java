@@ -21,6 +21,7 @@ public class Stomper extends Ability implements Listener {
     private static final String CHARGE_METADATA = "StomperCharge";
 
     private double impactDistance = 5;
+    private double damageReduction = 3.25;
 
     private double boost = 3;
     private double multiplier = 1.25;
@@ -56,15 +57,14 @@ public class Stomper extends Ability implements Listener {
         player.setVelocity(directionVector);
 
         player.playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1.0F, 0.0F);
-        ParticleEffect.FOOTSTEP.display(0, 0, 0, 0, 5, player.getLocation(), EFFECT_DISTANCE);
     }
 
     @Override
     public void onGround(Player player, boolean onGround) {
-        if (onGround) {
+        if (onGround && player.hasMetadata(STOMPER_METADATA)) {
             onDeactivate(player); // Removes player metadata
 
-            double baseDamage = Math.min(50, player.getFallDistance()) / (multiplier + boost);
+            double baseDamage = Math.min(50, player.getFallDistance()) / damageReduction;
 
             List<Player> nearbyPlayers = PlayerUtil.getNearbyPlayers(player, impactDistance);
             for (Player nearbyPlayer : nearbyPlayers) {
@@ -73,6 +73,7 @@ public class Stomper extends Ability implements Listener {
 
             ParticleEffect.EXPLOSION_HUGE.display(0, 0, 0, 0, 1, player.getLocation(), EFFECT_DISTANCE);
             player.playSound(player.getLocation(), Sound.ANVIL_LAND, 1.0F, 0.0F);
+            player.setFallDistance(0);
         }
     }
 
@@ -100,6 +101,7 @@ public class Stomper extends Ability implements Listener {
         data.addProperty("impact-distance", impactDistance);
         data.addProperty("boost", boost);
         data.addProperty("multiplier", multiplier);
+        data.addProperty("damage-reduction", damageReduction);
 
         return data;
     }
@@ -107,7 +109,7 @@ public class Stomper extends Ability implements Listener {
     @Override
     public void fromJson(JsonObject object) {
         impactDistance = object.get("impact-distance").getAsDouble();
-
+        damageReduction = object.get("damage-reduction").getAsDouble();
         multiplier = object.get("multiplier").getAsDouble();
         boost = object.get("boost").getAsDouble();
     }
