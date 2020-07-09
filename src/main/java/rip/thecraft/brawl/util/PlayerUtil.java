@@ -9,6 +9,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import rip.thecraft.brawl.Brawl;
@@ -29,7 +30,7 @@ public class PlayerUtil {
      *
      * @return Returns list of nearby players
      */
-    public static List<Player> getNearbyPlayers(Player player, double radius) {
+    public static List<Player> getNearbyPlayers(LivingEntity player, double radius) {
         List<Player> players = new ArrayList<>();
         for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
             if (entity instanceof Player) {

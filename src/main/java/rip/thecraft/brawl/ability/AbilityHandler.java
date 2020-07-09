@@ -59,7 +59,7 @@ public class AbilityHandler {
                 new IceSpikes(),
                 new Vortex(plugin),
                 new Detonator(plugin),
-                new Vampire(plugin),
+                new Vampire(),
                 new Rider(plugin),
                 new WebShooter(plugin),
                 new Dash(),

@@ -1,10 +1,7 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import lombok.RequiredArgsConstructor;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import com.google.gson.JsonObject;
+import org.bukkit.*;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -14,17 +11,17 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.protection.Protection;
 import rip.thecraft.brawl.util.ParticleEffect;
+import rip.thecraft.brawl.util.PlayerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-@RequiredArgsConstructor
 public class Vampire extends Ability {
 
-    private final Brawl plugin;
+    private double captureRange = 5;
 
     @Override
     public Material getType() {
@@ -51,76 +48,86 @@ public class Vampire extends Ability {
         for (int i = 0; i < 16; i++) {
             bats.add(player.getWorld().spawn(player.getEyeLocation(), Bat.class));
         }
+
         new BukkitRunnable() {
 
             long timestamp = System.currentTimeMillis();
-            List<UUID> catched = new ArrayList<>();
 
             @Override
             public void run() {
-                if (System.currentTimeMillis() - timestamp > 4500L || player == null) {
+                if (System.currentTimeMillis() - timestamp > 5000L || player == null) {
                     this.cancel();
                     return;
                 }
 
-                bats.stream().filter(Entity::isValid).forEachOrdered(bat -> {
-                    Vector rand = new Vector((Math.random() - 0.5D) / 3.0D, (Math.random() - 0.5D) / 3.0D,
-                            (Math.random() - 0.5D) / 3.0D);
-                    if (bat != null && !bat.isDead()) {
-                        bat.setVelocity(player.getLocation().getDirection().clone().multiply(0.5D).add(rand));
-                    }
+                for (Entity bat : bats) {
+                    if (bat.isValid() && !bat.isDead()) {
+                        Vector rand = new Vector((Math.random() - 0.5D) / 3.0D, (Math.random() - 0.5D) / 3.0D,
+                                (Math.random() - 0.5D) / 3.0D); // Makes the bats move randomly
+                        Vector directionVector = player.getLocation().getDirection()
+                                .clone()
+                                .multiply(0.5D)
+                                .add(rand);
 
-                    bat.getNearbyEntities(5, 5, 5).stream().filter(entity -> entity instanceof Player)
-                            .map(entity -> (Player)entity)
-                            .filter(other -> !other.equals(player) && !plugin.getPlayerDataHandler().getPlayerData(other).isSpawnProtection() && !catched.contains(other.getUniqueId()) &&  !Protection.isAlly(player, other) && hitPlayer(bat.getLocation(), other)).forEachOrdered(other -> {
+                        bat.setVelocity(directionVector);
 
-                        Vector v = bat.getLocation().getDirection();
-                        v.normalize();
-                        v.multiply(.4d);
-                        v.setY(v.getY() + 0.2d);
+                        if (bat.getPassenger() != null && bat.getPassenger() instanceof Player) {
+                            Player victim = (Player) bat.getPassenger();
+                            victim.playEffect(EntityEffect.WITCH_MAGIC);
 
-                        if (v.getY() > 7.5) {
-                            v.setY(7.5);
-                        }
+                            victim.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 30, 2));
+                            victim.playSound(victim.getLocation(), Sound.BAT_IDLE, 1.25f, 1.25f);
+                        } else {
+                            List<Player> victims = PlayerUtil.getNearbyPlayers(player, captureRange);
+                            for (Player victim : victims) {
+                                PlayerData victimData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(victim);
+                                if (victimData.isSpawnProtection() || Protection.isAlly(player, victim)) continue;
 
-                        if (other.isOnGround()) {
-                            v.setY(v.getY() + 0.4d);
-                        }
-
-                        other.setFallDistance(0);
-
-                        if (Brawl.RANDOM.nextBoolean()) {
-                            catched.add(other.getUniqueId());
-                        }
-                        bat.setPassenger(other);
-
-                        ParticleEffect.SMOKE_NORMAL.display(0, 0, 0, 1.5f, 1, bat.getLocation(), EFFECT_DISTANCE);
-                    });
-
-                    for (Entity b : bats) {
-                        if (b.getPassenger() != null && b.getPassenger() instanceof Player) {
-                            ((Player) b.getPassenger()).addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 30, 2));
-                            ((Player) b.getPassenger()).playSound(b.getPassenger().getLocation(), Sound.BAT_LOOP, 1.25f, 1.25f);
+                                if (inRange(bat.getLocation(), victim)) {
+                                    if (Brawl.RANDOM.nextBoolean() && Brawl.RANDOM.nextBoolean() && Brawl.RANDOM.nextBoolean()) { // Don't make it trigger all the time but also able to catch them
+                                        capturePlayer(bat, victim);
+                                    }
+                                }
+                            }
                         }
                     }
-                });
+                }
             }
 
             @Override
             public synchronized void cancel() throws IllegalStateException {
                 for (Entity bat : bats) {
-                    if (bat != null && !bat.isDead()) {
+                    if (bat.isValid() && !bat.isDead()) {
                         bat.remove();
                     }
                 }
-                catched.clear();
                 super.cancel();
 
             }
-        }.runTaskTimer(plugin, 4L, 4L);
+        }.runTaskTimer(Brawl.getInstance(), 10L, 10L);
     }
 
-    private boolean hitPlayer(Location location, Player player) {
+    private void capturePlayer(Entity bat, Player victim) {
+        Vector v = bat.getLocation().getDirection();
+        v.normalize();
+        v.multiply(.4d);
+        v.setY(v.getY() + 0.2d);
+
+        if (v.getY() > 7.5) {
+            v.setY(7.5);
+        }
+
+        if (victim.isOnGround()) {
+            v.setY(v.getY() + 0.4d);
+        }
+
+        victim.setFallDistance(0);
+        bat.setPassenger(victim);
+
+        ParticleEffect.SMOKE_NORMAL.display(0, 0, 0, 1.5f, 1, bat.getLocation(), EFFECT_DISTANCE);
+    }
+
+    private boolean inRange(Location location, Player player) {
         Vector locVec = location.add(0, -location.getY(), 0).toVector();
         Vector playerVec = player.getLocation().add(0, -player.getLocation().getY(), 0).toVector();
         double vecLength = locVec.subtract(playerVec).length();
@@ -137,7 +144,14 @@ public class Vampire extends Ability {
     }
 
     @Override
-    public void onKill(Player player) {
+    public JsonObject toJson() {
+        JsonObject object = super.toJson();
+        object.addProperty("capture-range", captureRange);
+        return object;
+    }
 
+    @Override
+    public void fromJson(JsonObject object) {
+        object.addProperty("capture-range", captureRange);
     }
 }
