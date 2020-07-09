@@ -1,8 +1,5 @@
 package rip.thecraft.brawl.ability.abilities.skylands.chemist;
 
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.util.ParticleEffect;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -16,6 +13,9 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.util.ParticleEffect;
 
 import java.util.List;
 import java.util.Set;
@@ -55,7 +55,7 @@ public class SmokeBomb extends Ability implements Listener {
         thrownPotion.setItem(bomb);
         List<Block> lineOfSight = player.getLineOfSight((Set<Material>) null, 5);
         for(Block block : lineOfSight) {
-            ParticleEffect.LARGE_SMOKE.send(block.getLocation(), 1.5f, 5);
+            ParticleEffect.SMOKE_LARGE.display(0, 0, 0, 1.5f, 5, block.getLocation(), EFFECT_DISTANCE);
         }
         thrownPotion.setMetadata("chemist", new FixedMetadataValue(Brawl.getInstance(), player.getUniqueId()));
     }
@@ -63,7 +63,7 @@ public class SmokeBomb extends Ability implements Listener {
     @EventHandler
     public void onPotion(PotionSplashEvent event) {
         if (event.getPotion().hasMetadata("chemist")) {
-            ParticleEffect.LARGE_SMOKE.send(event.getPotion().getLocation(), 1.5f, 15);
+            ParticleEffect.SMOKE_LARGE.display(0, 0, 0, 1.5f, 10, event.getPotion().getLocation(), EFFECT_DISTANCE);
         }
     }
 

@@ -199,7 +199,7 @@ public class Tag extends Game implements Listener {
             GamePlayer tagged = iterator.next();
             Player player = tagged.toPlayer();
 
-            Arrays.asList(ParticleEffect.LARGE_SMOKE, ParticleEffect.HUGE_EXPLOSION, ParticleEffect.LAVA).forEach(effect -> effect.send(player.getLocation(), 0, 0, 0, 1.0f, 1));
+            Arrays.asList(ParticleEffect.SMOKE_LARGE, ParticleEffect.EXPLOSION_NORMAL, ParticleEffect.LAVA).forEach(effect -> effect.display(0, 0, 0, 0, 1, player.getLocation(), 25));
 
             player.sendMessage(Game.PREFIX + ChatColor.YELLOW + "You blew up.");
             player.setHealth(0);

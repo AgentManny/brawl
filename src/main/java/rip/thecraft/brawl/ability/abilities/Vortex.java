@@ -1,9 +1,5 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.player.protection.Protection;
-import rip.thecraft.brawl.util.ParticleEffect;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -16,6 +12,10 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.player.protection.Protection;
+import rip.thecraft.brawl.util.ParticleEffect;
 
 @RequiredArgsConstructor
 public class Vortex extends Ability {
@@ -104,9 +104,10 @@ public class Vortex extends Ability {
                 location.add(x, 0, z);
 
                 if (Brawl.RANDOM.nextBoolean()) {
-                    ParticleEffect.LARGE_SMOKE.send(location, 0, 0, 0, 0, 1);
+                    ParticleEffect.SMOKE_LARGE.display(0, 0, 0, 1.5f, 1, location, EFFECT_DISTANCE);
                 } else {
-                    ParticleEffect.FLAME.send(location, 0, 0, 0, 0, 1);
+                    ParticleEffect.FLAME.display(0, 0, 0, 1.5f, 1, location, EFFECT_DISTANCE);
+
                 }
 
                 location.subtract(x, 0, z);

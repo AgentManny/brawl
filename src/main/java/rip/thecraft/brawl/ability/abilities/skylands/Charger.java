@@ -1,11 +1,6 @@
 package rip.thecraft.brawl.ability.abilities.skylands;
 
 import com.google.gson.JsonObject;
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.util.BrawlUtil;
-import rip.thecraft.brawl.util.DurationFormatter;
-import rip.thecraft.brawl.util.ParticleEffect;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -13,6 +8,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.util.Vector;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.util.BrawlUtil;
+import rip.thecraft.brawl.util.DurationFormatter;
+import rip.thecraft.brawl.util.ParticleEffect;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class Charger extends Ability implements Listener {
     private ParticleEffect chargeParticle = ParticleEffect.CLOUD;
     private Sound chargeSound = Sound.CLICK;
 
-    private ParticleEffect activateParticle = ParticleEffect.HUGE_EXPLOSION;
+    private ParticleEffect activateParticle = ParticleEffect.EXPLOSION_LARGE;
     private Sound activateSound = Sound.HORSE_LAND;
 
     private double multiplier = 0.5D;
@@ -68,7 +68,7 @@ public class Charger extends Ability implements Listener {
                 }
 
                 if (this.chargeParticle != null) {
-                    this.chargeParticle.send(player.getLocation(), 0, 0, 0, 0, 1);
+           //         this.chargeParticle.send(player.getLocation(), 0, 0, 0, 0, 1);
                 }
             } else if(this.chargeup.containsKey(player.getUniqueId())) {
                 long time = System.currentTimeMillis() - this.chargeup.get(player.getUniqueId());
@@ -89,7 +89,7 @@ public class Charger extends Ability implements Listener {
                 }
 
                 if (this.activateParticle != null) {
-                    this.activateParticle.send(player.getLocation(), 1, 1);
+                //    this.activateParticle.send(player.getLocation(), 1, 1);
                 }
 
                 this.chargeup.remove(player.getUniqueId());

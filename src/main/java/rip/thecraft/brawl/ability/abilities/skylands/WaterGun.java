@@ -30,10 +30,10 @@ public class WaterGun extends Ability implements Listener  {
 
     private PotionEffect potionEffect = new PotionEffect(PotionEffectType.SLOW, 120, 4);
 
-    private ParticleEffect landParticle = ParticleEffect.SPLASH;
+    private ParticleEffect landParticle = ParticleEffect.WATER_SPLASH;
     private Sound landSound = Sound.SPLASH2;
 
-    private ParticleEffect activateParticle = ParticleEffect.SPLASH;
+    private ParticleEffect activateParticle = ParticleEffect.WATER_SPLASH;
     private Sound activateSound = Sound.SPLASH;
 
     private double radius = 1.6;

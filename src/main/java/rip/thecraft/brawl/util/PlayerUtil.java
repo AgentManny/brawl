@@ -15,10 +15,29 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.falcon.util.EntityUtils;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 public class PlayerUtil {
 
+    /**
+     * Returns nearby players from a player.
+     *
+     * @param player Target player
+     * @param radius Radius to check
+     *
+     * @return Returns list of nearby players
+     */
+    public static List<Player> getNearbyPlayers(Player player, double radius) {
+        List<Player> players = new ArrayList<>();
+        for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
+            if (entity instanceof Player) {
+                players.add((Player) entity);
+            }
+        }
+        return players;
+    }
     /**
      * Resets a player's inventory (and other associated data, such as health, food, etc) to their default state.
      *

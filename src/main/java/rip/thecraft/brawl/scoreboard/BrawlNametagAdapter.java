@@ -24,9 +24,9 @@ public class BrawlNametagAdapter extends NametagProvider {
     @Override
     public NametagInfo fetchNametag(Player toRefresh, Player refreshFor) {
         Profile profile = Falcon.getInstance().getProfileHandler().getByPlayer(toRefresh);
-        String color = ChatColor.translateAlternateColorCodes('&', profile.getRank().getGameColor());
-
         PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(toRefresh);
+
+        String color = playerData.getLevel().getSimplePrefix() + ChatColor.translateAlternateColorCodes('&', profile.getRank().getGameColor());
 
         PlayerData refreshPlayerData = plugin.getPlayerDataHandler().getPlayerData(refreshFor);
         if (playerData == null || refreshPlayerData == null) return createNametag(color, "");

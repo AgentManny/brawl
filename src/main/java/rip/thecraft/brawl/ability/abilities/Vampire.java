@@ -1,11 +1,10 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.player.protection.Protection;
-import rip.thecraft.brawl.util.ParticleEffect;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -13,6 +12,10 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.player.protection.Protection;
+import rip.thecraft.brawl.util.ParticleEffect;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +94,7 @@ public class Vampire extends Ability {
                         }
                         bat.setPassenger(other);
 
-                        ParticleEffect.send(Effect.SMALL_SMOKE, bat.getLocation(), 1);
+                        ParticleEffect.SMOKE_NORMAL.display(0, 0, 0, 1.5f, 1, bat.getLocation(), EFFECT_DISTANCE);
                     });
 
                     for (Entity b : bats) {

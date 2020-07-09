@@ -1,9 +1,5 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.util.BrawlUtil;
-import rip.thecraft.brawl.util.ParticleEffect;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -11,6 +7,10 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.util.BrawlUtil;
+import rip.thecraft.brawl.util.ParticleEffect;
 
 import java.util.HashSet;
 import java.util.List;
@@ -47,7 +47,8 @@ public class Dragon extends Ability implements Listener {
                         nearbyPlayers = BrawlUtil.getNearbyPlayers(player, 10);
                     }
 
-                    ParticleEffect.FLAME.send(blockLoc, 0.1f, 1);
+                    ParticleEffect.FLAME.display(0, 0, 0, 1.5f, 2, blockLoc, EFFECT_DISTANCE);
+
                     for(Player target : nearbyPlayers) {
                         Location targetLoc = target.getLocation();
                         if(targetLoc.getBlockX() == blockLoc.getBlockX()

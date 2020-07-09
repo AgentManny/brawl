@@ -12,12 +12,12 @@ import rip.thecraft.brawl.ability.abilities.*;
 import rip.thecraft.brawl.ability.abilities.classic.Fisherman;
 import rip.thecraft.brawl.ability.abilities.classic.Gambler;
 import rip.thecraft.brawl.ability.abilities.classic.Stomper;
-import rip.thecraft.brawl.ability.abilities.legacy.Rapid;
-import rip.thecraft.brawl.ability.abilities.skylands.chemist.Chemist;
-import rip.thecraft.brawl.ability.abilities.skylands.chemist.SmokeBomb;
 import rip.thecraft.brawl.ability.abilities.legacy.Illusioner;
 import rip.thecraft.brawl.ability.abilities.legacy.Medic;
+import rip.thecraft.brawl.ability.abilities.legacy.Rapid;
 import rip.thecraft.brawl.ability.abilities.skylands.*;
+import rip.thecraft.brawl.ability.abilities.skylands.chemist.Chemist;
+import rip.thecraft.brawl.ability.abilities.skylands.chemist.SmokeBomb;
 import rip.thecraft.server.CraftServer;
 import rip.thecraft.server.handler.MovementHandler;
 import rip.thecraft.server.handler.PacketHandler;
@@ -49,7 +49,7 @@ public class AbilityHandler {
 
                 new FluffyHandcuffs(),
 
-                new Stomper(plugin),
+                new Stomper(),
                 new SilverfishSwarm(plugin),
                 new Charger(plugin),
                 new WaterGun(plugin),
