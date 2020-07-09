@@ -45,18 +45,18 @@ public class Stomper extends Ability implements Listener {
             return;
         }
 
-        addCooldown(player);
+        if (!player.hasMetadata(STOMPER_METADATA)) {
+            Vector directionVector = player.getLocation().getDirection().clone()
+                    .multiply(multiplier)
+                    .setY(boost);
 
-        Vector directionVector = player.getLocation().getDirection().clone()
-                .multiply(multiplier)
-                .setY(boost);
+            player.setMetadata(STOMPER_METADATA, new FixedMetadataValue(Brawl.getInstance(), null));
+            player.setMetadata(CHARGE_METADATA, new FixedMetadataValue(Brawl.getInstance(), null));
 
-        player.setMetadata(STOMPER_METADATA, new FixedMetadataValue(Brawl.getInstance(), null));
-        player.setMetadata(CHARGE_METADATA, new FixedMetadataValue(Brawl.getInstance(), null));
+            player.setVelocity(directionVector);
 
-        player.setVelocity(directionVector);
-
-        player.playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1.0F, 0.0F);
+            player.playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1.0F, 0.0F);
+        }
     }
 
     @Override
@@ -74,6 +74,7 @@ public class Stomper extends Ability implements Listener {
             ParticleEffect.EXPLOSION_HUGE.display(0, 0, 0, 0, 1, player.getLocation(), EFFECT_DISTANCE);
             player.playSound(player.getLocation(), Sound.ANVIL_LAND, 1.0F, 0.0F);
             player.setFallDistance(0);
+            addCooldown(player); // Reset the cooldown
         }
     }
 
