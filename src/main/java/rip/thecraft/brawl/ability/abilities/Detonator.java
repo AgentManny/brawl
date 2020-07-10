@@ -1,9 +1,5 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.util.ArmorUtil;
-import rip.thecraft.brawl.util.BrawlUtil;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -12,9 +8,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.util.ArmorUtil;
+import rip.thecraft.brawl.util.BrawlUtil;
 
 import java.util.concurrent.ThreadLocalRandom;
+
 @RequiredArgsConstructor
 public class Detonator extends Ability {
 
@@ -93,12 +93,9 @@ public class Detonator extends Ability {
 
         double chance = Math.random() * 100;
         Location location = player.getLocation().add(0.0D, 1.0D, 0.0D);
-        if (chance < 70) {
-            player.sendMessage(ChatColor.RED + "You were lucky and managed to escape the explosion");
-            player.setVelocity(player.getLocation().getDirection().add(new Vector(0, 2.25, 0).multiply(1.5)));
-            player.setHealth(player.getMaxHealth());
-            plugin.getPlayerDataHandler().getPlayerData(player).setNoFallDamage(true);
-        }
+
+        player.setVelocity(player.getLocation().getDirection().clone().normalize().multiply(2.5));
+        player.sendMessage(ChatColor.YELLOW + "You were boosted away from the explosion!");
 
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
 

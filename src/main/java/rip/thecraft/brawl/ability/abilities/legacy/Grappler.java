@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.ability.abilities;
+package rip.thecraft.brawl.ability.abilities.legacy;
 
 import net.minecraft.server.v1_8_R3.EntityFishingHook;
 import net.minecraft.server.v1_8_R3.EntityHuman;

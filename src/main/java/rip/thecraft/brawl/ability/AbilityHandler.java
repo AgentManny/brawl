@@ -12,9 +12,7 @@ import rip.thecraft.brawl.ability.abilities.*;
 import rip.thecraft.brawl.ability.abilities.classic.Fisherman;
 import rip.thecraft.brawl.ability.abilities.classic.Gambler;
 import rip.thecraft.brawl.ability.abilities.classic.Stomper;
-import rip.thecraft.brawl.ability.abilities.legacy.Illusioner;
-import rip.thecraft.brawl.ability.abilities.legacy.Medic;
-import rip.thecraft.brawl.ability.abilities.legacy.Rapid;
+import rip.thecraft.brawl.ability.abilities.legacy.*;
 import rip.thecraft.brawl.ability.abilities.skylands.Archer;
 import rip.thecraft.brawl.ability.abilities.skylands.Charger;
 import rip.thecraft.brawl.ability.abilities.skylands.SilverfishSwarm;
@@ -51,6 +49,7 @@ public class AbilityHandler {
                 new Toss(),
 
                 new SnowGlobe(),
+                new Hellhound(),
 
                 // MCPVP
                 new Flash(),
