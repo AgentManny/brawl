@@ -131,8 +131,8 @@ public class ProtectListener implements Listener {
 
         Block block = event.getClickedBlock();
         Action action = event.getAction();
-        if (action == Action.PHYSICAL) { // Prevent players from trampling on crops or pressure plates, etc.
-            if (!player.hasMetadata("build")) {
+        if (action == Action.PHYSICAL) { // Prevent players from trampling on crops or any other pressure plates besides stone, etc.
+            if (!player.hasMetadata("build") && (event.hasBlock() && event.getClickedBlock().getType() != Material.STONE_PLATE)) {
                 event.setCancelled(true);
             }
         } else if (action == Action.RIGHT_CLICK_BLOCK) {

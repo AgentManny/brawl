@@ -17,6 +17,7 @@ import rip.thecraft.brawl.util.MathUtil;
 public class Level {
 
     public static final int BASE_EXPERIENCE = 5;
+    public static final int MAX_LEVEL = 100;
 
     private final PlayerData playerData;
 
@@ -43,6 +44,11 @@ public class Level {
     }
 
     public void addLevel(Player player) {
+        if (getCurrentLevel() >= MAX_LEVEL) {
+            player.sendMessage(ChatColor.RED.toString() + "You are not able to level up as the maximum level is 100!");
+            return;
+        }
+
         currentExp -= getMaxExperience();
         playerData.getStatistic().add(StatisticType.LEVEL);
 

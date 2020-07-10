@@ -12,12 +12,12 @@ import rip.thecraft.brawl.ability.type.*;
 import rip.thecraft.brawl.ability.type.classic.Fisherman;
 import rip.thecraft.brawl.ability.type.classic.Gambler;
 import rip.thecraft.brawl.ability.type.classic.Stomper;
-import rip.thecraft.brawl.ability.type.legacy.Rapid;
-import rip.thecraft.brawl.ability.type.skylands.chemist.Chemist;
-import rip.thecraft.brawl.ability.type.skylands.chemist.SmokeBomb;
 import rip.thecraft.brawl.ability.type.legacy.Illusioner;
 import rip.thecraft.brawl.ability.type.legacy.Medic;
+import rip.thecraft.brawl.ability.type.legacy.Rapid;
 import rip.thecraft.brawl.ability.type.skylands.*;
+import rip.thecraft.brawl.ability.type.skylands.chemist.Chemist;
+import rip.thecraft.brawl.ability.type.skylands.chemist.SmokeBomb;
 import rip.thecraft.server.CraftServer;
 import rip.thecraft.server.handler.MovementHandler;
 import rip.thecraft.server.handler.PacketHandler;
@@ -139,7 +139,12 @@ public class AbilityHandler {
     }
 
     public Ability getAbilityByName(String name) {
-        return this.abilities.get(name);
+        for (Map.Entry<String, Ability> entry : this.abilities.entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(name)) {
+                return entry.getValue();
+            }
+        }
+        return null;
     }
 
     private File getFile() {
