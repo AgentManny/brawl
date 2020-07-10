@@ -99,6 +99,10 @@ public abstract class Ability {
 
     }
 
+    public void onCooldownExpire(Player player) {
+
+    }
+
     /**
      * Triggers when a projectile is launched
      * @param player Attacked

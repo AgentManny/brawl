@@ -22,6 +22,7 @@ public class Stomper extends Ability implements Listener {
 
     private double impactDistance = 5;
     private double damageReduction = 3.25;
+    private double fallDamageReduction = 5;
 
     private double boost = 3;
     private double multiplier = 1.25;
@@ -73,7 +74,7 @@ public class Stomper extends Ability implements Listener {
 
             ParticleEffect.EXPLOSION_HUGE.display(0, 0, 0, 0, 1, player.getLocation(), EFFECT_DISTANCE);
             player.playSound(player.getLocation(), Sound.ANVIL_LAND, 1.0F, 0.0F);
-            player.setFallDistance((float) (player.getFallDistance() / damageReduction)); // Fall damage should still apply to stompers but be reduced
+            player.setFallDistance((float) (player.getFallDistance() / fallDamageReduction)); // Fall damage should still apply to stompers but be reduced
             addCooldown(player); // Reset the cooldown
         }
     }
