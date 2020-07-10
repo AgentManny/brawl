@@ -49,6 +49,10 @@ public class AbilityHandler {
 
                 new FluffyHandcuffs(),
 
+                // MCPVP
+                new Flash(),
+                new Kangaroo(),
+
                 new Stomper(),
                 new SilverfishSwarm(plugin),
                 new Charger(plugin),
