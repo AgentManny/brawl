@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.warp.command;
 
-import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
@@ -12,13 +11,12 @@ import rip.thecraft.brawl.warp.WarpManager;
 import rip.thecraft.spartan.command.Command;
 import rip.thecraft.spartan.command.Param;
 
-@RequiredArgsConstructor
 public class WarpCommand {
 
-    private final WarpManager wm;
+    private static final WarpManager wm = Brawl.getInstance().getWarpManager();
 
-    @Command(names = { "warp", "warps", "go", "goto" })
-    public void execute(Player sender, @Param(defaultValue= "list", name = "warp") Warp warp) {
+    @Command(names = {"warp", "warps", "go", "goto"})
+    public static void execute(Player sender, @Param(defaultValue = "list", name = "warp") Warp warp) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(sender);
         if (playerData.getPlayerState() == PlayerState.SPAWN || playerData.getPlayerState() == PlayerState.FIGHTING) {
             playerData.warp(warp.getName(), warp.getLocation(), 10, () -> {
@@ -37,8 +35,8 @@ public class WarpCommand {
         }
     }
 
-    @Command(names = { "warps help", "warp help"}, permission = "op")
-    public void help(Player sender) {
+    @Command(names = {"warps help", "warp help"}, permission = "op")
+    public static void help(Player sender) {
         sender.sendMessage("");
         sender.sendMessage(ChatColor.DARK_PURPLE.toString() + "Warp Commands");
         sender.sendMessage(ChatColor.LIGHT_PURPLE + "  /warp <warpName>" + ChatColor.GRAY + " (Teleport to a warp)");
@@ -51,8 +49,8 @@ public class WarpCommand {
     }
 
     @Command(names = {"warp create", "warps create"}, permission = "op")
-    public void create(Player sender, String name) {
-        if(wm.getWarp(name) != null) {
+    public static void create(Player sender, String name) {
+        if (wm.getWarp(name) != null) {
             sender.sendMessage(ChatColor.RED + "Warp '" + name + "' is already created!");
             return;
         }
@@ -62,20 +60,20 @@ public class WarpCommand {
     }
 
     @Command(names = {"warp remove", "warps remove"}, permission = "op")
-    public void remove(Player sender, @Param(name = "warpName") Warp warp) {
+    public static void remove(Player sender, @Param(name = "warpName") Warp warp) {
         sender.sendMessage(ChatColor.YELLOW + "Removed the warp " + ChatColor.LIGHT_PURPLE + warp.getName() + ChatColor.YELLOW + ".");
         wm.removeWarp(warp.getName());
     }
 
     @Command(names = {"warp setlocation", "warps setlocation"}, permission = "op")
-    public void setLocation(Player sender, @Param(name = "warpName") Warp warp) {
+    public static void setLocation(Player sender, @Param(name = "warpName") Warp warp) {
         warp.setLocation(sender.getLocation());
         sender.sendMessage(ChatColor.YELLOW + "You have updated the location for the warp " + ChatColor.GOLD + warp.getName() + ChatColor.YELLOW + ".");
     }
 
 
     @Command(names = {"warp kit", "warps kit"}, permission = "op")
-    public void setKit(Player sender, @Param(name = "warpName") Warp warp, String kitName) {
+    public static void setKit(Player sender, @Param(name = "warpName") Warp warp, String kitName) {
 
         Kit kit = Brawl.getInstance().getKitHandler().getKit(kitName);
         warp.setKit(kit.getName());
@@ -84,12 +82,8 @@ public class WarpCommand {
 
 
     @Command(names = {"warp save", "warps save"}, permission = "op")
-    public void save(Player sender) {
+    public static void save(Player sender) {
         wm.save();
         sender.sendMessage(ChatColor.YELLOW + "Saved warp(s).");
     }
-
-
-
-
 }

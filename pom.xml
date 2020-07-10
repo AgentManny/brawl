@@ -15,15 +15,13 @@
             <groupId>rip.thecraft.spigot</groupId>
             <artifactId>spigot-server</artifactId>
             <version>1.8.8-R0.1-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/spigot.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>rip.thecraft.spigot</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.8.8-R0.1-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/spigot-api.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

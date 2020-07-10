@@ -1,16 +1,16 @@
 package rip.thecraft.brawl.team.command.leader;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.team.Team;
 import rip.thecraft.brawl.team.command.general.TeamCreateCommand;
 import rip.thecraft.spartan.command.Command;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 public class TeamRenameCommand {
 
     @Command(names = { "team rename", "t rename", "f rename", "faction rename", "fac rename" })
-    public void execute(Player sender, String name) {
+    public static void rename(Player sender, String name) {
         Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(sender);
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");

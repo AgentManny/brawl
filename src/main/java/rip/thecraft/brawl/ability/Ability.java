@@ -32,6 +32,8 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public abstract class Ability {
 
+    protected static final int EFFECT_DISTANCE = 25;
+
     @Setter protected int cooldown = 25;
 
     public String getName() {
@@ -86,6 +88,18 @@ public abstract class Ability {
      * @param player Killer
      */
     public void onKill(Player player) {
+
+    }
+
+    public void onGround(Player player, boolean onGround) {
+
+    }
+
+    public void onSneak(Player player, boolean sneaking) {
+
+    }
+
+    public void onCooldownExpire(Player player) {
 
     }
 

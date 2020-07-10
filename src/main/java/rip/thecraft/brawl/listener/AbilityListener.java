@@ -13,6 +13,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerOnGroundEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 import rip.thecraft.brawl.Brawl;
@@ -24,6 +26,24 @@ import rip.thecraft.brawl.kit.KitHandler;
 public class AbilityListener implements Listener {
 
     private final Brawl plugin;
+
+    @EventHandler
+    public void onPlayerGround(PlayerOnGroundEvent event) {
+        Player player = event.getPlayer();
+        Kit selectedKit = KitHandler.getEquipped(player);
+        if (selectedKit != null) {
+            selectedKit.getAbilities().forEach(ability -> ability.onGround(player, event.getOnGround()));
+        }
+    }
+
+    @EventHandler
+    public void onToggleSneak(PlayerToggleSneakEvent event) {
+        Player player = event.getPlayer();
+        Kit selectedKit = KitHandler.getEquipped(player);
+        if (selectedKit != null) {
+            selectedKit.getAbilities().forEach(ability -> ability.onSneak(player, event.isSneaking()));
+        }
+    }
 
     @EventHandler
     public void onProject(EntityShootBowEvent event) {

@@ -34,6 +34,14 @@ public enum Perk {
 //            ChatColor.GRAY + "Undetected to any " + ChatColor.WHITE + "long range abilities" + ChatColor.GRAY + "."
 //    ),
 
+    SCAVENGER(
+            "Scavenger",
+            Material.IRON_CHESTPLATE,
+            500,
+            ChatColor.GRAY + "Refill stations will always have",
+            ChatColor.GRAY + "soup/potions in them."
+    ),
+
     LIGHTWEIGHT(
             "Lightweight",
             Material.DIAMOND_BOOTS,

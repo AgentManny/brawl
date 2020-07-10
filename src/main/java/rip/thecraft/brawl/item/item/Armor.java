@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.server.util.chatcolor.CC;
+import rip.thecraft.spartan.Spartan;
 import rip.thecraft.spartan.serialization.ItemStackAdapter;
 import rip.thecraft.spartan.util.ItemUtils;
 
@@ -59,6 +60,7 @@ public class Armor {
             this.boots = null;
             return;
         }
+
         this.helmet = BrawlUtil.has(jsonObject, "helmet") ? ItemStackAdapter.deserialize(jsonObject.get("helmet")) : null;
         this.chestplate = BrawlUtil.has(jsonObject, "chestplate") ? ItemStackAdapter.deserialize(jsonObject.get("chestplate")) : null;
         this.leggings = BrawlUtil.has(jsonObject, "leggings") ? ItemStackAdapter.deserialize(jsonObject.get("leggings")) : null;

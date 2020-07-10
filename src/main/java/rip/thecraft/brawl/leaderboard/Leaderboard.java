@@ -69,7 +69,7 @@ public class Leaderboard {
             }
 
             Profile profile = Falcon.getInstance().getProfileHandler().loadProfile(UUID.fromString(doc.getString("uuid")));
-            statistics.put(profile.getDisplayName(), elo);
+            statistics.put(profile.getPlayerListName(), elo);
 
         }
         return statistics;

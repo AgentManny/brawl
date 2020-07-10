@@ -1,10 +1,10 @@
 package rip.thecraft.brawl.team.command.general;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.team.Team;
 import rip.thecraft.spartan.command.Command;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 import java.util.regex.Pattern;
 
@@ -13,7 +13,7 @@ public class TeamCreateCommand {
     public final static Pattern ALPHA_NUMERIC = Pattern.compile("[^a-zA-Z0-9]");
 
     @Command(names = { "team create", "t create", "f create", "faction create", "fac create" })
-    public void execute(Player sender, String name) {
+    public static void create(Player sender, String name) {
         if (Brawl.getInstance().getTeamHandler().getPlayerTeam(sender.getUniqueId()) == null) {
             if (ALPHA_NUMERIC.matcher(name).find()) {
                 sender.sendMessage(ChatColor.RED + "Team names must be alphanumeric!");

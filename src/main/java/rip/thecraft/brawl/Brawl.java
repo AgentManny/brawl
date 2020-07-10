@@ -19,29 +19,23 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.AbilityHandler;
-import rip.thecraft.brawl.ability.command.AbilityCommand;
-import rip.thecraft.brawl.ability.command.adapter.AbilityTypeAdapter;
-import rip.thecraft.brawl.command.*;
-import rip.thecraft.brawl.command.manage.ExpModifyCommand;
-import rip.thecraft.brawl.command.manage.SetSpawnCommand;
-import rip.thecraft.brawl.command.manage.VisualCommand;
+import rip.thecraft.brawl.command.adapters.AbilityCommandAdapter;
+import rip.thecraft.brawl.command.adapters.ArenaCommandAdapter;
 import rip.thecraft.brawl.duelarena.DuelArenaHandler;
 import rip.thecraft.brawl.duelarena.arena.Arena;
-import rip.thecraft.brawl.duelarena.command.ArenaCommand;
-import rip.thecraft.brawl.duelarena.command.DuelCommand;
-import rip.thecraft.brawl.duelarena.command.ViewMatchInvCommand;
-import rip.thecraft.brawl.duelarena.command.adapter.ArenaCommandAdapter;
 import rip.thecraft.brawl.event.EventHandler;
+import rip.thecraft.brawl.event.koth.KOTH;
+import rip.thecraft.brawl.event.koth.command.adapter.KOTHCommandAdapter;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameHandler;
+import rip.thecraft.brawl.game.GameType;
+import rip.thecraft.brawl.game.command.adapter.GameCommandAdapter;
 import rip.thecraft.brawl.item.ItemHandler;
 import rip.thecraft.brawl.killstreak.KillstreakHandler;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.KitHandler;
-import rip.thecraft.brawl.kit.command.KitCommand;
-import rip.thecraft.brawl.kit.command.adapter.KitTypeAdapter;
+import rip.thecraft.brawl.kit.command.adapter.KitCommandAdapter;
 import rip.thecraft.brawl.leaderboard.Leaderboard;
-import rip.thecraft.brawl.leaderboard.command.LeaderboardCommand;
 import rip.thecraft.brawl.listener.*;
 import rip.thecraft.brawl.market.MarketHandler;
 import rip.thecraft.brawl.player.PlayerData;
@@ -49,16 +43,19 @@ import rip.thecraft.brawl.player.PlayerDataHandler;
 import rip.thecraft.brawl.player.adapter.PlayerDataTypeAdapter;
 import rip.thecraft.brawl.player.cps.ClickTracker;
 import rip.thecraft.brawl.region.RegionHandler;
-import rip.thecraft.brawl.region.command.RegionCommands;
 import rip.thecraft.brawl.scoreboard.BrawlNametagAdapter;
 import rip.thecraft.brawl.scoreboard.BrawlScoreboardAdapter;
 import rip.thecraft.brawl.spectator.SpectatorManager;
 import rip.thecraft.brawl.task.SoupTask;
+import rip.thecraft.brawl.team.Team;
 import rip.thecraft.brawl.team.TeamHandler;
+import rip.thecraft.brawl.team.adapter.TeamTypeAdapter;
 import rip.thecraft.brawl.upgrade.UpgradeManager;
 import rip.thecraft.brawl.util.EntityHider;
 import rip.thecraft.brawl.visual.VisualManager;
+import rip.thecraft.brawl.warp.Warp;
 import rip.thecraft.brawl.warp.WarpManager;
+import rip.thecraft.brawl.warp.WarpTypeAdapter;
 import rip.thecraft.server.CraftServer;
 import rip.thecraft.spartan.command.MCommandHandler;
 import rip.thecraft.spartan.nametag.NametagHandler;
@@ -171,44 +168,42 @@ public class Brawl extends JavaPlugin {
     }
 
     private void registerCommands() {
+        MCommandHandler.registerParameterType(Ability.class, new AbilityCommandAdapter());
         MCommandHandler.registerParameterType(Arena.class, new ArenaCommandAdapter());
-        MCommandHandler.registerParameterType(Ability.class, new AbilityTypeAdapter(this));
-        MCommandHandler.registerParameterType(Kit.class, new KitTypeAdapter(this));
+        MCommandHandler.registerParameterType(Kit.class, new KitCommandAdapter());
         MCommandHandler.registerParameterType(PlayerData.class, new PlayerDataTypeAdapter(this));
+        MCommandHandler.registerParameterType(KOTH.class, new KOTHCommandAdapter());
+        MCommandHandler.registerParameterType(GameType.class, new GameCommandAdapter());
+        MCommandHandler.registerParameterType(Team.class, new TeamTypeAdapter());
+        MCommandHandler.registerParameterType(Warp.class, new WarpTypeAdapter());
 
-        Arrays.asList(
-                new HelpCommand(),
-                new SetRefillCommand(),
+        MCommandHandler.registerPackage(this, "rip.thecraft.brawl.command");
+        MCommandHandler.registerPackage(this, "rip.thecraft.brawl.command.manage");
 
-                // Manage commands
-                new ExpModifyCommand(),
-                new VisualCommand(this),
-                new SetSpawnCommand(this),
+        MCommandHandler.registerPackage(this, "rip.thecraft.brawl.duelarena.command");
+        MCommandHandler.registerPackage(this, "rip.thecraft.brawl.game.command");
+        MCommandHandler.registerPackage(this, "rip.thecraft.brawl.kit.command");
+        MCommandHandler.registerPackage(this, "rip.thecraft.brawl.warp.command");
 
-                new KillstreakCommand(this),
-
-                new ArenaCommand(this),
-                new ViewMatchInvCommand(),
-                new DuelCommand(this),
-
-                new StatsCommand(),
-                new LeaderboardCommand(),
-                new AbilityCommand(),
-                new SpawnCommand(this),
-                new KitCommand(this),
-                new RegionCommands(this),
-                new ClearkitCommand(this)
-        ).forEach(MCommandHandler::registerCommand);
+        // Team commands
+        MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command.general");
+        MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command.info");
+        MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command.leader");
+        MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command.manager");
+        MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command.staff");
+        MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command");
     }
 
     private void registerHandlers() {
-        this.playerDataHandler = new PlayerDataHandler(this);
-        this.kitHandler = new KitHandler(this);
+        abilityHandler = new AbilityHandler(this);
+        kitHandler = new KitHandler(this);
+
+        playerDataHandler = new PlayerDataHandler(this);
+
+        regionHandler = new RegionHandler();
 
         spectatorManager = new SpectatorManager(this);
         this.matchHandler = new DuelArenaHandler();
-
-        this.abilityHandler = new AbilityHandler(this);
 
         this.killstreakHandler = new KillstreakHandler(this);
         this.upgradeManager = new UpgradeManager(this);
@@ -221,8 +216,6 @@ public class Brawl extends JavaPlugin {
 
         this.leaderboard = new Leaderboard(this);
         this.visualManager = new VisualManager(this);
-
-        this.regionHandler = new RegionHandler();
 
         this.itemHandler = new ItemHandler(this);
 

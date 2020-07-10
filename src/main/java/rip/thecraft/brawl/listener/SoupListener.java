@@ -3,7 +3,11 @@ package rip.thecraft.brawl.listener;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,30 +16,58 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Attachable;
+import org.bukkit.material.MaterialData;
+import org.bukkit.metadata.FixedMetadataValue;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameFlag;
+import rip.thecraft.brawl.kit.type.RefillType;
 import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.upgrade.perk.Perk;
+import rip.thecraft.brawl.util.MathUtil;
 import rip.thecraft.brawl.util.SchedulerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 public class SoupListener implements Listener {
 
     private final Brawl plugin;
 
+    public static final String REFILL_METADATA = "REFILL_DATA";
+    public static final String PLAYER_REFILLING_METADATA = "PLAYER_REFILLING";
+    private final Set<BlockState> refillStations = new HashSet<>();
+
+    @EventHandler
+    public void onPluginDisable(PluginDisableEvent event) {
+        if (event.getPlugin() instanceof Brawl) {
+            for (BlockState state : refillStations) {
+                Location loc = state.getLocation();
+                state.setMaterial(Material.EMERALD_BLOCK);
+                System.out.println("[Refill Station] Reverted (" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ") back to it's original state.");
+            }
+        }
+    }
+
     @EventHandler
     public void onSign(SignChangeEvent event) {
-        if (event.getLine(0).equalsIgnoreCase("[Refill]") && event.getPlayer().isOp()) {
-            event.setLine(0, CC.DARK_PURPLE + "[Refill]");
-            event.setLine(1, "Click here");
-            event.setLine(2, "to refill");
+        if (event.getLine(0).contains("Refill") && event.getPlayer().isOp()) {
+            event.setLine(0, " ");
+            event.setLine(1, CC.DARK_PURPLE + "- Refill -");
+            event.setLine(2, "Soup/Potions");
+            event.setLine(3, " ");
         }
     }
 
@@ -70,20 +102,101 @@ public class SoupListener implements Listener {
                 player.setFoodLevel((player.getFoodLevel() + 7) > 20D ? 20 : player.getFoodLevel() + 7);
                 player.getItemInHand().setType(Material.BOWL);
             } else if (event.hasBlock() && event.getClickedBlock().getState() instanceof Sign) {
-                Sign sign = (Sign) event.getClickedBlock().getState();
-                if(sign.getLine(0).equalsIgnoreCase(ChatColor.DARK_PURPLE + "[Refill]")) {
-                    Inventory inventory = Bukkit.createInventory(null, 27, "Refill");
-                    PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
-                    ItemStack item = playerData.getRefillType().getItem();
-                    for(int i = 0; i < inventory.getSize(); i++) {
-                        inventory.setItem(i, item);
-                    }
-                    event.getPlayer().openInventory(inventory);
+                Block clickedBlock = event.getClickedBlock();
+                Sign sign = (Sign) clickedBlock.getState();
+                MaterialData materialData = sign.getMaterialData();
+                if(sign.getLine(1).contains("Refill")) {
+                    Block signBlock = sign.getBlock().getRelative(materialData instanceof Attachable ? ((Attachable) materialData).getAttachedFace() : BlockFace.DOWN);
+                    handleStation(player, signBlock);
                 }
             }
         }
     }
 
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        Player player = event.getActor();
+        Inventory inventory = event.getInventory();
+        if (inventory != null && inventory.getTitle().startsWith("Refill") && player.hasMetadata(PLAYER_REFILLING_METADATA)) {
+            Location location = (Location) player.getMetadata(PLAYER_REFILLING_METADATA, plugin).value();
+
+            location.getBlock().removeMetadata(PLAYER_REFILLING_METADATA, plugin);
+            player.removeMetadata(PLAYER_REFILLING_METADATA, plugin);
+
+            //player.getInventory().firstEmpty() != -1
+            if (inventory.firstEmpty() != -1) { // Contains an empty soup which means it was used
+                replenishStation(location.getBlock(), MathUtil.getRandomInt(10, 25));
+            }
+        }
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        if (player.hasMetadata(PLAYER_REFILLING_METADATA)) { // If they quit while using a soup we don't want it messing that station up
+            Location location = (Location) player.getMetadata(PLAYER_REFILLING_METADATA, plugin).value();
+            location.getBlock().removeMetadata(PLAYER_REFILLING_METADATA, plugin);
+        }
+    }
+
+    public void handleStation(Player player, Block attachedBlock) {
+        BlockState state = attachedBlock.getState();
+        if (!attachedBlock.hasMetadata(REFILL_METADATA) && !this.refillStations.contains(state)) { // Metadata is persistent, if the server crashes soup signs won't revert back to their original state.
+            replenishStation(attachedBlock, 1); // Replenish our station instantly
+            return;
+        }
+
+        if (attachedBlock.getType() == Material.REDSTONE_BLOCK) {
+            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "REFILL STATION! " + ChatColor.GRAY + "This station is still refilling.");
+            return;
+        }
+
+        if (attachedBlock.hasMetadata(PLAYER_REFILLING_METADATA)) {
+            Player usingPlayer = Bukkit.getPlayer(UUID.fromString(attachedBlock.getMetadata(PLAYER_REFILLING_METADATA, plugin).asString()));
+            if (usingPlayer == null) {
+                attachedBlock.removeMetadata(PLAYER_REFILLING_METADATA, plugin);
+            } else {
+                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "REFILL STATION! " + ChatColor.GRAY + "This station is currently occupied, another player is using it.");
+                return;
+            }
+        }
+
+        // Assume it's an emerald block if not, it'll automatically set it when the replenish task is over
+        PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
+        RefillType refillType = playerData.getRefillType();
+
+        int inventorySize = playerData.usingPerk(Perk.SCAVENGER) ? 36: 18;
+
+        attachedBlock.setMetadata(PLAYER_REFILLING_METADATA, new FixedMetadataValue(plugin, player.getUniqueId().toString()));
+        player.setMetadata(PLAYER_REFILLING_METADATA, new FixedMetadataValue(plugin, attachedBlock.getLocation()));
+
+        Inventory inventory = Bukkit.createInventory(null, inventorySize, "Refill your " + refillType.name().toLowerCase() + "s...");
+        for(int i = 0; i < inventory.getSize(); i++) {
+            inventory.setItem(i, refillType.getItem());
+        }
+        player.openInventory(inventory);
+    }
+
+    public void replenishStation(Block attachedBlock, int replenishTime) {
+        this.refillStations.add(attachedBlock.getState()); // Ensure it's added
+
+        attachedBlock.setMetadata(REFILL_METADATA, new FixedMetadataValue(plugin, System.currentTimeMillis()));
+        attachedBlock.setType(Material.REDSTONE_BLOCK);
+
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                attachedBlock.setType(Material.EMERALD_BLOCK);
+
+                if (attachedBlock.hasMetadata(PLAYER_REFILLING_METADATA)) {
+                    Player usingPlayer = Bukkit.getPlayer(UUID.fromString(attachedBlock.getMetadata(PLAYER_REFILLING_METADATA, plugin).asString()));
+                    if (usingPlayer != null) {
+                        usingPlayer.removeMetadata(PLAYER_REFILLING_METADATA, plugin);
+                    }
+                    attachedBlock.removeMetadata(PLAYER_REFILLING_METADATA, plugin);
+                }
+
+
+        }, replenishTime * 20);
+    }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerDropItemEvent(PlayerDropItemEvent event) {

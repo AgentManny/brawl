@@ -1,5 +1,8 @@
 package rip.thecraft.brawl.player.statistic;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.bson.Document;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.duelarena.loadout.MatchLoadout;
 import rip.thecraft.brawl.game.GameType;
@@ -7,9 +10,6 @@ import rip.thecraft.brawl.game.statistic.GameStatistic;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.statistic.KitStatistic;
 import rip.thecraft.brawl.player.PlayerData;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.bson.Document;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +38,7 @@ public class PlayerStatistic {
             }
             return;
         }
+
         Document spawnDocument = (Document) document.get("spawn");
         for (StatisticType statisticType : StatisticType.values()) {
             this.spawnStatistics.put(statisticType, spawnDocument.get(statisticType.name(), statisticType == StatisticType.LEVEL ? 1 : 0.0));
@@ -53,10 +54,10 @@ public class PlayerStatistic {
 
         Document kitDocument = (Document) document.get("kit");
         for (Kit kit : Brawl.getInstance().getKitHandler().getKits()) {
-            if (kitDocument.containsKey(kit.getName())) {
+            if (kitDocument.containsKey(kit.getName().toLowerCase())) {
                 Document statistic = (Document) document.get(kit.getName());
 
-                this.kitStatistics.putIfAbsent(kit.getName(), new KitStatistic(statistic));
+                this.kitStatistics.put(kit.getName(), new KitStatistic(statistic));
             }
         }
 
@@ -100,7 +101,7 @@ public class PlayerStatistic {
 
     public Document getKitData() {
         Document kitDocument = new Document();
-        this.kitStatistics.forEach(((kit, stats) -> kitDocument.put(kit, stats.toJSON())));
+        this.kitStatistics.forEach(((kit, stats) -> kitDocument.put(kit.toLowerCase(), stats.toJSON())));
         return kitDocument;
     }
 

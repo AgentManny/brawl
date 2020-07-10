@@ -12,7 +12,7 @@ import java.util.UUID;
 public class TeamUninviteCommand {
 
     @Command(names = { "team uninvite", "t uninvite", "f uninvite", "faction uninvite", "fac uninvite", "team revoke", "t revoke", "f revoke", "faction revoke", "fac revoke" })
-    public void execute(Player sender, String name) {
+    public static void teamUninvite(Player sender, String name) {
         Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(sender);
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");

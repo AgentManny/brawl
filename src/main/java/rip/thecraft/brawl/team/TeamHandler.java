@@ -11,22 +11,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.team.adapter.TeamTypeAdapter;
-import rip.thecraft.brawl.team.command.TeamCommand;
-import rip.thecraft.brawl.team.command.general.TeamAcceptCommand;
-import rip.thecraft.brawl.team.command.general.TeamChatCommand;
-import rip.thecraft.brawl.team.command.general.TeamCreateCommand;
-import rip.thecraft.brawl.team.command.general.TeamLeaveCommand;
-import rip.thecraft.brawl.team.command.info.TeamInfoCommand;
-import rip.thecraft.brawl.team.command.info.TeamListCommand;
-import rip.thecraft.brawl.team.command.leader.*;
-import rip.thecraft.brawl.team.command.manager.*;
-import rip.thecraft.brawl.team.command.staff.*;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.command.MCommandHandler;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,48 +33,9 @@ public class TeamHandler {
     public TeamHandler() {
         this.collection = Brawl.getInstance().getMongoDatabase().getCollection("teams");
 
-        this.registerCommands();
         this.loadTeams();
 
         new TeamSaveTask().runTaskTimerAsynchronously(Brawl.getInstance(), 6000L, 6000L);
-    }
-
-    public void registerCommands() {
-        MCommandHandler.registerParameterType(Team.class, new TeamTypeAdapter());
-
-        Arrays.asList(
-                new ForceDisbandAllCommand(),
-                new ForceDisbandCommand(),
-                new ForceJoinCommand(),
-                new ForceKickCommand(),
-                new ForceLeaveCommand(),
-                new ForceLeaveCommand(),
-                new ForceNameCommand(),
-                new SaveTeamCommand(),
-
-                new TeamPasswordCommand(),
-
-                new TeamManagerCommand(),
-
-                new TeamAcceptCommand(),
-                new TeamAnnouncementCommand(),
-                new TeamChatCommand(),
-                new TeamCommand(),
-                new TeamCreateCommand(),
-                new TeamDemoteCommand(),
-                new TeamDisbandCommand(),
-                new TeamInfoCommand(),
-                new TeamInviteCommand(),
-                new TeamInvitesCommand(),
-                new TeamKickCommand(),
-                new TeamLeaderCommand(),
-                new TeamLeaveCommand(),
-                new TeamListCommand(),
-                new TeamPromoteCommand(),
-                new TeamRenameCommand(),
-                new TeamUninviteCommand()
-
-        ).forEach(MCommandHandler::registerCommand);
     }
 
     public List<Team> getTeams() {
@@ -121,7 +71,7 @@ public class TeamHandler {
         loading = false;
 
         String nanosFancy = new DecimalFormat("#.##").format((System.nanoTime() - now) / 1E6D);
-        System.out.println("{" + Brawl.getInstance().getName() + "} Successfully loaded "
+        System.out.println("[" + Brawl.getInstance().getName() + "] Successfully loaded "
                 + this.getTeams().size() + " teams in " + nanosFancy + "ms");
     }
 

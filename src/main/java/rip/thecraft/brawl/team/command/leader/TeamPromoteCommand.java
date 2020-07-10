@@ -10,21 +10,21 @@ import rip.thecraft.spartan.command.Command;
 public class TeamPromoteCommand {
 
     @Command(names = {"team promote", "t promote", "f promote", "faction promote", "fac promote", "team captain", "t captain", "f captain", "faction captain", "fac captain"})
-    public void teamPromote(Player sender, CacheProfile target) {
+    public static void teamPromote(Player sender, CacheProfile player) {
         Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(sender);
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
             return;
         }
         if (team.isOwner(sender.getUniqueId()) || sender.isOp()) {
-            if (team.isMember(target.getUuid())) {
-                if (team.isManager(target.getUuid())) {
+            if (team.isMember(player.getUuid())) {
+                if (team.isManager(player.getUuid())) {
                     sender.sendMessage(ChatColor.RED + "That player has already been promoted.");
                     return;
                 }
 
-                team.sendMessage(ChatColor.DARK_AQUA + target.getUsername() + " has been promoted to Manager!");
-                team.addManager(target.getUuid());
+                team.sendMessage(ChatColor.DARK_AQUA + player.getUsername() + " has been promoted to Manager!");
+                team.addManager(player.getUuid());
 
             } else {
                 sender.sendMessage(ChatColor.DARK_AQUA + "Player is not on your team.");

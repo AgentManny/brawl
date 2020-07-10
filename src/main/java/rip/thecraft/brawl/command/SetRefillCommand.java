@@ -13,7 +13,7 @@ import rip.thecraft.spartan.command.Param;
 public class SetRefillCommand {
 
     @Command(names = "setrefill")
-    public void execute(Player player, @Param(defaultValue = "_", name = "soup|potion") String source) {
+    public static void execute(Player player, @Param(defaultValue = "_", name = "soup|potion") String source) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
         RefillType refillType;
         if (source.equalsIgnoreCase("_")) {
@@ -28,7 +28,7 @@ public class SetRefillCommand {
         setRefillType(player, playerData, refillType);
     }
 
-    private void setRefillType(CommandSender sender, PlayerData playerData, RefillType refillType) {
+    private static void setRefillType(CommandSender sender, PlayerData playerData, RefillType refillType) {
         if (refillType == null || refillType == RefillType.NONE) {
             sender.sendMessage(ChatColor.RED + "You must provide a valid healing method.");
             sender.sendMessage(ChatColor.RED      + "Available healing methods: " + ChatColor.GRAY + "[Soup, Potion]");

@@ -1,19 +1,19 @@
 package rip.thecraft.brawl.team.command.staff;
 
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.team.Team;
-import rip.thecraft.spartan.command.Command;
-import rip.thecraft.server.util.chatcolor.CC;
 import org.bukkit.conversations.*;
 import org.bukkit.entity.Player;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.team.Team;
+import rip.thecraft.server.util.chatcolor.CC;
+import rip.thecraft.spartan.command.Command;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ForceDisbandAllCommand {
 
-    @Command(names = "forcedisbandall", permission = "op")
-    public void execute(Player sender) {
+    @Command(names = "team admin forcedisbandall", permission = "op")
+    public static void forceDisband(Player sender) {
         ConversationFactory factory = new ConversationFactory(Brawl.getInstance()).withModality(true).withPrefix(new NullConversationPrefix()).withFirstPrompt(new StringPrompt() {
             public String getPromptText(ConversationContext context) {
                 return "§aAre you sure you want to disband all teams? Type §byes§a to confirm or §cno§a to quit.";

@@ -7,17 +7,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.game.command.GameMapCommand;
-import rip.thecraft.brawl.game.command.GameStartCommand;
-import rip.thecraft.brawl.game.command.HostCommand;
-import rip.thecraft.brawl.game.command.JoinCommand;
-import rip.thecraft.brawl.game.command.adapter.GameTypeAdapter;
 import rip.thecraft.brawl.game.lobby.GameLobby;
 import rip.thecraft.brawl.game.map.GameMapHandler;
 import rip.thecraft.brawl.game.type.*;
 import rip.thecraft.server.CraftServer;
 import rip.thecraft.server.handler.MovementHandler;
-import rip.thecraft.spartan.command.MCommandHandler;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -50,10 +44,6 @@ public class GameHandler {
                 new WoolShuffle(),
                 new Brackets()
         ).forEach(this::register);
-
-        MCommandHandler.registerParameterType(GameType.class, new GameTypeAdapter());
-        Arrays.asList(new GameMapCommand(brawl), new HostCommand(brawl), new JoinCommand(brawl), new GameStartCommand())
-        .forEach(MCommandHandler::registerCommand);
     }
 
     private void register(Game game) {

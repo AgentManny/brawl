@@ -14,7 +14,7 @@ import java.util.UUID;
 public class TeamKickCommand {
 
     @Command(names = { "team kick", "t kick", "f kick", "faction kick", "fac kick" })
-    public void execute(Player sender, @Param(name = "player") CacheProfile cacheProfile) {
+    public static void teamKick(Player sender, @Param(name = "player") CacheProfile cacheProfile) {
         Player player = cacheProfile.getPlayer();
         UUID uuid = cacheProfile.getUuid();
 

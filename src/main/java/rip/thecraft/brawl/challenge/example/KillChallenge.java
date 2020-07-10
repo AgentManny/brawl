@@ -15,4 +15,5 @@ public class KillChallenge extends IntegerChallenge {
     public void complete(Player player, PlayerChallenge challenge) {
         player.sendMessage(ChatColor.GREEN + "You've completed your " + this.name + " challenge. You've been rewarded");
     }
+
 }

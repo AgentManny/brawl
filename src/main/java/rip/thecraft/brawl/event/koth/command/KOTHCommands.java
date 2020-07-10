@@ -15,7 +15,7 @@ import rip.thecraft.spartan.util.TimeUtils;
 public class KOTHCommands {
 
     @Command(names = "koth create", permission = "op")
-    public void create(Player sender, String name) {
+    public static void create(Player sender, String name) {
         if (Brawl.getInstance().getEventHandler().getKOTHByName(name) != null) {
             sender.sendMessage(CC.RED + "KOTH " + name + ChatColor.RED + " already exists.");
             return;
@@ -27,7 +27,7 @@ public class KOTHCommands {
     }
 
     @Command(names = "koth delete", permission = "op")
-    public void delete(Player sender, KOTH koth) {
+    public static void delete(Player sender, KOTH koth) {
         ConversationFactory factory = new ConversationFactory(Brawl.getInstance()).withModality(true).withPrefix(new NullConversationPrefix()).withFirstPrompt(new StringPrompt() {
             public String getPromptText(ConversationContext context) {
                 return "§aAre you sure you want to delete " + koth.getName() + "? Type §byes§a to confirm or §cno§a to quit.";
@@ -56,7 +56,7 @@ public class KOTHCommands {
     }
 
     @Command(names = "koth setcapdelay", permission = "brawl.koth")
-    public void execute(Player sender, String time) {
+    public static void execute(Player sender, String time) {
         EventHandler gh = Brawl.getInstance().getEventHandler();
         KOTH koth = gh.getActiveKOTH();
         if (koth == null) {
@@ -73,7 +73,7 @@ public class KOTHCommands {
     }
 
     @Command(names = "koth start", permission = "brawl.koth")
-    public void execute(Player sender, KOTH koth) {
+    public static void execute(Player sender, KOTH koth) {
         EventHandler gh = Brawl.getInstance().getEventHandler();
         if (gh.getActiveKOTH() != null) {
             sender.sendMessage(ChatColor.RED + "There is already an active koth.");
@@ -84,7 +84,7 @@ public class KOTHCommands {
     }
 
     @Command(names = "koth stop", permission = "brawl.koth")
-    public void execute(Player sender) {
+    public static void execute(Player sender) {
         EventHandler gh = Brawl.getInstance().getEventHandler();
         if (gh.getActiveKOTH() == null) {
             sender.sendMessage(ChatColor.RED + "There are no active koths.");
@@ -96,7 +96,7 @@ public class KOTHCommands {
     }
 
     @Command(names = "koth setcapzone", permission = "op")
-    public void setCapzone(Player sender, KOTH koth) {
+    public static void setCapzone(Player sender, KOTH koth) {
         Selection sel = Selection.createOrGetSelection(sender);
 
         if (!sel.isFullObject()) {

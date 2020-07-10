@@ -1,18 +1,17 @@
 package rip.thecraft.brawl.team.command.general;
 
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.team.Team;
-import rip.thecraft.spartan.Spartan;
-import rip.thecraft.spartan.command.Command;
-import rip.thecraft.spartan.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.team.Team;
+import rip.thecraft.spartan.command.Command;
+import rip.thecraft.spartan.command.Param;
 import rip.thecraft.spartan.nametag.NametagHandler;
 
 public class TeamAcceptCommand {
 
     @Command(names = {"team accept", "t accept", "f accept", "faction accept", "fac accept", "team a", "t a", "f a", "faction a", "fac a", "team join", "t join", "f join", "faction join", "fac join"})
-    public void execute(Player sender, Team team, @Param(name = "_") String password) {
+    public static void accept(Player sender, Team team, @Param(defaultValue = "_") String password) {
         if (Brawl.getInstance().getTeamHandler().getPlayerTeam(sender.getUniqueId()) != null) {
             sender.sendMessage(ChatColor.RED + "You are already on a team!");
             return;

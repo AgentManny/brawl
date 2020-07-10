@@ -9,10 +9,7 @@ import org.apache.commons.io.FileUtils;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.event.king.KillTheKing;
 import rip.thecraft.brawl.event.koth.KOTH;
-import rip.thecraft.brawl.event.koth.command.KOTHCommands;
-import rip.thecraft.brawl.event.koth.command.adapter.KOTHCommandAdapter;
 import rip.thecraft.spartan.Spartan;
-import rip.thecraft.spartan.command.MCommandHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,9 +28,6 @@ public class EventHandler {
 
     public EventHandler() {
         this.load();
-
-        MCommandHandler.registerParameterType(KOTH.class, new KOTHCommandAdapter());
-        MCommandHandler.registerCommand(new KOTHCommands());
     }
 
     public void load() {

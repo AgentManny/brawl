@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 public class ForceLeaveCommand  {
 
     @Command(names = "forceleave", permission = "op")
-    public void execute(Player player) {
+    public static void forceLeave(Player player) {
         Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(player);
         if (team == null) {
             player.sendMessage(ChatColor.RED + "You are not on a team!");

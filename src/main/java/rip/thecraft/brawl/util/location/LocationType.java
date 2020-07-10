@@ -1,11 +1,15 @@
 package rip.thecraft.brawl.util.location;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.citizensnpcs.api.event.DespawnReason;
+import net.citizensnpcs.api.npc.NPC;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 
-@AllArgsConstructor
+import java.util.function.BiConsumer;
+
 public enum LocationType {
 
     SPAWN("SPAWN"),
@@ -15,10 +19,32 @@ public enum LocationType {
     HOLOGRAM_STATS("HOLO_STATS"),
     HOLOGRAM_LEADERBOARDS("HOLO_LB"),
 
-    UPGRADER("NPC_UPGRADER"),
+    UPGRADER("NPC_UPGRADER", (player, location) -> {
+        NPC npc = Brawl.getInstance().getUpgradeManager().getNpc();
+        if (npc.isSpawned()) {
+            npc.despawn(DespawnReason.PLUGIN);
+            if (player != null) {
+                player.sendMessage(ChatColor.GRAY + "Removed pre existing Upgrader NPC");
+            }
+        }
+
+        npc.spawn(location);
+    }),
+
     CHALLENGES("NPC_CHALLENGES");
 
     @Getter private final String name;
+    @Getter private BiConsumer<Player, Location> update = null;
+
+    LocationType(String name) {
+        this.name = name;
+    }
+
+    LocationType(String name, BiConsumer<Player, Location> update) {
+        this.name = name;
+        this.update = update;
+    }
+
 
     public Location getLocation() {
         return Brawl.getInstance().getLocationByName(name);

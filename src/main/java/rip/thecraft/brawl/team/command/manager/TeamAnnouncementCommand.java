@@ -1,15 +1,15 @@
 package rip.thecraft.brawl.team.command.manager;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.team.Team;
 import rip.thecraft.spartan.command.Command;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 public class TeamAnnouncementCommand {
 
     @Command(names = {"team announcement", "t announcement", "f announcement", "faction announcement", "fac announcement", "team desc", "t desc", "f desc", "faction desc", "fac desc", "team description", "t description", "f description", "faction description", "fac description"})
-    public void execute(Player sender, String announcement) {
+    public static void setAnnouncement(Player sender, String announcement) {
         Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(sender.getUniqueId());
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You're not in a team!");

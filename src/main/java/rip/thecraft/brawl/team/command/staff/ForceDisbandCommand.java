@@ -1,14 +1,14 @@
 package rip.thecraft.brawl.team.command.staff;
 
-import rip.thecraft.brawl.team.Team;
-import rip.thecraft.spartan.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import rip.thecraft.brawl.team.Team;
+import rip.thecraft.spartan.command.Command;
 
 public class ForceDisbandCommand {
 
-    @Command(names = "forcedisband", permission = "op")
-    public void execute(Player sender, Team team) {
+    @Command(names = "team admin forcedisband", permission = "op")
+    public static void forceDisband(Player sender, Team team) {
         for (final Player online : team.getOnlineMembers()) {
             online.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + sender.getName() + " has force-disbanded the team.");
         }

@@ -163,7 +163,7 @@ public class ItemHandler implements Listener {
                             break;
                         }
                         case EVENT_SELECTOR: {
-                            new GameSelectorMenu(plugin).openMenu(player);
+                            new GameSelectorMenu().openMenu(player);
                             break;
                         }
                         case EVENT_VOTE_SELECTED: {
