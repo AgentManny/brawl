@@ -62,6 +62,9 @@ public class KitEditButton extends Button {
                     .command("/spawn")
                     .send(player);
             Brawl.getInstance().getKitHandler().save();
+        } else if (action == KitEditAction.ABILITY) {
+            new KitAbilityEditMenu(kit).openMenu(player);
+            player.sendMessage(CC.GREEN + "You have opened the ability editor for kit " + kit.getName() + ".");
         } else {
             Conversation conversation = new ConversationFactory(Falcon.getInstance())
                     .withLocalEcho(false)
@@ -93,10 +96,6 @@ public class KitEditButton extends Button {
                 case WEIGHT:
                     kit.setWeight(Integer.parseInt(s));
                     player.sendMessage(CC.GREEN + "You have editted " + kit.getName() + "'s " + action.name().toLowerCase() + ".");
-                    break;
-                case ABILITY:
-                    new KitAbilityEditMenu(kit).openMenu(player);
-                    player.sendMessage(CC.GREEN + "You have opened the ability editor for kit " + kit.getName() + ".");
                     break;
                 case DESCRIPTION:
                     kit.setDescription(CC.translate(s));
