@@ -1,8 +1,5 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.spartan.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -11,11 +8,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.spartan.util.ItemBuilder;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-public class NinjaStars extends Ability {
+public class Shurikens extends Ability {
 
     @Override
     public boolean bypassAbilityPreventZone() {
@@ -36,7 +36,7 @@ public class NinjaStars extends Ability {
 
             Item item = player.getWorld().dropItem(player.getEyeLocation(),
                     new ItemBuilder(Material.NETHER_STAR)
-                    .name("Ninja Star" + ThreadLocalRandom.current().nextInt(1, 1000))
+                    .name("Shurikens" + ThreadLocalRandom.current().nextInt(1, 1000))
                     .create()
             );
             item.setPickupDelay(Integer.MAX_VALUE);

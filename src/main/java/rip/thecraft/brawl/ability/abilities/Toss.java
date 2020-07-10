@@ -19,8 +19,8 @@ public class Toss extends Ability implements Listener {
     private Map<UUID, Long> times = new HashMap<>();
 
     @Override
-    public void onApply(Player player) {
-        player.sendMessage(ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "ABILITY INFO " + ChatColor.GRAY + "Right click players with your fist to pick them up.");
+    public String getDescription() {
+        return "Right click players with your fist to pick them up.";
     }
 
     @EventHandler

@@ -1,7 +1,5 @@
-package rip.thecraft.brawl.ability.abilities.skylands;
+package rip.thecraft.brawl.ability.abilities;
 
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.ability.Ability;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -11,11 +9,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.Ability;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FluffyHandcuffs extends Ability {
+public class SnowGlobe extends Ability {
 
     @Override
     public Material getType() {

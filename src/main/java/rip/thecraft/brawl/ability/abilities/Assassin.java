@@ -1,7 +1,5 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.ability.Ability;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -11,8 +9,12 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.Ability;
 
 public class Assassin extends Ability implements Listener {
+
+    private static String STEALTH_METADATA = "Stealth";
 
     @Override
     public Material getType() {
@@ -31,12 +33,10 @@ public class Assassin extends Ability implements Listener {
 
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 200, 0));
-//        Brawl.getInstance().getServer().getOnlinePlayers().forEach(online  -> {
-//            if (!Protection.isAlly(online, player)) {
-//                Brawl.getInstance().getEntityHider().hideEntity(online, player);
-//            }
-//        });
         player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 150, 1));
+
+        player.sendMessage(ChatColor.LIGHT_PURPLE + "You are now in your stealth state!");
+        player.sendMessage(ChatColor.GRAY + "You are hidden from normal players and your damage has increased.");
 
         int taskId = new BukkitRunnable() {
 
@@ -44,25 +44,26 @@ public class Assassin extends Ability implements Listener {
 
             @Override
             public void run() {
-                if (player != null) {
-                    if (hasEquipped(player)) {
-                        player.getInventory().setArmorContents(armorCopy);
-                        player.removeMetadata("assassin_id", Brawl.getInstance());
-                        player.sendMessage(ChatColor.GREEN + "You've returned to your normal state.");
-                    }
-//                    Brawl.getInstance().getServer().getOnlinePlayers().forEach(online  -> Brawl.getInstance().getEntityHider().showEntity(online, player));
+                if (player != null && hasEquipped(player)) {
+                    player.getInventory().setArmorContents(armorCopy);
+                    player.removeMetadata(STEALTH_METADATA, Brawl.getInstance());
+                    player.sendMessage(ChatColor.GREEN + "You've returned to your normal state.");
                 }
-
             }
 
-            @Override
-            public synchronized void cancel() throws IllegalStateException {
-                super.cancel();
-            }
         }.runTaskLater(Brawl.getInstance(), 200L).getTaskId();
+
         player.getInventory().setArmorContents(null);
-        player.setMetadata("assassin_id", new FixedMetadataValue(Brawl.getInstance(), taskId));
+        player.setMetadata(STEALTH_METADATA, new FixedMetadataValue(Brawl.getInstance(), taskId));
     }
 
-
+    @Override
+    public void onDeactivate(Player player) {
+        if (player.hasMetadata(STEALTH_METADATA)) {
+            int taskId = player.getMetadata(STEALTH_METADATA, Brawl.getInstance()).asInt();
+            if (Brawl.getInstance().getServer().getScheduler().isCurrentlyRunning(taskId)) {
+                Brawl.getInstance().getServer().getScheduler().cancelTask(taskId);
+            }
+        }
+    }
 }

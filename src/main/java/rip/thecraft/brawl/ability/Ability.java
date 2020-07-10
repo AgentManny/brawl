@@ -36,6 +36,10 @@ public abstract class Ability {
 
     @Setter protected int cooldown = 25;
 
+    public String getDescription() {
+        return null;
+    }
+
     public String getName() {
         return getClass().getSimpleName();
     }

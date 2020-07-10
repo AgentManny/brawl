@@ -15,7 +15,10 @@ import rip.thecraft.brawl.ability.abilities.classic.Stomper;
 import rip.thecraft.brawl.ability.abilities.legacy.Illusioner;
 import rip.thecraft.brawl.ability.abilities.legacy.Medic;
 import rip.thecraft.brawl.ability.abilities.legacy.Rapid;
-import rip.thecraft.brawl.ability.abilities.skylands.*;
+import rip.thecraft.brawl.ability.abilities.skylands.Archer;
+import rip.thecraft.brawl.ability.abilities.skylands.Charger;
+import rip.thecraft.brawl.ability.abilities.skylands.SilverfishSwarm;
+import rip.thecraft.brawl.ability.abilities.skylands.WaterGun;
 import rip.thecraft.brawl.ability.abilities.skylands.chemist.Chemist;
 import rip.thecraft.brawl.ability.abilities.skylands.chemist.SmokeBomb;
 import rip.thecraft.server.CraftServer;
@@ -47,7 +50,7 @@ public class AbilityHandler {
                 new Fireball(),
                 new Toss(),
 
-                new FluffyHandcuffs(),
+                new SnowGlobe(),
 
                 // MCPVP
                 new Flash(),
@@ -76,8 +79,8 @@ public class AbilityHandler {
                 new Smite(),
 
 
-                new NinjaStars(),
-                new Dragon(),
+                new Shurikens(),
+                new Blaze(),
                 new Gambler(),
                 new Assassin(),
                 new Phantom(),

@@ -15,13 +15,13 @@ import rip.thecraft.brawl.util.ParticleEffect;
 import java.util.HashSet;
 import java.util.List;
 
-public class Dragon extends Ability implements Listener {
+public class Blaze extends Ability implements Listener {
 
     private final Brawl plugin = Brawl.getInstance();
 
     @Override
     public Material getType() {
-        return Material.FIREBALL;
+        return Material.BLAZE_POWDER;
     }
 
     @Override

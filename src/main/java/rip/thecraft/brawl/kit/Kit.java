@@ -130,7 +130,13 @@ public class Kit implements Listener, Comparable<Kit> {
         player.getInventory().setContents(this.items.getItems());
 
         this.abilities.stream().map(Ability::getIcon).filter(Objects::nonNull).forEach(player.getInventory()::addItem);
-        this.abilities.forEach(ability -> ability.onApply(player));
+        this.abilities.forEach(ability -> {
+            if (ability.getDescription() != null && updateProfile) {
+                player.sendMessage(ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "ABILITY INFO " + ChatColor.WHITE + ability.getName());
+                player.sendMessage(ChatColor.GRAY + " - " + ability.getDescription());
+            }
+            ability.onApply(player);
+        });
         this.potionEffects.forEach(potionEffect -> player.addPotionEffect(potionEffect, true));
 
         if (addRefill) {
