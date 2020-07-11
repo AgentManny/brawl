@@ -10,6 +10,7 @@ import rip.thecraft.brawl.duelarena.loadout.MatchLoadout;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.falcon.Falcon;
 import rip.thecraft.falcon.profile.Profile;
+import rip.thecraft.falcon.rank.Rank;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -69,7 +70,8 @@ public class Leaderboard {
             }
 
             Profile profile = Falcon.getInstance().getProfileHandler().loadProfile(UUID.fromString(doc.getString("uuid")));
-            statistics.put(profile.getPlayerListName(), elo);
+            Rank rank = profile.getRank();
+            statistics.put(rank.getGameColor() + profile.getUsername(), elo);
 
         }
         return statistics;
