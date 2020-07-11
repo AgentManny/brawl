@@ -58,14 +58,18 @@ public class ItemHandler implements Listener {
 
 
                 int amount = 1;
-
+                int data = 0;
                 if(configurationSection.get(key + ".AMOUNT") != null) {
                     amount = configurationSection.getInt(key + ".AMOUNT", 1);
                 }
 
-                ItemBuilder itemBuilder = new ItemBuilder()
-                        .material(material)
-                        .data((byte) configurationSection.getInt(key + ".DATA", 0))
+                if(configurationSection.get(key + ".DATA") != null) {
+                    data = configurationSection.getInt(key + ".DATA", 0);
+                }
+
+
+                ItemBuilder itemBuilder = new ItemBuilder(material)
+                        .data(data)
                         .amount(amount);
 
                 String displayName = configurationSection.getString(key + ".NAME");
