@@ -23,7 +23,6 @@ public class HologramUpdateTask extends BukkitRunnable {
             if (player == null) continue;
 
             hologram.setLines(visualManager.getHoloStats(player));
-            hologram.send();
         }
     }
 
