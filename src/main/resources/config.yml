@@ -34,13 +34,16 @@ LANGUAGE:
       '0':
         TYPE: IRON_SWORD
         NAME: "&7\u00bb &d&lUnranked Queue &7\u00ab"
+        META: DUEL_ARENA_UNRANKED
       '1':
         TYPE: DIAMOND_SWORD
         NAME: "&7\u00bb &5&lRanked Queue &7\u00ab"
+        META: DUEL_ARENA_RANKED
       '8':
         TYPE: INK_SACK
         DATA: 14
         NAME: "&7\u00bb &cReturn to &lSpawn &7\u00ab"
+        META: DUEL_ARENA_LEAVE
     SPAWN:
       '0':
         TYPE: BOOK
