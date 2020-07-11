@@ -91,8 +91,10 @@ public class PlayerDataHandler implements Closeable {
         Player target = Bukkit.getPlayer(name);
         if (target != null) {
             profile = this.getPlayerData(target.getUniqueId());
-        } else if (MUUIDCache.uuid(name) != null){
+        } else if (MUUIDCache.uuid(name) != null) {
             profile = new PlayerData(MUUIDCache.uuid(name), name);
+            System.out.println("[PlayerData - Offline | Primary: " + Bukkit.isPrimaryThread() + "] Loading " + name + " (" + profile.getUuid().toString() + ") data");
+            profile.fromDocument(plugin.getPlayerDataHandler().getDocument(profile.getUuid()));
         }
         return profile;
     }
