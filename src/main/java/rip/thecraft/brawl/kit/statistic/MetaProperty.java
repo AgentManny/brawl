@@ -1,10 +1,10 @@
 package rip.thecraft.brawl.kit.statistic;
 
 import com.google.common.base.Function;
-import rip.thecraft.brawl.kit.Kit;
-import rip.thecraft.brawl.player.PlayerData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import rip.thecraft.brawl.kit.Kit;
+import rip.thecraft.brawl.player.PlayerData;
 
 @Data
 @AllArgsConstructor

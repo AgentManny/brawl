@@ -22,7 +22,12 @@ public class HologramUpdateTask extends BukkitRunnable {
             Hologram hologram = entry.getValue();
             if (player == null) continue;
 
-            hologram.setLines(visualManager.getHoloStats(player));
+            String[] holoStats = visualManager.getHoloStats(player);
+            if (holoStats != null) {
+                for (int i = 0; i < holoStats.length; i++) {
+                    hologram.setLine(i, holoStats[i]);
+                }
+            }
         }
     }
 

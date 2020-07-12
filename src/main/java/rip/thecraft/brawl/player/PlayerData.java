@@ -16,6 +16,7 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.duelarena.queue.QueueData;
 import rip.thecraft.brawl.game.GameType;
+import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.type.RankType;
 import rip.thecraft.brawl.kit.type.RefillType;
@@ -27,6 +28,7 @@ import rip.thecraft.brawl.team.Team;
 import rip.thecraft.brawl.upgrade.perk.Perk;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.server.util.chatcolor.CC;
+import rip.thecraft.spartan.nametag.NametagHandler;
 import rip.thecraft.spartan.util.Cooldown;
 
 import java.util.*;
@@ -205,6 +207,24 @@ public class PlayerData {
 
     public boolean hasCombatLogged() {
         return combatTaggedTil > System.currentTimeMillis() && !spawnProtection;
+    }
+
+    public void spawn() {
+        Player player = getPlayer();
+        if (player == null) return;
+
+        this.spawnProtection = true;
+        this.duelArena = false;
+
+        if (this.selectedKit == null) {
+            if (!player.hasMetadata("staffmode")) {
+                Brawl.getInstance().getItemHandler().apply(player, InventoryType.SPAWN);
+            }
+            NametagHandler.reloadPlayer(player);
+            NametagHandler.reloadOthersFor(player);
+        } else {
+            player.sendMessage(ChatColor.GREEN + "Clear your kit by using " + ChatColor.WHITE + "/clearkit" + ChatColor.GREEN + ".");
+        }
     }
 
     public boolean canWarp() {

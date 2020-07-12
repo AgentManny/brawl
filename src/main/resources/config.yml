@@ -41,7 +41,7 @@ LANGUAGE:
         META: DUEL_ARENA_RANKED
       '8':
         TYPE: INK_SACK
-        DATA: 14
+        DATA: 1
         NAME: "&7\u00bb &cReturn to &lSpawn &7\u00ab"
         META: DUEL_ARENA_LEAVE
     SPAWN:

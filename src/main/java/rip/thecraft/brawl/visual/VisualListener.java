@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -20,16 +21,18 @@ public class VisualListener implements Listener {
 
     private final VisualManager visualManager;
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if (getHoloStats() == null) return; // Prevent loading
-        Hologram hologram = Holograms.forPlayers(Arrays.asList(player))
-                .at(getHoloStats())
-                .addLines(visualManager.getHoloStats(player))
-                .build();
-        hologram.send();
-        visualManager.playerStats.put(player.getUniqueId(), hologram);
+        Brawl.getInstance().getServer().getScheduler().runTaskLater(Brawl.getInstance(), () -> {
+            if (getHoloStats() == null) return; // Prevent loading
+            Hologram hologram = Holograms.forPlayers(Arrays.asList(player))
+                    .at(getHoloStats())
+                    .addLines(visualManager.getHoloStats(player))
+                    .build();
+            hologram.send();
+            visualManager.playerStats.put(player.getUniqueId(), hologram);
+        }, 40L);
     }
 
     @EventHandler

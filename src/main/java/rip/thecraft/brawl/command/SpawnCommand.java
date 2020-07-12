@@ -10,7 +10,6 @@ import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameElimination;
 import rip.thecraft.brawl.game.GameHandler;
 import rip.thecraft.brawl.game.team.GamePlayer;
-import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.spectator.SpectatorManager;
 import rip.thecraft.brawl.util.BrawlUtil;
@@ -32,6 +31,10 @@ public class SpawnCommand {
         if (playerData.isEvent()) {
             GameHandler gh =  Brawl.getInstance().getGameHandler();
             SpectatorManager sm =  Brawl.getInstance().getSpectatorManager();
+            if (sm.isSpectating(sender)) {
+                sm.removeSpectator(sender);
+            }
+
             if (gh.getLobby() != null && gh.getLobby().getPlayers().contains(sender.getUniqueId())) {
                 gh.getLobby().leave(sender.getUniqueId());
             }
@@ -45,9 +48,6 @@ public class SpawnCommand {
                     }
                 }
 
-                if (sm.inSpectator(sender)) {
-                    sm.removeSpectator(sender.getUniqueId(), game, false);
-                }
                 NametagHandler.reloadPlayer(sender);
                 NametagHandler.reloadOthersFor(sender);
             }
@@ -64,19 +64,7 @@ public class SpawnCommand {
         }
 
 
-        playerData.warp("spawn", spawn, BrawlUtil.getNearbyPlayers(sender, 25).isEmpty() ? 3 : 5, () -> {
-            playerData.setSpawnProtection(true);
-            playerData.setDuelArena(false);
-            if (playerData.getSelectedKit() == null) {
-                if (!sender.hasMetadata("staffmode")) {
-                    Brawl.getInstance().getItemHandler().apply(sender, InventoryType.SPAWN);
-                    NametagHandler.reloadPlayer(sender);
-                    NametagHandler.reloadOthersFor(sender);
-                }
-            } else {
-                sender.sendMessage(ChatColor.YELLOW + "Clear your kit by using " + ChatColor.LIGHT_PURPLE + "/clearkit" + ChatColor.YELLOW + ".");
-            }
-        });
+        playerData.warp("spawn", spawn, BrawlUtil.getNearbyPlayers(sender, 25).isEmpty() ? 3 : 5, playerData::spawn);
     }
 
     @Command(names = { "1v1", "1vs1", "duelarena"})

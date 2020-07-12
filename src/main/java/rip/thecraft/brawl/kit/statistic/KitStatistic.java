@@ -1,12 +1,16 @@
 package rip.thecraft.brawl.kit.statistic;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.bson.Document;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Data
+@Setter
+@Getter
+@NoArgsConstructor
 public class KitStatistic {
 
     private int uses = 0;
@@ -14,9 +18,6 @@ public class KitStatistic {
     private int deaths = 0;
 
     private transient Map<String, Object> properties = new HashMap<>();
-
-    public KitStatistic() {
-    }
 
     public KitStatistic(Document document) {
         if (document == null) return;

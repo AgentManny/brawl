@@ -55,9 +55,9 @@ public class PlayerStatistic {
         Document kitDocument = (Document) document.get("kit");
         for (Kit kit : Brawl.getInstance().getKitHandler().getKits()) {
             if (kitDocument.containsKey(kit.getName().toLowerCase())) {
-                Document statistic = (Document) document.get(kit.getName());
+                Document statistic = (Document) kitDocument.get(kit.getName().toLowerCase());
 
-                this.kitStatistics.put(kit.getName(), new KitStatistic(statistic));
+                this.kitStatistics.put(kit.getName().toLowerCase(), new KitStatistic(statistic));
             }
         }
 
@@ -127,7 +127,7 @@ public class PlayerStatistic {
     }
 
     public KitStatistic get(Kit kit) {
-        this.kitStatistics.putIfAbsent(kit.getName(), new KitStatistic( ));
+        this.kitStatistics.putIfAbsent(kit.getName(), new KitStatistic());
         return this.kitStatistics.get(kit.getName());
     }
 

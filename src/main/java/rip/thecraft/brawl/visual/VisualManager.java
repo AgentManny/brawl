@@ -39,13 +39,17 @@ public class VisualManager implements Listener {
         }
     }
 
-    public List<String> getHoloStats(Player player) {
+    public String[] getHoloStats(Player player) {
         List<String> lines = new ArrayList<>();
+        lines.add(ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Statistics");
 
         PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
-        if (playerData == null) return lines;
+        if (playerData == null) {
+            lines.add("Loading...");
+            return lines.toArray(new String[]{});
+        }
 
-        lines.add(ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Statistics");
+
         for (StatisticType type : StatisticType.values()) {
             if (type.isHidden()) continue;
             String displayValue = String.valueOf(Math.round(playerData.getStatistic().get(type)));
@@ -56,7 +60,7 @@ public class VisualManager implements Listener {
 
             lines.add(ChatColor.WHITE + type.getName() + ": " + ChatColor.LIGHT_PURPLE +  displayValue);
         }
-        return lines;
+        return lines.toArray(new String[] { });
     }
 
 }
