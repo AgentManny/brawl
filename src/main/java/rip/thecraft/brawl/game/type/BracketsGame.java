@@ -2,9 +2,6 @@ package rip.thecraft.brawl.game.type;
 
 import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -12,22 +9,18 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.*;
 import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.kit.Kit;
+import rip.thecraft.brawl.kit.type.RefillType;
+import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
-import rip.thecraft.spartan.util.PlayerUtils;
 import rip.thecraft.spartan.util.TimeUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Brackets extends Game implements Listener {
+public class BracketsGame extends Game {
 
-    private Kit defaultKit;
-
-    public Brackets() {
-        super(GameType.BRACKETS, GameFlag.PLAYER_ELIMINATE, GameFlag.NO_FALL);
-        defaultKit = Brawl.getInstance().getKitHandler().getDefaultKit();
-    }
+    private String kit;
 
     private GamePlayer player1;
     private GamePlayer player2;
@@ -37,6 +30,24 @@ public class Brackets extends Game implements Listener {
     private List<GamePlayer> alreadyPlayed;
 
     private BukkitTask task;
+
+    public BracketsGame(GameType type, String kit) {
+        super(type, GameFlag.PLAYER_ELIMINATE, GameFlag.NO_FALL);
+        this.kit = kit;
+    }
+
+    public Kit getKit() {
+        return kit == null ? null : Brawl.getInstance().getKitHandler().getKit(kit);
+    }
+
+    public RefillType getRefillType(Player player) {
+        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+        return playerData.getRefillType();
+    }
+
+    public int getRefillAmount() {
+        return 8;
+    }
 
     @Override
     public void setup() {
@@ -113,13 +124,7 @@ public class Brackets extends Game implements Listener {
 
     @Override
     public void handleElimination(Player player, Location location, GameElimination elimination) {
-        if (eliminate(player)) {
-            broadcast(ChatColor.DARK_RED + player.getName() + ChatColor.RED + (elimination == GameElimination.QUIT ? " disconnected" : " has been eliminated") + ".");
-            if (elimination != GameElimination.QUIT) {
-                Brawl.getInstance().getSpectatorManager().addSpectator(player, this);
-                player.teleport(this.getRandomLocation());
-            }
-
+        if (eliminate(player, location, elimination)) {
             // Find a winner
             if (this.getAlivePlayers().size() == 1) {
                 GamePlayer winner = this.getAlivePlayers().get(0);
@@ -141,27 +146,31 @@ public class Brackets extends Game implements Listener {
         this.broadcast(Game.PREFIX + ChatColor.LIGHT_PURPLE + this.getMatch()[0].getName() + ChatColor.YELLOW + " vs " + ChatColor.LIGHT_PURPLE + this.getMatch()[1].getName());
 
         if(getMatch()[0] == null || !player1.isAlive()) {
-            this.eliminate(player1.toPlayer());
+            handleElimination(player1.toPlayer(), null, GameElimination.OTHER);
             return;
         }
 
         if(getMatch()[1] == null || !player2.isAlive()) {
-            this.eliminate(player2.toPlayer());
+            handleElimination(player2.toPlayer(), null, GameElimination.OTHER);
             return;
         }
 
-
-        getMatch()[0].toPlayer().teleport(this.getLocationByName("ArenaLocation1"));
-        getMatch()[1].toPlayer().teleport(this.getLocationByName("ArenaLocation2"));
-
-        for (GamePlayer gamer : getMatch()) {
+        Kit kit = getKit();
+        for (int i = 0; i < getMatch().length; i++) {
+            GamePlayer gamer = getMatch()[i];
             Player player = gamer.toPlayer();
-            defaultKit.apply(player, false, false);
-            for (int i = 0; i < 8; i++) {
-                player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP));
+            player.teleport(getLocationByName("ArenaLocation" + (i + 1)));
+            if (kit != null) {
+                kit.apply(player, false, false);
+            } else {
+                PlayerUtil.resetInventory(player);
+            }
+
+            ItemStack item = getRefillType(player).getItem();
+            for (int refill = 0; refill < getRefillAmount(); refill++) {
+                player.getInventory().addItem(item);
             }
         }
-
 
         this.playSound(Sound.NOTE_PIANO, 1L, 20L);
     }
@@ -198,30 +207,6 @@ public class Brackets extends Game implements Listener {
 
     public boolean contains(GamePlayer player) {
         return player.equals(player1) || player.equals(player2);
-    }
-
-    @EventHandler
-    public void onPlayerDamage(EntityDamageByEntityEvent event) {
-        if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
-            Game game = Brawl.getInstance().getGameHandler().getActiveGame();
-            if (game instanceof Brackets) {
-                GamePlayer gamePlayer = this.getGamePlayer(player);
-                if (gamePlayer != null) {
-                    if (gamePlayer.isAlive()) {
-                        if (this.state == GameState.GRACE_PERIOD) {
-                            event.setCancelled(true);
-                            return;
-                        }
-
-                        if (!this.contains(gamePlayer)) {
-                            event.setCancelled(true);
-                        }
-
-                    }
-                }
-            }
-        }
     }
 
     @Override

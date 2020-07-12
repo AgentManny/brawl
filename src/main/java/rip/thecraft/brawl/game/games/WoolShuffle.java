@@ -1,7 +1,17 @@
-package rip.thecraft.brawl.game.type;
+package rip.thecraft.brawl.game.games;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameFlag;
@@ -10,20 +20,9 @@ import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.util.BukkitUtil;
 import rip.thecraft.brawl.util.cuboid.Cuboid;
+import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.ItemBuilder;
 import rip.thecraft.spartan.util.TimeUtils;
-import rip.thecraft.server.util.chatcolor.CC;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +49,7 @@ public class WoolShuffle extends Game implements Listener {
     private BukkitTask task;
 
     public WoolShuffle() {
-        super(GameType.WOOL_SHUFFLE, GameFlag.WATER_ELIMINATE, GameFlag.NO_FALL);
+        super(GameType.WOOL_SHUFFLE, GameFlag.WATER_ELIMINATE, GameFlag.NO_FALL, GameFlag.NO_PVP);
     }
 
     @Override
@@ -265,20 +264,6 @@ public class WoolShuffle extends Game implements Listener {
                 GamePlayer gamePlayer = this.getGamePlayer(player);
                 if (gamePlayer != null && gamePlayer.isAlive()) {
                     event.setResult(Event.Result.DENY);
-                    event.setCancelled(true);
-                }
-            }
-        }
-    }
-
-
-    @EventHandler
-    public void onPlayerDamage(EntityDamageByEntityEvent event) {
-        if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
-            Game game = Brawl.getInstance().getGameHandler().getActiveGame();
-            if (game instanceof WoolShuffle) {
-                if (player != null && this.containsPlayer(player) && this.getGamePlayer(player).isAlive()) {
                     event.setCancelled(true);
                 }
             }

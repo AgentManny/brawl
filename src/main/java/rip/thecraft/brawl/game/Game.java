@@ -1,5 +1,13 @@
 package rip.thecraft.brawl.game;
 
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import mkremins.fanciful.FancyMessage;
+import net.md_5.bungee.api.chat.BaseComponent;
+import org.apache.commons.lang.WordUtils;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.lobby.GameLobby;
 import rip.thecraft.brawl.game.map.GameMap;
@@ -9,19 +17,10 @@ import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.util.PlayerUtil;
-import rip.thecraft.spartan.nametag.NametagHandler;
 import rip.thecraft.brawl.util.Tasks;
-import rip.thecraft.spartan.util.PlayerUtils;
-import rip.thecraft.spartan.util.TimeUtils;
 import rip.thecraft.server.util.chatcolor.CC;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import mkremins.fanciful.FancyMessage;
-import net.md_5.bungee.api.chat.BaseComponent;
-import org.apache.commons.lang.WordUtils;
-import org.bukkit.*;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
+import rip.thecraft.spartan.nametag.NametagHandler;
+import rip.thecraft.spartan.util.TimeUtils;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -42,7 +41,6 @@ public abstract class Game {
 
     private long startedAt = -1L;
     private long endedAt = -1L;
-
 
     private List<UUID> spectators = new CopyOnWriteArrayList<>();
     protected List<GamePlayer> players = new ArrayList<>();
@@ -76,15 +74,19 @@ public abstract class Game {
         });
     }
 
+    public void addItems(Player player) {
+
+    }
+
+    public String getEliminateMessage(Player player, GameElimination elimination) {
+        return ChatColor.DARK_RED + player.getName() + ChatColor.RED + (elimination == GameElimination.QUIT ? " disconnected" : " has been eliminated") + ".";
+    }
 
     public void cleanup() {
         startedAt = -1;
         endedAt = -1;
 
         spectators.clear();
-
-        //todo buggy
-        Brawl.getInstance().getSpectatorManager().bug(this);
 
         players.clear();
 
@@ -114,7 +116,7 @@ public abstract class Game {
 
             this.options.values().forEach(option -> option.onEnd(this));
             this.getAlivePlayers().forEach(GamePlayer::spawn);
-            this.spectators.forEach(uuid -> Brawl.getInstance().getSpectatorManager().removeSpectator(uuid, this, false));
+            this.spectators.forEach(uuid -> Brawl.getInstance().getSpectatorManager().removeSpectator(uuid));
             Brawl.getInstance().getGameHandler().destroy();
             Brawl.getInstance().getGameHandler().getCooldown().put(this.getType(), System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5));
 
@@ -124,6 +126,8 @@ public abstract class Game {
     public void setup() {
         this.getAlivePlayers().forEach(gamePlayer -> {
             Player player = gamePlayer.toPlayer();
+            addItems(player);
+            player.updateInventory();
             player.teleport(this.getRandomLocation());
         });
 
@@ -134,22 +138,22 @@ public abstract class Game {
         this.getOptions().values().forEach(option -> option.onStart(this));
     }
 
-    public boolean eliminate(Player player) {
+    public boolean eliminate(Player player, Location location, GameElimination elimination) {
         GamePlayer eliminated = getGamePlayer(player);
         if (eliminated == null || !eliminated.isAlive() || this.state == GameState.FINISHED) return false;
 
         eliminated.setAlive(false); // Died
+
+        if (elimination != GameElimination.QUIT) {
+            Brawl.getInstance().getSpectatorManager().addSpectator(player, location);
+        }
+
+        broadcast(getEliminateMessage(player, elimination));
         return true;
     }
 
     public void handleElimination(Player player, Location location, GameElimination elimination) {
-        if (eliminate(player)) {
-            broadcast(ChatColor.DARK_RED + player.getName() + ChatColor.RED + (elimination == GameElimination.QUIT ? " disconnected" : " has been eliminated") + ".");
-            if (elimination != GameElimination.QUIT) {
-                Brawl.getInstance().getSpectatorManager().addSpectator(player, this);
-                player.teleport(this.getRandomLocation());
-            }
-
+        if (eliminate(player, location, elimination)) {
             // Find a winner
             if (this.getAlivePlayers().size() == 1) {
                 GamePlayer winner = this.getAlivePlayers().get(0);

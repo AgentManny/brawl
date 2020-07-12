@@ -18,7 +18,6 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.duelarena.DuelArena;
 import rip.thecraft.brawl.duelarena.match.queue.QueueType;
 import rip.thecraft.brawl.duelarena.menu.LoadoutMenu;
-import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.lobby.GameLobby;
 import rip.thecraft.brawl.game.menu.GameSelectorMenu;
 import rip.thecraft.brawl.item.type.InventoryType;
@@ -189,11 +188,7 @@ public class ItemHandler implements Listener {
                         }
                         case SPECTATOR_LEAVE: {
                             //todo improve spec
-                            Brawl.getInstance().getSpectatorManager().removeSpectator(player.getUniqueId(), Brawl.getInstance().getGameHandler().getActiveGame(), false);
-                            Game game = plugin.getGameHandler().getActiveGame();
-                            if (game != null) {
-                                game.getSpectators().remove(player.getUniqueId());
-                            }
+                            Brawl.getInstance().getSpectatorManager().removeSpectator(player);
                             break;
                         }
                         case EVENT_VOTE: {

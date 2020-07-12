@@ -8,6 +8,9 @@ public enum GameFlag {
     CRAFTING,
     HUNGER,
 
+    NO_DAMAGE, // Sets damage to 0
+    ALLOW_DAMAGE_GRACE, // Allows damaging while in grace period
+
     NO_FALL,
     NO_PVP
 

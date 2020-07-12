@@ -72,6 +72,22 @@ LANGUAGE:
         NAME: '&7» &c&lLeave Queue &7«'
         META: QUEUE_LEAVE
     SPECTATOR:
+      '0':
+        TYPE: COMPASS
+        NAME: '&7» &5&lSpectate Player &7«'
+        META: SPECTATOR_PLAYER_MENU
+      '3':
+        TYPE: NETHER_STAR
+        NAME: '&7» &a&lActive Game &7«'
+        META: SPECTATE_GAME
+      '4':
+        TYPE: WATCH
+        NAME: '&7» &e&lSpawn &7«'
+        META: SPECTATE_SPAWN
+      '5':
+        TYPE: ENDER_EYE
+        NAME: '&7» &6&l1v1 &7«'
+        META: SPECTATE_ARENA
       '8':
         TYPE: 351
         DATA: 1

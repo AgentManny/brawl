@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
@@ -23,6 +24,9 @@ public class GamePlayer {
 
     @Setter
     private boolean alive = false;
+
+    @Setter
+    private Location respawnTo;
 
     public GamePlayer(Player player) {
         this.uniqueId = player.getUniqueId();

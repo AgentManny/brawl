@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.game.type;
+package rip.thecraft.brawl.game.games;
 
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
@@ -24,7 +24,6 @@ import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.brawl.util.SchedulerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.Cooldown;
-import rip.thecraft.spartan.util.PlayerUtils;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -148,7 +147,6 @@ public class OITC extends Game implements Listener {
                 shooter = (Player) projectile.getShooter();
             }
         }
-
 
         GamePlayer gameVictim = getGamePlayer(victim);
 

@@ -137,7 +137,7 @@ public class Brawl extends JavaPlugin {
         MovementListener movementListener = new MovementListener(this);
         CraftServer.getInstance().addMovementHandler(movementListener);
 
-        Arrays.asList(new ClickTracker(this), new AbilityListener(this), new ToolInteractListener(), new ProtectListener(this), new ArenaListener(this), new PlayerListener(this), new DamageListener(this), new SoupListener(this), new TeamListener(this), movementListener)
+        Arrays.asList(new ClickTracker(this), new GameListener(), new AbilityListener(this), new ToolInteractListener(), new ProtectListener(this), new ArenaListener(this), new PlayerListener(this), new DamageListener(this), new SoupListener(this), new TeamListener(this), movementListener)
                 .forEach(listener -> this.getServer().getPluginManager().registerEvents(listener, this));
         loaded = true;
     }
@@ -202,7 +202,7 @@ public class Brawl extends JavaPlugin {
 
         regionHandler = new RegionHandler();
 
-        spectatorManager = new SpectatorManager(this);
+        spectatorManager = new SpectatorManager();
         this.matchHandler = new DuelArenaHandler();
 
         this.killstreakHandler = new KillstreakHandler(this);

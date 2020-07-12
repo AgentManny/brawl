@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.game.type;
+package rip.thecraft.brawl.game.games;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class Tag extends Game implements Listener {
 
     public Tag() {
-        super(GameType.TNT_TAG, GameFlag.NO_FALL);
+        super(GameType.TNT_TAG, GameFlag.NO_FALL, GameFlag.NO_DAMAGE);
     }
 
     private List<GamePlayer> taggers;
@@ -193,7 +193,6 @@ public class Tag extends Game implements Listener {
     }
 
     public void explode() {
-
         Iterator<GamePlayer> iterator = taggers.iterator();
         while (iterator.hasNext()) {
             GamePlayer tagged = iterator.next();
@@ -211,14 +210,13 @@ public class Tag extends Game implements Listener {
     }
 
     @Override
-    public void handleElimination(Player player, Location location, GameElimination elimination) {
-        if (eliminate(player)) {
-            broadcast(ChatColor.DARK_RED + player.getName() + ChatColor.RED + (elimination == GameElimination.QUIT ? " disconnected" : " blew up.") + ".");
-            if (elimination != GameElimination.QUIT) {
-                Brawl.getInstance().getSpectatorManager().addSpectator(player, this);
-                player.teleport(this.getRandomLocation());
-            }
+    public String getEliminateMessage(Player player, GameElimination elimination) {
+        return ChatColor.DARK_RED + player.getName() + ChatColor.RED + (elimination == GameElimination.QUIT ? " disconnected" : " blew up.") + ".";
+    }
 
+    @Override
+    public void handleElimination(Player player, Location location, GameElimination elimination) {
+        if (eliminate(player, location, elimination)) {
             // Find a winner
             if (this.getAlivePlayers().size() == 1) {
                 GamePlayer winner = this.getAlivePlayers().get(0);

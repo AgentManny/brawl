@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.util.EntityHider;
 import rip.thecraft.spartan.util.PlayerUtils;
@@ -17,6 +18,15 @@ public class SpectatorListener implements Listener {
     private final EntityHider entityHider = Brawl.getInstance().getEntityHider();
 
     private final SpectatorManager spectatorManager;
+
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        SpectatorMode spectator = spectatorManager.getSpectator(event.getPlayer());
+        if (spectator != null && spectator.getTeleportTo() != null) {
+            event.setRespawnLocation(spectator.getTeleportTo().clone());
+            spectator.setTeleportTo(null);
+        }
+    }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {

@@ -10,7 +10,7 @@ import rip.thecraft.brawl.game.team.GameTeam;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class PartneredGame extends Game {
+public class PartneredGame extends Game {
 
     private List<GameTeam<GamePlayer>> teams = new ArrayList<>();
     private List<GameTeam<GamePlayer>> alreadyPlayed = new ArrayList<>();
