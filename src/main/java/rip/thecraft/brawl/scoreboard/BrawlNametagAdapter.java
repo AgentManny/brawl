@@ -51,7 +51,7 @@ public class BrawlNametagAdapter extends NametagProvider {
             }
         }
 
-        if (plugin.getSpectatorManager().inSpectator(toRefresh)) {
+        if (plugin.getSpectatorManager().isSpectating(toRefresh)) {
             color = ChatColor.GRAY.toString();
         }
         return createNametag(color, "");

@@ -14,6 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.challenges.Challenge;
 import rip.thecraft.brawl.duelarena.queue.QueueData;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.item.type.InventoryType;
@@ -90,6 +91,10 @@ public class PlayerData {
     private long lastAction = System.currentTimeMillis();
     private Location lastLocation = null;
     private boolean duelsEnabled = true;
+
+    // Challenges
+    private Challenge dailyChallenge;
+    private Challenge weeklyChallenge;
 
     private boolean needsSaving;
     private boolean loaded;
@@ -430,8 +435,16 @@ public class PlayerData {
         return this.getCooldown(cooldownName.toUpperCase()) != null;
     }
 
-     public Player getPlayer() {
+    public Player getPlayer() {
         return Bukkit.getPlayer(this.uuid);
+    }
+
+    public boolean hasActiveDailyChallenge() {
+        return (dailyChallenge != null && (dailyChallenge.getChallengeType().getMillis() + dailyChallenge.getTimestamp()) > System.currentTimeMillis());
+    }
+
+    public boolean hasActiveWeeklyChallenge() {
+        return (weeklyChallenge != null && (weeklyChallenge.getChallengeType().getMillis() + weeklyChallenge.getTimestamp()) > System.currentTimeMillis());
     }
 
     @Override
