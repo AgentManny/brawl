@@ -1,14 +1,14 @@
-package rip.thecraft.brawl.challenges.type.daily;
+package rip.thecraft.brawl.challenges.type.weekly;
 
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.challenges.Challenge;
 import rip.thecraft.brawl.challenges.ChallengeType;
 import rip.thecraft.server.util.chatcolor.CC;
 
-public class DailyKillChallenge extends Challenge {
+public class WeeklyKillChallenge extends Challenge {
 
-    public DailyKillChallenge() {
-        super("Daily_Kill", "Kill 5 enemies.", ChallengeType.DAILY, 5);
+    public WeeklyKillChallenge() {
+        super("Weekly_Kill", "Kill 100 enemies.", ChallengeType.WEEKLY, 100);
     }
 
     @Override
@@ -24,5 +24,4 @@ public class DailyKillChallenge extends Challenge {
             player.sendMessage(CC.YELLOW + "You have completed the " + CC.GOLD + getDisplayName() + CC.YELLOW + " challenge.");
         }
     }
-
 }

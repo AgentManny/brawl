@@ -127,8 +127,12 @@ public class SpawnData {
 
         }
 
-        if (playerData.hasActiveDailyChallenge() && playerData.getDailyChallenge().getName().equalsIgnoreCase("Kill")) {
+        if (playerData.hasActiveDailyChallenge() && playerData.getDailyChallenge().getName().contains("Kill")) {
             playerData.getDailyChallenge().increment(player);
+        }
+
+        if (playerData.hasActiveWeeklyChallenge() && playerData.getDailyChallenge().getName().contains("Kill")) {
+            playerData.getWeeklyChallenge().increment(player);
         }
 
 //        if ((stats.get(StatisticType.KILLSTREAK) > 15 && stats.get(StatisticType.KILLSTREAK) % 10 == 0) || (stats.get(StatisticType.KILLSTREAK) == 5 && stats.get(StatisticType.KILLSTREAK) <= 15)) {

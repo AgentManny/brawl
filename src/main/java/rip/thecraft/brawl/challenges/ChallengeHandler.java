@@ -1,8 +1,8 @@
 package rip.thecraft.brawl.challenges;
 
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import rip.thecraft.brawl.challenges.type.daily.DailyKillChallenge;
+import rip.thecraft.brawl.challenges.type.weekly.WeeklyKillChallenge;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,11 +13,16 @@ public class ChallengeHandler {
     private List<Challenge> dailyChallenges, weeklyChallenges;
 
     public ChallengeHandler() {
+        // Only include the 3 challenges for the day / week
+        // The menu loops through the entire list.
         this.dailyChallenges = Arrays.asList(
                 new DailyKillChallenge()
         );
 
-        this.weeklyChallenges = Lists.newArrayList();
+        this.weeklyChallenges = Arrays.asList(
+                new WeeklyKillChallenge()
+        );
+
     }
 
     public Challenge getByName(String challengeName) {

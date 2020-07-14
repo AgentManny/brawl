@@ -13,7 +13,7 @@ public abstract class Challenge {
     protected final ChallengeType challengeType; // to help track timing and keep things organized
     protected final int maxProgress; // max progress is what is required to achieve reward
     @Setter protected int currentProgress; // data tracker for player
-    protected long timestamp; // time when activated
+    @Setter protected long timestamp; // time when activated
 
     public abstract void increment(Player player);
 

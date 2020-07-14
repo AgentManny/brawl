@@ -15,6 +15,7 @@ import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.challenges.Challenge;
+import rip.thecraft.brawl.challenges.ChallengeType;
 import rip.thecraft.brawl.duelarena.queue.QueueData;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.item.type.InventoryType;
@@ -28,6 +29,7 @@ import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.team.Team;
 import rip.thecraft.brawl.upgrade.perk.Perk;
 import rip.thecraft.brawl.util.BrawlUtil;
+import rip.thecraft.brawl.util.MathUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.nametag.NametagHandler;
 import rip.thecraft.spartan.util.Cooldown;
@@ -445,6 +447,30 @@ public class PlayerData {
 
     public boolean hasActiveWeeklyChallenge() {
         return (weeklyChallenge != null && (weeklyChallenge.getChallengeType().getMillis() + weeklyChallenge.getTimestamp()) > System.currentTimeMillis());
+    }
+
+    public long getChallengeTimeRemaining(ChallengeType challengeType) {
+        switch (challengeType) {
+            case DAILY:
+                if (this.dailyChallenge == null) return -1L;
+                return (this.dailyChallenge.getTimestamp() + challengeType.getMillis()) - System.currentTimeMillis();
+            case WEEKLY:
+                if (this.weeklyChallenge == null) return -1L;
+                return (this.weeklyChallenge.getTimestamp() + challengeType.getMillis()) - System.currentTimeMillis();
+        }
+        return -1L;
+    }
+
+    public double getChallengeProgress(ChallengeType challengeType) {
+        switch (challengeType) {
+            case DAILY:
+                if (this.dailyChallenge == null) return 0;
+                return MathUtil.getPercent(dailyChallenge.getCurrentProgress(), dailyChallenge.getMaxProgress());
+            case WEEKLY:
+                if (this.weeklyChallenge == null) return 0;
+                return MathUtil.getPercent(weeklyChallenge.getCurrentProgress(), weeklyChallenge.getMaxProgress());
+        }
+        return 0;
     }
 
     @Override
