@@ -8,9 +8,17 @@ import java.util.stream.Collectors;
 
 public enum RegionType {
 
+    /** Region where you can't activate abilities or damage players */
     SAFEZONE,
+
+    /** Region where you can't activate abilities */
     NO_ABILITY_ZONE,
-    NO_PERK_ZONE;
+
+    /** Region where you can't activate perks */
+    NO_PERK_ZONE,
+
+    /** Region where a multiplier is applied */
+    MULTIPLIER;
 
     public List<Region> getRegions() {
         return Brawl.getInstance().getRegionHandler().getRegions()
