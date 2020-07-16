@@ -162,7 +162,7 @@ public class DamageListener implements Listener {
             case GAME: {
                 if (Brawl.getInstance().getGameHandler().getActiveGame().getFlags().contains(GameFlag.PLAYER_ELIMINATE)) {
                     event.setRespawnLocation(playerData.getLastLocation());
-                    Brawl.getInstance().getSpectatorManager().addSpectator(player, Brawl.getInstance().getGameHandler().getActiveGame());
+                    // Brawl.getInstance().getSpectatorManager().addSpectator(player);
                 }
                 break;
             }

@@ -34,6 +34,8 @@ public class Team {
 
     private String announcement;
 
+    private String tagline;
+
     private String password;
 
     private Set<UUID> managers = new HashSet<>();
@@ -49,6 +51,15 @@ public class Team {
         this.name = name;
         this.owner = owner;
         this.members.add(owner);
+    }
+
+    public boolean hasTagline() { // u needa unlock that
+        return true;
+    }
+
+    public String getDisplayTagline() {
+        if (hasTagline() && tagline == null || tagline.isEmpty()) return "";
+        return ChatColor.GRAY + " [" + CC.translate(tagline) + ChatColor.GRAY + "]";
     }
 
     public String getDisplayName(Player player) {
@@ -163,6 +174,11 @@ public class Team {
 
     public void setAnnouncement(String announcement) {
         this.announcement = announcement;
+        this.flagForSave();
+    }
+
+    public void setTagline(String tagline) {
+        this.tagline = tagline == null ? null : ChatColor.translateAlternateColorCodes('&', tagline);
         this.flagForSave();
     }
 

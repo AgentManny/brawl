@@ -4,10 +4,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.Game;
+import rip.thecraft.brawl.levels.Level;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
+import rip.thecraft.brawl.team.Team;
 import rip.thecraft.falcon.Falcon;
 import rip.thecraft.falcon.profile.Profile;
+import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.nametag.NametagInfo;
 import rip.thecraft.spartan.nametag.NametagProvider;
 
@@ -26,10 +29,11 @@ public class BrawlNametagAdapter extends NametagProvider {
         Profile profile = Falcon.getInstance().getProfileHandler().getByPlayer(toRefresh);
         PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(toRefresh);
 
-        String color = playerData.getLevel().getSimplePrefix() + ChatColor.translateAlternateColorCodes('&', profile.getRank().getGameColor());
+        String color = CC.translate(profile.getRank().getGameColor());
 
         PlayerData refreshPlayerData = plugin.getPlayerDataHandler().getPlayerData(refreshFor);
         if (playerData == null || refreshPlayerData == null) return createNametag(color, "");
+
         switch (playerData.getPlayerState()) {
             case GAME: {
                 if (refreshPlayerData.getPlayerState() == PlayerState.GAME) {
@@ -51,9 +55,15 @@ public class BrawlNametagAdapter extends NametagProvider {
             }
         }
 
-        if (plugin.getSpectatorManager().inSpectator(toRefresh)) {
+        if (plugin.getSpectatorManager().isSpectating(toRefresh)) {
             color = ChatColor.GRAY.toString();
         }
-        return createNametag(color, "");
+
+        Level level = playerData.getLevel();
+        String levelPrefix = Level.getColor(level.getCurrentLevel()) + level.getSimplePrefix() + ChatColor.translateAlternateColorCodes('&', profile.getRank().getGameColor());
+
+        Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(toRefresh);
+
+        return createNametag(levelPrefix + color, team == null ? "" : team.getDisplayTagline());
     }
 }
