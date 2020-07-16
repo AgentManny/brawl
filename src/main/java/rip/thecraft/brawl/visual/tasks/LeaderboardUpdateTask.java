@@ -5,8 +5,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.duelarena.loadout.MatchLoadout;
 import rip.thecraft.brawl.leaderboard.Leaderboard;
 import rip.thecraft.brawl.player.statistic.StatisticType;
+import rip.thecraft.brawl.util.location.LocationType;
 import rip.thecraft.brawl.visual.VisualManager;
 import rip.thecraft.falcon.hologram.hologram.Hologram;
 import rip.thecraft.falcon.hologram.hologram.Holograms;
@@ -23,6 +25,9 @@ public class LeaderboardUpdateTask extends BukkitRunnable {
 
     private Hologram hologram;
     private Hologram updateHologram;
+
+    private Hologram hologramElo;
+    private Hologram updateHologramElo;
 
     public LeaderboardUpdateTask(VisualManager visualManager) {
         this.visualManager = visualManager;
@@ -41,9 +46,24 @@ public class LeaderboardUpdateTask extends BukkitRunnable {
                 .build();
         this.updateHologram.send();
 
+
+        loc = LocationType.HOLOGRAM_LEADERBOARDS_ELO.getLocation();
+        this.hologramElo = Holograms.newHologram()
+                .at(loc)
+                .addLines(ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Leaderboards", "Loading...", " ")
+                .build();
+        this.hologramElo.send();
+
+        this.updateHologramElo = Holograms.newHologram()
+                .at(loc.clone().subtract(0, .5, 0))
+                .addLines("Refreshing in")
+                .build();
+        this.updateHologramElo.send();
+
     }
 
     private StatisticType statType = StatisticType.KILLS;
+    private MatchLoadout matchLoadout = null;
 
     private static final int REFRESH_TIMER = 10;
     private int refreshTimer = 0;
@@ -51,6 +71,34 @@ public class LeaderboardUpdateTask extends BukkitRunnable {
     private DecimalFormat statFormat = new DecimalFormat("#.#");
 
     private BiConsumer<StatisticType, Hologram> update = (stat, hologram) -> {
+        Leaderboard leaderboard = Brawl.getInstance().getLeaderboard();
+        hologram.setLine(1, stat.getColor() + stat.getName());
+
+        int entries = 0;
+        Map<String, Double> values = leaderboard.getSpawnLeaderboards().get(statType);
+        for (Map.Entry<String, Double> entry : values.entrySet()) {
+            ++entries;
+
+            String prefix = entries == 1 ? ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD : entries == 2 ? ChatColor.LIGHT_PURPLE.toString() : entries == 3 ? ChatColor.YELLOW.toString() : ChatColor.WHITE.toString();
+            switch (entries) {
+                case 1: {
+                    prefix = ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD;
+                    break;
+                }
+                case 2: {
+                    prefix = ChatColor.LIGHT_PURPLE.toString();
+                    break;
+                }
+                case 3: {
+                    prefix = ChatColor.YELLOW.toString();
+                    break;
+                }
+            }
+            hologram.setLine(entries + 2, (prefix + entries + ". " + ChatColor.WHITE + entry.getKey() + ChatColor.GRAY + " ● " + ChatColor.WHITE + statFormat.format(entry.getValue())));
+        }
+    };
+
+    private BiConsumer<MatchLoadout, Hologram> updateElo = (stat, hologram) -> {
         Leaderboard leaderboard = Brawl.getInstance().getLeaderboard();
         hologram.setLine(1, stat.getColor() + stat.getName());
 

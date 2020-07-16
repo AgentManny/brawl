@@ -18,6 +18,7 @@ public enum LocationType {
 
     HOLOGRAM_STATS("HOLO_STATS"),
     HOLOGRAM_LEADERBOARDS("HOLO_LB"),
+    HOLOGRAM_LEADERBOARDS_ELO("HOLO_STATS_ELO"),
 
     UPGRADER("NPC_UPGRADER", (player, location) -> {
         NPC npc = Brawl.getInstance().getUpgradeManager().getNpc();

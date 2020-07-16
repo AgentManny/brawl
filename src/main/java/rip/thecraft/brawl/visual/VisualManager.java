@@ -17,6 +17,7 @@ import java.util.*;
 public class VisualManager implements Listener {
 
     public static final String HOLO_STATS = "HOLO_STATS";
+    public static final String HOLO_STATS_ELO = "HOLO_STATS_ELO";
     public static final String HOLO_LB = "HOLO_LB";
 
     private final Brawl plugin;
