@@ -1,12 +1,13 @@
 package rip.thecraft.brawl.duelarena;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
+import rip.thecraft.brawl.util.location.LocationType;
 import rip.thecraft.spartan.nametag.NametagHandler;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 public class DuelArena {
 
@@ -40,7 +41,7 @@ public class DuelArena {
             NametagHandler.reloadOthersFor(player);
         }
 
-        player.teleport(Brawl.getInstance().getLocationByName("DUEL_ARENA"));
+        player.teleport(LocationType.ARENA.getLocation());
     }
 
     public static void respawn(Player player, boolean teleport) {

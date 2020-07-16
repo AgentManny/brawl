@@ -34,9 +34,10 @@ public class SpectatorPlayerMenu extends Menu {
 
         int i = 0;
         for (Player online : Bukkit.getOnlinePlayers()) {
-            if (online.canSee(player) && !(online.hasMetadata("hidden") || online.hasMetadata("staffmode"))) {
+            if (online != player && online.canSee(player) && !(online.hasMetadata("hidden") || online.hasMetadata("staffmode"))) {
                 PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(online);
-                buttons.put(++i, new SpectatorPlayerButton(online, playerData.getPlayerState()));
+                PlayerState state = playerData.getPlayerState();
+                buttons.put(++i, new SpectatorPlayerButton(online, state));
             }
         }
         return buttons;
@@ -50,7 +51,7 @@ public class SpectatorPlayerMenu extends Menu {
 
         @Override
         public String getName(Player player) {
-            return target.getDisplayName();
+            return ChatColor.WHITE + target.getDisplayName();
         }
 
         @Override
@@ -82,6 +83,7 @@ public class SpectatorPlayerMenu extends Menu {
                 player.sendMessage(ChatColor.RED + "Target is no longer online.");
                 return;
             }
+
 
             spectatorMode.spectate(target);
         }

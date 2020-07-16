@@ -13,9 +13,9 @@ public enum PlayerState {
     GAME("Game", ChatColor.DARK_PURPLE),
     ARENA("Duel Arena", ChatColor.GOLD),
     MATCH("Duel Arena (Fighting)", ChatColor.RED),
-    KIT_SELECTED("Spawn (Fighting)", ChatColor.RED),
+    KIT_SELECTED("Warzone", ChatColor.RED),
     SPECTATING("Spectating", ChatColor.GRAY),
-    FIGHTING("Unknown (Fighting)", ChatColor.DARK_GRAY);
+    FIGHTING("Warzone", ChatColor.RED);
 
     private String displayName;
     private ChatColor color;

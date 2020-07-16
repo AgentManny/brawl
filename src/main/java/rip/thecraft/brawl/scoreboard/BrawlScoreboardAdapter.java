@@ -19,6 +19,7 @@ import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.cps.ClickTracker;
 import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.player.statistic.StatisticType;
+import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.brawl.util.DurationFormatter;
 import rip.thecraft.spartan.scoreboard.ScoreboardAdapter;
 import rip.thecraft.spartan.util.LinkedList;
@@ -51,6 +52,10 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
 
         lines.add(LINE_SEPARATOR);
         switch (playerData.getPlayerState()) {
+            case SPECTATING: {
+                this.getSpectatorMode(player, playerData, lines);
+                break;
+            }
             case GAME: {
                 Game game = plugin.getGameHandler().getActiveGame();
                 if (game != null) {
@@ -76,6 +81,28 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
             }
         }
         lines.add(ChatColor.WHITE + LINE_SEPARATOR);
+    }
+
+    private void getSpectatorMode(Player player, PlayerData playerData, List<String> lines) {
+        SpectatorMode spectatorMode = plugin.getSpectatorManager().getSpectator(player);
+        SpectatorMode.SpectatorType spectating = spectatorMode.getSpectating();
+
+        switch (spectating) {
+            case GAME: {
+                Game game = spectatorMode.getGame();
+                if (game != null) {
+                    lines.addAll(game.getSidebar(player));
+                }
+                break;
+            }
+            case MATCH: {
+                // todo add spectator scoreboard stuff
+                break;
+            }
+        }
+
+        lines.add(" ");
+        lines.add(ChatColor.GRAY + "Spectator Mode");
     }
 
     private List<String> getSpawn(Player player, PlayerData playerData, List<String> toReturn) {

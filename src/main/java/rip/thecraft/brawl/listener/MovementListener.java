@@ -94,10 +94,10 @@ public class MovementListener implements MovementHandler, Listener {
                 playerData.setSpawnProtection(false);
             }
 
-            if  (StaffMode.hasStaffMode(player)) return;
+            if (StaffMode.hasStaffMode(player)) return;
+            if (state == PlayerState.SPECTATING) return;
 
             if (playerData.isSpawnProtection()) {
-
                 if (RegionType.SAFEZONE.appliesTo(from) && !RegionType.SAFEZONE.appliesTo(to)) {
                     playerData.setSpawnProtection(false);
                     if (playerData.getSelectedKit() == null) {

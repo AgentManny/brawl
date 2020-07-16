@@ -1,14 +1,18 @@
 package rip.thecraft.brawl.spectator;
 
+import com.mongodb.lang.Nullable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.duelarena.DuelArena;
+import rip.thecraft.brawl.duelarena.loadout.MatchLoadout;
 import rip.thecraft.brawl.duelarena.match.Match;
+import rip.thecraft.brawl.duelarena.match.queue.QueueType;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.lobby.GameLobby;
 import rip.thecraft.brawl.item.type.InventoryType;
@@ -47,14 +51,25 @@ public class SpectatorMode {
         return init(spectator, spectator, null);
     }
 
-    public static SpectatorMode init(Player spectator, Player spectating, Location location) {
+    public static SpectatorMode init(Player spectator, @Nullable Player spectating, Location location) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(spectator);
+
         SpectatorMode mode = new SpectatorMode(spectator.getUniqueId(), playerData.getPlayerState());
         if (location != null) {
             mode.setTeleportTo(location);
         }
+
+        playerData.setSpawnProtection(false);
+        playerData.setDuelArena(false);
+        if (playerData.getSelectedKit() != null) {
+            playerData.setPreviousKit(playerData.getSelectedKit());
+            playerData.setSelectedKit(null);
+        }
+
         mode.spectate(spectating);
         Brawl.getInstance().getItemHandler().apply(spectator, InventoryType.SPECTATOR);
+        spectator.setAllowFlight(true);
+        spectator.setFlying(true);
         return mode;
     }
 
@@ -66,11 +81,17 @@ public class SpectatorMode {
             return;
         }
 
+        if (spectator == spectating) {
+            spectator.sendMessage(ChatColor.RED + "You can't spectate yourself!");
+            return;
+        }
+
         cleanup();
 
         List<UUID> hiddenPlayers = new ArrayList<>();
         SpectatorType type = SpectatorType.NONE;
         Location location = Brawl.getInstance().getLocationByName("SPAWN");
+        String message = null;
 
         if (spectating != null) {
             Match match = Brawl.getInstance().getMatchHandler().containsPlayer(spectating, true);
@@ -83,21 +104,44 @@ public class SpectatorMode {
                 this.match = match;
                 match.getMatchData().getSpectators().add(this.spectator);
 
+                Player[] players = match.getPlayers();
+
+                Player playerOne = players[0];
+                PlayerData playerOneData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(playerOne);
+
+                Player playerTwo = players[1];
+                PlayerData playerTwoData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(playerTwo);
+
+                QueueType queue = match.getQueueType();
+                MatchLoadout loadout = match.getLoadout();
+
+                message =
+                        playerOne.getName() + (queue == QueueType.RANKED ? " (" + playerOneData.getStatistic().get(loadout) + ")" : "") +
+                        " vs. " +
+                        playerTwo.getName() + (queue == QueueType.RANKED ? " (" + playerTwoData.getStatistic().getArenaStatistics().get(loadout) + ")" : "");
+
                 type = SpectatorType.MATCH;
             } else if (lobby != null) {
                 type = SpectatorType.GAME_LOBBY;
                 location = Brawl.getInstance().getLocationByName("GAME_LOBBY");
+                message = "Game Lobby (" + lobby.getGameType().getShortName() + ")";
 
                 this.lobby = lobby;
             } else if (game != null) {
                 type = SpectatorType.GAME;
                 location = game.getDefaultLocation();
+                message = game.getType().getName();
                 this.game = game;
 
             } else {
                 type = SpectatorType.PLAYER;
-                location = spectator.getLocation();
+                location = spectating.getLocation();
+                message = spectating.getName();
             }
+        }
+
+        if (message != null) {
+            spectator.sendMessage(ChatColor.GREEN + "You are now spectating: " + ChatColor.WHITE + message);
         }
 
         spectator.teleport(teleportTo == null ? location : teleportTo);
@@ -116,7 +160,10 @@ public class SpectatorMode {
         SpectatorManager specManager = Brawl.getInstance().getSpectatorManager();
         Player player = getPlayer();
         if (player != null) { // make sure they didn't disconnect
+            player.setAllowFlight(false);
+            player.setFlying(false);
             PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+            playerData.setSpawnProtection(true);
 
             if (lastState == PlayerState.ARENA) {
                 DuelArena.join(player);
