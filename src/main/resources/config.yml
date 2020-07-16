@@ -85,7 +85,7 @@ LANGUAGE:
         NAME: '&7» &e&lSpawn &7«'
         META: SPECTATE_SPAWN
       '5':
-        TYPE: ENDER_EYE
+        TYPE: EYE_OF_ENDER
         NAME: '&7» &6&l1v1 &7«'
         META: SPECTATE_ARENA
       '8':

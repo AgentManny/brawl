@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class KitRandomButton extends Button {
 
-    private final Brawl plugin;
     private final Kit kit;
 
     @Override
@@ -46,8 +45,8 @@ public class KitRandomButton extends Button {
 
     @Override
     public void clicked(Player player, int slot, ClickType clickType) {
-        PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
-        List<Kit> kits = plugin.getKitHandler().getKits().stream().filter(playerData::hasKit).collect(Collectors.toList());
+        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+        List<Kit> kits = Brawl.getInstance().getKitHandler().getKits().stream().filter(playerData::hasKit).collect(Collectors.toList());
         Kit kit = kits.get(Brawl.RANDOM.nextInt(kits.size()));
         kit.apply(player, true, true);
     }

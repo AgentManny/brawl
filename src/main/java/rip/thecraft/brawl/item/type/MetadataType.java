@@ -1,46 +1,112 @@
 package rip.thecraft.brawl.item.type;
 
 import lombok.Getter;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.duelarena.DuelArena;
+import rip.thecraft.brawl.duelarena.match.queue.QueueType;
+import rip.thecraft.brawl.duelarena.menu.LoadoutMenu;
+import rip.thecraft.brawl.game.lobby.GameLobby;
+import rip.thecraft.brawl.game.menu.GameSelectorMenu;
+import rip.thecraft.brawl.kit.Kit;
+import rip.thecraft.brawl.kit.menu.KitSelectorMenu;
+import rip.thecraft.brawl.leaderboard.menu.LeaderboardEloMenu;
+import rip.thecraft.brawl.leaderboard.menu.LeaderboardMenu;
+import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.spectator.menu.SpectatorPlayerMenu;
+
+import java.util.function.BiConsumer;
 
 public enum MetadataType {
 
-    KIT_SELECTOR,
-    PREVIOUS_KIT,
-    EVENT_SELECTOR,
-    EVENT_LEAVE,
+    KIT_SELECTOR((player, data) -> {
+        new KitSelectorMenu().openMenu(player);
+    }),
+    PREVIOUS_KIT((player, playerData) -> {
+        Kit kit = playerData.getPreviousKit() == null ? Brawl.getInstance().getKitHandler().getDefaultKit() : playerData.getPreviousKit();
+        kit.apply(player, true, true);
+    }),
+
+    EVENT_SELECTOR((player, playerData) -> {
+        new GameSelectorMenu().openMenu(player);
+    }),
+    EVENT_LEAVE((player, playerData) -> {
+        GameLobby lobby = Brawl.getInstance().getGameHandler().getLobby();
+        if (lobby != null && lobby.getPlayers().contains(player.getUniqueId())) {
+            lobby.leave(player.getUniqueId());
+        }
+    }),
+
     EVENT_VOTE,
-    EVENT_VOTE_SELECTED,
-    SHOP,
+    EVENT_VOTE_SELECTED((player, playerData) -> {
+        player.sendMessage(ChatColor.RED + "You've already voted for this map.");
+        player.updateInventory();
+    }),
 
-    DUEL_ARENA,
-    DUEL_ARENA_LEAVE,
-    DUEL_ARENA_RANKED,
-    DUEL_ARENA_UNRANKED,
-    DUEL_ARENA_QUICK_QUEUE,
+    SHOP((player, playerData) -> {
+        player.sendMessage(ChatColor.RED + "Our shop system is still undergoing work. Please try again later");
+    }),
 
-    QUEUE_LEAVE,
+    DUEL_ARENA((player, playerData) -> {
+        DuelArena.join(player);
+    }),
+    DUEL_ARENA_LEAVE((player, playerData) -> {
+        DuelArena.leave(player);
+    }),
+    DUEL_ARENA_RANKED((player, playerData) -> {
+        new LoadoutMenu(QueueType.RANKED).openMenu(player);
+    }),
+    DUEL_ARENA_UNRANKED((player, playerData) -> {
+        new LoadoutMenu(QueueType.UNRANKED).openMenu(player);
+    }),
+    DUEL_ARENA_QUICK_QUEUE((player, playerData) -> {
+        Brawl.getInstance().getMatchHandler().joinQuickQueue(player);
+    }),
+
+    QUEUE_LEAVE((player, playerData) -> {
+        Brawl.getInstance().getMatchHandler().leaveQueue(player);
+    }),
 
     SPECTATE_GAME,
     SPECTATE_ARENA,
     SPECTATE_SPAWN,
 
-    SPECTATOR_PLAYER_MENU,
-    SPECTATOR_LEAVE,
+    SPECTATOR_PLAYER_MENU((player, playerData) -> {
+        new SpectatorPlayerMenu().openMenu(player);
+    }),
+    SPECTATOR_LEAVE((player, playerData) -> {
+        Brawl.getInstance().getSpectatorManager().removeSpectator(player);
+    }),
 
 
-    LEADERBOARDS,
-    LEADERBOARDS_ELO,
+    LEADERBOARDS((player, playerData) -> {
+        new LeaderboardMenu().openMenu(player);
+    }),
+    LEADERBOARDS_ELO((player, playerData) -> {
+        new LeaderboardEloMenu().openMenu(player);
+    }),
 
     DISABLED;
 
     @Getter
     private boolean cancellable;
 
+    @Getter
+    private BiConsumer<Player, PlayerData> activate;
+
     MetadataType() {
+        this.activate = null;
         this.cancellable = true;
     }
 
-    MetadataType(boolean cancellable) {
+    MetadataType(BiConsumer<Player, PlayerData> activate) {
+        this.activate = activate;
+        this.cancellable = true;
+    }
+
+    MetadataType(BiConsumer<Player, PlayerData> activate, boolean cancellable) {
+        this.activate = activate;
         this.cancellable = cancellable;
     }
 

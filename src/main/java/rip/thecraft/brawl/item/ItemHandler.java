@@ -23,7 +23,6 @@ import rip.thecraft.brawl.game.menu.GameSelectorMenu;
 import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.item.type.MetadataType;
 import rip.thecraft.brawl.kit.Kit;
-import rip.thecraft.brawl.kit.menu.KitSelectorMenu;
 import rip.thecraft.brawl.leaderboard.menu.LeaderboardEloMenu;
 import rip.thecraft.brawl.leaderboard.menu.LeaderboardMenu;
 import rip.thecraft.brawl.player.PlayerData;
@@ -65,7 +64,6 @@ public class ItemHandler implements Listener {
                 if(configurationSection.get(key + ".DATA") != null) {
                     data = configurationSection.getInt(key + ".DATA", 0);
                 }
-
 
                 ItemBuilder itemBuilder = new ItemBuilder(material)
                         .data(data)
@@ -160,37 +158,13 @@ public class ItemHandler implements Listener {
                         event.setUseInteractedBlock(Event.Result.DENY);
                         event.setUseItemInHand(Event.Result.DENY);
                     }
+
+                    if (metadataType.getActivate() != null) {
+                        metadataType.getActivate().accept(player, playerData);
+                        return;
+                    }
+
                     switch (metadataType) {
-                        case KIT_SELECTOR: {
-                            new KitSelectorMenu(plugin).openMenu(player);
-                            break;
-                        }
-                        case EVENT_SELECTOR: {
-                            new GameSelectorMenu().openMenu(player);
-                            break;
-                        }
-                        case EVENT_VOTE_SELECTED: {
-                            player.sendMessage(ChatColor.RED + "You've already voted for this map.");
-                            player.updateInventory();
-                            break;
-                        }
-                        case PREVIOUS_KIT: {
-                            Kit kit = playerData.getPreviousKit() == null ? plugin.getKitHandler().getDefaultKit() : playerData.getPreviousKit();
-                            kit.apply(player, true, true);
-                            break;
-                        }
-                        case EVENT_LEAVE: {
-                            GameLobby lobby = plugin.getGameHandler().getLobby();
-                            if (lobby != null && lobby.getPlayers().contains(player.getUniqueId())) {
-                                lobby.leave(player.getUniqueId());
-                            }
-                            break;
-                        }
-                        case SPECTATOR_LEAVE: {
-                            //todo improve spec
-                            Brawl.getInstance().getSpectatorManager().removeSpectator(player);
-                            break;
-                        }
                         case EVENT_VOTE: {
                             if (playerData.getLastAction() > System.currentTimeMillis()) {
                                 player.sendMessage(ChatColor.RED + "Please wait before doing this again.");
@@ -212,43 +186,7 @@ public class ItemHandler implements Listener {
                             }
                             break;
                         }
-                        case DUEL_ARENA: {
-                            DuelArena.join(player);
-                            break;
-                        }
-                        case DUEL_ARENA_LEAVE: {
-                            DuelArena.leave(player);
-                            break;
-                        }
-                        case LEADERBOARDS: {
-                            new LeaderboardMenu().openMenu(player);
-                            break;
-                        }
-                        case LEADERBOARDS_ELO: {
-                            new LeaderboardEloMenu().openMenu(player);
-                            break;
-                        }
-                        case SHOP: {
-                            player.sendMessage(ChatColor.RED + "Our shop system is still undergoing work. Please try again later");
-                            // new MarketMenu().openMenu(player);
-                            break;
-                        }
-                        case DUEL_ARENA_RANKED: {
-                            new LoadoutMenu(plugin, QueueType.RANKED).openMenu(player);
-                            break;
-                        }
-                        case DUEL_ARENA_UNRANKED: {
-                            new LoadoutMenu(plugin, QueueType.UNRANKED).openMenu(player);
-                            break;
-                        }
-                        case DUEL_ARENA_QUICK_QUEUE: {
-                            plugin.getMatchHandler().joinQuickQueue(player);
-                            break;
-                        }
-                        case QUEUE_LEAVE: {
-                            plugin.getMatchHandler().leaveQueue(player);
-                            break;
-                        }
+
                         default: {
                             player.sendMessage(ChatColor.RED + "This feature has been temporarily disabled. Please try again later.");
                         }

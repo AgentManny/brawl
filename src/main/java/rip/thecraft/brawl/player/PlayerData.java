@@ -198,7 +198,9 @@ public class PlayerData {
     }
 
     public PlayerState getPlayerState() {
-        if (Brawl.getInstance().getGameHandler().getLobby() != null && Brawl.getInstance().getGameHandler().getLobby().getPlayers().contains(this.uuid)) {
+        if (Brawl.getInstance().getSpectatorManager().isSpectating(getPlayer())) {
+            return PlayerState.SPECTATING;
+        } else if (Brawl.getInstance().getGameHandler().getLobby() != null && Brawl.getInstance().getGameHandler().getLobby().getPlayers().contains(this.uuid)) {
             return PlayerState.GAME_LOBBY;
         } else if (Brawl.getInstance().getGameHandler().getActiveGame() != null && Brawl.getInstance().getGameHandler().getActiveGame().containsPlayer(this.getPlayer()) && Brawl.getInstance().getGameHandler().getActiveGame().getGamePlayer(this.getPlayer()).isAlive()) {
             return PlayerState.GAME;

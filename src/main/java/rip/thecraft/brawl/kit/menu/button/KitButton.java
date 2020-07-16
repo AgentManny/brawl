@@ -22,7 +22,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class KitButton extends Button {
 
-    private final Brawl plugin;
     private final Kit kit;
 
     @Override
@@ -37,7 +36,7 @@ public class KitButton extends Button {
 
     @Override
     public ItemStack getButtonItem(Player player) {
-        PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
+        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
         List<String> lore = ItemBuilder.wrap(kit.getDescription(), CC.GRAY, 30);
         lore.add(0, CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 31));
 //            lore.add(playerData.hasKit(kit) ? CC.GREEN + CC.BOLD + "UNLOCKED" : (kit.getRankType() != RankType.NONE ? CC.GRAY + "Exclusive to " + CC.WHITE + kit.getRankType().getDisplayName() : CC.GRAY + "Price: " + CC.WHITE + kit.getPrice() + " coins"));
@@ -68,7 +67,7 @@ public class KitButton extends Button {
 
     @Override
     public void clicked(Player player, int slot, ClickType clickType) {
-        PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
+        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
         if (playerData.hasKit(kit)) {
             kit.apply(player, true, true);
         } else {

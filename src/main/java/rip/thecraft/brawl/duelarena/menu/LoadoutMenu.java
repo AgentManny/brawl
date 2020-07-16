@@ -26,8 +26,7 @@ public class LoadoutMenu extends Menu {
     {
         setAutoUpdate(true);
     }
-
-    private final Brawl plugin;
+    
     private final QueueType queueType;
 
     @Override
@@ -40,7 +39,7 @@ public class LoadoutMenu extends Menu {
         Map<Integer, Button> buttonMap = new HashMap<>();
 
         int i = 0;
-        for (MatchLoadout loadout : plugin.getMatchHandler().getLoadouts()) {
+        for (MatchLoadout loadout : Brawl.getInstance().getMatchHandler().getLoadouts()) {
             buttonMap.put(i++, new LoadoutButton(loadout, queueType));
         }
 
@@ -65,11 +64,11 @@ public class LoadoutMenu extends Menu {
 
         @Override
         public ItemStack getButtonItem(Player player) {
-            PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
+            PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
             List<String> lore = new ArrayList<>();
             lore.add(CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 25));
-            lore.add(CC.DARK_PURPLE + "Queued: " + CC.LIGHT_PURPLE + plugin.getMatchHandler().getQueued(loadout, queueType));
-            lore.add(CC.DARK_PURPLE + "Playing: " + CC.LIGHT_PURPLE + plugin.getMatchHandler().getPlaying(loadout));
+            lore.add(CC.DARK_PURPLE + "Queued: " + CC.LIGHT_PURPLE + Brawl.getInstance().getMatchHandler().getQueued(loadout, queueType));
+            lore.add(CC.DARK_PURPLE + "Playing: " + CC.LIGHT_PURPLE + Brawl.getInstance().getMatchHandler().getPlaying(loadout));
             if (queueType == QueueType.RANKED) {
                 lore.add(" ");
                 lore.add(CC.DARK_PURPLE + "Your Elo: " + CC.LIGHT_PURPLE + playerData.getStatistic().get(loadout));
@@ -86,9 +85,9 @@ public class LoadoutMenu extends Menu {
         @Override
         public void clicked(Player player, int slot, ClickType clickType) {
             if (queueType == QueueType.UNRANKED) {
-                plugin.getMatchHandler().joinUnrankedQueue(player, loadout);
+                Brawl.getInstance().getMatchHandler().joinUnrankedQueue(player, loadout);
             } else if (queueType == QueueType.RANKED) {
-                plugin.getMatchHandler().joinRankedQueue(player, loadout);
+                Brawl.getInstance().getMatchHandler().joinRankedQueue(player, loadout);
             } else {
                 player.sendMessage(ChatColor.RED + "This queue isn't supported.");
             }
