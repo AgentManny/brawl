@@ -2,4 +2,4 @@ name: KitPvP
 main: rip.thecraft.brawl.Brawl
 version: ${brawl.desc}
 depend: [Spartan, Falcon, ProtocolLib]
-authors: [Manny]
+authors: [Manny, drawlin]

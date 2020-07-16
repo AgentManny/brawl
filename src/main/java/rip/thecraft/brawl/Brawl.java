@@ -19,6 +19,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.AbilityHandler;
+import rip.thecraft.brawl.challenges.Challenge;
+import rip.thecraft.brawl.challenges.ChallengeHandler;
+import rip.thecraft.brawl.challenges.command.adapter.ChallengeCommandAdapter;
 import rip.thecraft.brawl.command.adapters.AbilityCommandAdapter;
 import rip.thecraft.brawl.command.adapters.ArenaCommandAdapter;
 import rip.thecraft.brawl.duelarena.DuelArenaHandler;
@@ -105,6 +108,8 @@ public class Brawl extends JavaPlugin {
 
     private ItemHandler itemHandler;
 
+    private ChallengeHandler challengeHandler;
+
     private EntityHider entityHider;
 
     private Map<String, Location> locationMap = new HashMap<>();
@@ -176,6 +181,7 @@ public class Brawl extends JavaPlugin {
         MCommandHandler.registerParameterType(GameType.class, new GameCommandAdapter());
         MCommandHandler.registerParameterType(Team.class, new TeamTypeAdapter());
         MCommandHandler.registerParameterType(Warp.class, new WarpTypeAdapter());
+        MCommandHandler.registerParameterType(Challenge.class, new ChallengeCommandAdapter());
 
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.command");
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.command.manage");
@@ -184,6 +190,8 @@ public class Brawl extends JavaPlugin {
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.game.command");
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.kit.command");
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.warp.command");
+
+        MCommandHandler.registerPackage(this, "rip.thecraft.brawl.challenges.command");
 
         // Team commands
         MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command.general");
@@ -198,6 +206,7 @@ public class Brawl extends JavaPlugin {
         abilityHandler = new AbilityHandler(this);
         kitHandler = new KitHandler(this);
 
+        this.challengeHandler = new ChallengeHandler();
         playerDataHandler = new PlayerDataHandler(this);
 
         regionHandler = new RegionHandler();
