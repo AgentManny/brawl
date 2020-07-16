@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.challenges.Challenge;
+import rip.thecraft.brawl.challenges.ChallengeType;
+import rip.thecraft.brawl.challenges.PlayerChallenge;
 import rip.thecraft.brawl.killstreak.Killstreak;
 import rip.thecraft.brawl.killstreak.KillstreakHandler;
 import rip.thecraft.brawl.kit.Kit;
@@ -127,12 +130,12 @@ public class SpawnData {
 
         }
 
-        if (playerData.hasActiveDailyChallenge() && playerData.getDailyChallenge().getName().contains("Kill")) {
-            playerData.getDailyChallenge().increment(player);
-        }
 
-        if (playerData.hasActiveWeeklyChallenge() && playerData.getDailyChallenge().getName().contains("Kill")) {
-            playerData.getWeeklyChallenge().increment(player);
+        for (PlayerChallenge playerChallenge : playerData.getActiveChallenges()) {
+            Challenge challenge = playerChallenge.getChallenge();
+            if (challenge.getType() == ChallengeType.KILLS) {
+                playerChallenge.increment(player, 1);
+            }
         }
 
 //        if ((stats.get(StatisticType.KILLSTREAK) > 15 && stats.get(StatisticType.KILLSTREAK) % 10 == 0) || (stats.get(StatisticType.KILLSTREAK) == 5 && stats.get(StatisticType.KILLSTREAK) <= 15)) {

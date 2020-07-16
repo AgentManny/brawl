@@ -7,6 +7,9 @@ import org.bson.Document;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.challenges.Challenge;
+import rip.thecraft.brawl.challenges.ChallengeType;
+import rip.thecraft.brawl.challenges.PlayerChallenge;
 import rip.thecraft.brawl.levels.task.LevelFlashTask;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.StatisticType;
@@ -34,10 +37,20 @@ public class Level {
     public void addExp(Player player, int exp, String action) {
         if (player != null) {
             player.setExp((float) (getPercentageExp() * 0.01F));
-            player.sendMessage(ChatColor.GREEN + "+" + exp + " exp" + ChatColor.GRAY + " (" + action + ChatColor.GRAY + ")");
+            String message = ChatColor.GREEN + "+" + exp + " exp";
+            if (action != null) {
+                message += ChatColor.GRAY + " (" + action + ChatColor.GRAY + ")";
+            }
+            player.sendMessage(message);
         }
         playerData.getStatistic().add(StatisticType.TOTAL_EXPERIENCE, exp);
         currentExp += exp;
+        for (PlayerChallenge playerChallenge : playerData.getActiveChallenges()) {
+            Challenge challenge = playerChallenge.getChallenge();
+            if (challenge.getType() == ChallengeType.EXPERIENCE) {
+                playerChallenge.increment(player, exp);
+            }
+        }
         while (currentExp >= getMaxExperience()) {
             addLevel(player);
         }

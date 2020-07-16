@@ -14,8 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.challenges.Challenge;
-import rip.thecraft.brawl.challenges.ChallengeType;
+import rip.thecraft.brawl.challenges.PlayerChallenge;
 import rip.thecraft.brawl.duelarena.queue.QueueData;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.item.type.InventoryType;
@@ -29,7 +28,6 @@ import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.team.Team;
 import rip.thecraft.brawl.upgrade.perk.Perk;
 import rip.thecraft.brawl.util.BrawlUtil;
-import rip.thecraft.brawl.util.MathUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.nametag.NametagHandler;
 import rip.thecraft.spartan.util.Cooldown;
@@ -95,8 +93,7 @@ public class PlayerData {
     private boolean duelsEnabled = true;
 
     // Challenges
-    private Challenge dailyChallenge;
-    private Challenge weeklyChallenge;
+    private List<PlayerChallenge> challenges = new ArrayList<>();
 
     private boolean needsSaving;
     private boolean loaded;
@@ -363,6 +360,11 @@ public class PlayerData {
         return this.getPlayer().isOp() ||this.getPlayer().hasPermission("rank." + gameType.getRankType().getName().toLowerCase()) || this.getPlayer().hasPermission("game." + gameType.getName().toLowerCase()) ||  (gameRentals.containsKey(gameType.getName()) && gameRentals.get(gameType.getName()) > System.currentTimeMillis());
     }
 
+    public List<PlayerChallenge> getActiveChallenges() {
+        this.challenges.removeIf(challenge -> System.currentTimeMillis() > challenge.getTimestamp() + challenge.getChallenge().getDuration().getMillis());
+        return challenges;
+    }
+
     public void setSelectedKit(Kit selectedKit) {
         if (this.selectedKit != null) {
             this.selectedKit.getAbilities().forEach(ability -> {
@@ -442,39 +444,7 @@ public class PlayerData {
     public Player getPlayer() {
         return Bukkit.getPlayer(this.uuid);
     }
-
-    public boolean hasActiveDailyChallenge() {
-        return (dailyChallenge != null && (dailyChallenge.getChallengeType().getMillis() + dailyChallenge.getTimestamp()) > System.currentTimeMillis());
-    }
-
-    public boolean hasActiveWeeklyChallenge() {
-        return (weeklyChallenge != null && (weeklyChallenge.getChallengeType().getMillis() + weeklyChallenge.getTimestamp()) > System.currentTimeMillis());
-    }
-
-    public long getChallengeTimeRemaining(ChallengeType challengeType) {
-        switch (challengeType) {
-            case DAILY:
-                if (this.dailyChallenge == null) return -1L;
-                return (this.dailyChallenge.getTimestamp() + challengeType.getMillis()) - System.currentTimeMillis();
-            case WEEKLY:
-                if (this.weeklyChallenge == null) return -1L;
-                return (this.weeklyChallenge.getTimestamp() + challengeType.getMillis()) - System.currentTimeMillis();
-        }
-        return -1L;
-    }
-
-    public double getChallengeProgress(ChallengeType challengeType) {
-        switch (challengeType) {
-            case DAILY:
-                if (this.dailyChallenge == null) return 0;
-                return MathUtil.getPercent(dailyChallenge.getCurrentProgress(), dailyChallenge.getMaxProgress());
-            case WEEKLY:
-                if (this.weeklyChallenge == null) return 0;
-                return MathUtil.getPercent(weeklyChallenge.getCurrentProgress(), weeklyChallenge.getMaxProgress());
-        }
-        return 0;
-    }
-
+    
     @Override
     public String toString() {
         return "uuid=" + uuid.toString() + ";name=" + name;

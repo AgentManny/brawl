@@ -1,15 +1,23 @@
 package rip.thecraft.brawl.challenges;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+public enum ChallengeType {
 
-@AllArgsConstructor
-@Getter
-public enum  ChallengeType {
+    /** Challenge increments by credits earned */
+    CREDITS,
 
-    DAILY(86400000),
-    WEEKLY(604800000);
+    /** Challenge increments by experience earned */
+    EXPERIENCE,
 
-    private final long millis;
+    /** Challenge increments by contracts completed */
+    CONTRACT,
+
+    /** Challenge increments by player kills */
+    KILLS,
+
+    /** Challenge increments by playing games  */
+    GAMES,
+
+    /** Challenge increments by winning a game */
+    GAME_WINS,
 
 }

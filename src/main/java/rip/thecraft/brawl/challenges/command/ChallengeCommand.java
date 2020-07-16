@@ -11,13 +11,13 @@ import rip.thecraft.spartan.command.Command;
 
 public class ChallengeCommand {
 
-    @Command(names = {"challenge info"})
+    @Command(names = {"challenge info"}, permission = "op")
     public static void info(CommandSender sender, Challenge challenge) {
         sender.sendMessage(challenge.getName() + " information");
         sender.sendMessage(challenge.getDescription());
     }
 
-    @Command(names = {"challenge list"})
+    @Command(names = {"challenge list"}, permission = "op")
     public static void list(CommandSender sender) {
         sender.sendMessage(CC.GOLD + "Weekly challenges");
         Brawl.getInstance().getChallengeHandler().getWeeklyChallenges().forEach(challenge -> sender.sendMessage(CC.YELLOW + challenge.getName()));
@@ -25,12 +25,12 @@ public class ChallengeCommand {
         Brawl.getInstance().getChallengeHandler().getDailyChallenges().forEach(challenge -> sender.sendMessage(CC.YELLOW + challenge.getName()));
     }
 
-    @Command(names = {"challenge"})
+    @Command(names = {"challenge"}, permission = "op")
     public static void execute(Player player) {
         new ChallengeMenu().openMenu(player);
     }
 
-    @Command(names = {"challenge debug"})
+    @Command(names = {"challenge debug"}, permission = "op")
     public static void debug(Player player, PlayerData playerData) {
         player.sendMessage("weekly");
         if (playerData.hasActiveWeeklyChallenge() || playerData.getWeeklyChallenge() != null) {

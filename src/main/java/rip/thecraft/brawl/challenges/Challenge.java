@@ -1,27 +1,46 @@
 package rip.thecraft.brawl.challenges;
 
+import com.google.common.collect.ImmutableMap;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.bukkit.entity.Player;
+import rip.thecraft.brawl.challenges.rewards.RewardType;
 
-@RequiredArgsConstructor
+import java.util.Map;
+
 @Getter
-public abstract class Challenge {
+@AllArgsConstructor
+public enum Challenge {
 
-    protected final String name, description;
-    protected final ChallengeType challengeType; // to help track timing and keep things organized
-    protected final int maxProgress; // max progress is what is required to achieve reward
-    @Setter protected int currentProgress; // data tracker for player
-    @Setter protected long timestamp; // time when activated
+    HUNTER(
+            ChallengeType.KILLS,
+            ChallengeDuration.DAILY,
+            "Hunter",
+            "Kill 25 Players",
+            25,
+            ImmutableMap.of(RewardType.CREDITS, 500, RewardType.EXPERIENCE, 500)
+    ),
 
-    public abstract void increment(Player player);
+    ENTREPRENEUR(
+            ChallengeType.CREDITS,
+            ChallengeDuration.WEEKLY,
+            "Entrepreneur",
+            "Earn 5000 credits",
+            5000,
+            ImmutableMap.of(RewardType.CREDITS, 5000, RewardType.EXPERIENCE, 1000)
+    );
 
-    public abstract void complete(Player player);
+    private ChallengeType type;
+    private ChallengeDuration duration;
 
-    public String getDisplayName() {
-        return this.name.replace("_", " ");
+    private String name;
+    private String description;
+
+    private int maxValue;
+
+    private Map<RewardType, Integer> rewards;
+
+    public boolean isComplete(int value) {
+        return value >= maxValue;
     }
-
 
 }
