@@ -14,6 +14,9 @@ public enum ChallengeType {
     /** Challenge increments by player kills */
     KILLS,
 
+    /** Challenge increments when an ability is used */
+    ABILITY,
+
     /** Challenge increments by playing games  */
     GAMES,
 

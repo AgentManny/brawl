@@ -63,8 +63,8 @@ public class ChallengeMenu extends Menu {
         public List<String> getDescription(Player player) {
             List<String> lore = ItemBuilder.wrap(challenge.getDescription(), CC.GRAY, 30);
 
-            int progressPercent = Math.round((playerChallenge.getProgress() / challenge.getMaxValue()) * 100);
-            String timeLeft = TimeUtils.formatLongIntoDetailedString((playerChallenge.getTimestamp() + challenge.getDuration().getMillis()) - System.currentTimeMillis());
+            int progressPercent = Math.round((playerChallenge.getValue() / challenge.getMaxValue()) * 100);
+            String timeLeft = TimeUtils.formatLongIntoDetailedString((playerChallenge.getExpiresAt() + challenge.getDuration().getMillis()) - System.currentTimeMillis());
             lore.add(" ");
             lore.add(ChatColor.GRAY + "Progress: " + ChatColor.WHITE + progressPercent + ChatColor.GRAY + " (" + ChatColor.WHITE + playerChallenge.getProgress() + "/" + challenge.getMaxValue() + ChatColor.GRAY + ")");
             lore.add(" ");

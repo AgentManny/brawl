@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.challenges.Challenge;
 import rip.thecraft.spartan.command.ParameterType;
 
@@ -15,8 +14,10 @@ public class ChallengeCommandAdapter implements ParameterType<Challenge> {
 
     @Override
     public Challenge transform(CommandSender sender, String source) {
-        Challenge challenge = Brawl.getInstance().getChallengeHandler().getByName(source);
-        if (challenge == null) {
+        Challenge challenge = null;
+        try {
+            challenge = Challenge.valueOf(source.replace(" ", "_").toUpperCase());
+        } catch (EnumConstantNotPresentException e) {
             sender.sendMessage(ChatColor.RED + "Challenge " + source + " not found.");
         }
         return challenge;
@@ -25,8 +26,9 @@ public class ChallengeCommandAdapter implements ParameterType<Challenge> {
     @Override
     public List<String> tabComplete(Player sender, Set<String> flags, String source) {
         List<String> completions = Lists.newArrayList();
-        Brawl.getInstance().getChallengeHandler().getDailyChallenges().forEach(challenge -> completions.add(challenge.getName()));
-        Brawl.getInstance().getChallengeHandler().getWeeklyChallenges().forEach(challenge -> completions.add(challenge.getName()));
+        for (Challenge value : Challenge.values()) {
+            completions.add(value.getName());
+        }
         return completions;
     }
 }

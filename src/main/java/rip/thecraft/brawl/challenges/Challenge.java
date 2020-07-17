@@ -3,17 +3,30 @@ package rip.thecraft.brawl.challenges;
 import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.apache.commons.lang.WordUtils;
+import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.challenges.rewards.RewardType;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+// Todo make challenges configurable as the system we have right now allows that
 @Getter
 @AllArgsConstructor
 public enum Challenge {
 
+    POGGERS(
+            ChallengeType.ABILITY,
+            Duration.TEST,
+            "Poggers",
+            "Poggers",
+            1,
+            ImmutableMap.of(RewardType.CREDITS, 69, RewardType.EXPERIENCE, 69)
+    ),
+
     HUNTER(
             ChallengeType.KILLS,
-            ChallengeDuration.DAILY,
+            Duration.DAILY,
             "Hunter",
             "Kill 25 Players",
             25,
@@ -22,15 +35,18 @@ public enum Challenge {
 
     ENTREPRENEUR(
             ChallengeType.CREDITS,
-            ChallengeDuration.WEEKLY,
+            Duration.WEEKLY,
             "Entrepreneur",
             "Earn 5000 credits",
             5000,
             ImmutableMap.of(RewardType.CREDITS, 5000, RewardType.EXPERIENCE, 1000)
     );
 
+    public static final int MAX_DAILY_CHALLENGES = 3;
+    public static final int MAX_WEEKLY_CHALLENGES = 2;
+
     private ChallengeType type;
-    private ChallengeDuration duration;
+    private Duration duration;
 
     private String name;
     private String description;
@@ -43,4 +59,23 @@ public enum Challenge {
         return value >= maxValue;
     }
 
+    @AllArgsConstructor
+    public enum Duration {
+
+        TEST(TimeUnit.SECONDS.toMillis(15)),
+        DAILY(TimeUnit.HOURS.toMillis(12)),
+        WEEKLY(TimeUnit.DAYS.toMillis(7));
+
+        public final long millis;
+
+        public String getDisplayName() {
+            return WordUtils.capitalize(name().toLowerCase());
+        }
+
+    }
+
+    public static Challenge getRandomChallenge() {
+        Challenge[] values = values();
+        return values[Brawl.RANDOM.nextInt(values.length)];
+    }
 }
