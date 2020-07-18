@@ -7,6 +7,8 @@ import org.apache.commons.lang.WordUtils;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.challenges.rewards.RewardType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -42,8 +44,8 @@ public enum Challenge {
             ImmutableMap.of(RewardType.CREDITS, 5000, RewardType.EXPERIENCE, 1000)
     );
 
-    public static final int MAX_DAILY_CHALLENGES = 3;
-    public static final int MAX_WEEKLY_CHALLENGES = 2;
+    public static final int MAX_DAILY_CHALLENGES = 2;
+    public static final int MAX_WEEKLY_CHALLENGES = 1;
 
     private ChallengeType type;
     private Duration duration;
@@ -72,6 +74,16 @@ public enum Challenge {
             return WordUtils.capitalize(name().toLowerCase());
         }
 
+    }
+
+    public static List<Challenge> getByDuration(Duration duration) {
+        List<Challenge> challenges = new ArrayList<>();
+        for (Challenge value : values()) {
+            if (value.getDuration() == duration) {
+                challenges.add(value);
+            }
+        }
+        return challenges;
     }
 
     public static Challenge getRandomChallenge() {

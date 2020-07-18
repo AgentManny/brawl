@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.challenges.Challenge;
 import rip.thecraft.brawl.challenges.ChallengeType;
-import rip.thecraft.brawl.challenges.PlayerChallenge;
+import rip.thecraft.brawl.challenges.player.PlayerChallenge;
 import rip.thecraft.brawl.levels.task.LevelFlashTask;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.StatisticType;

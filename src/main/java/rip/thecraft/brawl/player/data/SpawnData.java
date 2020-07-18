@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.challenges.Challenge;
 import rip.thecraft.brawl.challenges.ChallengeType;
-import rip.thecraft.brawl.challenges.PlayerChallenge;
+import rip.thecraft.brawl.challenges.player.PlayerChallenge;
 import rip.thecraft.brawl.killstreak.Killstreak;
 import rip.thecraft.brawl.killstreak.KillstreakHandler;
 import rip.thecraft.brawl.kit.Kit;

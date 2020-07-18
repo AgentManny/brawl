@@ -1,7 +1,5 @@
 package rip.thecraft.brawl.player;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -16,8 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.challenges.Challenge;
-import rip.thecraft.brawl.challenges.PlayerChallenge;
+import rip.thecraft.brawl.challenges.player.ChallengeTracker;
 import rip.thecraft.brawl.duelarena.queue.QueueData;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.item.type.InventoryType;
@@ -81,9 +78,9 @@ public class PlayerData {
     private Map<String, Long> gameRentals = new HashMap<>();
 
     private PlayerStatistic statistic = new PlayerStatistic(this);
+    private ChallengeTracker challengeTracker = new ChallengeTracker(this);
 
     private SpawnData spawnData = new SpawnData(this);
-
     private QueueData queueData = new QueueData();
 
     private Map<String, Cooldown> cooldownMap = new HashMap<>();
@@ -94,9 +91,6 @@ public class PlayerData {
     private long lastAction = System.currentTimeMillis();
     private Location lastLocation = null;
     private boolean duelsEnabled = true;
-
-    // Challenges
-    private List<PlayerChallenge> challenges = new ArrayList<>();
 
     private boolean needsSaving;
     private boolean loaded;
@@ -127,6 +121,7 @@ public class PlayerData {
                 .append("gameRentals", this.gameRentals)
                 .append("statistic", this.statistic.getData())
                 .append("level", this.level.toDocument())
+                .append("challenges", this.challengeTracker.toDocument())
                 .append("kill-tracker", killTracker)
                 .append("healing-method", refillType.name())
                 .append("previous-death", previousDeath == null ? null : previousDeath.toString())
@@ -139,6 +134,7 @@ public class PlayerData {
         if (document == null) {
             this.loaded = true;
             this.statistic.load(null);
+            this.challengeTracker.load(null);
             this.save();
             return;
         }
@@ -152,16 +148,7 @@ public class PlayerData {
         this.gameRentals.putAll((Map<String, Long>) document.get("gameRentals"));
 
         statistic.load((Document) document.get("statistic"));
-
-        if (document.containsKey("challenges")) {
-            List<Document> challengesDoc = (List<Document>) document.get("challenges");
-            challengesDoc.forEach(doc -> {
-                PlayerChallenge challenge = new PlayerChallenge(document);
-                if (challenge.isActive()) {
-                    challenges
-                }
-            });
-        }
+        challengeTracker.load((Document) document.get("challenges"));
 
         if (document.containsKey("level")) {
             level.load((Document) document.get("level"));
@@ -371,54 +358,6 @@ public class PlayerData {
         }
 
         return this.getPlayer().isOp() ||this.getPlayer().hasPermission("rank." + gameType.getRankType().getName().toLowerCase()) || this.getPlayer().hasPermission("game." + gameType.getName().toLowerCase()) ||  (gameRentals.containsKey(gameType.getName()) && gameRentals.get(gameType.getName()) > System.currentTimeMillis());
-    }
-
-    private void validateChallenges() {
-        this.challenges.removeIf(challenge -> !challenge.isActive());
-    }
-
-    public void generateChallenges() {
-        validateChallenges();
-        this.challenges.clear();
-
-        Set<Challenge> challenges = new HashSet<>();
-        int weeklyCount = 0;
-        int dailyCount = 0;
-
-        // We iterate 10 times to try to get unique challenges (and not repeating)
-        // If it fails, it means there aren't enough challenges in the pool
-        for (int i = 0; i < 15; i++) {
-            Challenge challenge = Challenge.getRandomChallenge();
-            if (!challenges.contains(challenge)) {
-                if (challenge.getDuration() == Challenge.Duration.WEEKLY && weeklyCount < Challenge.MAX_WEEKLY_CHALLENGES) {
-                    ++weeklyCount;
-                } else if (challenge.getDuration() == Challenge.Duration.DAILY && dailyCount < Challenge.MAX_DAILY_CHALLENGES) {
-                    ++dailyCount;
-                }
-                challenges.add(challenge);
-            }
-        }
-
-        for (Challenge challenge : challenges) {
-            PlayerChallenge playerChallenge = new PlayerChallenge(challenge);
-            Player player = getPlayer();
-            if (player != null && player.isOp()) { // DEBUG - Remove
-                player.sendMessage(ChatColor.GRAY + "[DEBUG] Added " + challenge.name());
-            }
-            this.challenges.add(playerChallenge);
-        }
-    }
-
-    public List<PlayerChallenge> getChallenges() {
-        validateChallenges();
-        return challenges;
-    }
-
-    public Multimap<Challenge.Duration, PlayerChallenge> getAllChallenges() {
-        validateChallenges();
-        Multimap<Challenge.Duration, PlayerChallenge> challenges = ArrayListMultimap.create();
-        this.challenges.forEach(challenge -> challenges.put(challenge.getChallenge().getDuration(), challenge));
-        return challenges;
     }
 
     public void setSelectedKit(Kit selectedKit) {
