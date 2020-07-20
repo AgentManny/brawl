@@ -20,7 +20,6 @@ import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.AbilityHandler;
 import rip.thecraft.brawl.challenges.Challenge;
-import rip.thecraft.brawl.challenges.ChallengeHandler;
 import rip.thecraft.brawl.challenges.command.adapter.ChallengeCommandAdapter;
 import rip.thecraft.brawl.command.adapters.AbilityCommandAdapter;
 import rip.thecraft.brawl.command.adapters.ArenaCommandAdapter;
@@ -107,8 +106,6 @@ public class Brawl extends JavaPlugin {
     private RegionHandler regionHandler;
 
     private ItemHandler itemHandler;
-
-    private ChallengeHandler challengeHandler;
 
     private EntityHider entityHider;
 
@@ -206,7 +203,6 @@ public class Brawl extends JavaPlugin {
         abilityHandler = new AbilityHandler(this);
         kitHandler = new KitHandler(this);
 
-        this.challengeHandler = new ChallengeHandler();
         playerDataHandler = new PlayerDataHandler(this);
 
         regionHandler = new RegionHandler();

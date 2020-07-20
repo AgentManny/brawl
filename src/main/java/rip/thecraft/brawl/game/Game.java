@@ -9,6 +9,8 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.challenges.ChallengeType;
+import rip.thecraft.brawl.challenges.player.PlayerChallenge;
 import rip.thecraft.brawl.game.lobby.GameLobby;
 import rip.thecraft.brawl.game.map.GameMap;
 import rip.thecraft.brawl.game.option.GameOption;
@@ -107,6 +109,13 @@ public abstract class Game {
                 PlayerData playerData = winner.toPlayerData();
                 if (playerData != null) {
                     playerData.getStatistic().add(StatisticType.CREDITS, 250);
+
+                    for (PlayerChallenge challenge : playerData.getChallengeTracker().getChallenges().values()) {
+                        if (challenge.isActive() && challenge.getChallenge().getType() == ChallengeType.GAME_WINS) {
+                            challenge.increment(winner.toPlayer(), 1);
+                        }
+                    }
+
                 }
             }
             Bukkit.broadcastMessage(PREFIX + ChatColor.WHITE + winners + ChatColor.YELLOW + (this.winners.size() <= 1 ? " has" : " have") + " won the " + ChatColor.DARK_PURPLE + getType().getShortName() + ChatColor.YELLOW + " event and received " + ChatColor.LIGHT_PURPLE + "250 credits" + ChatColor.YELLOW + ".");
@@ -136,6 +145,17 @@ public abstract class Game {
 
     public void start() {
         this.getOptions().values().forEach(option -> option.onStart(this));
+        this.getAlivePlayers().forEach(gamePlayer -> {
+            Player player = gamePlayer.toPlayer();
+            PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+            if (playerData != null) {
+                for (PlayerChallenge challenge : playerData.getChallengeTracker().getChallenges().values()) {
+                    if (challenge.isActive() && challenge.getChallenge().getType() == ChallengeType.GAMES) {
+                        challenge.increment(player, 1);
+                    }
+                }
+            }
+        });
     }
 
     public boolean eliminate(Player player, Location location, GameElimination elimination) {

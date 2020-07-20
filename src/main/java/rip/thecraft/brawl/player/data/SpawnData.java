@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.challenges.Challenge;
 import rip.thecraft.brawl.challenges.ChallengeType;
 import rip.thecraft.brawl.challenges.player.PlayerChallenge;
 import rip.thecraft.brawl.killstreak.Killstreak;
@@ -40,6 +39,11 @@ public class SpawnData {
                 double pct = getPctDamaged(damager);
                 if (pct >= MIN_PERCENT_FOR_ASSIST) {
                     double tokens = pct * finalCredits;
+                    for (PlayerChallenge challenge : playerData.getChallengeTracker().getChallenges().values()) {
+                        if (challenge.isActive() && challenge.getChallenge().getType() == ChallengeType.CREDITS) {
+                            challenge.increment(damager, Math.round((float) tokens));
+                        }
+                    }
                     damager.sendMessage(CC.DARK_PURPLE + "You've earned " + CC.LIGHT_PURPLE + Math.round(tokens) + " credits" + CC.DARK_PURPLE + " for dealing " + CC.LIGHT_PURPLE + (Math.round(tokens * 10) / 10.0) + "%" + CC.DARK_PURPLE + " damage to " + CC.WHITE + killer.getDisplayName() + CC.DARK_PURPLE + ".");
                     assisters.add(damager.getName());
                 }
@@ -130,11 +134,9 @@ public class SpawnData {
 
         }
 
-
-        for (PlayerChallenge playerChallenge : playerData.getActiveChallenges()) {
-            Challenge challenge = playerChallenge.getChallenge();
-            if (challenge.getType() == ChallengeType.KILLS) {
-                playerChallenge.increment(player, 1);
+        for (PlayerChallenge challenge : playerData.getChallengeTracker().getChallenges().values()) {
+            if (challenge.isActive() && challenge.getChallenge().getType() == ChallengeType.KILLS) {
+                challenge.increment(player, 1);
             }
         }
 
