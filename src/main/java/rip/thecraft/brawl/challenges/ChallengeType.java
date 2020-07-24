@@ -9,13 +9,13 @@ public enum ChallengeType {
     EXPERIENCE,
 
     /** Challenge increments by contracts completed */
-    CONTRACT,
+    CONTRACT, // TODO:
 
     /** Challenge increments by player kills */
     KILLS,
 
     /** Challenge increments when an ability is used */
-    ABILITY,
+    ABILITY, // TODO:
 
     /** Challenge increments by playing games  */
     GAMES,

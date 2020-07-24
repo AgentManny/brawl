@@ -7,7 +7,6 @@ import org.bson.Document;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.challenges.Challenge;
 import rip.thecraft.brawl.challenges.ChallengeType;
 import rip.thecraft.brawl.challenges.player.PlayerChallenge;
 import rip.thecraft.brawl.levels.task.LevelFlashTask;
@@ -45,10 +44,10 @@ public class Level {
         }
         playerData.getStatistic().add(StatisticType.TOTAL_EXPERIENCE, exp);
         currentExp += exp;
-        for (PlayerChallenge playerChallenge : playerData.getActiveChallenges()) {
-            Challenge challenge = playerChallenge.getChallenge();
-            if (challenge.getType() == ChallengeType.EXPERIENCE) {
-                playerChallenge.increment(player, exp);
+
+        for (PlayerChallenge challenge : playerData.getChallengeTracker().getChallenges().values()) {
+            if (challenge.isActive() && challenge.getChallenge().getType() == ChallengeType.EXPERIENCE) {
+                challenge.increment(player, exp);
             }
         }
         while (currentExp >= getMaxExperience()) {
