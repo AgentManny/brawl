@@ -3,14 +3,14 @@ package rip.thecraft.brawl.item.item;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import rip.thecraft.brawl.util.BrawlUtil;
-import rip.thecraft.spartan.Spartan;
-import rip.thecraft.spartan.serialization.ItemStackAdapter;
-import rip.thecraft.spartan.util.ItemUtils;
-import rip.thecraft.server.util.chatcolor.CC;
 import lombok.Getter;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import rip.thecraft.brawl.util.BrawlUtil;
+import rip.thecraft.server.util.chatcolor.CC;
+import rip.thecraft.spartan.Spartan;
+import rip.thecraft.spartan.serialization.ItemStackAdapter;
+import rip.thecraft.spartan.util.ItemUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,9 +48,12 @@ public class Items {
         this.items = items.toArray(new ItemStack[] { });
     }
 
-
     public Items(ItemStack... items) {
         this.items = items;
+    }
+
+    public void setItem(int i, ItemStack item) {
+        items[i] = item;
     }
 
     public JsonArray toJson() {

@@ -1,8 +1,8 @@
 package rip.thecraft.brawl.kit.type;
 
-import rip.thecraft.server.util.chatcolor.CC;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.WordUtils;
+import rip.thecraft.server.util.chatcolor.CC;
 
 @AllArgsConstructor
 public enum RankType {
@@ -14,8 +14,7 @@ public enum RankType {
     ELITE(CC.AQUA),
     EPIC(CC.BLUE),
     LEGEND(CC.LIGHT_PURPLE),
-    CRAFTER(CC.DARK_PURPLE),
-    CRAFTER_PLUS(CC.DARK_RED);
+    CRAFTER(CC.DARK_PURPLE);
 
     private final String colour;
 

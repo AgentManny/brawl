@@ -153,6 +153,15 @@ public class AbilityHandler {
         return null;
     }
 
+    public Ability getAbilityByClass(Class<?> clazz) {
+        for (Map.Entry<String, Ability> entry : this.abilities.entrySet()) {
+            if (entry.getValue().getClass().equals(clazz)) {
+                return entry.getValue();
+            }
+        }
+        return null;
+    }
+
     private File getFile() {
         File file = new File(Brawl.getInstance().getDataFolder() + File.separator + "abilities.json");
         if (!file.exists()) {

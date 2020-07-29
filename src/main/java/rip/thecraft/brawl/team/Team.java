@@ -34,6 +34,7 @@ public class Team {
 
     private String announcement;
 
+    private int experience;
     private String tagline;
 
     private String password;

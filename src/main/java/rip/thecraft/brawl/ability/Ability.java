@@ -2,7 +2,6 @@ package rip.thecraft.brawl.ability;
 
 import com.google.gson.JsonObject;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -31,12 +30,15 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Getter
-@RequiredArgsConstructor
 public abstract class Ability {
 
     protected static final int EFFECT_DISTANCE = 25;
 
-    @Setter protected int cooldown = 25;
+    @Setter protected int cooldown;
+
+    public Ability() {
+        cooldown = getDefaultCooldown();
+    }
 
     public String getDescription() {
         return null;
@@ -52,6 +54,10 @@ public abstract class Ability {
 
     public byte getData() {
         return 0;
+    }
+
+    public int getDefaultCooldown() {
+        return 25;
     }
 
     public ItemStack getIcon() {

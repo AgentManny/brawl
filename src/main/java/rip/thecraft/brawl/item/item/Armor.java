@@ -10,7 +10,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.server.util.chatcolor.CC;
-import rip.thecraft.spartan.Spartan;
 import rip.thecraft.spartan.serialization.ItemStackAdapter;
 import rip.thecraft.spartan.util.ItemUtils;
 
@@ -35,12 +34,22 @@ public class Armor {
         this.boots = null;
     }
 
+    public Armor(Material... items) {
+        this.helmet = new ItemStack(items[0]);
+        this.chestplate = new ItemStack(items[1]);
+        this.leggings = new ItemStack(items[2]);
+        this.boots = new ItemStack(items[3]);
+    }
+
     public Armor(Player player) {
-        ItemStack[] armor = player.getInventory().getArmorContents();
-        this.helmet = armor[0];
-        this.chestplate = armor[1];
-        this.leggings = armor[2];
-        this.boots = armor[3];
+        this(player.getInventory().getArmorContents());
+    }
+
+    public Armor(ItemStack... items) {
+        this.helmet = items[0];
+        this.chestplate = items[1];
+        this.leggings = items[2];
+        this.boots = items[3];
     }
 
     public JsonObject toJson() {

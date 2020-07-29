@@ -42,6 +42,7 @@ public class Level {
             }
             player.sendMessage(message);
         }
+
         playerData.getStatistic().add(StatisticType.TOTAL_EXPERIENCE, exp);
         currentExp += exp;
 
@@ -57,7 +58,7 @@ public class Level {
 
     public void addLevel(Player player) {
         if (getCurrentLevel() >= MAX_LEVEL) {
-            player.sendMessage(ChatColor.RED.toString() + "You are not able to level up as the maximum level is 100!");
+            player.sendMessage(ChatColor.RED + "You are not able to level up as the maximum level is 100!");
             return;
         }
 

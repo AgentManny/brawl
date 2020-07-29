@@ -79,18 +79,15 @@ public class Brawl extends JavaPlugin {
     private MongoDatabase mongoDatabase;
 
     private PlayerDataHandler playerDataHandler;
-
     private AbilityHandler abilityHandler;
+    private KitHandler kitHandler;
 
     // Upgrade section
     private KillstreakHandler killstreakHandler;
     private UpgradeManager upgradeManager;
-
     private MarketHandler marketHandler;
-    private KitHandler kitHandler;
 
     private DuelArenaHandler matchHandler;
-
     private GameHandler gameHandler;
     private EventHandler eventHandler;
 
