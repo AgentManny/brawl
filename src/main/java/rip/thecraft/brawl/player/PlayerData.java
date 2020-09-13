@@ -14,6 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.player.achievements.Achievement;
 import rip.thecraft.brawl.challenges.player.ChallengeTracker;
 import rip.thecraft.brawl.duelarena.queue.QueueData;
 import rip.thecraft.brawl.game.GameType;
@@ -57,6 +58,8 @@ public class PlayerData {
     private Kit previousKit;
 
     private RefillType refillType = RefillType.SOUP;
+
+    private Set<String> achievements = new HashSet<>();
 
     // Perk data
     private Set<Perk> unlockedPerks = new HashSet<>();
@@ -209,6 +212,10 @@ public class PlayerData {
             return PlayerState.SPAWN;
         }
         return PlayerState.FIGHTING;
+    }
+
+    public boolean hasAchievement(Achievement achievement) {
+        return achievements.contains(achievement.getId());
     }
 
     public boolean hasCombatLogged() {

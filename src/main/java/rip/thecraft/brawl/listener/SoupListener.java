@@ -36,6 +36,7 @@ import rip.thecraft.brawl.util.MathUtil;
 import rip.thecraft.brawl.util.SchedulerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 
+import javax.lang.model.element.ElementVisitor;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -68,6 +69,12 @@ public class SoupListener implements Listener {
             event.setLine(1, CC.DARK_PURPLE + "- Refill -");
             event.setLine(2, "Soup/Potions");
             event.setLine(3, " ");
+
+            Sign sign = (Sign) event.getBlock().getState();
+            MaterialData materialData = sign.getMaterialData();
+            Block signBlock = sign.getBlock().getRelative(materialData instanceof Attachable ? ((Attachable) materialData).getAttachedFace() : BlockFace.DOWN);
+            signBlock.setType(Material.EMERALD_BLOCK);
+            event.getPlayer().sendMessage(ChatColor.RED + "Added refill station");
         }
     }
 
