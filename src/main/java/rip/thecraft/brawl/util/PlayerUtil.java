@@ -108,7 +108,7 @@ public class PlayerUtil {
         return hit;
     }
 
-    public static boolean hit(Entity entity, Player target) {
+    public static boolean hit(Entity entity, Entity target) {
         Location observerPos = entity.getLocation();
         Vector3D targetPos = new Vector3D(target.getLocation());
 

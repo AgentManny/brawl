@@ -4,12 +4,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.Getter;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.Spartan;
-import rip.thecraft.spartan.serialization.ItemStackAdapter;
 import rip.thecraft.spartan.util.ItemUtils;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class Items {
     public Items(JsonArray jsonArray) {
         List<ItemStack> items = new ArrayList<>();
         for (JsonElement element : jsonArray) {
-            items.add(ItemStackAdapter.deserialize(element));
+            items.add(Spartan.GSON.fromJson(element, ItemStack.class));
         }
         this.items = items.toArray(new ItemStack[] { });
     }
@@ -59,7 +59,8 @@ public class Items {
     public JsonArray toJson() {
         JsonArray jsonArray = new JsonArray();
         for (ItemStack itemStack : this.items) {
-            jsonArray.add(ItemStackAdapter.serialize(itemStack));
+            if (itemStack == null || itemStack.getType() == Material.MUSHROOM_SOUP) continue;
+            jsonArray.add(Spartan.GSON.toJsonTree(itemStack));
         }
         return jsonArray;
     }

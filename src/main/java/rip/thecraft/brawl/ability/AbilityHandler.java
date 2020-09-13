@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.ability;
 
-import com.google.common.base.Preconditions;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -55,6 +54,8 @@ public class AbilityHandler {
                 new Flash(),
                 new Kangaroo(),
 
+                new BatBlaster(),
+
                 new Stomper(),
                 new SilverfishSwarm(plugin),
                 new Charger(plugin),
@@ -99,7 +100,9 @@ public class AbilityHandler {
                 JsonArray array = element.getAsJsonArray();
                 for (Object object : array) {
                     JsonObject jsonObject = (JsonObject) object;
-                    Ability ability = Preconditions.checkNotNull(this.getAbilityByName(jsonObject.get("name").getAsString()));
+                    Ability ability = this.getAbilityByName(jsonObject.get("name").getAsString());
+                    if (ability == null) continue; // Ability no longer exists
+
                     ability.fromJson(jsonObject);
                 }
             } else {
@@ -146,17 +149,17 @@ public class AbilityHandler {
 
     public Ability getAbilityByName(String name) {
         for (Map.Entry<String, Ability> entry : this.abilities.entrySet()) {
-            if (entry.getKey().equalsIgnoreCase(name)) {
+            if (entry.getKey().replace(" ", "").equalsIgnoreCase(name.replace(" ", ""))) {
                 return entry.getValue();
             }
         }
         return null;
     }
 
-    public Ability getAbilityByClass(Class<?> clazz) {
+    public <T extends Ability> T getAbilityByClass(Class<T> clazz) {
         for (Map.Entry<String, Ability> entry : this.abilities.entrySet()) {
             if (entry.getValue().getClass().equals(clazz)) {
-                return entry.getValue();
+                return (T) entry.getValue();
             }
         }
         return null;

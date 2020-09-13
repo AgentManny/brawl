@@ -2,13 +2,14 @@ package rip.thecraft.brawl.util;
 
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import rip.thecraft.brawl.Brawl;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import rip.thecraft.brawl.Brawl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -55,7 +56,7 @@ public class BrawlUtil {
         return UUID_PATTERN.matcher(string).find();
     }
 
-    public static List<Player> getNearbyPlayers(Player player, double radius) {
+    public static List<Player> getNearbyPlayers(Entity player, double radius) {
         return player.getNearbyEntities(radius, radius, radius).stream().filter(entity -> entity instanceof Player).map(entity -> ((Player)entity)).collect(Collectors.toList());
     }
 

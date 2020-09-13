@@ -5,11 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.server.util.chatcolor.CC;
+import rip.thecraft.spartan.Spartan;
 import rip.thecraft.spartan.serialization.ItemStackAdapter;
 import rip.thecraft.spartan.util.ItemUtils;
 
@@ -54,10 +56,10 @@ public class Armor {
 
     public JsonObject toJson() {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.add("helmet", this.helmet == null ? null : ItemStackAdapter.serialize(this.helmet));
-        jsonObject.add("chestplate", this.chestplate == null ? null : ItemStackAdapter.serialize(this.chestplate));
-        jsonObject.add("leggings", this.leggings == null ? null : ItemStackAdapter.serialize(this.leggings));
-        jsonObject.add("boots", this.boots == null ? null : ItemStackAdapter.serialize(this.boots));
+        jsonObject.add("helmet", this.helmet == null ? null : Spartan.GSON.toJsonTree(helmet));
+        jsonObject.add("chestplate", this.chestplate == null ? null : Spartan.GSON.toJsonTree(this.chestplate));
+        jsonObject.add("leggings", this.leggings == null ? null : Spartan.GSON.toJsonTree(this.leggings));
+        jsonObject.add("boots", this.boots == null ? null : Spartan.GSON.toJsonTree(this.boots));
         return jsonObject;
     }
 
@@ -70,10 +72,10 @@ public class Armor {
             return;
         }
 
-        this.helmet = BrawlUtil.has(jsonObject, "helmet") ? ItemStackAdapter.deserialize(jsonObject.get("helmet")) : null;
-        this.chestplate = BrawlUtil.has(jsonObject, "chestplate") ? ItemStackAdapter.deserialize(jsonObject.get("chestplate")) : null;
-        this.leggings = BrawlUtil.has(jsonObject, "leggings") ? ItemStackAdapter.deserialize(jsonObject.get("leggings")) : null;
-        this.boots = BrawlUtil.has(jsonObject, "boots") ? ItemStackAdapter.deserialize(jsonObject.get("boots")) : null;
+        this.helmet = BrawlUtil.has(jsonObject, "helmet") ? Spartan.GSON.fromJson(jsonObject.get("helmet"), ItemStack.class) : null;
+        this.chestplate = BrawlUtil.has(jsonObject, "chestplate") ? Spartan.GSON.fromJson(jsonObject.get("chestplate"), ItemStack.class) : null;
+        this.leggings = BrawlUtil.has(jsonObject, "leggings") ? Spartan.GSON.fromJson(jsonObject.get("leggings"), ItemStack.class) : null;
+        this.boots = BrawlUtil.has(jsonObject, "boots") ? Spartan.GSON.fromJson(jsonObject.get("boots"), ItemStack.class) : null;
     }
 
     public String info() {

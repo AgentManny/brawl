@@ -6,9 +6,7 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 import lombok.Getter;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Item;
@@ -23,6 +21,8 @@ import rip.thecraft.brawl.challenges.Challenge;
 import rip.thecraft.brawl.challenges.command.adapter.ChallengeCommandAdapter;
 import rip.thecraft.brawl.command.adapters.AbilityCommandAdapter;
 import rip.thecraft.brawl.command.adapters.ArenaCommandAdapter;
+import rip.thecraft.brawl.command.adapters.EntityEffectCommandAdapter;
+import rip.thecraft.brawl.command.adapters.SoundCommandAdapter;
 import rip.thecraft.brawl.duelarena.DuelArenaHandler;
 import rip.thecraft.brawl.duelarena.arena.Arena;
 import rip.thecraft.brawl.event.EventHandler;
@@ -136,7 +136,7 @@ public class Brawl extends JavaPlugin {
         MovementListener movementListener = new MovementListener(this);
         CraftServer.getInstance().addMovementHandler(movementListener);
 
-        Arrays.asList(new ClickTracker(this), new GameListener(), new AbilityListener(this), new ToolInteractListener(), new ProtectListener(this), new ArenaListener(this), new PlayerListener(this), new DamageListener(this), new SoupListener(this), new TeamListener(this), movementListener)
+        Arrays.asList(new EnderChestListener(), new ClickTracker(this), new GameListener(), new AbilityListener(this), new ToolInteractListener(), new ProtectListener(this), new ArenaListener(this), new PlayerListener(this), new DamageListener(this), new SoupListener(this), new TeamListener(this), movementListener)
                 .forEach(listener -> this.getServer().getPluginManager().registerEvents(listener, this));
         loaded = true;
     }
@@ -176,6 +176,9 @@ public class Brawl extends JavaPlugin {
         MCommandHandler.registerParameterType(Team.class, new TeamTypeAdapter());
         MCommandHandler.registerParameterType(Warp.class, new WarpTypeAdapter());
         MCommandHandler.registerParameterType(Challenge.class, new ChallengeCommandAdapter());
+
+        MCommandHandler.registerParameterType(EntityEffect.class, new EntityEffectCommandAdapter());
+        MCommandHandler.registerParameterType(Sound.class, new SoundCommandAdapter());
 
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.command");
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.command.manage");

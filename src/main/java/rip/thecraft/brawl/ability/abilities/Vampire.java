@@ -2,6 +2,7 @@ package rip.thecraft.brawl.ability.abilities;
 
 import com.google.gson.JsonObject;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftBat;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -21,7 +22,20 @@ import java.util.List;
 
 public class Vampire extends Ability {
 
-    private double captureRange = 5;
+
+    // Direction configuration
+    public double rndOffset = 0.5;
+    public double rndOffsetMult = 3.0;
+
+    public double rndDirectionMult = 0.5;
+
+    // Capture effects
+    public EntityEffect captureEffect = EntityEffect.WITCH_MAGIC;
+    public Sound captureSound = Sound.BAT_IDLE;
+
+    public boolean applyWitherEffect = true; // Applies a wither effect after captured
+
+    public double captureRange = 5;
 
     @Override
     public Material getType() {
@@ -45,13 +59,15 @@ public class Vampire extends Ability {
 
         List<Entity> bats = new ArrayList<>();
 
-        for (int i = 0; i < 16; i++) {
-            bats.add(player.getWorld().spawn(player.getEyeLocation(), Bat.class));
+        for (int i = 0; i < 10; i++) {
+            Bat bat = player.getWorld().spawn(player.getEyeLocation(), Bat.class);
+            bats.add(bat);
         }
 
         new BukkitRunnable() {
 
             long timestamp = System.currentTimeMillis();
+
 
             @Override
             public void run() {
@@ -62,21 +78,20 @@ public class Vampire extends Ability {
 
                 for (Entity bat : bats) {
                     if (bat.isValid() && !bat.isDead()) {
-                        Vector rand = new Vector((Math.random() - 0.5D) / 3.0D, (Math.random() - 0.5D) / 3.0D,
-                                (Math.random() - 0.5D) / 3.0D); // Makes the bats move randomly
+                        Vector rand = new Vector((Math.random() - rndOffset) / rndOffsetMult, (Math.random() - rndOffset) / rndOffsetMult,
+                                (Math.random() - rndOffset) / rndOffsetMult); // Makes the bats move randomly
                         Vector directionVector = player.getLocation().getDirection()
                                 .clone()
-                                .multiply(0.5D)
+                                .multiply(rndDirectionMult)
                                 .add(rand);
 
                         bat.setVelocity(directionVector);
 
                         if (bat.getPassenger() != null && bat.getPassenger() instanceof Player) {
                             Player victim = (Player) bat.getPassenger();
-                            victim.playEffect(EntityEffect.WITCH_MAGIC);
-
-                            victim.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 30, 2));
-                            victim.playSound(victim.getLocation(), Sound.BAT_IDLE, 1.25f, 1.25f);
+                            if (applyWitherEffect) {
+                                victim.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 30, 2));
+                            }
                         } else {
                             List<Player> victims = PlayerUtil.getNearbyPlayers(player, captureRange);
                             for (Player victim : victims) {
@@ -123,6 +138,9 @@ public class Vampire extends Ability {
 
         victim.setFallDistance(0);
         bat.setPassenger(victim);
+
+        victim.playEffect(captureEffect);
+        victim.playSound(victim.getLocation(), captureSound, 1.25f, 1.25f);
 
         ParticleEffect.SMOKE_NORMAL.display(0, 0, 0, 1.5f, 1, bat.getLocation(), EFFECT_DISTANCE);
     }

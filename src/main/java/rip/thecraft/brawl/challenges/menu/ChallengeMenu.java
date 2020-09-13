@@ -69,7 +69,7 @@ public class ChallengeMenu extends Menu {
         public List<String> getDescription(Player player) {
             List<String> lore = ItemBuilder.wrap(challenge.getDescription(), CC.GRAY, 30);
 
-            //String timeLeft = ChatColor.GRAY + "Expires " + (challenge.getDuration() == Challenge.Duration.WEEKLY ? "at " + ChatColor.WHITE + WordUtils.capitalizeFully(ChallengeTracker.WEEKLY_RESET_DAY.name().toLowerCase()) + " at " + ChallengeTracker.RESET_TIME.format(ChallengeTracker.TIME_FORMATTER) : ChatColor.GRAY + "in " + ChatColor.WHITE + TimeUtils.formatIntoSimplifiedString((int) TimeUnit.MILLISECONDS.toSeconds(tracker.getDailyExpiry())));
+            String timeLeft = ChatColor.GRAY + "Expires " + (challenge.getDuration() == Challenge.Duration.WEEKLY ? "at " + ChatColor.WHITE + WordUtils.capitalizeFully(ChallengeTracker.WEEKLY_RESET_DAY.name().toLowerCase()) + " at " + ChallengeTracker.RESET_TIME.format(ChallengeTracker.TIME_FORMATTER) : ChatColor.GRAY + "in " + ChatColor.WHITE + TimeUtils.formatIntoSimplifiedString((int) TimeUnit.MILLISECONDS.toSeconds(tracker.getDailyExpiry())));
             lore.add(" ");
             lore.add(ChatColor.GRAY + "Progress: " + ChatColor.WHITE + playerChallenge.getProgress() + "%" + ChatColor.GRAY + " (" + ChatColor.WHITE + playerChallenge.getProgress() + "/" + challenge.getMaxValue() + ChatColor.GRAY + ")");
             lore.add(" ");

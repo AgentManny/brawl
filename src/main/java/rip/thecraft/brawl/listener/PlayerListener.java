@@ -134,6 +134,7 @@ public class PlayerListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
+        playerData.setSelectedKit(null);
 
         if (playerData.isEvent()) {
             Game game = Brawl.getInstance().getGameHandler().getActiveGame();

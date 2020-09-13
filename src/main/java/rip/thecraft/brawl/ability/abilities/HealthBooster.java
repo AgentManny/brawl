@@ -11,18 +11,20 @@ public class HealthBooster extends Ability {
 
     @Override
     public void onApply(Player player) {
-        player.setMaxHealth(24);
-        player.setHealth(player.getMaxHealth());
+        SchedulerUtil.runTask(() -> {
+            player.setMaxHealth(24);
+            player.setHealth(player.getMaxHealth());
+        }, false);
     }
 
     @Override
     public void onRemove(Player player) {
-        SchedulerUtil.runTaskLater(() -> {
+        SchedulerUtil.runTask(() -> {
             if (player != null) {
                 player.setMaxHealth(20);
                 player.setHealth(player.getMaxHealth());
             }
-        }, 10L, false);
+        }, false);
     }
 
     @Override
