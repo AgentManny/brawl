@@ -37,7 +37,7 @@ public class KitButton extends Button {
     @Override
     public ItemStack getButtonItem(Player player) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
-        List<String> lore = ItemBuilder.wrap(kit.getDescription(), CC.GRAY, 30);
+        List<String> lore = ItemBuilder.wrap(kit.getDescription(), CC.GRAY, 30, false);
         lore.add(0, CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 31));
 //            lore.add(playerData.hasKit(kit) ? CC.GREEN + CC.BOLD + "UNLOCKED" : (kit.getRankType() != RankType.NONE ? CC.GRAY + "Exclusive to " + CC.WHITE + kit.getRankType().getDisplayName() : CC.GRAY + "Price: " + CC.WHITE + kit.getPrice() + " coins"));
         if (!kit.getDescription().isEmpty()) {
@@ -62,7 +62,7 @@ public class KitButton extends Button {
         }
         lore.add(CC.GRAY + "\u00bb " + value + CC.GRAY + " \u00ab");
         lore.add(CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 31));
-        return new ItemBuilder(kit.getIcon()).name((playerData.hasKit(kit) ? CC.GREEN : CC.RED) + kit.getName()).lore(lore).create();
+        return new ItemBuilder(kit.getIcon()).name((playerData.hasKit(kit) ? CC.GREEN : CC.RED) + kit.getName()).amount(1).lore(lore).create();
     }
 
     @Override

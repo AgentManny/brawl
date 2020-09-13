@@ -2,6 +2,8 @@ package rip.thecraft.brawl.kit.kits.vip;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import rip.thecraft.brawl.item.item.Armor;
 import rip.thecraft.brawl.item.item.Items;
 import rip.thecraft.brawl.kit.AbstractKit;
@@ -10,7 +12,7 @@ import rip.thecraft.spartan.util.ItemBuilder;
 public class Fisherman extends AbstractKit {
 
     public Fisherman() {
-        super("Fisherman", "Special fishing rod that teleports players to you!");
+        super("Fisherman", "Hooking a player with your fishing rod reels them in.");
 
         this.abilities.add(getAbility(rip.thecraft.brawl.ability.abilities.classic.Fisherman.class));
     }
@@ -44,5 +46,12 @@ public class Fisherman extends AbstractKit {
     @Override
     public Items getItems() {
         return new Items(new ItemBuilder(Material.DIAMOND_SWORD).create());
+    }
+
+    @Override
+    public PotionEffect[] getPotions() {
+        return new PotionEffect[] {
+                new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0)
+        };
     }
 }

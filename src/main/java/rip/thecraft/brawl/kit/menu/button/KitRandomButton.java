@@ -40,7 +40,7 @@ public class KitRandomButton extends Button {
         lore.add(CC.GRAY + "\u00bb " + CC.LIGHT_PURPLE + "Click to use a random kit" + CC.GRAY + " \u00ab");
         lore.add(CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 31));
         return new ItemBuilder(kit.getIcon())
-                .name(CC.LIGHT_PURPLE + "Select a random kit").lore(lore).create();
+                .name(CC.LIGHT_PURPLE + "Select a random kit").lore(lore).amount(1).create();
     }
 
     @Override

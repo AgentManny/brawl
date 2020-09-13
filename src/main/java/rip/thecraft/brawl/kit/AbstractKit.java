@@ -68,7 +68,7 @@ public abstract class AbstractKit {
         return kit;
     }
 
-    public Ability getAbility(Class<?> clazz) {
+    public <T extends Ability> T getAbility(Class<T> clazz) {
         return Brawl.getInstance().getAbilityHandler().getAbilityByClass(clazz);
     }
 

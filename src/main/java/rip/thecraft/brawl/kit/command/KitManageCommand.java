@@ -15,8 +15,10 @@ import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.editor.menu.KitEditMenu;
 import rip.thecraft.brawl.kit.editor.menu.KitEditorMenu;
 import rip.thecraft.brawl.kit.type.RankType;
+import rip.thecraft.brawl.util.conversation.PromptBuilder;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.command.Command;
+import rip.thecraft.spartan.command.Param;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -35,7 +37,7 @@ public class KitManageCommand {
     }
 
 
-    @Command(names = {"kit manage create", "k manage create"}, permission = "op")
+    @Command(names = {"kit create", "k create"}, permission = "op")
     public static void create(Player player, String name) {
         if (Brawl.getInstance().getKitHandler().getKit(name) != null) {
             player.sendMessage(CC.RED + "Kit " + name + " already exists.");
@@ -53,13 +55,13 @@ public class KitManageCommand {
         player.sendMessage(ChatColor.GREEN + "Created kit " + name + ".");
     }
 
-    @Command(names = {"kit manage remove", "k manage remove"}, permission = "op")
+    @Command(names = {"kit remove", "k remove"}, permission = "op")
     public static void remove(Player player, Kit kit) {
         Brawl.getInstance().getKitHandler().unregisterKit(kit);
         player.sendMessage(ChatColor.RED + "Removed kit " + kit.getName() + ".");
     }
 
-    @Command(names = {"kit manage setweight", "k manage setweight"}, permission = "op")
+    @Command(names = {"editkit weight", "ek weight"}, permission = "op")
     public static void setWeight(Player player, Kit kit, int weight) {
         kit.setWeight(weight);
         Brawl.getInstance().getKitHandler().getKits().sort(Kit::compareTo);
@@ -67,19 +69,31 @@ public class KitManageCommand {
     }
 
 
-    @Command(names = {"kit manage setprice", "k manage setprice"}, permission = "op")
+    @Command(names = {"editkit setprice", "ek setprice"}, permission = "op")
     public static void setPrice(Player player, Kit kit, int price) {
         kit.setPrice(price);
         player.sendMessage(ChatColor.GREEN + kit.getName() + " price set to " + price);
     }
 
-    @Command(names = {"kit manage setdescription", "k manage setdescription"}, permission = "op")
-    public static void description(Player player, Kit kit, String description) {
+    @Command(names = {
+            "editkit setdescription", "ek setdescription",
+            "editkit setdesc", "ek setdesc",
+            "editkit desc", "ek desc"
+    }, permission = "op")
+    public static void description(Player player, Kit kit, @Param(defaultValue = "$") String description) {
+        if (description.equals("$")) {
+            new PromptBuilder(player, ChatColor.GREEN + "Enter the kit description:")
+                    .input((input) -> {
+                        player.sendMessage(ChatColor.GREEN + "Description set to: " + ChatColor.YELLOW + input);
+                        kit.setDescription(input);
+                    }).start();
+            return;
+        }
         player.sendMessage(ChatColor.GREEN + "Set description of " + kit.getName() + " from \"" + kit.getDescription() + "\" to \"" + description.trim() + "\".");
         kit.setDescription(description.trim());
     }
 
-    @Command(names = {"kit manage setrank", "k manage setrank"}, permission = "op")
+    @Command(names = {"editkit setrank", "ek setrank"}, permission = "op")
     public static void setRank(Player player, Kit kit, String rank) {
         RankType rankType = null;
         try {
@@ -92,23 +106,23 @@ public class KitManageCommand {
         player.sendMessage(ChatColor.GREEN + "Kit " + kit.getName() + " is now restricted to " + rankType.getDisplayName() + ChatColor.GREEN + ".");
     }
 
-    @Command(names = {"kit manage seticon", "k manage seticon"}, permission = "op")
+    @Command(names = {"editkit seticon", "ek seticon"}, permission = "op")
     public static void icon(Player player, Kit kit) {
         player.sendMessage(ChatColor.GREEN + "Kit " + kit.getName() + " icon is now the item you're holding.");
         kit.setIcon(player.getItemInHand() == null ? new ItemStack(Material.AIR) : player.getItemInHand());
     }
 
-    @Command(names = {"kit manage ability", "k manage ability"}, permission = "op")
+    @Command(names = {"editkit ability", "ek ability"}, permission = "op")
     public static void ability(Player player, Kit kit, Ability ability) {
         if (kit.getAbilities().contains(ability)) {
             kit.getAbilities().remove(ability);
         } else {
             kit.getAbilities().add(ability);
         }
-        player.sendMessage(ChatColor.GREEN + "Kit " + kit.getName() + (kit.getAbilities().contains(ability) ? "now has" : "no longer has") + " ability " + ChatColor.BOLD + ability.getName() + ChatColor.GREEN + ".");
+        player.sendMessage(ChatColor.GREEN + "Kit " + kit.getName() + (kit.getAbilities().contains(ability) ? " now has" : " no longer has") + " ability " + ChatColor.BOLD + ability.getName() + ChatColor.GREEN + ".");
     }
 
-    @Command(names = {"kit manage load", "k manage load"}, permission = "op")
+    @Command(names = {"editkit load", "ek load"}, permission = "op")
     public static void load(Player player, Kit kit) {
         kit.apply(player, false, false);
         new FancyMessage(ChatColor.GREEN + "You've been given " + kit.getName() + ChatColor.GREEN + ". Click Here to update this kit.")
@@ -117,13 +131,13 @@ public class KitManageCommand {
                 .send(player);
     }
 
-    @Command(names = {"kit manage save", "k manage save"}, permission = "op")
-    public static void save(Player player) {
-        Brawl.getInstance().getKitHandler().save();
-        player.sendMessage(CC.GREEN + "Saved all kits");
+    @Command(names = {"editkit save", "ek save"}, permission = "op")
+    public static void save(Player player, Kit kit) {
+        kit.save();
+        player.sendMessage(CC.GREEN + "Saved " + kit.getName() + " kit.");
     }
 
-    @Command(names = {"kit manage update", "k manage update"}, permission = "op")
+    @Command(names = {"editkit update", "ek update"}, permission = "op")
     public static void update(Player player, Kit kit) {
         PlayerInventory inventory = player.getInventory();
         kit.setPotionEffects(new ArrayList<>(player.getActivePotionEffects()));
@@ -136,7 +150,7 @@ public class KitManageCommand {
         Brawl.getInstance().getKitHandler().save();
     }
 
-    @Command(names = {"kit manage info", "k manage info"}, permission = "op")
+    @Command(names = {"editkit info", "ek info"}, permission = "op")
     public static void info(Player player, Kit kit) {
         player.sendMessage(CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 51));
         player.sendMessage(CC.LIGHT_PURPLE + "Kit Information of " + CC.WHITE + kit.getName());

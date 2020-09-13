@@ -1,7 +1,7 @@
 package rip.thecraft.brawl.kit;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.Getter;
 import org.bukkit.Material;
@@ -17,18 +17,17 @@ import rip.thecraft.brawl.kit.command.BukkitCommand;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.util.BrawlUtil;
-import rip.thecraft.spartan.Spartan;
 import rip.thecraft.spartan.util.ItemBuilder;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class KitHandler {
+
+    protected static final File KIT_DIRECTORY;
 
     private final Brawl plugin;
 
@@ -40,52 +39,54 @@ public class KitHandler {
         this.load();
     }
 
+    static {
+        KIT_DIRECTORY = new File(Brawl.getInstance().getDataFolder(), "kits");
+        KIT_DIRECTORY.mkdirs();
+    }
+
     private void load() {
-        File file = getFile();
-        try (FileReader reader = new FileReader(file)) {
-            JsonElement parse = new JsonParser().parse(reader);
-            if (parse.isJsonArray()) {
-                JsonArray array = parse.getAsJsonArray();
-                for (JsonElement element : array) {
-                    this.registerKit(new Kit(element.getAsJsonObject()));
+        if (KIT_DIRECTORY.exists()) {
+            plugin.getLogger().info("[Kit Manager] Loading /kits/ directory...");
+            File[] kits = KIT_DIRECTORY.listFiles((dir, name) -> name.endsWith(".json"));
+            if (kits == null) {
+                plugin.getLogger().info("[Kit Manager] No kits found. (registering default kit)");
+                createDefaultKit();
+                return;
+            }
+            for (File kitFile : kits) {
+                try (FileReader reader = new FileReader(kitFile)) {
+                    JsonElement parse = new JsonParser().parse(reader);
+                    if (parse.isJsonNull()) {
+                        plugin.getLogger().severe("[Kit Manager] Failed to load " + kitFile.getName() + ": corrupted (null)");
+                        continue;
+                    }
+
+                    if (!parse.isJsonObject()) {
+                        plugin.getLogger().severe("[Kit Manager] Failed to load " + kitFile.getName() + ": corrupted (not a object)");
+                        continue;
+                    }
+
+                    JsonObject jsonObject = parse.getAsJsonObject();
+                    this.registerKit(new Kit(jsonObject));
+                    plugin.getLogger().info("[Kit Manager] Registered kit " + jsonObject.get("name").getAsString() + " (" + kitFile.getName() + ").");
+                } catch (Exception e) {
+                    plugin.getLogger().severe("[Kit Manager] Failed to load " + kitFile.getName() + ":");
+                    e.printStackTrace();
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            plugin.getLogger().info("[Kit Manager] Registered " + this.kits.size() + " kits.");
+        } else {
+            plugin.getLogger().info("[Kit Manager] Created /kits/ directory");
         }
-        this.getDefaultKit();
+
+        getDefaultKit();
     }
 
     public void save() {
-        File file = getFile();
-
-        try (FileWriter writer = new FileWriter(file)) {
-
-            Spartan.GSON.toJson(toJson(), writer);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (Kit kit : kits) {
+            kit.save();
         }
-    }
-
-    private JsonArray toJson() {
-        JsonArray jsonArray = new JsonArray();
-        for (Kit kit : this.kits) {
-            jsonArray.add(kit.toJson());
-        }
-        return jsonArray;
-    }
-
-    private File getFile() {
-        File file = new File(Brawl.getInstance().getDataFolder() + File.separator + "kits.json");
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return file;
     }
 
     public void registerKit(Kit kit) {
@@ -108,26 +109,29 @@ public class KitHandler {
 
 
     public Kit getDefaultKit() {
-        Kit kit = this.getKit("PvP");
-        if (kit == null) {
-            kit = new Kit("PvP");
-
-            kit.setIcon(BrawlUtil.create(Material.DIAMOND_SWORD));
-            kit.setDescription("Basic PvP class.");
-            kit.setPotionEffects(Collections.singletonList(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0)));
-
-            Armor armor = kit.getArmor();
-            armor.setHelmet(BrawlUtil.create(Material.IRON_HELMET));
-            armor.setChestplate(BrawlUtil.create(Material.IRON_CHESTPLATE));
-            armor.setLeggings(BrawlUtil.create(Material.IRON_LEGGINGS));
-            armor.setBoots(BrawlUtil.create(Material.IRON_BOOTS));
-
-            kit.setWeight(-1);
-
-            kit.setItems(new Items(new ItemBuilder(Material.DIAMOND_SWORD).enchant(Enchantment.DAMAGE_ALL, 1).enchant(Enchantment.DURABILITY, 3).create()));
-            this.registerKit(kit);
+        if (this.getKit("PvP") == null) {
+            createDefaultKit();
         }
         return this.getKit("PVP");
+    }
+
+    private void createDefaultKit() {
+        Kit kit = new Kit("PvP");
+        kit.setIcon(BrawlUtil.create(Material.DIAMOND_SWORD));
+        kit.setDescription("Basic PvP class.");
+        kit.setPotionEffects(Collections.singletonList(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0)));
+
+        Armor armor = kit.getArmor();
+        armor.setHelmet(BrawlUtil.create(Material.IRON_HELMET));
+        armor.setChestplate(BrawlUtil.create(Material.IRON_CHESTPLATE));
+        armor.setLeggings(BrawlUtil.create(Material.IRON_LEGGINGS));
+        armor.setBoots(BrawlUtil.create(Material.IRON_BOOTS));
+
+        kit.setWeight(-1);
+
+        kit.setItems(new Items(new ItemBuilder(Material.DIAMOND_SWORD).enchant(Enchantment.DAMAGE_ALL, 1).enchant(Enchantment.DURABILITY, 3).create()));
+        this.registerKit(kit);
+        kit.save();
     }
 
     public Kit getKit(String name) {

@@ -12,7 +12,7 @@ import rip.thecraft.spartan.util.ItemBuilder;
 public class Beserk extends AbstractKit {
 
     public Beserk() {
-        super("Beserk", "Release a burst of energy from within gaining a brief boost of movement speed");
+        super("Beserk", "Release a burst of energy from within gaining a brief boost of speed!");
 
         this.abilities.add(getAbility(Dash.class));
     }

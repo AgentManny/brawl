@@ -19,23 +19,26 @@ import rip.thecraft.brawl.item.item.Armor;
 import rip.thecraft.brawl.item.item.Items;
 import rip.thecraft.brawl.kit.type.RankType;
 import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.spartan.Spartan;
-import rip.thecraft.spartan.serialization.ItemStackAdapter;
 import rip.thecraft.spartan.serialization.PotionEffectAdapter;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static rip.thecraft.brawl.kit.KitHandler.KIT_DIRECTORY;
 
 @Data
 public class Kit implements Listener, Comparable<Kit> {
 
     private final String name;
 
-    private ItemStack icon;
+    private ItemStack icon = new ItemStack(Material.DIRT);
     private String description = "";
 
     private double price = 0;
@@ -57,8 +60,10 @@ public class Kit implements Listener, Comparable<Kit> {
     public Kit(JsonObject jsonObject) {
         this.name = jsonObject.get("name").getAsString();
 
-        ItemStack icon = BrawlUtil.has(jsonObject, "icon") ? ItemStackAdapter.deserialize(jsonObject.get("icon")) : null;
-        this.icon = icon == null ? new ItemStack(Material.STONE) : icon;
+        if (jsonObject.has("icon") && jsonObject.isJsonObject()) {
+            JsonObject icon = jsonObject.get("icon").getAsJsonObject();
+            this.icon = new ItemStack(Material.valueOf(icon.get("type").getAsString()), icon.has("data") ? icon.get("data").getAsByte() : 0);
+        }
 
         this.description = jsonObject.get("description").getAsString();
         this.weight = jsonObject.get("weight").getAsInt();
@@ -87,33 +92,53 @@ public class Kit implements Listener, Comparable<Kit> {
         return this.price <= 0;
     }
 
-    public JsonObject toJson() {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("name", this.name);
-        jsonObject.add("icon", ItemStackAdapter.serialize(this.icon));
-        jsonObject.addProperty("description", this.description);
-        jsonObject.addProperty("weight", this.weight);
-        jsonObject.addProperty("price", this.price);
-        jsonObject.addProperty("rankType", this.rankType.name());
+    public JsonObject getJson() {
+        JsonObject kit = new JsonObject();
+        kit.addProperty("name", name);
+
+        JsonObject iconData = new JsonObject();
+        iconData.addProperty("type", icon.getType().name());
+        iconData.addProperty("data", icon.getData().getData());
+        kit.add("icon", iconData);
+
+        kit.addProperty("description", description);
+        kit.addProperty("weight", weight);
+        kit.addProperty("price", price);
+        kit.addProperty("rankType", rankType.name());
 
         JsonArray potionEffectsArray = new JsonArray();
-        for (PotionEffect potionEffect : this.potionEffects) {
+        for (PotionEffect potionEffect : potionEffects) {
             potionEffectsArray.add(PotionEffectAdapter.toJson(potionEffect));
         }
-        jsonObject.add("potionEffects", potionEffectsArray);
+        kit.add("potionEffects", potionEffectsArray);
 
         JsonArray abilitiesArray = new JsonArray();
-        for (String entry : this.abilities.stream().map(Ability::getName).collect(Collectors.toList())) {
+        for (String entry : abilities.stream().map(Ability::getName).collect(Collectors.toList())) {
             abilitiesArray.add(new JsonPrimitive(entry));
         }
-        jsonObject.add("abilities", abilitiesArray);
+        kit.add("abilities", abilitiesArray);
 
-        jsonObject.addProperty("potionEffects", Spartan.GSON.toJson(this.potionEffects.stream().map(PotionEffectAdapter::toJson).collect(Collectors.toList())));
 //        jsonObject.addProperty("type", Spartan.GSON.toJson(this.type.stream().map(Ability::getName).collect(Collectors.toList())));
-        jsonObject.add("armor", this.armor == null ? null : this.armor.toJson());
-        jsonObject.add("items", this.items == null ? null : this.items.toJson());
+        kit.add("armor", armor == null ? null : armor.toJson());
+        kit.add("items", items == null ? null : items.toJson());
+        return kit;
+    }
 
-        return jsonObject;
+    public void save() {
+        File file = getFile();
+        try (FileWriter writer = new FileWriter(file)) {
+            Spartan.GSON.toJson(getJson(), writer);
+        } catch (IOException e) {
+            Brawl.getInstance().getLogger().severe("[Kit Manager] Failed to save " + file.getName() + ":");
+            e.printStackTrace();
+            return;
+        }
+
+        Brawl.getInstance().getLogger().info("[Kit Manager] Saved " + name + " kit. (" + file.getName() + ")");
+    }
+
+    public File getFile() {
+        return new File(KIT_DIRECTORY, name.toLowerCase().replace(" ", "_") + ".json");
     }
 
     public void apply(Player player, boolean updateProfile, boolean addRefill) {
@@ -132,8 +157,7 @@ public class Kit implements Listener, Comparable<Kit> {
         this.abilities.stream().map(Ability::getIcon).filter(Objects::nonNull).forEach(player.getInventory()::addItem);
         this.abilities.forEach(ability -> {
             if (ability.getDescription() != null && updateProfile) {
-                player.sendMessage(ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "ABILITY INFO " + ChatColor.WHITE + ability.getName());
-                player.sendMessage(ChatColor.GRAY + " - " + ability.getDescription());
+                player.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + ability.getDescription());
             }
             ability.onApply(player);
         });
