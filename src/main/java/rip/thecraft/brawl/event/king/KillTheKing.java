@@ -1,21 +1,23 @@
 package rip.thecraft.brawl.event.king;
 
 import com.mongodb.BasicDBObject;
+import lombok.Getter;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.event.Event;
+import rip.thecraft.brawl.event.EventType;
 import rip.thecraft.brawl.event.king.runnables.WaitingCountdownRunnable;
 import rip.thecraft.brawl.game.GameState;
 import rip.thecraft.brawl.util.LocationSerializer;
 import rip.thecraft.brawl.util.MathUtil;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
-@RequiredArgsConstructor
 @Getter
 public class KillTheKing extends Event {
 
@@ -29,7 +31,12 @@ public class KillTheKing extends Event {
 
     private int startsIn = 45;
 
-    @Override
+    public KillTheKing(String name) {
+        super(name, EventType.KILL_THE_KING);
+        this.name = name;
+    }
+
+
     public void start(Player host) {
         plugin.getServer()
                 .broadcastMessage(" " +
@@ -42,8 +49,23 @@ public class KillTheKing extends Event {
     }
 
     @Override
+    public void start() {
+
+    }
+
+    @Override
     public void finish(Player winner) {
 
+    }
+
+    @Override
+    public void tick() {
+
+    }
+
+    @Override
+    public boolean isSetup() {
+        return false;
     }
 
     /***

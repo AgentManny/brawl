@@ -1,7 +1,7 @@
 package rip.thecraft.brawl.event.koth;
 
 import com.mongodb.BasicDBObject;
-import lombok.Data;
+import lombok.Getter;
 import lombok.Setter;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.event.Event;
+import rip.thecraft.brawl.event.EventType;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.team.Team;
 import rip.thecraft.brawl.util.cuboid.Cuboid;
@@ -24,7 +25,8 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-@Data
+@Getter
+@Setter
 public class KOTH extends Event {
 
     public static final String PREFIX = CC.DARK_PURPLE + "[KingOfTheHill] " + CC.WHITE;
@@ -42,10 +44,10 @@ public class KOTH extends Event {
     private BukkitTask task;
 
     public KOTH(String name) {
+        super(name, EventType.KING_OF_THE_HILL);
         this.name = name;
     }
 
-    @Override
     public void start(Player host) {
         new ImageMessage("koth").appendText(" ", " ", PREFIX, ChatColor.WHITE + name + " KOTH", ChatColor.YELLOW + "can be contested now.").broadcast();
 
@@ -74,6 +76,11 @@ public class KOTH extends Event {
     }
 
     @Override
+    public void start() {
+
+    }
+
+    @Override
     public void finish(Player winner) {
         if (winner != null) {
 
@@ -93,6 +100,16 @@ public class KOTH extends Event {
         }
 
         Brawl.getInstance().getEventHandler().setActiveKOTH(null);
+    }
+
+    @Override
+    public void tick() {
+
+    }
+
+    @Override
+    public boolean isSetup() {
+        return false;
     }
 
     public List<String> getScoreboard(Player player) {
