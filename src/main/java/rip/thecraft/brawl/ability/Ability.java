@@ -14,6 +14,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.event.AbilityCooldownEvent;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
+import rip.thecraft.brawl.ability.property.type.IntegerProperty;
 import rip.thecraft.brawl.challenges.ChallengeType;
 import rip.thecraft.brawl.challenges.player.PlayerChallenge;
 import rip.thecraft.brawl.duelarena.match.Match;
@@ -36,8 +38,11 @@ public abstract class Ability {
 
     @Setter protected int cooldown;
 
+    public Map<String, AbilityProperty<?>> properties = new HashMap<>();
+
     public Ability() {
         cooldown = getDefaultCooldown();
+        properties.put("cooldown", new IntegerProperty(cooldown));
     }
 
     public String getDescription() {
@@ -62,12 +67,14 @@ public abstract class Ability {
 
     public ItemStack getIcon() {
         if (getType() == null) return null;
-
-        return new ItemBuilder(getType())
+        ItemBuilder data = new ItemBuilder(getType())
                 .name(CC.GRAY + "\u00bb " + getColor() + CC.BOLD + getName() + CC.GRAY + " \u00ab")
-                .data(getData())
-                .create();
+                .data(getData());
 
+        if (getDescription() != null) {
+            data.lore(ItemBuilder.wrap(getDescription(), ChatColor.GRAY.toString()));
+        }
+        return data.create();
     }
 
     public Perk[] getDisabledPerks() {
