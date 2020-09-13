@@ -42,6 +42,7 @@ public abstract class Ability {
 
     public Ability() {
         cooldown = getDefaultCooldown();
+
         properties.put("cooldown", new IntegerProperty(cooldown));
     }
 

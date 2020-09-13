@@ -11,6 +11,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.AbilityTask;
+import rip.thecraft.brawl.ability.property.type.DoubleProperty;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.brawl.util.ParticleEffect;
 import rip.thecraft.brawl.util.PlayerUtil;
@@ -21,10 +22,12 @@ import java.util.concurrent.TimeUnit;
 
 public class BatBlaster extends Ability {
 
-    public double power = 0.7;
-    public double yBase = 0.72;
-
     private final long duration = TimeUnit.SECONDS.toMillis(2);
+
+    public BatBlaster() {
+        properties.put("power", new DoubleProperty(0.7));
+        properties.put("vertical", new DoubleProperty(0.72));
+    }
 
     @Override
     public String getName() {
@@ -88,11 +91,13 @@ public class BatBlaster extends Ability {
                         if (PlayerUtil.hit(bat, other)) {
                             other.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 30, 3));
 
-                            ParticleEffect.SMOKE_LARGE.display(0, 0, 0, 0, 1, bat.getLocation(), 12);
-
                             Vector unitVector = other.getLocation().toVector().subtract(bat.getLocation().toVector()).normalize();
-                            other.setVelocity(unitVector.multiply(power).setY(yBase));
+                            other.setVelocity(unitVector
+                                    .multiply((Double)properties.get("power").value())
+                                    .setY((Double)properties.get("vertical").value())
+                            );
 
+                            ParticleEffect.SMOKE_LARGE.display(0, 0, 0, 0, 1, bat.getLocation(), 12);
                             bat.getWorld().playSound(bat.getLocation(), Sound.BAT_HURT, 1.0F, 1.0F);
                             // bat.remove(); // Bat gets removed after it tags a player
                         }

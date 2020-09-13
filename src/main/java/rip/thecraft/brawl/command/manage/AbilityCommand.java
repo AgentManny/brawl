@@ -6,6 +6,8 @@ import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.AbilityHandler;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
+import rip.thecraft.brawl.ability.property.exception.PropertyParseException;
 import rip.thecraft.spartan.command.Command;
 
 public class AbilityCommand {
@@ -38,12 +40,22 @@ public class AbilityCommand {
         ability.getProperties().forEach((name, property) -> {
             sender.sendMessage(ChatColor.YELLOW + " - " + WordUtils.capitalizeFully(name) + ": " + ChatColor.WHITE + property.toString());
         });
-        sender.sendMessage(ChatColor.RED + "Usage: /ability set " + ability.getName() + " <property> <newValue>");
+        sender.sendMessage(ChatColor.RED + "Usage: /ability set " + ability.getName().toLowerCase() + " <property> <newValue>");
     }
 
     @Command(names = { "ability set" }, permission = "op", description = "Manage abilities")
     public static void set(Player sender, Ability ability, String property, String newValue) {
-        sender.sendMessage(ChatColor.RED + "This isn't supported yet.");
+        if (ability.getProperties().containsKey(property)) {
+            AbilityProperty abilityProperty = ability.getProperties().get(property);
+            try {
+                abilityProperty.set(abilityProperty.parse(newValue));
+                sender.sendMessage(ability.getColor() + ability.getName() + ChatColor.YELLOW + " " + property + ChatColor.YELLOW + " set to " + ChatColor.WHITE + newValue + ChatColor.YELLOW + ".");
+            } catch (PropertyParseException e) {
+                sender.sendMessage(ChatColor.RED + e.getMessage());
+            }
+        } else {
+            sender.sendMessage(ChatColor.RED + "Property " + property + " not found for " + ability.getName() + ".");
+        }
     }
 
 

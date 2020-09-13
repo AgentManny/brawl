@@ -18,6 +18,8 @@ import rip.thecraft.brawl.ability.abilities.skylands.SilverfishSwarm;
 import rip.thecraft.brawl.ability.abilities.skylands.WaterGun;
 import rip.thecraft.brawl.ability.abilities.skylands.chemist.Chemist;
 import rip.thecraft.brawl.ability.abilities.skylands.chemist.SmokeBomb;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
+import rip.thecraft.brawl.ability.property.type.IntegerProperty;
 import rip.thecraft.server.CraftServer;
 import rip.thecraft.server.handler.MovementHandler;
 import rip.thecraft.server.handler.PacketHandler;

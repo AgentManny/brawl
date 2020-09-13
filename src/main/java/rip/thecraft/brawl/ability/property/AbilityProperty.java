@@ -2,6 +2,7 @@ package rip.thecraft.brawl.ability.property;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import rip.thecraft.brawl.ability.property.exception.PropertyParseException;
 
 @RequiredArgsConstructor
 public abstract class AbilityProperty<T> {
@@ -12,10 +13,11 @@ public abstract class AbilityProperty<T> {
 
     public abstract void set(T newValue);
 
-    public abstract T parse(String value);
+    public abstract T parse(String value) throws PropertyParseException;
 
     public String toString() {
         return String.valueOf(value);
     }
+
 
 }
