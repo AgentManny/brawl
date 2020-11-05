@@ -1,12 +1,12 @@
 package rip.thecraft.brawl.ability.abilities.classic;
 
-import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.util.BukkitUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.util.BukkitUtil;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -21,11 +21,16 @@ public class Gambler extends Ability {
         return ChatColor.DARK_AQUA;
     }
 
+    @Override
+    public String getDescription() {
+        return "Gives you random effects that can help you positively or negatively";
+    }
+
     public void onActivate(Player player) {
         if (hasCooldown(player, true)) {
             return;
         }
-        addCooldown(player, TimeUnit.SECONDS.toMillis(20L));
+        addCooldown(player, TimeUnit.SECONDS.toMillis(15L));
 
         ThreadLocalRandom random = ThreadLocalRandom.current();
 

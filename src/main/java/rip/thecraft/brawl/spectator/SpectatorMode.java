@@ -14,6 +14,7 @@ import rip.thecraft.brawl.duelarena.loadout.MatchLoadout;
 import rip.thecraft.brawl.duelarena.match.Match;
 import rip.thecraft.brawl.duelarena.match.queue.QueueType;
 import rip.thecraft.brawl.game.Game;
+import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.game.lobby.GameLobby;
 import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.player.PlayerData;
@@ -73,6 +74,48 @@ public class SpectatorMode {
         return mode;
     }
 
+    /**
+     * Spectate a certain section, this doesn't specify individual players
+     * @param type Area to spectate
+     */
+    @Deprecated
+    public void spec(SpectatorType type) {
+        Player spectator = getPlayer();
+        if (spectator == null) {
+            leave();
+            return;
+        }
+
+        switch (type) {
+            case SPAWN: {
+
+            }
+            default: {
+              //  getPlayer()
+                return;
+            }
+        }
+    }
+
+    public void spectateGame() {
+        Player spectator = getPlayer();
+        GameLobby lobby = Brawl.getInstance().getGameHandler().getLobby();
+        Game game = Brawl.getInstance().getGameHandler().getActiveGame();
+        if (lobby == null && game == null) {
+            spectator.sendMessage(ChatColor.RED + "There isn't any games to spectate.");
+            return;
+        }
+
+        Location location = lobby != null ? LocationType.GAME_LOBBY.getLocation() : game.getDefaultLocation();
+        GameType gameType = lobby != null ? lobby.getGameType() : game.getType();
+        spectating = lobby != null ? SpectatorType.GAME_LOBBY : SpectatorType.GAME;
+
+        this.lobby = lobby;
+        this.game = game;
+
+        spectator.teleport(location);
+        spectator.sendMessage(ChatColor.GREEN + "You are now spectating: " + ChatColor.WHITE + gameType.getShortName() + (lobby != null ? " (Lobby)" : ""));
+    }
 
     public void spectate(Player spectating) {
         Player spectator = getPlayer();
@@ -189,9 +232,12 @@ public class SpectatorMode {
 
     public enum SpectatorType {
 
+        SPAWN,
+        DUEL_ARENA,
+        GAME_LOBBY,
+
         MATCH,
         GAME,
-        GAME_LOBBY,
         PLAYER,
         NONE
 

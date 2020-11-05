@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -36,6 +37,18 @@ public class SpectatorListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         spectatorManager.removeSpectator(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            if (spectatorManager.isSpectating(player)) {
+                event.setCancelled(true);
+
+                player.setFireTicks(0); // Prevent spectators from being on fire
+            }
+        }
     }
 
     @EventHandler

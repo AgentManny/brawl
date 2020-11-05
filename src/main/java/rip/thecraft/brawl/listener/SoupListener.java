@@ -32,11 +32,9 @@ import rip.thecraft.brawl.game.GameFlag;
 import rip.thecraft.brawl.kit.type.RefillType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.upgrade.perk.Perk;
-import rip.thecraft.brawl.util.MathUtil;
 import rip.thecraft.brawl.util.SchedulerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 
-import javax.lang.model.element.ElementVisitor;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -58,6 +56,7 @@ public class SoupListener implements Listener {
                 Location loc = state.getLocation();
                 state.setMaterial(Material.EMERALD_BLOCK);
                 System.out.println("[Refill Station] Reverted (" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ") back to it's original state.");
+
             }
         }
     }
@@ -74,7 +73,22 @@ public class SoupListener implements Listener {
             MaterialData materialData = sign.getMaterialData();
             Block signBlock = sign.getBlock().getRelative(materialData instanceof Attachable ? ((Attachable) materialData).getAttachedFace() : BlockFace.DOWN);
             signBlock.setType(Material.EMERALD_BLOCK);
-            event.getPlayer().sendMessage(ChatColor.RED + "Added refill station");
+            event.getPlayer().sendMessage(ChatColor.GREEN + "Added a new refill station at " + ChatColor.WHITE + "(" + signBlock.getLocation().getBlockX() + ", " + signBlock.getLocation().getBlockY() + ", " + signBlock.getLocation().getBlockZ() + ")" + ChatColor.GREEN + ".");
+
+            for (BlockFace face : BlockFace.values()) {
+                Block newSign = signBlock.getRelative(face);
+                if (newSign.getType() == Material.WALL_SIGN) {
+                    Sign sign2 = (Sign) newSign.getState();
+                    if (!sign2.getLine(1).contains("Refill")) {
+                        sign2.setLine(0, " ");
+                        sign2.setLine(1, CC.DARK_PURPLE + "- Refill -");
+                        sign2.setLine(2, "Soup/Potions");
+                        sign2.setLine(3, " ");
+                        sign2.update();
+                        event.getPlayer().sendMessage(ChatColor.GRAY + "* Found a nearby sign (" + face.name() + ") which was added as a Soup sign");
+                    }
+                }
+            }
         }
     }
 
@@ -132,7 +146,18 @@ public class SoupListener implements Listener {
 
             //player.getInventory().firstEmpty() != -1
             if (inventory.firstEmpty() != -1) { // Contains an empty soup which means it was used
-                replenishStation(location.getBlock(), MathUtil.getRandomInt(10, 25));
+                double emptySlots = 0;
+                double totalSlots = inventory.getSize();
+                for (ItemStack content : inventory.getContents()) {
+                    if (content == null || content.getType() == Material.AIR || content.getType() == Material.BOWL) {
+                        emptySlots++;
+                    }
+                }
+
+                double percentageSlots = (emptySlots / totalSlots) * 100;
+                // Every X seconds refill a soup
+               // Bukkit.broadcastMessage("Percentage used: " + percentageSlots + ". Should refill in " + Math.round(percentageSlots / 5) + " seconds");
+                replenishStation(location.getBlock(), (int) Math.round(percentageSlots / 5));
             }
         }
     }
@@ -149,8 +174,9 @@ public class SoupListener implements Listener {
     public void handleStation(Player player, Block attachedBlock) {
         BlockState state = attachedBlock.getState();
         if (!attachedBlock.hasMetadata(REFILL_METADATA) && !this.refillStations.contains(state)) { // Metadata is persistent, if the server crashes soup signs won't revert back to their original state.
-            replenishStation(attachedBlock, 1); // Replenish our station instantly
-            return;
+            this.refillStations.add(attachedBlock.getState()); // Ensure it's added
+            attachedBlock.setMetadata(REFILL_METADATA, new FixedMetadataValue(plugin, System.currentTimeMillis()));
+            attachedBlock.setType(Material.EMERALD_BLOCK);
         }
 
         if (attachedBlock.getType() == Material.REDSTONE_BLOCK) {

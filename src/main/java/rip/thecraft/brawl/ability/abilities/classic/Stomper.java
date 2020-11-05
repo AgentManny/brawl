@@ -38,6 +38,11 @@ public class Stomper extends Ability implements Listener {
     }
 
     @Override
+    public String getDescription() {
+        return "Launch yourself into the air and then sneak to thrust yourself down, dealing massive damage to whoever is on the ground below you.";
+    }
+
+    @Override
     public void onActivate(Player player) {
         if (hasCooldown(player, true)) return;
 

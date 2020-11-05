@@ -18,6 +18,21 @@ public class SpectatorManager implements Listener {
         Brawl.getInstance().getServer().getPluginManager().registerEvents(new SpectatorListener(this), Brawl.getInstance());
     }
 
+
+    /**
+     * Remove all spectators from a game.
+     * @param Object The data to check.
+     */
+    public void removeSpectators(SpectatorMode.SpectatorType type, Object data) {
+        for (Map.Entry<UUID, SpectatorMode> entry : spectators.entrySet()) {
+            SpectatorMode mode = entry.getValue();
+            if (mode.getSpectating() == type) {
+                mode.leave();
+            }
+        }
+    }
+
+
     public SpectatorMode addSpectator(Player spectator) {
         return addSpectator(spectator, null, null);
     }
@@ -42,7 +57,6 @@ public class SpectatorManager implements Listener {
             spectator.leave();
         }
     }
-
     public void removeSpectator(Player player) {
         removeSpectator(player.getUniqueId());
     }

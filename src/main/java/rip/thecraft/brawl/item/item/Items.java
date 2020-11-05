@@ -28,7 +28,6 @@ public class Items {
     }
 
 
-
     @Deprecated
     public Items(JsonObject jsonObject) {
         Map<Integer, String> map = Spartan.GSON.fromJson(jsonObject.get("items").getAsJsonObject(), BrawlUtil.MAP_INTEGER_STRING);
@@ -43,7 +42,7 @@ public class Items {
     public Items(JsonArray jsonArray) {
         List<ItemStack> items = new ArrayList<>();
         for (JsonElement element : jsonArray) {
-            items.add(Spartan.GSON.fromJson(element, ItemStack.class));
+            items.add(element.isJsonNull() || element.isJsonNull() ? new ItemStack(Material.AIR) : Spartan.GSON.fromJson(element, ItemStack.class));
         }
         this.items = items.toArray(new ItemStack[] { });
     }
@@ -59,8 +58,7 @@ public class Items {
     public JsonArray toJson() {
         JsonArray jsonArray = new JsonArray();
         for (ItemStack itemStack : this.items) {
-            if (itemStack == null || itemStack.getType() == Material.MUSHROOM_SOUP) continue;
-            jsonArray.add(Spartan.GSON.toJsonTree(itemStack));
+            jsonArray.add(itemStack == null || itemStack.getType() == Material.MUSHROOM_SOUP ? null : Spartan.GSON.toJsonTree(itemStack));
         }
         return jsonArray;
     }

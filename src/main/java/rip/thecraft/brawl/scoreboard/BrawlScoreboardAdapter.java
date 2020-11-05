@@ -1,6 +1,7 @@
 package rip.thecraft.brawl.scoreboard;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -87,6 +88,13 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
         SpectatorMode spectatorMode = plugin.getSpectatorManager().getSpectator(player);
         SpectatorMode.SpectatorType spectating = spectatorMode.getSpectating();
 
+        lines.add(ChatColor.DARK_PURPLE + "Spectating: " + ChatColor.LIGHT_PURPLE + WordUtils.capitalizeFully(spectating.name()));
+        if (spectatorMode.getFollow() != null) {
+            Player follow = Bukkit.getPlayer(spectatorMode.getFollow());
+            if (follow != null) {
+                lines.add(ChatColor.DARK_PURPLE + "Following: " + ChatColor.LIGHT_PURPLE + follow.getName());
+            }
+        }
         switch (spectating) {
             case GAME: {
                 Game game = spectatorMode.getGame();
@@ -102,7 +110,7 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
         }
 
         lines.add(" ");
-        lines.add(ChatColor.GRAY + "Spectator Mode");
+        lines.add(ChatColor.RED.toString() + "Spectator Mode (Beta)");
     }
 
     private List<String> getSpawn(Player player, PlayerData playerData, List<String> toReturn) {

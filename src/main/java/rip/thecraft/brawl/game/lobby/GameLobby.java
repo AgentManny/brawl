@@ -19,6 +19,7 @@ import rip.thecraft.brawl.game.map.GameMap;
 import rip.thecraft.brawl.game.team.GameTeam;
 import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.brawl.util.location.LocationType;
 import rip.thecraft.spartan.nametag.NametagHandler;
@@ -75,7 +76,7 @@ public class GameLobby {
         PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
 
         updateVotes();
-        player.getInventory().setItem(8, brawl.getItemHandler().toItemStack("LANGUAGE.ITEM.GAME.LOBBY.LEAVE_ITEM", brawl.getConfig()));
+        player.getInventory().setItem(8, brawl.getItemHandler().toItemStack("LANGUAGE.ITEM.GAME_LOBBY.LEAVE_EVENT", brawl.getConfig()));
 
         NametagHandler.reloadPlayer(player);
         NametagHandler.reloadOthersFor(player);
@@ -125,7 +126,6 @@ public class GameLobby {
             playerData.setSelectedKit(null);
             player.teleport(brawl.getLocationByName("SPAWN"));
             brawl.getItemHandler().apply(player, InventoryType.SPAWN);
-
             NametagHandler.reloadPlayer(player);
             NametagHandler.reloadOthersFor(player);
         }
@@ -194,12 +194,19 @@ public class GameLobby {
         brawl.getGameHandler().setActiveGame(game);
         brawl.getGameHandler().setLobby(null);
 
+        for (SpectatorMode spectator : brawl.getSpectatorManager().getSpectators()) {
+            if (spectator.getSpectating() == SpectatorMode.SpectatorType.GAME_LOBBY) {
+                spectator.spectateGame(); // Re-spectate to game
+            }
+        }
+
         game.setup();
 
     }
 
 
     public void stop() {
+        brawl.getSpectatorManager().removeSpectators(SpectatorMode.SpectatorType.GAME_LOBBY, this);
         this.players.forEach(this::leave);
         brawl.getGameHandler().setLobby(null);
     }
@@ -227,7 +234,7 @@ public class GameLobby {
                     case 2:
                     case 1:
                         for(Player player : brawl.getServer().getOnlinePlayers()) {
-                            new FancyMessage(Game.PREFIX + ChatColor.WHITE + gameType.getName() + ChatColor.YELLOW + " will be starting in " + ChatColor.LIGHT_PURPLE + TimeUtils.formatIntoDetailedString(startTime) + ChatColor.YELLOW + "." + ChatColor.GRAY + " (Click to join)").tooltip(Arrays.asList(ChatColor.YELLOW + "Click to join " + ChatColor.BLUE + gameType.getName() + ChatColor.YELLOW + ".")).command("/join").send(player);
+                            new FancyMessage(Game.PREFIX + ChatColor.WHITE + gameType.getName() + ChatColor.YELLOW + " will be starting in " + ChatColor.LIGHT_PURPLE + TimeUtils.formatIntoDetailedString(startTime) + ChatColor.YELLOW + "." + ChatColor.GRAY + " (Click to join)").tooltip(Arrays.asList(ChatColor.YELLOW + "Click to join " + ChatColor.DARK_PURPLE + gameType.getName() + ChatColor.YELLOW + ".")).command("/join").send(player);
                         }
                         break;
                     default:

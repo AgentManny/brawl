@@ -6,35 +6,35 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.region.RegionType;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class Flash extends Ability {
 
-    private static final Set<Material> invalidBlocks = new HashSet<>();
+    private static final HashSet<Byte> invalidBlocks = new HashSet<>();
 
     private boolean giveWeakness = true;
     private int maxTeleportDistance = 100;
 
     static {
-        invalidBlocks.add(Material.BARRIER);
-        invalidBlocks.add(Material.SNOW);
-        invalidBlocks.add(Material.LONG_GRASS);
-        invalidBlocks.add(Material.RED_MUSHROOM);
-        invalidBlocks.add(Material.RED_ROSE);
-        invalidBlocks.add(Material.YELLOW_FLOWER);
-        invalidBlocks.add(Material.BROWN_MUSHROOM);
-        invalidBlocks.add(Material.SIGN_POST);
-        invalidBlocks.add(Material.WALL_SIGN);
-        invalidBlocks.add(Material.FIRE);
-        invalidBlocks.add(Material.TORCH);
-        invalidBlocks.add(Material.REDSTONE_WIRE);
-        invalidBlocks.add(Material.REDSTONE_TORCH_OFF);
-        invalidBlocks.add(Material.REDSTONE_TORCH_ON);
-        invalidBlocks.add(Material.VINE);
-        invalidBlocks.add(Material.WATER_LILY);
+        invalidBlocks.add((byte) Material.BARRIER.getId());
+        invalidBlocks.add((byte) Material.SNOW.getId());
+        invalidBlocks.add((byte) Material.LONG_GRASS.getId());
+        invalidBlocks.add((byte) Material.RED_MUSHROOM.getId());
+        invalidBlocks.add((byte) Material.RED_ROSE.getId());
+        invalidBlocks.add((byte) Material.YELLOW_FLOWER.getId());
+        invalidBlocks.add((byte) Material.BROWN_MUSHROOM.getId());
+        invalidBlocks.add((byte) Material.SIGN_POST.getId());
+        invalidBlocks.add((byte) Material.WALL_SIGN.getId());
+        invalidBlocks.add((byte) Material.FIRE.getId());
+        invalidBlocks.add((byte) Material.TORCH.getId());
+        invalidBlocks.add((byte) Material.REDSTONE_WIRE.getId());
+        invalidBlocks.add((byte) Material.REDSTONE_TORCH_OFF.getId());
+        invalidBlocks.add((byte) Material.REDSTONE_TORCH_ON.getId());
+        invalidBlocks.add((byte) Material.VINE.getId());
+        invalidBlocks.add((byte) Material.WATER_LILY.getId());
     }
 
     @Override
@@ -51,7 +51,7 @@ public class Flash extends Ability {
     public void onActivate(Player player) {
         if (this.hasCooldown(player, true)) return;
 
-        List<Block> blocks = player.getLastTwoTargetBlocks(invalidBlocks, maxTeleportDistance);
+        List<Block> blocks = player.getLastTwoTargetBlocks((HashSet<Byte>)null, maxTeleportDistance);
         if (blocks.size() > 1 && blocks.get(1).getType() == Material.AIR) {
             player.sendMessage(ChatColor.RED + "You can't teleport this far!");
             return;
@@ -64,6 +64,11 @@ public class Flash extends Ability {
             Location loc = blockLoc.add(0.5, 0.5, 0.5);
             loc.setPitch(playerLoc.getPitch());
             loc.setYaw(playerLoc.getYaw());
+
+            if (loc.getBlockY() >= 150 || RegionType.SAFEZONE.appliesTo(loc)) {
+                player.sendMessage(ChatColor.RED + "You can't teleport here!");
+                return;
+            }
 
             player.eject();
             player.teleport(loc);

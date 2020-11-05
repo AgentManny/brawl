@@ -37,6 +37,7 @@ public class SpawnCommand {
 
             if (gh.getLobby() != null && gh.getLobby().getPlayers().contains(sender.getUniqueId())) {
                 gh.getLobby().leave(sender.getUniqueId());
+                sender.sendMessage(ChatColor.RED + "You have left the event.");
             }
 
             Game game = gh.getActiveGame();

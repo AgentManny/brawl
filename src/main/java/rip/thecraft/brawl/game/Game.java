@@ -18,6 +18,7 @@ import rip.thecraft.brawl.game.scoreboard.GameScoreboard;
 import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.StatisticType;
+import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.brawl.util.Tasks;
 import rip.thecraft.server.util.chatcolor.CC;
@@ -26,7 +27,6 @@ import rip.thecraft.spartan.util.TimeUtils;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Data
@@ -125,9 +125,10 @@ public abstract class Game {
 
             this.options.values().forEach(option -> option.onEnd(this));
             this.getAlivePlayers().forEach(GamePlayer::spawn);
-            this.spectators.forEach(uuid -> Brawl.getInstance().getSpectatorManager().removeSpectator(uuid));
+
+            Brawl.getInstance().getSpectatorManager().removeSpectators(SpectatorMode.SpectatorType.GAME, this);
+
             Brawl.getInstance().getGameHandler().destroy();
-            Brawl.getInstance().getGameHandler().getCooldown().put(this.getType(), System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5));
 
         }, 60);
     }
@@ -165,7 +166,11 @@ public abstract class Game {
         eliminated.setAlive(false); // Died
 
         if (elimination != GameElimination.QUIT) {
-            Brawl.getInstance().getSpectatorManager().addSpectator(player, location);
+            SpectatorMode spectatorMode = Brawl.getInstance().getSpectatorManager().addSpectator(player, location);
+            spectatorMode.setSpectating(SpectatorMode.SpectatorType.GAME);
+            for (int i = 0; i < 8; i++) { // Only add the LEAVE SPECTATOR item (in the 9th slot)
+                player.getInventory().setItem(i, null);
+            }
         }
 
         broadcast(getEliminateMessage(player, elimination));

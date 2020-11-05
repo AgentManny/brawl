@@ -16,6 +16,7 @@ import rip.thecraft.server.handler.MovementHandler;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Getter
 public class GameHandler {
@@ -73,6 +74,8 @@ public class GameHandler {
 
     public void destroy() {
         if (activeGame == null) return;
+
+        cooldown.put(activeGame.getType(), System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5));
 
         activeGame.cleanup();
 

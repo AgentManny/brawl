@@ -14,7 +14,9 @@ import rip.thecraft.brawl.kit.menu.KitSelectorMenu;
 import rip.thecraft.brawl.leaderboard.menu.LeaderboardEloMenu;
 import rip.thecraft.brawl.leaderboard.menu.LeaderboardMenu;
 import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.brawl.spectator.menu.SpectatorPlayerMenu;
+import rip.thecraft.brawl.util.location.LocationType;
 
 import java.util.function.BiConsumer;
 
@@ -35,6 +37,7 @@ public enum MetadataType {
         GameLobby lobby = Brawl.getInstance().getGameHandler().getLobby();
         if (lobby != null && lobby.getPlayers().contains(player.getUniqueId())) {
             lobby.leave(player.getUniqueId());
+            player.sendMessage(ChatColor.RED + "You have left the event.");
         }
     }),
 
@@ -68,9 +71,27 @@ public enum MetadataType {
         Brawl.getInstance().getMatchHandler().leaveQueue(player);
     }),
 
-    SPECTATE_GAME,
-    SPECTATE_ARENA,
-    SPECTATE_SPAWN,
+    SPECTATE_GAME((player, playerData) -> {
+        SpectatorMode spectator = Brawl.getInstance().getSpectatorManager().getSpectator(player);
+        if (spectator != null) { // Make sure they are actually spectating
+            spectator.spectateGame();
+        }
+    }),
+    SPECTATE_ARENA((player, playerData) -> {
+        SpectatorMode spectator = Brawl.getInstance().getSpectatorManager().getSpectator(player);
+        if (spectator != null) { // Make sure they are actually spectating
+            spectator.setTeleportTo(LocationType.ARENA.getLocation());
+            spectator.spectate(null);
+        }
+    }),
+    SPECTATE_SPAWN((player, playerData) -> {
+        SpectatorMode spectator = Brawl.getInstance().getSpectatorManager().getSpectator(player);
+        if (spectator != null) { // Make sure they are actually spectating
+            spectator.setTeleportTo(LocationType.SPAWN.getLocation());
+            spectator.spectate(null);
+
+        }
+    }),
 
     SPECTATOR_PLAYER_MENU((player, playerData) -> {
         new SpectatorPlayerMenu().openMenu(player);

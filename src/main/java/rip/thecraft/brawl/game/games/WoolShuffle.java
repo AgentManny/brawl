@@ -4,12 +4,14 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Wool;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.Brawl;
@@ -188,8 +190,12 @@ public class WoolShuffle extends Game implements Listener {
                 for (int boopX = x; boopX < newX; boopX++) {
                     for (int boopZ = z; boopZ < newZ; boopZ++) {
                         Block block = Bukkit.getWorld("world").getBlockAt(boopX, y, boopZ);
-                        block.setData(color.getData());
                         block.setType(Material.WOOL);
+
+                        BlockState state = block.getState();
+                        state.setData(new Wool(color));
+                        state.update();
+
                         blockData.put(color, block.getLocation());
                     }
                 }

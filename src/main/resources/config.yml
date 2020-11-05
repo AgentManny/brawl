@@ -1,70 +1,126 @@
 mongo:
-  database: "brawl"
-  host: "127.0.0.1:27017"
-  username: ""
-  password: ""
+  database: brawl
+  host: 127.0.0.1:27017
+  username: admin
+  password: ''
 ALLOWED_COMMANDS:
-  - "ignore"
-  - "unignore"
-  - "reply"
-  - "r"
-  - "tell"
-  - "msg"
-  - "m"
-  - "pm"
-  - "whisper"
-  - "w"
-  - "togglepm"
-  - "tpm"
-  - "togglesounds"
-  - "sounds"
-  - "list"
-  - "who"
-  - "ping"
-  - "reclaim"
-  - "claim"
-  - "report"
-  - "request"
-  - "helpop"
+  - ignore
+  - unignore
+  - reply
+  - r
+  - tell
+  - msg
+  - m
+  - pm
+  - whisper
+  - w
+  - togglepm
+  - tpm
+  - togglesounds
+  - sounds
+  - list
+  - who
+  - ping
+  - reclaim
+  - claim
+  - report
+  - request
+  - helpop
 TEAM:
   SIZE: 5
 LANGUAGE:
+  SCOREBOARD:
+    SPAWN:
+      TITLE: '&5&lTHE CRAFT'
+      LINES:
+        - '{LINE}'
+        - '&5Kills: &d{KILLS:ROUNDED}'
+        - '&5Deaths: &d{DEATHS:ROUNDED}'
+        - '&5Killstreak: &d{KILLSTREAK:ROUNDED}'
+        - '&4{ABILITY}: &c{ABILITY:TIME}'
+        - '&6{ABILITY:ACTIVE:KEY}: &e{ABILITY:ACTIVE:VALUE}'
+        - '&f{LINE}'
+    DUEL_ARENA:
+      TITLE: '&5&lTHE CRAFT'
+      LINES:
+        - '{LINE}'
+        - '&5Playing: &d1'
+        - '&5In Fights: &d0'
+        - '&dIn Queue: &d0'
+        - '&f{LINE}'
+    GAME:
+      LOBBY:
+        TITLE: '&5&l{NAME:CAPITALISE}'
+        LINES:
+          - '{LINE}'
+          - '&5Event: &d{NAME:SHORT}'
+          - '&5Players: &d{ALIVE}/{TOTAL}'
+          - '&5Starting in &f{TIME}'
+          - ' '
+          - '&5Map Vote'
+          - '&5{COUNT}. &d{MAP} &f{MAP:VOTE_COUNT}'
+          - '&f{LINE}'
+      OTHER:
+        TITLE: '&5&l{NAME:CAPITALISE}'
+        LINES:
+          - '{LINE}'
+          - '&5Event: &d{NAME:SHORT}'
+          - '&5Players: &d{ALIVE}/{TOTAL}'
+          - '&7{LINE}{STATE:GRACE_PERIOD}'
+          - '&5Starting in &f{TIME}{STATE:GRACE_PERIOD}'
+          - '&7{LINE}{STATE:FINISHED}'
+          - '&5Winner: &f{WINNER}'
+          - '&f{LINE}'
   ITEM:
     ARENA:
       '0':
         TYPE: IRON_SWORD
-        NAME: "&7\u00bb &d&lUnranked Queue &7\u00ab"
+        NAME: '&7» &d&lUnranked Queue &7«'
         META: DUEL_ARENA_UNRANKED
       '1':
         TYPE: DIAMOND_SWORD
-        NAME: "&7\u00bb &5&lRanked Queue &7\u00ab"
+        NAME: '&7» &5&lRanked Queue &7«'
         META: DUEL_ARENA_RANKED
       '8':
         TYPE: INK_SACK
-        DATA: 1
-        NAME: "&7\u00bb &cReturn to &lSpawn &7\u00ab"
+        DATA: 14
+        NAME: '&7» &cReturn to &lSpawn &7«'
         META: DUEL_ARENA_LEAVE
     SPAWN:
       '0':
         TYPE: BOOK
-        NAME: "&7\u00bb &5&lKit Selector &7\u00ab"
+        NAME: '&7» &5&lKit Selector &7«'
         META: KIT_SELECTOR
       '1':
         TYPE: WATCH
-        NAME: "&7\u00bb &d&lPrevious Kit &7\u00ab"
+        NAME: '&7» &d&lPrevious Kit &7«'
         META: PREVIOUS_KIT
       '4':
         TYPE: EMERALD
-        NAME: "&7\u00bb &2&lShop &7\u00ab"
+        NAME: '&7» &2&lShop &7«'
         META: SHOP
       '7':
         TYPE: NETHER_STAR
-        NAME: "&7\u00bb &e&lEvent Selector &7\u00ab"
+        NAME: '&7» &e&lEvent Selector &7«'
         META: EVENT_SELECTOR
       '8':
         TYPE: 381
-        NAME: "&7\u00bb &6&l1v1 &7\u00ab"
+        NAME: '&7» &6&l1v1 &7«'
         META: DUEL_ARENA
+    GAME_LOBBY:
+      LEAVE_EVENT:
+        TYPE: 351
+        DATA: 1
+        NAME: '&7» &c&lLeave Event &7«'
+        META: EVENT_LEAVE
+      VOTE:
+        TYPE: 395
+        NAME: '&7» &b&l{MAP_NAME} &7«'
+        META: EVENT_VOTE
+      VOTE_SELECTED:
+        TYPE: MAP
+        NAME: '&7» &a&l{MAP_NAME} &7«'
+        META: EVENT_VOTE_SELECTED
     QUEUE:
       '8':
         TYPE: 351
@@ -85,7 +141,7 @@ LANGUAGE:
         NAME: '&7» &e&lSpawn &7«'
         META: SPECTATE_SPAWN
       '5':
-        TYPE: EYE_OF_ENDER
+        TYPE: 381
         NAME: '&7» &6&l1v1 &7«'
         META: SPECTATE_ARENA
       '8':
@@ -93,205 +149,215 @@ LANGUAGE:
         DATA: 1
         NAME: '&7» &c&lLeave Spectator &7«'
         META: SPECTATOR_LEAVE
-  SCOREBOARD:
-    SPAWN:
-      TITLE: "&5&lTHE CRAFT"
-      LINES:
-        - "{LINE}"
-        - "&5Kills: &d{KILLS:ROUNDED}"
-        - "&5Deaths: &d{DEATHS:ROUNDED}"
-        - "&5Killstreak: &d{KILLSTREAK:ROUNDED}"
-        - "&4{ABILITY}: &c{ABILITY:TIME}"
-        - "&6{ABILITY:ACTIVE:KEY}: &e{ABILITY:ACTIVE:VALUE}"
-        - "&f{LINE}"
-    DUEL_ARENA:
-      TITLE: "&5&lTHE CRAFT"
-      LINES:
-        - "{LINE}"
-        - "&5Playing: &d1"
-        - "&5In Fights: &d0"
-        - "&dIn Queue: &d0"
-        - "&f{LINE}"
-    GAME:
-      LOBBY:
-        TITLE: "&5&l{NAME:CAPITALISE}"
-        LINES:
-          - "{LINE}"
-          - "&5Event: &d{NAME:SHORT}"
-          - "&5Players: &d{ALIVE}/{TOTAL}"
-          - "&5Starting in &f{TIME}"
-          - " "
-          - "&5Map Vote"
-          - "&5{COUNT}. &d{MAP} &f{MAP:VOTE_COUNT}"
-          - "&f{LINE}"
-      OTHER:
-        TITLE: "&5&l{NAME:CAPITALISE}"
-        LINES:
-          - "{LINE}"
-          - "&5Event: &d{NAME:SHORT}"
-          - "&5Players: &d{ALIVE}/{TOTAL}"
-          - "&7{LINE}{STATE:GRACE_PERIOD}"
-          - "&5Starting in &f{TIME}{STATE:GRACE_PERIOD}"
-          - "&7{LINE}{STATE:FINISHED}"
-          - "&5Winner: &f{WINNER}"
-          - "&f{LINE}"
   GAME:
-    START_TIMER: "&d&lEvent &7| &f{NAME}&e will start in &d{TIME}&e."
-    START: "&d&lEvent &7| &f{NAME}&e has now started."
+    START_TIMER: '&d&lEvent &7| &f{NAME}&e will start in &d{TIME}&e.'
+    START: '&d&lEvent &7| &f{NAME}&e has now started.'
     TEAM:
-      REMOVED: "&c&lEvent &7| &cTeam disbanded as {0} left."
+      REMOVED: '&c&lEvent &7| &cTeam disbanded as {0} left.'
     MAP:
-      CREATED: "&aCreated map &f{0}&a for {1}."
-      REMOVED: "&aRemoved map &f{0}&a for {1}."
-      LOCATIONS_LEFT: "&7Locations Remaining: &f{0}"
-      LOCATION_ADDED: "&aAdded location &f{0} &afor &f{1} &a{2} game."
-      LOCATION_REMOVED: "&aRemoved location &f{0} &afor &f{1} &a{2} game."
-      TELEPORTED: "&aTeleported to &f{0} &afor &f{1} &a{2} game."
+      CREATED: '&aCreated map &f{0}&a for {1}.'
+      REMOVED: '&aRemoved map &f{0}&a for {1}.'
+      LOCATIONS_LEFT: '&7Locations Remaining: &f{0}'
+      LOCATION_ADDED: '&aAdded location &f{0} &afor &f{1} &a{2} game.'
+      LOCATION_REMOVED: '&aRemoved location &f{0} &afor &f{1} &a{2} game.'
+      TELEPORTED: '&aTeleported to &f{0} &afor &f{1} &a{2} game.'
       ERROR:
-        NOT_FOUND: "&cMap {0} for {1} not found."
-        LOCATION_NOT_FOUND: "&cLocation for {0} doesn't exist for {1} game."
-        ALREADY_EXISTS: "&cMap {0} for {1} already exists."
+        NOT_FOUND: '&cMap {0} for {1} not found.'
+        LOCATION_NOT_FOUND: '&cLocation for {0} doesn''t exist for {1} game.'
+        ALREADY_EXISTS: '&cMap {0} for {1} already exists.'
     LOBBY:
-      JOIN: "&d&lEvent &7| &f{0}&e has joined the event. &7({1}/{2})"
+      JOIN: '&d&lEvent &7| &f{0}&e has joined the event. &7({1}/{2})'
       ERROR:
-        ALREADY_VOTED: "&cYou've already voted for this map."
+        ALREADY_VOTED: '&cYou''ve already voted for this map.'
       INVENTORY:
         LEAVE_EVENT:
-          TYPE: INK_SACK
+          TYPE: 351
           DATA: 1
-          NAME: "&7\u00bb &c&lLeave Event &7\u00ab"
+          NAME: '&7» &c&lLeave Event &7«'
           META: EVENT_LEAVE
         VOTE:
           TYPE: 395
-          NAME: "&7\u00bb &b&l{MAP_NAME} &7\u00ab"
+          NAME: '&7» &b&l{MAP_NAME} &7«'
           META: EVENT_VOTE
         VOTE_SELECTED:
           TYPE: MAP
-          NAME: "&7\u00bb &a&l{MAP_NAME} &7\u00ab"
+          NAME: '&7» &a&l{MAP_NAME} &7«'
           META: EVENT_VOTE_SELECTED
-  DISABLED: "&cNo permission."
+  DISABLED: '&cNo permission.'
   CREDITS:
-    DEDUCTED: "&d{0}&e has been &cdeducted&e from your account."
+    DEDUCTED: '&d{0}&e has been &cdeducted&e from your account.'
     ERROR:
-      INSUFFICIENT_FUNDS: "&dYou don't have enough to purchase this item."
+      INSUFFICIENT_FUNDS: '&dYou don''t have enough to purchase this item.'
   SHOP:
-    PURCHASED: "&aPurchased &f{0}x &a{1}."
-    ENCHANTED: "&aUpgraded item &f{0}&a."
+    PURCHASED: '&aPurchased &f{0}x &a{1}.'
+    ENCHANTED: '&aUpgraded item &f{0}&a.'
   TELEPORT:
     ERROR:
-      ENDERPEARL: "&cYou cannot enderpearl into spawn, used enderpearl has been refunded."
+      ENDERPEARL: '&cYou cannot enderpearl into spawn, used enderpearl has been refunded.'
   LOCATION:
-    SET: "&eSet location of &d{0}&e."
-    NOT_FOUND: "&cNo location set for {0}&c."
+    SET: '&eSet location of &d{0}&e.'
+    NOT_FOUND: '&cNo location set for {0}&c.'
   ABILITY:
-    COOLDOWN: "&cYou must wait &l{0}&c before using this again."
-    EXPIRED: "&aYou can now use &l{0}&a again."
+    COOLDOWN: '&cYou must wait &l{0}&c before using this again.'
+    EXPIRED: '&aYou can now use &l{0}&a again.'
     ERROR:
-      SAFEZONE: "&cYou cannot use abilities in spawn."
+      SAFEZONE: '&cYou cannot use abilities in spawn.'
   PLAYER:
     KIT:
-      SELECTED: "&eYou have chosen the &d{0}&e kit."
+      SELECTED: '&eYou have chosen the &d{0}&e kit.'
     PROTECTION:
-      REMOVED: "&7You no longer have spawn protection."
-      DAMAGE: "&cYou still have spawn protection."
-      DAMAGE_OTHER: "&c{0}&c still has spawn protection."
+      REMOVED: '&7You no longer have spawn protection.'
+      DAMAGE: '&cYou still have spawn protection.'
+      DAMAGE_OTHER: '&c{0}&c still has spawn protection.'
   TEAM:
     HELP:
-      - "&7&m{0}"
-      - "&d&lTeam Information &7- &fCommands"
-      - "&7&m{0}"
-      - "&dGeneral Commands:"
-      - "  &e/team create <teamName> &d(Create a new team)"
-      - "  &e/team accept <teamName|playerName> &d(Accept a pending invitation)"
-      - "  &e/team leave &d(Leave your current team)"
-      - "  &e/team chat &d(Toggle team chat)"
-      - " "
-      - "&dInformation Commands:"
-      - "  &e/team chat &d(Toggle team chat)"
-      - "  &e/team info [playerName|teamName] &d(Display team roaster)"
-      - "  &e/team list &d(Show a list of teams online)"
-      - " "
-      - "&dCaptain Commands:"
-      - "  &e/team invite <playerName> &d(Invite a team to your team)"
-      - "  &e/team uninvite <playerName> &d(Revoke an invitation)"
-      - "  &e/team invites &d(List all open invitations)"
-      - "  &e/team kick <playerName> &d(Kick a team from your team)"
-      - "  &e/team announcement <message|clear> &d(Set your team's announcement)"
-      - " "
-      - "&dLeader Commands:"
-      - "  &e/team promote <playerName> &d(Promote a team)"
-      - "  &e/team demote <playerName> &d(Demote a team)"
-      - "  &e/team rename <newName> &d(Rename your team)"
-      - "  &e/team disband &d(Disband your team -- CANNOT BE REVERSED)"
-      - "&7&m{0}"
+      - '&7&m{0}'
+      - '&d&lTeam Information &7- &fCommands'
+      - '&7&m{0}'
+      - '&dGeneral Commands:'
+      - '  &e/team create <teamName> &d(Create a new team)'
+      - '  &e/team accept <teamName|playerName> &d(Accept a pending invitation)'
+      - '  &e/team leave &d(Leave your current team)'
+      - '  &e/team chat &d(Toggle team chat)'
+      - ' '
+      - '&dInformation Commands:'
+      - '  &e/team chat &d(Toggle team chat)'
+      - '  &e/team info [playerName|teamName] &d(Display team roaster)'
+      - '  &e/team list &d(Show a list of teams online)'
+      - ' '
+      - '&dCaptain Commands:'
+      - '  &e/team invite <playerName> &d(Invite a team to your team)'
+      - '  &e/team uninvite <playerName> &d(Revoke an invitation)'
+      - '  &e/team invites &d(List all open invitations)'
+      - '  &e/team kick <playerName> &d(Kick a team from your team)'
+      - '  &e/team announcement <message|clear> &d(Set your team''s announcement)'
+      - ' '
+      - '&dLeader Commands:'
+      - '  &e/team promote <playerName> &d(Promote a team)'
+      - '  &e/team demote <playerName> &d(Demote a team)'
+      - '  &e/team rename <newName> &d(Rename your team)'
+      - '  &e/team disband &d(Disband your team -- CANNOT BE REVERSED)'
+      - '&7&m{0}'
     INFO:
-      - "&7&m{LINE}"
-      - "&b{NAME}&7[{ONLINE}/{SIZE}]"
-      - "&eLeader: &d{LEADER}"
-      - "&eColeaders: &d{COLEADERS}"
-      - "&eCaptains: &d{CAPTAINS}"
-      - "&eMembers: &d{MEMBERS}"
-      - "&eAnnouncement: &d{ANNOUNCEMENT}"
-      - "&7&m{LINE}"
-    ANNOUNCEMENT: "&5{0}&e set the announcement to &d{1}&e."
-    CREATE: "&5Your team has been created!\n&7To learn more about teams, do /team"
-    CHAT_SWITCHED: "&eYou are now talking in &5{0}&e."
-    DISBAND: "&5**{0}&e has disbanded your team."
-    JOIN: "&5{0}&e has joined your team."
+      - '&7&m{LINE}'
+      - '&b{NAME}&7[{ONLINE}/{SIZE}]'
+      - '&eLeader: &d{LEADER}'
+      - '&eColeaders: &d{COLEADERS}'
+      - '&eCaptains: &d{CAPTAINS}'
+      - '&eMembers: &d{MEMBERS}'
+      - '&eAnnouncement: &d{ANNOUNCEMENT}'
+      - '&7&m{LINE}'
+    ANNOUNCEMENT: '&5{0}&e set the announcement to &d{1}&e.'
+    CREATE: |-
+      &5Your team has been created!
+      &7To learn more about teams, do /team
+    CHAT_SWITCHED: '&eYou are now talking in &5{0}&e.'
+    DISBAND: '&5**{0}&e has disbanded your team.'
+    JOIN: '&5{0}&e has joined your team.'
     ERROR:
-      FULL: "&cTeam is already at full capacity ({0} members)"
-      NOT_INVITED: "&cYou haven't been invited to this team."
-      LEADER_ONLY: "&cYou must be a leader to do this."
-      DIFFERENT_TEAM: "&c{0}&c is not in your team."
+      FULL: '&cTeam is already at full capacity ({0} members)'
+      NOT_INVITED: '&cYou haven''t been invited to this team.'
+      LEADER_ONLY: '&cYou must be a leader to do this.'
+      DIFFERENT_TEAM: '&c{0}&c is not in your team.'
       PLAYER:
-        SELF: "&cNope! Nice try."
-        NOT_FOUND: "&cYou are not in a team."
-        FOUND: "&cYou are already in a team."
-      DISBAND: "&cYou don't have permission to disband other teams."
-      ALREADY_EXISTS: "&cTeam {0}&c already exists."
+        SELF: '&cNope! Nice try.'
+        NOT_FOUND: '&cYou are not in a team.'
+        FOUND: '&cYou are already in a team.'
+      DISBAND: '&cYou don''t have permission to disband other teams.'
+      ALREADY_EXISTS: '&cTeam {0}&c already exists.'
       NAME:
-        MIN: "&cMaximum team name size is 12 characters"
-        MAX: "&cMinimum team name size is 3 characters"
-      ALPHA_NUMERIC: "&cTeam names must be alphanumeric."
+        MIN: '&cMaximum team name size is 12 characters'
+        MAX: '&cMinimum team name size is 3 characters'
+      ALPHA_NUMERIC: '&cTeam names must be alphanumeric.'
   COMMAND:
     RELOAD:
-      SUCCESS: "&aReloaded configuration."
-      ERROR: "&cFailed to reload configuration"
+      SUCCESS: '&aReloaded configuration.'
+      ERROR: '&cFailed to reload configuration'
     KIT:
-      CREATE: "&eCreated kit &d{0}&e."
-      REMOVE: "&eRemoved kit &d{0}&e."
-      RETRIEVE: "&eGiven kit &d{0}&e. &dClick Here&e to update this kit."
-      UPDATE: "&eUpdated kit &d{0}&e. &dClick Here&e to return to spawn."
-      ICON: "&eUpdated icon for kit &d{0}&e."
-      DESCRIPTION: "&eUpdated description for kit &d{0}&e to &d{1}&e."
-      RANK: "&eUpdated rank for kit &d{0}&e."
-      RARITY: "&eUpdated rarity for kit &d{0}&e."
-      ABILITY: "&e{0} &eability &d{1}&e for kit &d{2}&e."
+      CREATE: '&eCreated kit &d{0}&e.'
+      REMOVE: '&eRemoved kit &d{0}&e.'
+      RETRIEVE: '&eGiven kit &d{0}&e. &dClick Here&e to update this kit.'
+      UPDATE: '&eUpdated kit &d{0}&e. &dClick Here&e to return to spawn.'
+      ICON: '&eUpdated icon for kit &d{0}&e.'
+      DESCRIPTION: '&eUpdated description for kit &d{0}&e to &d{1}&e.'
+      RANK: '&eUpdated rank for kit &d{0}&e.'
+      RARITY: '&eUpdated rarity for kit &d{0}&e.'
+      ABILITY: '&e{0} &eability &d{1}&e for kit &d{2}&e.'
     ERROR:
-      INVENTORY_FULL: "&cYour inventory is full."
+      INVENTORY_FULL: '&cYour inventory is full.'
     REGION:
-      SAVE: "&eSaved regions in &d{0}ms&e."
+      SAVE: '&eSaved regions in &d{0}ms&e.'
       LIST:
-        - "&7&m{LINE}"
-        - "&5&lRegions"
-        - "  &f{NAME}&c[{TYPE:FORMAT}] &7({X}, {Y}, {Z}) &7({X2}, {Y2}, {Z2})"
-        - "&7&m{LINE}"
+        - '&7&m{LINE}'
+        - '&5&lRegions'
+        - '  &f{NAME}&c[{TYPE:FORMAT}] &7({X}, {Y}, {Z}) &7({X2}, {Y2}, {Z2})'
+        - '&7&m{LINE}'
       HELP:
-        - "&7&m{LINE}"
-        - "&5&lRegion Commands"
-        - "  &f/region create &7(Create a region)"
-        - "  &f/region help &7(Region help commands)"
-        - "  &f/region list &7(List all regions)"
-        - "  &f/region remove &7(Remove a region)"
-        - "&7&m{LINE}"
-      CREATE: "&eCreated region &d{0}&e."
-      REMOVE: "&eRemoved region &d{0}&e."
+        - '&7&m{LINE}'
+        - '&5&lRegion Commands'
+        - '  &f/region create &7(Create a region)'
+        - '  &f/region help &7(Region help commands)'
+        - '  &f/region list &7(List all regions)'
+        - '  &f/region remove &7(Remove a region)'
+        - '&7&m{LINE}'
+      CREATE: '&eCreated region &d{0}&e.'
+      REMOVE: '&eRemoved region &d{0}&e.'
       ERROR:
-        NOT_SELECTED: "&cYou haven't selected a region."
-        NOT_FOUND: "&cRegion {0}&c not found."
-        ALREADY_EXISTS: "&cRegion {0}&c already exists."
-        TYPE_NOT_FOUND: "&cRegion type {0}&c not found."
+        NOT_SELECTED: '&cYou haven''t selected a region.'
+        NOT_FOUND: '&cRegion {0}&c not found.'
+        ALREADY_EXISTS: '&cRegion {0}&c already exists.'
+        TYPE_NOT_FOUND: '&cRegion type {0}&c not found.'
   KIT:
     PVP:
-      DESCRIPTION: "Basic PvP class."
+      DESCRIPTION: Basic PvP class.
       ENABLED: true
+LOCATIONS:
+  SPAWN:
+    world: world
+    x: 0.5795325350672685
+    y: 100.0
+    z: 0.5509482765977608
+    yaw: 0.09051448
+    pitch: -0.24124241
+  NPC_UPGRADER:
+    world: world
+    x: 7.092774393608665
+    y: 99.0
+    z: 5.0514058552580074
+    yaw: 10.125083
+    pitch: 13.387623
+  HOLO_LB:
+    world: world
+    x: -6.492060429424009
+    y: 99.5
+    z: -6.42366813868594
+    yaw: -42.414062
+    pitch: 3.3235397
+  HOLO_STATS:
+    world: world
+    x: 7.377283159491882
+    y: 99.5
+    z: -6.427592770642988
+    yaw: -310.97046
+    pitch: -0.894106
+  GAME_LOBBY:
+    world: world
+    x: 0.6615065722248856
+    y: 121.0
+    z: 170.36529824108345
+    yaw: -180.49551
+    pitch: -3.164398
+  DUEL_ARENA:
+    world: world
+    x: 1000.6690045937258
+    y: 100.0
+    z: 1000.155723071546
+    yaw: -0.6047363
+    pitch: 0.94663006
+  NPC_CHALLENGES:
+    world: world
+    x: 4.572977425618586
+    y: 99.0
+    z: 4.950717995704466
+    yaw: 11.418846
+    pitch: 13.837627

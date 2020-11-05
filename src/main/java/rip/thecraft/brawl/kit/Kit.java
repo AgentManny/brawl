@@ -60,9 +60,11 @@ public class Kit implements Listener, Comparable<Kit> {
     public Kit(JsonObject jsonObject) {
         this.name = jsonObject.get("name").getAsString();
 
-        if (jsonObject.has("icon") && jsonObject.isJsonObject()) {
-            JsonObject icon = jsonObject.get("icon").getAsJsonObject();
-            this.icon = new ItemStack(Material.valueOf(icon.get("type").getAsString()), icon.has("data") ? icon.get("data").getAsByte() : 0);
+        JsonElement iconData = jsonObject.get("icon");
+        if (iconData != null && iconData.isJsonObject() && !iconData.isJsonNull()) {
+            this.icon = Spartan.GSON.fromJson(iconData, ItemStack.class);
+        } else {
+            Brawl.getInstance().getLogger().severe("[Kit] " + this.name + " icon failed to load");
         }
 
         this.description = jsonObject.get("description").getAsString();
@@ -96,10 +98,7 @@ public class Kit implements Listener, Comparable<Kit> {
         JsonObject kit = new JsonObject();
         kit.addProperty("name", name);
 
-        JsonObject iconData = new JsonObject();
-        iconData.addProperty("type", icon.getType().name());
-        iconData.addProperty("data", icon.getData().getData());
-        kit.add("icon", iconData);
+        kit.add("icon", Spartan.GSON.toJsonTree(icon));
 
         kit.addProperty("description", description);
         kit.addProperty("weight", weight);

@@ -25,7 +25,6 @@ public class Dash extends Ability implements Listener {
         if (this.hasCooldown(player, true)) return;
         this.addCooldown(player);
 
-
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 30, 10), true);
     }
 
