@@ -1,7 +1,6 @@
 package rip.thecraft.brawl.ability.property.type;
 
 import lombok.NonNull;
-import org.apache.http.ParseException;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.ability.property.exception.PropertyParseException;
 

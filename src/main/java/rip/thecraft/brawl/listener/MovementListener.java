@@ -3,6 +3,7 @@ package rip.thecraft.brawl.listener;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import me.activated.core.plugin.AquaCoreAPI;
 import net.minecraft.server.v1_8_R3.PacketPlayInFlying;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -26,7 +27,6 @@ import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.region.RegionType;
-import rip.thecraft.falcon.staff.StaffMode;
 import rip.thecraft.server.handler.MovementHandler;
 
 @RequiredArgsConstructor
@@ -94,7 +94,7 @@ public class MovementListener implements MovementHandler, Listener {
                 playerData.setSpawnProtection(false);
             }
 
-            if (StaffMode.hasStaffMode(player)) return;
+            if (AquaCoreAPI.INSTANCE.getPlayerData(player.getUniqueId()).isInStaffMode()) return;
             if (state == PlayerState.SPECTATING) return;
 
             if (playerData.isSpawnProtection()) {

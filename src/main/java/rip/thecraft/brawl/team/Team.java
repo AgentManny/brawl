@@ -11,7 +11,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.falcon.rank.Rank;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.Spartan;
 import rip.thecraft.spartan.nametag.NametagHandler;
@@ -82,7 +81,7 @@ public class Team {
     public void sendTeamInfo(CommandSender sender) {
         sender.sendMessage(CC.GRAY + "*** " + CC.DARK_AQUA + name + CC.GRAY + " ***");
 
-        if (this.announcement != null && (sender.isOp() || sender.hasPermission(Rank.STAFF_NODE) || sender instanceof Player && isMember((Player) sender))) {
+        if (this.announcement != null && (sender.isOp() || sender.hasPermission("aqua.core.staff") || sender instanceof Player && isMember((Player) sender))) {
             sender.sendMessage(CC.DARK_AQUA + "Announcement: " + ChatColor.GRAY + announcement);
         }
 

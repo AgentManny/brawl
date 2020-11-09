@@ -5,7 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.visual.VisualManager;
-import rip.thecraft.falcon.hologram.hologram.Hologram;
+import rip.thecraft.brawl.hologram.hologram.Hologram;
 
 import java.util.Map;
 import java.util.UUID;

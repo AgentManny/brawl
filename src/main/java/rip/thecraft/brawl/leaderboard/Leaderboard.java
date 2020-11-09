@@ -4,13 +4,12 @@ import com.google.gson.internal.LinkedTreeMap;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Sorts;
 import lombok.Getter;
+import me.activated.core.api.player.PlayerData;
+import me.activated.core.plugin.AquaCore;
 import org.bson.Document;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.duelarena.loadout.MatchLoadout;
 import rip.thecraft.brawl.player.statistic.StatisticType;
-import rip.thecraft.falcon.Falcon;
-import rip.thecraft.falcon.profile.Profile;
-import rip.thecraft.falcon.rank.Rank;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -50,8 +49,8 @@ public class Leaderboard {
             Document doc = iterator.next();
             Document statDocument = (Document) ((Document) doc.get("statistic")).get("spawn");
             if (statDocument != null) {
-                Profile profile = Falcon.getInstance().getProfileHandler().loadProfile(UUID.fromString(doc.getString("uuid")));
-                statistics.put(profile.getDisplayName(), statDocument.getDouble(statisticType.name()));
+                PlayerData playerData = AquaCore.INSTANCE.getAquaCoreAPI().getPlayerData(UUID.fromString(doc.getString("uuid")));
+                statistics.put(playerData.getNameColor(), statDocument.getDouble(statisticType.name()));
             }
         }
         return statistics;
@@ -69,10 +68,8 @@ public class Leaderboard {
                 elo = statDoc.getInteger(matchLoadout.getName().toLowerCase(), 1000);
             }
 
-            Profile profile = Falcon.getInstance().getProfileHandler().loadProfile(UUID.fromString(doc.getString("uuid")));
-            Rank rank = profile.getRank();
-            statistics.put(rank.getGameColor() + profile.getUsername(), elo);
-
+            PlayerData playerData = AquaCore.INSTANCE.getAquaCoreAPI().getPlayerData(UUID.fromString(doc.getString("uuid")));
+            statistics.put(playerData.getNameColor(), elo);
         }
         return statistics;
     }

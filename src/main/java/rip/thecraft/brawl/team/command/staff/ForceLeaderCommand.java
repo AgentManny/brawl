@@ -3,7 +3,7 @@ package rip.thecraft.brawl.team.command.staff;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.team.Team;
-import rip.thecraft.falcon.profile.cache.CacheProfile;
+import rip.thecraft.brawl.util.CacheProfile;
 import rip.thecraft.spartan.command.Command;
 import rip.thecraft.spartan.command.Param;
 

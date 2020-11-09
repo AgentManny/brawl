@@ -8,8 +8,8 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.leaderboard.Leaderboard;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.visual.VisualManager;
-import rip.thecraft.falcon.hologram.hologram.Hologram;
-import rip.thecraft.falcon.hologram.hologram.Holograms;
+import rip.thecraft.brawl.hologram.hologram.Hologram;
+import rip.thecraft.brawl.hologram.hologram.Holograms;
 
 import java.text.DecimalFormat;
 import java.util.Map;

@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.lang.Nullable;
 import lombok.NonNull;
 import lombok.Setter;
+import me.activated.core.plugin.AquaCoreAPI;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,7 +14,6 @@ import rip.thecraft.brawl.event.Event;
 import rip.thecraft.brawl.event.EventType;
 import rip.thecraft.brawl.team.Team;
 import rip.thecraft.brawl.util.cuboid.Cuboid;
-import rip.thecraft.falcon.staff.StaffMode;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.TimeUtils;
 
@@ -65,7 +65,7 @@ public class KingOfTheHill extends Event {
             sendMessage();
             captureTime--;
         } else {
-            setCappingPlayer(captureZone.getPlayers().stream().filter(player -> !StaffMode.hasStaffMode(player)).findAny().orElse(null));
+            setCappingPlayer(captureZone.getPlayers().stream().filter(player -> !AquaCoreAPI.INSTANCE.getPlayerData(player.getUniqueId()).isInStaffMode()).findAny().orElse(null));
         }
 
         if (captureTime <= 0) {

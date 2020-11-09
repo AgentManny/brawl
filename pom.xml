@@ -39,10 +39,11 @@
         </dependency>
 
         <dependency>
-            <groupId>rip.thecraft.falcon</groupId>
-            <artifactId>bukkit</artifactId>
+            <groupId>com.aqua.somethingidk</groupId>
+            <artifactId>core</artifactId>
             <version>1.0</version>
-            <scope>provided</scope>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/Core.jar</systemPath>
         </dependency>
 
         <dependency>

@@ -1,5 +1,6 @@
 package rip.thecraft.brawl.scoreboard;
 
+import me.activated.core.plugin.AquaCoreAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
@@ -8,9 +9,6 @@ import rip.thecraft.brawl.levels.Level;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.team.Team;
-import rip.thecraft.falcon.Falcon;
-import rip.thecraft.falcon.profile.Profile;
-import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.nametag.NametagInfo;
 import rip.thecraft.spartan.nametag.NametagProvider;
 
@@ -26,10 +24,8 @@ public class BrawlNametagAdapter extends NametagProvider {
 
     @Override
     public NametagInfo fetchNametag(Player toRefresh, Player refreshFor) {
-        Profile profile = Falcon.getInstance().getProfileHandler().getByPlayer(toRefresh);
         PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(toRefresh);
-
-        String color = CC.translate(profile.getRank().getGameColor());
+        String color = AquaCoreAPI.INSTANCE.getPlayerNameColor(toRefresh.getUniqueId()).toString();
 
         PlayerData refreshPlayerData = plugin.getPlayerDataHandler().getPlayerData(refreshFor);
         if (playerData == null || refreshPlayerData == null) return createNametag(color, "");
@@ -60,7 +56,7 @@ public class BrawlNametagAdapter extends NametagProvider {
         }
 
         Level level = playerData.getLevel();
-        String levelPrefix = Level.getColor(level.getCurrentLevel()) + level.getSimplePrefix() + ChatColor.translateAlternateColorCodes('&', profile.getRank().getGameColor());
+        String levelPrefix = Level.getColor(level.getCurrentLevel()) + level.getSimplePrefix() + color;
 
         Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(toRefresh);
 

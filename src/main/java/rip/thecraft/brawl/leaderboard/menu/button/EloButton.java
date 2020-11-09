@@ -7,13 +7,11 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.duelarena.loadout.MatchLoadout;
-import rip.thecraft.falcon.Falcon;
 import rip.thecraft.spartan.menu.Button;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 public class EloButton extends Button {
