@@ -50,7 +50,7 @@ public class Leaderboard {
             Document statDocument = (Document) ((Document) doc.get("statistic")).get("spawn");
             if (statDocument != null) {
                 PlayerData playerData = AquaCore.INSTANCE.getAquaCoreAPI().getPlayerData(UUID.fromString(doc.getString("uuid")));
-                statistics.put(playerData.getNameColor(), statDocument.getDouble(statisticType.name()));
+                statistics.put(playerData == null ? doc.getString("username") : playerData.getNameColor(), statDocument.getDouble(statisticType.name()));
             }
         }
         return statistics;
@@ -69,7 +69,7 @@ public class Leaderboard {
             }
 
             PlayerData playerData = AquaCore.INSTANCE.getAquaCoreAPI().getPlayerData(UUID.fromString(doc.getString("uuid")));
-            statistics.put(playerData.getNameColor(), elo);
+            statistics.put(playerData == null ? doc.getString("username") : playerData.getNameColor(), elo);
         }
         return statistics;
     }
