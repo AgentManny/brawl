@@ -2,7 +2,7 @@ package rip.thecraft.brawl.util.conversation;
 
 import org.bukkit.conversations.*;
 import org.bukkit.entity.Player;
-import rip.thecraft.brawl.Brawl;
+import rip.thecraft.falcon.Falcon;
 
 import java.util.function.Consumer;
 
@@ -41,7 +41,7 @@ public class PromptBuilder {
     }
 
     public Conversation createConversation() {
-        return new ConversationFactory(Brawl.getInstance())
+        return new ConversationFactory(Falcon.getInstance())
                 .withLocalEcho(false)
                 .withFirstPrompt(build())
                 .thatExcludesNonPlayersWithMessage("Go away evil console!")

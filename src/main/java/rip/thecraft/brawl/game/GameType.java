@@ -16,7 +16,7 @@ public enum GameType {
 
 	SPLEEF(
 			new ItemBuilder(Material.DIAMOND_SPADE).build(),
-			RankType.BASIC,
+			RankType.SILVER,
 			"Fight opponents. Last man standing wins.",
 			2,
 			40
@@ -25,7 +25,7 @@ public enum GameType {
 	FFA(
 			"Free For All", "FFA",
 			new ItemBuilder(Material.DIAMOND_SWORD).build(),
-			RankType.BASIC,
+			RankType.SILVER,
 			"Fight opponents. Last man standing wins.",
 			2,
 			50,
@@ -34,7 +34,7 @@ public enum GameType {
 
 	BRACKETS(
 			new ItemBuilder(Material.MUSHROOM_SOUP).build(),
-			RankType.LEGEND,
+			RankType.GOLD,
 			"Fight opponents. Last man standing wins.",
 			2,
 			50,
@@ -43,7 +43,7 @@ public enum GameType {
 
 	SUMO(
 			new ItemBuilder(Material.LEASH).build(),
-			RankType.LEGEND,
+			RankType.PLATINUM,
 			"Fight opponents on a platform. Last man standing wins.",
 			2,
 			50,
@@ -53,7 +53,7 @@ public enum GameType {
 	OITC(
 			"One in the Chamber", "OITC",
 			new ItemBuilder(Material.BOW).build(),
-			RankType.PRO,
+			RankType.PLATINUM,
 			"Sniper. One shot, one kill! Last man standing wins!",
 			2,
 			50,
@@ -63,7 +63,7 @@ public enum GameType {
 	WOOL_SHUFFLE(
 			"Wool Shuffle",
 			new ItemBuilder(Material.WOOL).data((byte)10).build(),
-			RankType.ELITE,
+			RankType.DIAMOND,
 			"Run to the right color before the floor drops! Last man standing wins.",
 			2,
 			50,
@@ -72,7 +72,7 @@ public enum GameType {
 
 	TNT_TAG("TNT Tag", "Tag",
 			new ItemBuilder(Material.TNT).build(),
-			RankType.CRAFTER,
+			RankType.CHAMPION,
 			"Tag with a twist, don't blow up! Last man standing wins!",
 			2,
 			25,

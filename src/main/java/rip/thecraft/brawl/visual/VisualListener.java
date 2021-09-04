@@ -9,8 +9,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.hologram.hologram.Hologram;
-import rip.thecraft.brawl.hologram.hologram.Holograms;
+import rip.thecraft.falcon.hologram.hologram.Hologram;
+import rip.thecraft.falcon.hologram.hologram.Holograms;
 
 import java.util.Arrays;
 

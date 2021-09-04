@@ -4,12 +4,12 @@ import com.google.gson.internal.LinkedTreeMap;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Sorts;
 import lombok.Getter;
-import me.activated.core.api.player.PlayerData;
-import me.activated.core.plugin.AquaCore;
 import org.bson.Document;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.duelarena.loadout.MatchLoadout;
 import rip.thecraft.brawl.player.statistic.StatisticType;
+import rip.thecraft.falcon.Falcon;
+import rip.thecraft.falcon.profile.Profile;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -24,7 +24,7 @@ public class Leaderboard {
     private final Map<MatchLoadout, Map<String, Integer>> eloLeaderboards = new LinkedHashMap<>();
 
     public Leaderboard(Brawl plugin) {
-        plugin.getServer().getScheduler().runTaskTimer(plugin, this::update, 20L, TimeUnit.MINUTES.toMillis(15));
+       // plugin.getServer().getScheduler().runTaskTimer(plugin, this::update, 20L, TimeUnit.MINUTES.toMillis(15));
     }
 
     public void update() {
@@ -49,8 +49,8 @@ public class Leaderboard {
             Document doc = iterator.next();
             Document statDocument = (Document) ((Document) doc.get("statistic")).get("spawn");
             if (statDocument != null) {
-                PlayerData playerData = AquaCore.INSTANCE.getAquaCoreAPI().getPlayerData(UUID.fromString(doc.getString("uuid")));
-                statistics.put(playerData == null ? doc.getString("username") : playerData.getNameColor(), statDocument.getDouble(statisticType.name()));
+                Profile profile = Falcon.getInstance().getProfileHandler().loadProfile(UUID.fromString(doc.getString("uuid")));
+                statistics.put(profile.getDisplayName(), statDocument.getDouble(statisticType.name()));
             }
         }
         return statistics;
@@ -68,8 +68,9 @@ public class Leaderboard {
                 elo = statDoc.getInteger(matchLoadout.getName().toLowerCase(), 1000);
             }
 
-            PlayerData playerData = AquaCore.INSTANCE.getAquaCoreAPI().getPlayerData(UUID.fromString(doc.getString("uuid")));
-            statistics.put(playerData == null ? doc.getString("username") : playerData.getNameColor(), elo);
+            Profile profile = Falcon.getInstance().getProfileHandler().loadProfile(UUID.fromString(doc.getString("uuid")));
+            statistics.put(profile.getColor() + profile.getUsername(), elo);
+
         }
         return statistics;
     }

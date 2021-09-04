@@ -32,7 +32,6 @@ import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameHandler;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.game.command.adapter.GameCommandAdapter;
-import rip.thecraft.brawl.hologram.HologramManager;
 import rip.thecraft.brawl.item.ItemHandler;
 import rip.thecraft.brawl.killstreak.KillstreakHandler;
 import rip.thecraft.brawl.kit.Kit;
@@ -54,8 +53,6 @@ import rip.thecraft.brawl.team.Team;
 import rip.thecraft.brawl.team.TeamHandler;
 import rip.thecraft.brawl.team.adapter.TeamTypeAdapter;
 import rip.thecraft.brawl.upgrade.UpgradeManager;
-import rip.thecraft.brawl.util.CacheProfile;
-import rip.thecraft.brawl.util.CacheProfileParameterType;
 import rip.thecraft.brawl.util.EntityHider;
 import rip.thecraft.brawl.visual.VisualManager;
 import rip.thecraft.brawl.warp.Warp;
@@ -109,8 +106,6 @@ public class Brawl extends JavaPlugin {
 
     private EntityHider entityHider;
 
-    private HologramManager hologramManager;
-
     private Map<String, Location> locationMap = new HashMap<>();
 
     private boolean loaded = false;
@@ -161,6 +156,7 @@ public class Brawl extends JavaPlugin {
             game.end();
         }
 
+        abilityHandler.close();
         this.playerDataHandler.close();
         this.regionHandler.close();
         this.teamHandler.save(true);
@@ -169,6 +165,10 @@ public class Brawl extends JavaPlugin {
         this.abilityHandler.save();
         this.gameHandler.save();
         eventHandler.save();
+    }
+
+    public static String getVersion() {
+        return getInstance().getConfig().getString("version", "v0.1");
     }
 
     private void registerCommands() {
@@ -181,7 +181,6 @@ public class Brawl extends JavaPlugin {
         MCommandHandler.registerParameterType(Team.class, new TeamTypeAdapter());
         MCommandHandler.registerParameterType(Warp.class, new WarpTypeAdapter());
         MCommandHandler.registerParameterType(Challenge.class, new ChallengeCommandAdapter());
-        MCommandHandler.registerParameterType(CacheProfile.class, new CacheProfileParameterType());
 
         MCommandHandler.registerParameterType(EntityEffect.class, new EntityEffectCommandAdapter());
         MCommandHandler.registerParameterType(Sound.class, new SoundCommandAdapter());
@@ -198,15 +197,16 @@ public class Brawl extends JavaPlugin {
 
         // Team commands
         MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command.general");
+        /*
         MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command.info");
         MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command.leader");
         MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command.manager");
         MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command.staff");
         MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command");
+         */
     }
 
     private void registerHandlers() {
-        hologramManager = new HologramManager();
         abilityHandler = new AbilityHandler(this);
         kitHandler = new KitHandler(this);
 

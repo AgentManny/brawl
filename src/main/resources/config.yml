@@ -3,6 +3,7 @@ mongo:
   host: 127.0.0.1:27017
   username: admin
   password: ''
+version: "v0.1"
 ALLOWED_COMMANDS:
   - ignore
   - unignore

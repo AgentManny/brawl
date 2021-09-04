@@ -93,6 +93,10 @@ public class AbilityHandler {
 
     }
 
+    public void close() {
+        abilities.values().forEach(Ability::cleanup);
+    }
+
     private void load() {
         File file = getFile();
 

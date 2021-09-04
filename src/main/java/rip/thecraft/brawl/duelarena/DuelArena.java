@@ -11,7 +11,14 @@ import rip.thecraft.spartan.nametag.NametagHandler;
 
 public class DuelArena {
 
+    public static final boolean DISABLED = true;
+
     public static void join(Player player) {
+        if (DISABLED) {
+            player.sendMessage(ChatColor.RED + "Duel arena is currently disabled. Please try again later.");
+            player.sendMessage(ChatColor.GRAY + "Note: We are working hard to ensure core gameplay is perfected before we re-enable Duel Arenas.");
+            return;
+        }
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
         if (playerData.isDuelArena()) {
             player.sendMessage(ChatColor.RED + "You are already in the duel arena.");

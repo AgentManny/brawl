@@ -15,7 +15,8 @@ public class SpectateCommand {
     @Command(names = { "spec", "spectate" })
     public static void spectate(Player player, @Param(defaultValue = "self") Player target) {
         if (!player.isOp()) {
-            player.sendMessage(ChatColor.RED + "Spectating is currently disabled.");
+            player.sendMessage(ChatColor.RED + "Spectating is currently disabled. Please try again later.");
+            player.sendMessage(ChatColor.GRAY + "Note: We are still working on integrating Spectating for the variety of games we plan to introduce.");
             return;
         }
 

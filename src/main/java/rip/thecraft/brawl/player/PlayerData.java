@@ -14,7 +14,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.player.achievements.Achievement;
 import rip.thecraft.brawl.challenges.player.ChallengeTracker;
 import rip.thecraft.brawl.duelarena.queue.QueueData;
 import rip.thecraft.brawl.game.GameType;
@@ -23,6 +22,7 @@ import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.type.RankType;
 import rip.thecraft.brawl.kit.type.RefillType;
 import rip.thecraft.brawl.levels.Level;
+import rip.thecraft.brawl.player.achievements.Achievement;
 import rip.thecraft.brawl.player.data.SpawnData;
 import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.region.RegionType;
@@ -249,16 +249,19 @@ public class PlayerData {
         if (RegionType.SAFEZONE.appliesTo(player.getLocation())) return true;
 
         for (Entity entity : nearbyEntities) {
-            if ((entity instanceof Player)) {
+            if (entity instanceof Player) {
                 Player other = (Player) entity;
-                if (!other.canSee(player)) {
-                    return true;
-                }
-                if (!player.canSee(other)) {
+                if (other == player || !player.canSee(other)) {
                     continue;
                 }
 
+                if (!other.canSee(player)) {
+                    return true;
+                }
+
                 PlayerData pd = Brawl.getInstance().getPlayerDataHandler().getPlayerData(other.getUniqueId());
+                if (pd == null) continue;
+
                 if (pd.isSpawnProtection()) {
                     return true;
                 }

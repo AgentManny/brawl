@@ -59,6 +59,11 @@ public class SpawnCommand {
             return;
         }
 
+        if (playerData.hasCombatLogged()) {
+            sender.sendMessage(ChatColor.RED + "You can't teleport to spawn while in combat.");
+            return;
+        }
+
         if (sender.getGameMode() != GameMode.CREATIVE && !sender.isOnGround()) {
             sender.sendMessage(ChatColor.RED + "You need to be on the ground to warp to spawn.");
             return;

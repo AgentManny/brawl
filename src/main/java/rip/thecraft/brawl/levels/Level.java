@@ -18,7 +18,7 @@ import rip.thecraft.brawl.util.MathUtil;
 @RequiredArgsConstructor
 public class Level {
 
-    public static final int BASE_EXPERIENCE = 5;
+    public static final int BASE_EXPERIENCE = 15;
     public static final int MAX_LEVEL = 100;
 
     private final PlayerData playerData;
@@ -118,6 +118,10 @@ public class Level {
 
     public String getPrefix() {
         return getColor(getCurrentLevel()) + "[" + getCurrentLevel() + "✫] ";
+    }
+
+    public String getDisplayName() {
+        return getColor(getCurrentLevel()) + getCurrentLevel() + "✫";
     }
 
     public String getSimplePrefix() {

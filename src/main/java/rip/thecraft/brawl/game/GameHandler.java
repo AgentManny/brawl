@@ -2,7 +2,7 @@ package rip.thecraft.brawl.game;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Bukkit;
+import mkremins.fanciful.FancyMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -14,6 +14,7 @@ import rip.thecraft.server.CraftServer;
 import rip.thecraft.server.handler.MovementHandler;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -69,7 +70,9 @@ public class GameHandler {
             return;
         }
         this.lobby = new GameLobby(brawl, type);
-        Bukkit.broadcastMessage(Game.PREFIX + ChatColor.WHITE + (hoster == null ? "Someone" : hoster.getDisplayName()) + ChatColor.YELLOW + " is hosting the " + ChatColor.DARK_PURPLE + type.getShortName() + ChatColor.YELLOW + " event for a prize of " + ChatColor.LIGHT_PURPLE + "250 credits" + ChatColor.YELLOW + ".");
+        FancyMessage messageParts = new FancyMessage(Game.PREFIX + ChatColor.WHITE + (hoster == null ? "Someone" : hoster.getDisplayName()) + ChatColor.YELLOW + " is hosting the " + ChatColor.DARK_PURPLE + type.getShortName() + ChatColor.YELLOW + " event for a prize of " + ChatColor.LIGHT_PURPLE + "250 credits" + ChatColor.YELLOW + "." + ChatColor.GRAY + " (Click to join)")
+                .tooltip(Collections.singletonList(ChatColor.YELLOW + "Click to join " + ChatColor.DARK_PURPLE + type.getName() + ChatColor.YELLOW + ".")).command("/join");
+        brawl.getServer().getOnlinePlayers().forEach(messageParts::send);
     }
 
     public void destroy() {

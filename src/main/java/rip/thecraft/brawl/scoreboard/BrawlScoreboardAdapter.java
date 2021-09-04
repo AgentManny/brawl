@@ -34,16 +34,18 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class BrawlScoreboardAdapter implements ScoreboardAdapter {
 
-    public static final String LINE_SEPARATOR = ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------";
-    
+    public static final String LINE_SEPARATOR = ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "-------------------";
+
     private final Brawl plugin;
+
+    private boolean lineSeperators = false;
 
     @Override
     public String getTitle(Player player) {
         if (Brawl.getInstance().getGameHandler().getLobby() != null && Brawl.getInstance().getGameHandler().getLobby().getPlayers().contains(player.getUniqueId())) {
             return ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + Brawl.getInstance().getGameHandler().getLobby().getGameType().getShortName().toUpperCase();
         }
-        return ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "THE CRAFT";
+        return "       " + ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "KAZE" + ChatColor.GRAY + " " + Brawl.getVersion() + "       ";
     }
 
     @Override
@@ -51,7 +53,12 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
         PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
         if (playerData == null) return;
 
-        lines.add(LINE_SEPARATOR);
+        if (lineSeperators) {
+            lines.add(LINE_SEPARATOR);
+        } else {
+            //lines.add(ChatColor.GRAY + "Season One      ");
+            lines.add("                      ");
+        }
         switch (playerData.getPlayerState()) {
             case SPECTATING: {
                 this.getSpectatorMode(player, playerData, lines);
@@ -77,11 +84,18 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
                 break;
             }
             default: {
-                this.getSpawn(player, playerData, lines);
+                this.getKazeSpawn(player, playerData, lines);
                 break;
             }
         }
-        lines.add(ChatColor.WHITE + LINE_SEPARATOR);
+        if (lineSeperators) {
+            lines.add("   ");
+            lines.add(ChatColor.LIGHT_PURPLE + "kaze.gg");
+            lines.add(ChatColor.WHITE + LINE_SEPARATOR);
+        } else {
+            lines.add("   ");
+            lines.add(ChatColor.LIGHT_PURPLE + "kaze.gg        ");
+        }
     }
 
     private void getSpectatorMode(Player player, PlayerData playerData, List<String> lines) {
@@ -111,6 +125,62 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
 
         lines.add(" ");
         lines.add(ChatColor.RED.toString() + "Spectator Mode (Beta)");
+    }
+
+    private List<String> getKazeSpawn(Player player, PlayerData playerData, List<String> toReturn) {
+        PlayerStatistic statistic = playerData.getStatistic();
+        Kit kit = playerData.getSelectedKit();
+        Level level = playerData.getLevel();
+
+        toReturn.add(ChatColor.WHITE + "Level: " + level.getDisplayName());
+        toReturn.add(ChatColor.WHITE + "Required XP: " + ChatColor.LIGHT_PURPLE + (level.getMaxExperience() - level.getCurrentExp()));
+        toReturn.add(ChatColor.WHITE + "Credits: " + ChatColor.GOLD + (int) statistic.get(StatisticType.CREDITS));
+        toReturn.add("  ");
+        if (kit != null) {
+            toReturn.add(ChatColor.WHITE + "Kit: " + ChatColor.LIGHT_PURPLE + kit.getName());
+            for (Ability ability : kit.getAbilities()) {
+                ability.getProperties(player).forEach((key, value) -> toReturn.add(ChatColor.GOLD + key + ": " + ChatColor.YELLOW + value));
+                if (ability.hasCooldown(playerData.getPlayer(), false)) {
+                    toReturn.add(ChatColor.WHITE + ability.getName() + ": " + ChatColor.RED + DurationFormatter.getRemaining(ability.toCooldown(playerData).getRemaining()));
+                }
+            }
+            toReturn.add(ChatColor.BLACK + " ");
+        }
+        if (playerData.hasCombatLogged()) {
+            toReturn.add(ChatColor.WHITE + "Combat: " + ChatColor.RED + DurationFormatter.getRemaining(System.currentTimeMillis() - playerData.getCombatTaggedTil()));
+        }
+        toReturn.add(ChatColor.WHITE + "Killstreak: " + ChatColor.RED + (int) statistic.get(StatisticType.KILLSTREAK));
+//        toReturn.add("    ");
+//        toReturn.add(ChatColor.WHITE + "State: " + ChatColor.GOLD + "SafeZone");
+//
+//
+//
+//        toReturn.add(ChatColor.DARK_PURPLE  + "Kills: " + ChatColor.LIGHT_PURPLE + (int) statistic.get(StatisticType.KILLS));
+//        toReturn.add(ChatColor.DARK_PURPLE + "Deaths: " + ChatColor.LIGHT_PURPLE + (int) statistic.get(StatisticType.DEATHS));
+//        toReturn.add(ChatColor.DARK_PURPLE + "Killstreak: " + ChatColor.LIGHT_PURPLE + (int) statistic.get(StatisticType.KILLSTREAK));
+//        if (playerData.isSpawnProtection()) {
+//            toReturn.add(ChatColor.DARK_PURPLE  + "Highest Killstreak: " + ChatColor.LIGHT_PURPLE  + (int) statistic.get(StatisticType.HIGHEST_KILLSTREAK));
+//            toReturn.add(ChatColor.DARK_PURPLE + "KDR: " + ChatColor.LIGHT_PURPLE  + (int) statistic.get(StatisticType.KDR));
+//            toReturn.add(ChatColor.DARK_PURPLE + "Credits: " + ChatColor.LIGHT_PURPLE  + (int) statistic.get(StatisticType.CREDITS));
+//            toReturn.add(ChatColor.DARK_PURPLE + "Level: " + ChatColor.LIGHT_PURPLE + level.getCurrentLevel() + " (" + level.getCurrentExp() + "/" + level.getMaxExperience() + " XP)");
+//        }
+
+        if (playerData.hasCooldown("ENDERPEARL")) {
+            toReturn.add(ChatColor.DARK_RED + "Enderpearl: " + ChatColor.RED + DurationFormatter.getRemaining(playerData.getCooldown("ENDERPEARL").getRemaining()));
+        }
+
+//        if (kit != null) {
+//                for (Ability ability : kit.getAbilities()) {
+//                    ability.getProperties(player).forEach((key, value) -> toReturn.add(ChatColor.GOLD + key + ": " + ChatColor.YELLOW + value));
+//                    if (ability.hasCooldown(playerData.getPlayer(), false)) {
+//                        toReturn.add(ChatColor.DARK_RED + ability.getName() + ": " + ChatColor.RED + DurationFormatter.getRemaining(ability.toCooldown(playerData).getRemaining()));
+//                    }
+//                }
+//        }
+        if (plugin.getEventHandler().getActiveKOTH() != null) {
+            toReturn.addAll(plugin.getEventHandler().getActiveKOTH().getScoreboard(player));
+        }
+        return toReturn;
     }
 
     private List<String> getSpawn(Player player, PlayerData playerData, List<String> toReturn) {

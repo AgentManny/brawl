@@ -1,16 +1,17 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.ability.Ability;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.Ability;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,15 @@ public class WebShooter extends Ability {
     @Override
     public ChatColor getColor() {
         return ChatColor.WHITE;
+    }
+
+    @Override
+    public void cleanup() {
+        storedLocations.forEach(state -> {
+            if (state.getType() == Material.WEB) {
+                state.getBlock().setType(Material.AIR);
+            }
+        });
     }
 
     @Override
@@ -84,6 +94,8 @@ public class WebShooter extends Ability {
     }
 
 
+    private List<BlockState> storedLocations = new ArrayList<>();
+
     private void stuck(Location location) {
         if(location.getBlock().isLiquid()) {
             location = location.add(0, 1.0D, 0);
@@ -102,6 +114,7 @@ public class WebShooter extends Ability {
             if (state.getType() == Material.AIR) {
                 state.setType(Material.WEB);
             }
+            storedLocations.add(state.getState());
         }
 
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
@@ -111,6 +124,7 @@ public class WebShooter extends Ability {
                 if (state.getType() == Material.WEB) {
                     state.setType(Material.AIR);
                 }
+                storedLocations.remove(state.getState());
             }
 
         }, 120L);

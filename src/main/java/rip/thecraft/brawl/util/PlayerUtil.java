@@ -13,7 +13,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.util.EntityUtils;
+import rip.thecraft.falcon.util.EntityUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

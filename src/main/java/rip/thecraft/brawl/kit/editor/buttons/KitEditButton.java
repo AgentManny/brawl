@@ -14,6 +14,7 @@ import rip.thecraft.brawl.item.item.Items;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.editor.action.KitEditAction;
 import rip.thecraft.brawl.kit.editor.menu.KitAbilityEditMenu;
+import rip.thecraft.falcon.Falcon;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
 
@@ -65,7 +66,7 @@ public class KitEditButton extends Button {
             new KitAbilityEditMenu(kit).openMenu(player);
             player.sendMessage(CC.GREEN + "You have opened the ability editor for kit " + kit.getName() + ".");
         } else {
-            Conversation conversation = new ConversationFactory(Brawl.getInstance())
+            Conversation conversation = new ConversationFactory(Falcon.getInstance())
                     .withLocalEcho(false)
                     .withFirstPrompt(new KitEditPrompt(player, kit, action))
                     .thatExcludesNonPlayersWithMessage("Go away evil console!")

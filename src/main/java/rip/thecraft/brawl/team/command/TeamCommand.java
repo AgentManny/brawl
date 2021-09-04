@@ -8,6 +8,9 @@ public class TeamCommand {
 
     @Command(names = { "team", "t", "f", "faction", "fac", "team help", "t help", "f help", "faction help", " fac help" })
     public static void help(Player sender) {
+        sender.sendMessage(ChatColor.RED + "Teams are currently disabled. Please try again later.");
+        sender.sendMessage(ChatColor.GRAY + "Note: We are working hard to ensure core gameplay is perfected before we re-enable Teams.");
+        /*
         sender.sendMessage(ChatColor.DARK_AQUA.toString() + "*** General Commands ***");
         sender.sendMessage(ChatColor.GRAY + "/t accept <teamName> [password] " + ChatColor.GRAY + " - Accept a pending invitation");
         sender.sendMessage(ChatColor.GRAY + "/t create <teamName>" + ChatColor.GRAY + " - Create a new team");
@@ -31,6 +34,7 @@ public class TeamCommand {
         sender.sendMessage(ChatColor.GRAY + "/t transfer <playerName> - Transfer ownership to another player.");
         sender.sendMessage(ChatColor.GRAY + "/t rename <newName>" + ChatColor.GRAY + " - Rename your team");
         sender.sendMessage(ChatColor.GRAY + "/t disband" + ChatColor.GRAY + " - Disband your team");
+         */
     }
 
 }

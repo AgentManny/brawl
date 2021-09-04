@@ -66,6 +66,10 @@ public abstract class Ability {
         return 25;
     }
 
+    public void cleanup() {
+
+    }
+
     public ItemStack getIcon() {
         if (getType() == null) return null;
         ItemBuilder data = new ItemBuilder(getType())

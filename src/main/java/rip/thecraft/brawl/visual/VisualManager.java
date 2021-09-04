@@ -10,7 +10,7 @@ import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.visual.tasks.HologramUpdateTask;
 import rip.thecraft.brawl.visual.tasks.LeaderboardUpdateTask;
-import rip.thecraft.brawl.hologram.hologram.Hologram;
+import rip.thecraft.falcon.hologram.hologram.Hologram;
 
 import java.util.*;
 

@@ -25,6 +25,7 @@ import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.util.BrawlUtil;
+import rip.thecraft.falcon.util.ErrorType;
 
 import java.util.concurrent.TimeUnit;
 
@@ -37,7 +38,7 @@ public class PlayerListener implements Listener {
     public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
         if (!plugin.isLoaded()) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage(ChatColor.RED + "Server failed to load. Brawl failed to initialise");
+            event.setKickMessage(ErrorType.SERVER_STILL_LOADING.getMessage());
             return;
         }
 

@@ -8,13 +8,12 @@ import rip.thecraft.server.util.chatcolor.CC;
 public enum RankType {
 
     NONE(CC.GRAY),
-    BASIC(CC.YELLOW),
-    VIP(CC.GREEN), // 10
-    PRO(CC.GOLD), // 25
-    ELITE(CC.AQUA), // 35
-    EPIC(CC.BLUE), // 50
-    LEGEND(CC.LIGHT_PURPLE), // 75
-    CRAFTER(CC.DARK_PURPLE); // 100
+    SILVER(CC.WHITE), // $10
+    GOLD(CC.GOLD), // // $20
+    PLATINUM(CC.BLUE), // $35
+    DIAMOND(CC.AQUA), // $50
+    MASTER(CC.LIGHT_PURPLE), // $75
+    CHAMPION(CC.DARK_PURPLE); // $100
 
     private final String colour;
 

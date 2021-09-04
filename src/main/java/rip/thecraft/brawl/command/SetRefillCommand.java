@@ -12,7 +12,7 @@ import rip.thecraft.spartan.command.Param;
 
 public class SetRefillCommand {
 
-    @Command(names = "setrefill")
+    @Command(names = { "setrefill", "refill" } )
     public static void execute(Player player, @Param(defaultValue = "_", name = "soup|potion") String source) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
         RefillType refillType;
