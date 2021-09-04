@@ -147,7 +147,7 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
             toReturn.add(ChatColor.BLACK + " ");
         }
         if (playerData.hasCombatLogged()) {
-            toReturn.add(ChatColor.WHITE + "Combat: " + ChatColor.RED + DurationFormatter.getRemaining(System.currentTimeMillis() - playerData.getCombatTaggedTil()));
+            toReturn.add(ChatColor.WHITE + "Combat: " + ChatColor.RED + DurationFormatter.getRemaining(playerData.getCombatTaggedTil() - System.currentTimeMillis()));
         }
         toReturn.add(ChatColor.WHITE + "Killstreak: " + ChatColor.RED + (int) statistic.get(StatisticType.KILLSTREAK));
 //        toReturn.add("    ");

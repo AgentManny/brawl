@@ -52,6 +52,7 @@ public class SpawnData {
         return assisters;
     }
 
+    private long combatTimer = 15;
     public void damagedBy(Player damager, double damage) {
         UUID uuid;
         if (damager == null) {
@@ -62,7 +63,7 @@ public class SpawnData {
 
         damageReceived.putIfAbsent(uuid, 0D);
         damageReceived.put(uuid, damageReceived.get(uuid) + damage);
-        playerData.setCombatTaggedTil(System.currentTimeMillis() + (1000 * 60));
+        playerData.setCombatTaggedTil(System.currentTimeMillis() + (1000 * combatTimer));
     }
 
     public double getPctDamaged(Player damager) {

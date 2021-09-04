@@ -104,40 +104,10 @@ public class DamageListener implements Listener {
             plugin.getServer().getPluginManager().callEvent(new PlayerKillEvent(killer, killerData.getPlayerState(), player)); // We only use this
             switch(killerData.getPlayerState()) {
                 case FIGHTING: {
-                    if (killerData.getPreviousKill() != null) {
-                        if (player.getUniqueId() == killerData.getPreviousKill()) {
-                            killerData.setKillTracker(killerData.getKillTracker() + 1);
-                            if (killerData.getKillTracker() >= 3) {
-                                killer.sendMessage(CC.RED + CC.BOLD + "Boosting! " + CC.YELLOW + "Your statistics aren't being updated.");
-                                break;
-                            }
-                        } else {
-                            killerData.setKillTracker(0);
-                        }
-                    }
-
-                    if (killerData.getSelectedKit() != null) {
-                        killerData.getSelectedKit().getAbilities().forEach(ability -> ability.onKill(killer));
-                    }
-
-                    killerData.getSpawnData().killed(player);
-
-                    int killExp = 5; // You always get 5 exp per kill
-                    if (killerData.getStatistic().get(StatisticType.KILLSTREAK) > 5) {
-                        killExp += (int) Math.min(50, (killerData.getStatistic().get(StatisticType.KILLSTREAK) * 0.75)); // Killstreak multiplier only takes effect after 5 kills
-                    }
-
-                    killerData.getLevel().addExp(killer, killExp, "Killed " + player.getDisplayName());
-                    playerData.getSpawnData().applyAssists(killer, playerData.getSpawnData().getWorth());
-
-                    killerData.setPreviousKill(player.getUniqueId());
-
-                    player.sendMessage(ChatColor.RED + "You have been killed by " + CC.WHITE + killer.getDisplayName() + CC.RED + " [" + (Math.round((killer.getHealth() * 10) / 2) / 10) + "\u2764] using " + CC.WHITE + (killerData.getSelectedKit() == null ? "None" : killerData.getSelectedKit().getName()) + CC.RED + " kit.");
+                    playerData.handleKill(player, killer, killerData);
                     break;
                 }
             }
-
-
         }
 
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> player.spigot().respawn(), 4L);

@@ -26,6 +26,7 @@ import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.falcon.util.ErrorType;
+import rip.thecraft.spartan.util.PlayerUtils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -140,6 +141,11 @@ public class PlayerListener implements Listener {
             Game game = Brawl.getInstance().getGameHandler().getActiveGame();
             if (game != null && game.containsPlayer(player)) {
                 game.handleElimination(player, event.getPlayer().getLocation(), GameElimination.QUIT);
+            }
+        } else if (playerData.hasCombatLogged()) {
+            Player damageSource = PlayerUtils.getDamageSource(player);
+            if (damageSource != null) {
+                playerData.handleKill(player, damageSource, plugin.getPlayerDataHandler().getPlayerData(damageSource));
             }
         }
 
