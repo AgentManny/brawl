@@ -5,6 +5,9 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Sorts;
 import lombok.Getter;
 import org.bson.Document;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.duelarena.loadout.MatchLoadout;
 import rip.thecraft.brawl.player.statistic.StatisticType;
@@ -24,7 +27,7 @@ public class Leaderboard {
     private final Map<MatchLoadout, Map<String, Integer>> eloLeaderboards = new LinkedHashMap<>();
 
     public Leaderboard(Brawl plugin) {
-       // plugin.getServer().getScheduler().runTaskTimer(plugin, this::update, 20L, TimeUnit.MINUTES.toMillis(15));
+        plugin.getServer().getScheduler().runTaskTimer(plugin, this::update, 20L, TimeUnit.MINUTES.toMillis(15));
     }
 
     public void update() {
@@ -34,9 +37,10 @@ public class Leaderboard {
         }
 
         eloLeaderboards.clear();
-        for (MatchLoadout loadout : Brawl.getInstance().getMatchHandler().getLoadouts()) {
-            eloLeaderboards.put(loadout, data(loadout));
-        }
+        // Duel arenas are disabled
+//        for (MatchLoadout loadout : Brawl.getInstance().getMatchHandler().getLoadouts()) {
+//            eloLeaderboards.put(loadout, data(loadout));
+//        }
 
         System.out.println("Updated leaderboards");
     }
@@ -49,8 +53,15 @@ public class Leaderboard {
             Document doc = iterator.next();
             Document statDocument = (Document) ((Document) doc.get("statistic")).get("spawn");
             if (statDocument != null) {
-                Profile profile = Falcon.getInstance().getProfileHandler().loadProfile(UUID.fromString(doc.getString("uuid")));
-                statistics.put(profile.getDisplayName(), statDocument.getDouble(statisticType.name()));
+                UUID uuid = UUID.fromString(doc.getString("uuid"));
+
+                String displayName = doc.getString("username");
+                String color = ChatColor.WHITE.toString();
+                Player player = Bukkit.getPlayer(uuid);
+                if (player != null) {
+                    displayName = player.getDisplayName();
+                }
+                statistics.put(color + displayName, statDocument.getDouble(statisticType.name()));
             }
         }
         return statistics;

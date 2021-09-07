@@ -133,7 +133,7 @@ public class Kit implements Listener, Comparable<Kit> {
             return;
         }
 
-        Brawl.getInstance().getLogger().info("[Kit Manager] Saved " + name + " kit. (" + file.getName() + ")");
+        //Brawl.getInstance().getLogger().info("[Kit Manager] Saved " + name + " kit. (" + file.getName() + ")");
     }
 
     public File getFile() {

@@ -15,6 +15,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.Brawl;
@@ -34,6 +36,7 @@ import rip.thecraft.spartan.util.ItemBuilder;
 import rip.thecraft.spartan.util.PlayerUtils;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -104,7 +107,35 @@ public class DamageListener implements Listener {
             plugin.getServer().getPluginManager().callEvent(new PlayerKillEvent(killer, killerData.getPlayerState(), player)); // We only use this
             switch(killerData.getPlayerState()) {
                 case FIGHTING: {
-                    playerData.handleKill(player, killer, killerData);
+                    if (killerData.getPreviousKill() != null) {
+                        if (player.getUniqueId() == killerData.getPreviousKill()) {
+                            killerData.setKillTracker(killerData.getKillTracker() + 1);
+                            if (killerData.getKillTracker() >= 3) {
+                                killer.sendMessage(CC.RED + CC.BOLD + "Boosting! " + CC.YELLOW + "Your statistics aren't being updated.");
+                                break;
+                            }
+                        } else {
+                            killerData.setKillTracker(0);
+                        }
+                    }
+
+                    if (killerData.getSelectedKit() != null) {
+                        killerData.getSelectedKit().getAbilities().forEach(ability -> ability.onKill(killer));
+                    }
+
+                    killerData.getSpawnData().killed(player);
+
+                    int killExp = 5; // You always get 5 exp per kill
+                    if (killerData.getStatistic().get(StatisticType.KILLSTREAK) > 5) {
+                        killExp += (int) Math.min(50, (killerData.getStatistic().get(StatisticType.KILLSTREAK) * 0.75)); // Killstreak multiplier only takes effect after 5 kills
+                    }
+
+                    killerData.getLevel().addExp(killer, killExp, "Killed " + player.getDisplayName());
+                    playerData.getSpawnData().applyAssists(killer, playerData.getSpawnData().getWorth());
+
+                    killerData.setPreviousKill(player.getUniqueId());
+
+                    player.sendMessage(ChatColor.RED + "You have been killed by " + CC.WHITE + killer.getDisplayName() + CC.RED + " [" + (Math.round((killer.getHealth() * 10) / 2) / 10) + "\u2764] using " + CC.WHITE + (killerData.getSelectedKit() == null ? "None" : killerData.getSelectedKit().getName()) + CC.RED + " kit.");
                     break;
                 }
             }
@@ -260,7 +291,25 @@ public class DamageListener implements Listener {
                 }
 
             }
-            playerData.getSpawnData().damagedBy(damager, e.getDamage());
+            if (!e.isCancelled()) {
+                playerData.getSpawnData().damagedBy(damager, e.getDamage());
+            }
+        }
+    }
+
+    // Strength fix
+    @EventHandler
+    public void onPlayerDamage(EntityDamageByEntityEvent event) {
+        if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+            if (event.getDamager() != null && event.getDamager() instanceof Player) {
+                Player player = (Player) event.getDamager();
+                for (PotionEffect effect : player.getActivePotionEffects()) {
+                    if (effect.getType() == PotionEffectType.INCREASE_DAMAGE) {
+                        int level = effect.getAmplifier() + 1;
+                        event.setDamage(10.0D * event.getDamage() / (10.0D + 13.0D * level) + 13.0D * event.getDamage() * level * 30 / 200.0D / (10.0D + 13.0D * level));
+                    }
+                }
+            }
         }
     }
 

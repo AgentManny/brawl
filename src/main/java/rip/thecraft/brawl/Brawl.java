@@ -48,6 +48,7 @@ import rip.thecraft.brawl.region.RegionHandler;
 import rip.thecraft.brawl.scoreboard.BrawlNametagAdapter;
 import rip.thecraft.brawl.scoreboard.BrawlScoreboardAdapter;
 import rip.thecraft.brawl.spectator.SpectatorManager;
+import rip.thecraft.brawl.task.SaveTask;
 import rip.thecraft.brawl.task.SoupTask;
 import rip.thecraft.brawl.team.Team;
 import rip.thecraft.brawl.team.TeamHandler;
@@ -67,6 +68,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Getter
 public class Brawl extends JavaPlugin {
@@ -125,7 +127,8 @@ public class Brawl extends JavaPlugin {
         this.registerHandlers();
         this.registerCommands();
 
-        new SoupTask(this).runTaskTimer(this, 20L, 20L);
+        new SaveTask(this);
+        // new SoupTask(this).runTaskTimer(this, 20L, 20L);
 
         this.getServer().getWorlds().forEach(world -> {
             world.getEntitiesByClass(Item.class).forEach(Item::remove);
@@ -188,6 +191,8 @@ public class Brawl extends JavaPlugin {
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.command");
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.command.manage");
 
+        MCommandHandler.registerPackage(this, "rip.thecraft.brawl.leaderboard.command");
+
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.duelarena.command");
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.game.command");
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.kit.command");
@@ -196,7 +201,7 @@ public class Brawl extends JavaPlugin {
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.challenges.command");
 
         // Team commands
-        MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command.general");
+        MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command");
         /*
         MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command.info");
         MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command.leader");

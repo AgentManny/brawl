@@ -145,7 +145,7 @@ public class PlayerListener implements Listener {
         } else if (playerData.hasCombatLogged()) {
             Player damageSource = PlayerUtils.getDamageSource(player);
             if (damageSource != null) {
-                playerData.handleKill(player, damageSource, plugin.getPlayerDataHandler().getPlayerData(damageSource));
+                playerData.getSpawnData().killed(damageSource);
             }
         }
 

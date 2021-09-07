@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.command;
 
-import com.google.common.base.Strings;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.levels.Level;
@@ -13,10 +12,8 @@ public class StatsCommand {
 
     @Command(names = { "statistics", "stats" }, description = "Shows a player's statistics", async = true)
     public static void execute(Player sender, @Param(defaultValue = "self") PlayerData player) {
-        String line = ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + Strings.repeat("-", 35);
-        sender.sendMessage(line);
-        sender.sendMessage(ChatColor.YELLOW + "Stats for " + ChatColor.LIGHT_PURPLE + player.getName());
-        sender.sendMessage(line);
+        sender.sendMessage(" ");
+        sender.sendMessage(ChatColor.DARK_PURPLE + "*** Statistics of " + ChatColor.LIGHT_PURPLE + player.getName() + ChatColor.DARK_PURPLE + " ***");
         for (StatisticType type : StatisticType.values()) {
             if (type.isHidden()) continue;
             String displayValue =  String.valueOf(Math.round(player.getStatistic().get(type)));
@@ -24,8 +21,8 @@ public class StatsCommand {
                 Level level = player.getLevel();
                 displayValue += " (" + level.getCurrentExp() + "/" + level.getMaxExperience() + " EXP)";
             }
-            sender.sendMessage(ChatColor.YELLOW + type.getName() + ChatColor.GRAY + ": " + ChatColor.LIGHT_PURPLE +  displayValue);
+            sender.sendMessage(ChatColor.GRAY + type.getName() + ChatColor.GRAY + ": " + ChatColor.WHITE +  displayValue);
         }
-        sender.sendMessage(line);
+        sender.sendMessage(" ");
     }
 }

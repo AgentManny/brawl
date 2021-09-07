@@ -56,6 +56,7 @@ public class LeaderboardUpdateTask extends BukkitRunnable {
 
         int entries = 0;
         Map<String, Double> values = leaderboard.getSpawnLeaderboards().get(statType);
+        if (values == null) return;
         for (Map.Entry<String, Double> entry : values.entrySet()) {
             ++entries;
 

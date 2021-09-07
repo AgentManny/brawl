@@ -52,7 +52,7 @@ public class SpawnData {
         return assisters;
     }
 
-    private long combatTimer = 15;
+    private static long COMBAT_TAG_TIMER = 15;
     public void damagedBy(Player damager, double damage) {
         UUID uuid;
         if (damager == null) {
@@ -63,7 +63,12 @@ public class SpawnData {
 
         damageReceived.putIfAbsent(uuid, 0D);
         damageReceived.put(uuid, damageReceived.get(uuid) + damage);
-        playerData.setCombatTaggedTil(System.currentTimeMillis() + (1000 * combatTimer));
+
+        long combatTimer = System.currentTimeMillis() + (1000 * COMBAT_TAG_TIMER);
+        playerData.setCombatTaggedTil(combatTimer);
+        if (damager != null) {
+            Brawl.getInstance().getPlayerDataHandler().getPlayerData(damager).setCombatTaggedTil(combatTimer);
+        }
     }
 
     public double getPctDamaged(Player damager) {

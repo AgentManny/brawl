@@ -46,7 +46,7 @@ public class KitHandler {
 
     private void load() {
         if (KIT_DIRECTORY.exists()) {
-            plugin.getLogger().info("[Kit Manager] Loading /kits/ directory...");
+            plugin.getLogger().info("[Kit Manager] Loading kits...");
             File[] kits = KIT_DIRECTORY.listFiles((dir, name) -> name.endsWith(".json"));
             if (kits == null) {
                 plugin.getLogger().info("[Kit Manager] No kits found. (registering default kit)");
@@ -68,14 +68,14 @@ public class KitHandler {
 
                     JsonObject jsonObject = parse.getAsJsonObject();
                     this.registerKit(new Kit(jsonObject));
-                    plugin.getLogger().info("[Kit Manager] Registered kit " + jsonObject.get("name").getAsString() + " (" + kitFile.getName() + ").");
+                    //plugin.getLogger().info("[Kit Manager] Registered kit " + jsonObject.get("name").getAsString() + " (" + kitFile.getName() + ").");
                 } catch (Exception e) {
                     plugin.getLogger().severe("[Kit Manager] Failed to load " + kitFile.getName() + ":");
                     e.printStackTrace();
                 }
             }
 
-            plugin.getLogger().info("[Kit Manager] Registered " + this.kits.size() + " kits.");
+            plugin.getLogger().info("[Kit Manager] Loaded " + this.kits.size() + " kits.");
         } else {
             plugin.getLogger().info("[Kit Manager] Created /kits/ directory");
         }
@@ -87,6 +87,7 @@ public class KitHandler {
         for (Kit kit : kits) {
             kit.save();
         }
+        plugin.getLogger().info("[Kit Manager] Saved " + this.kits.size() + " kits.");
     }
 
     public void registerKit(Kit kit) {

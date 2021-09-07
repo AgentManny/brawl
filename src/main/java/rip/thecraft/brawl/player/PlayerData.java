@@ -25,7 +25,6 @@ import rip.thecraft.brawl.levels.Level;
 import rip.thecraft.brawl.player.achievements.Achievement;
 import rip.thecraft.brawl.player.data.SpawnData;
 import rip.thecraft.brawl.player.statistic.PlayerStatistic;
-import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.team.Team;
 import rip.thecraft.brawl.upgrade.perk.Perk;
@@ -223,42 +222,6 @@ public class PlayerData {
         return combatTaggedTil > System.currentTimeMillis() && !spawnProtection;
     }
 
-    public void handleKill(Player player, Player killer, PlayerData killerData) {
-        if (killerData.getPreviousKill() != null) {
-            if (player.getUniqueId() == killerData.getPreviousKill()) {
-                killerData.setKillTracker(killerData.getKillTracker() + 1);
-                if (killerData.getKillTracker() >= 3) {
-                    if (killer != null) {
-                        killer.sendMessage(CC.RED + CC.BOLD + "Boosting! " + CC.YELLOW + "Your statistics aren't being updated.");
-                    }
-                    return;
-                }
-            } else {
-                killerData.setKillTracker(0);
-            }
-        }
-
-        if (killerData.getSelectedKit() != null) {
-            killerData.getSelectedKit().getAbilities().forEach(ability -> ability.onKill(killer));
-        }
-
-        killerData.getSpawnData().killed(player);
-
-        int killExp = 5; // You always get 5 exp per kill
-        if (killerData.getStatistic().get(StatisticType.KILLSTREAK) > 5) {
-            killExp += (int) Math.min(50, (killerData.getStatistic().get(StatisticType.KILLSTREAK) * 0.75)); // Killstreak multiplier only takes effect after 5 kills
-        }
-
-        killerData.getLevel().addExp(killer, killExp, "Killed " + player.getDisplayName());
-        spawnData.applyAssists(killer, spawnData.getWorth());
-
-        killerData.setPreviousKill(player.getUniqueId());
-        previousDeath = killer.getUniqueId();
-        if (player != null) {
-            player.sendMessage(ChatColor.RED + "You have been killed by " + CC.WHITE + killer.getDisplayName() + CC.RED + " [" + (Math.round((killer.getHealth() * 10) / 2) / 10) + "\u2764] using " + CC.WHITE + (killerData.getSelectedKit() == null ? "None" : killerData.getSelectedKit().getName()) + CC.RED + " kit.");
-        }
-    }
-
     public void spawn() {
         Player player = getPlayer();
         if (player == null) return;
@@ -369,6 +332,7 @@ public class PlayerData {
     }
 
     public boolean usingPerk(Perk perk) {
+        if (selectedKit == null) return false;
         for (Ability ability : selectedKit.getAbilities()) {
             for (Perk disabledPerk : ability.getDisabledPerks()) {
                 if (disabledPerk.equals(perk)) {
