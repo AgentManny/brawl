@@ -1,8 +1,10 @@
 package rip.thecraft.brawl.ability.property.type;
 
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 
+@NoArgsConstructor
 public class StringProperty extends AbilityProperty<String> {
 
     public StringProperty(@NonNull String value) {
@@ -20,8 +22,8 @@ public class StringProperty extends AbilityProperty<String> {
     }
 
     @Override
-    public String parse(String value) {
-        return value;
+    public AbilityProperty<String> parse(String value) {
+        return new StringProperty(value);
     }
 
 }

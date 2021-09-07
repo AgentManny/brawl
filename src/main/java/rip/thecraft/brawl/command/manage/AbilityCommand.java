@@ -10,6 +10,8 @@ import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.ability.property.exception.PropertyParseException;
 import rip.thecraft.spartan.command.Command;
 
+import java.util.Locale;
+
 public class AbilityCommand {
 
     private static final AbilityHandler ah = Brawl.getInstance().getAbilityHandler();
@@ -46,9 +48,9 @@ public class AbilityCommand {
     @Command(names = { "ability set" }, permission = "op", description = "Manage abilities")
     public static void set(Player sender, Ability ability, String property, String newValue) {
         if (ability.getProperties().containsKey(property)) {
-            AbilityProperty abilityProperty = ability.getProperties().get(property);
+            AbilityProperty<?> abilityProperty = ability.getProperties().get(property);
             try {
-                abilityProperty.set(abilityProperty.parse(newValue));
+                ability.getProperties().put(property.toLowerCase(), abilityProperty.parse(newValue));
                 sender.sendMessage(ability.getColor() + ability.getName() + ChatColor.YELLOW + " " + property + ChatColor.YELLOW + " set to " + ChatColor.WHITE + newValue + ChatColor.YELLOW + ".");
             } catch (PropertyParseException e) {
                 sender.sendMessage(ChatColor.RED + e.getMessage());

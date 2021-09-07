@@ -1,9 +1,11 @@
 package rip.thecraft.brawl.ability.property.type;
 
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.ability.property.exception.PropertyParseException;
 
+@NoArgsConstructor
 public class DoubleProperty extends AbilityProperty<Double> {
 
     public DoubleProperty(@NonNull Double value) {
@@ -21,9 +23,9 @@ public class DoubleProperty extends AbilityProperty<Double> {
     }
 
     @Override
-    public Double parse(String value) throws PropertyParseException {
+    public AbilityProperty<Double> parse(String value) throws PropertyParseException {
         try {
-            return Double.parseDouble(value);
+            return new DoubleProperty(Double.parseDouble(value));
         } catch (NumberFormatException e) {
             throw new PropertyParseException(value + " is not a valid number (double)!");
         }

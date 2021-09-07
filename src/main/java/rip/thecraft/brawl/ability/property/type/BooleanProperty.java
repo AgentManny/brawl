@@ -2,32 +2,34 @@ package rip.thecraft.brawl.ability.property.type;
 
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.ability.property.exception.PropertyParseException;
 
 @NoArgsConstructor
-public class IntegerProperty extends AbilityProperty<Integer> {
+public class BooleanProperty extends AbilityProperty<Boolean> {
 
-    public IntegerProperty(@NonNull Integer value) {
+    public BooleanProperty(@NonNull Boolean value) {
         super(value);
     }
 
     @Override
-    public Integer value() {
+    public Boolean value() {
         return value;
     }
 
     @Override
-    public void set(Integer newValue) {
+    public void set(Boolean newValue) {
         this.value = newValue;
     }
 
     @Override
-    public AbilityProperty<Integer> parse(String value) throws PropertyParseException {
+    public AbilityProperty<Boolean> parse(String value) throws PropertyParseException {
         try {
-            return new IntegerProperty(Integer.parseInt(value));
+            return new BooleanProperty(Boolean.parseBoolean(value));
         } catch (NumberFormatException e) {
-            throw new PropertyParseException(value + " is not a valid number (integer)!");
+            throw new PropertyParseException(value + " is not a valid boolean!");
         }
     }
+
 }
