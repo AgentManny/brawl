@@ -3,6 +3,7 @@ package rip.thecraft.brawl.command.adapters;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -12,17 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class EntityEffectCommandAdapter implements ParameterType<EntityEffect> {
+public class EffectCommandAdapter implements ParameterType<Effect> {
 
     @Override
-    public EntityEffect transform(CommandSender sender, String source) {
-        EntityEffect effect = null;
+    public Effect transform(CommandSender sender, String source) {
+        Effect effect = null;
         try {
-            effect = EntityEffect.valueOf(source.toUpperCase().replace(" ", "_"));
+            effect = Effect.valueOf(source.toUpperCase().replace(" ", "_"));
         } catch (Exception e) {
-            sender.sendMessage(ChatColor.RED + "Entity effect " + effect + " not found.");
+            sender.sendMessage(ChatColor.RED + "Effect " + effect + " not found.");
             List<String> matching = new ArrayList<>();
-            for (EntityEffect value : EntityEffect.values()) {
+            for (Effect value : Effect.values()) {
                 if (value.name().contains(source)) {
                     matching.add(WordUtils.capitalizeFully(value.name().toLowerCase().replace("_", " ")));
                 }
@@ -38,7 +39,7 @@ public class EntityEffectCommandAdapter implements ParameterType<EntityEffect> {
     @Override
     public List<String> tabComplete(Player sender, Set<String> flags, String source) {
         List<String> completions = new ArrayList<>();
-        for (EntityEffect value : EntityEffect.values()) {
+        for (Effect value : Effect.values()) {
             if (StringUtils.startsWithIgnoreCase(value.name(), source)) {
                 completions.add(value.name());
             }

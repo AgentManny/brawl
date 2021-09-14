@@ -29,7 +29,7 @@ public class Dash extends Ability implements Listener {
     }
 
     @Override
-    public int getDefaultCooldown() {
+    public double getDefaultCooldown() {
         return 10;
     }
 }

@@ -19,10 +19,7 @@ import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.AbilityHandler;
 import rip.thecraft.brawl.challenges.Challenge;
 import rip.thecraft.brawl.challenges.command.adapter.ChallengeCommandAdapter;
-import rip.thecraft.brawl.command.adapters.AbilityCommandAdapter;
-import rip.thecraft.brawl.command.adapters.ArenaCommandAdapter;
-import rip.thecraft.brawl.command.adapters.EntityEffectCommandAdapter;
-import rip.thecraft.brawl.command.adapters.SoundCommandAdapter;
+import rip.thecraft.brawl.command.adapters.*;
 import rip.thecraft.brawl.duelarena.DuelArenaHandler;
 import rip.thecraft.brawl.duelarena.arena.Arena;
 import rip.thecraft.brawl.event.EventHandler;
@@ -141,7 +138,8 @@ public class Brawl extends JavaPlugin {
 
         Arrays.asList(new EnderChestListener(), new ClickTracker(this), new GameListener(), new AbilityListener(this), new ToolInteractListener(), new ProtectListener(this), new ArenaListener(this), new PlayerListener(this), new DamageListener(this), new SoupListener(this), new TeamListener(this), movementListener)
                 .forEach(listener -> this.getServer().getPluginManager().registerEvents(listener, this));
-        loaded = true;
+
+        getServer().getScheduler().runTaskLater(this, () -> loaded = true, 10L); // Ensure no issues occur
     }
 
     @Override
@@ -186,6 +184,7 @@ public class Brawl extends JavaPlugin {
         MCommandHandler.registerParameterType(Challenge.class, new ChallengeCommandAdapter());
 
         MCommandHandler.registerParameterType(EntityEffect.class, new EntityEffectCommandAdapter());
+        MCommandHandler.registerParameterType(Effect.class, new EffectCommandAdapter());
         MCommandHandler.registerParameterType(Sound.class, new SoundCommandAdapter());
 
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.command");

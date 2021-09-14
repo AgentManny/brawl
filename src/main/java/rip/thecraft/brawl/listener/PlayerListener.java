@@ -42,7 +42,6 @@ public class PlayerListener implements Listener {
             event.setKickMessage(ErrorType.SERVER_STILL_LOADING.getMessage());
             return;
         }
-
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -82,6 +81,7 @@ public class PlayerListener implements Listener {
                         event.setUseItemInHand(Event.Result.DENY);
                         event.setUseInteractedBlock(Event.Result.DENY);
                         event.setCancelled(true);
+                        player.updateInventory();
                         break;
                     }
                 }

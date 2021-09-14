@@ -1,5 +1,6 @@
 package rip.thecraft.brawl.command.manage;
 
+import mkremins.fanciful.FancyMessage;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -10,48 +11,39 @@ import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.ability.property.exception.PropertyParseException;
 import rip.thecraft.spartan.command.Command;
 
-import java.util.Locale;
-
 public class AbilityCommand {
 
     private static final AbilityHandler ah = Brawl.getInstance().getAbilityHandler();
 
-//    @Command(names = { "ability", "a" }, permission = "brawl.command.ability")
-//    public static void execute(Player sender, Ability ability) {
-//        sender.sendMessage(ChatColor.GOLD + "Manually activated " + ChatColor.WHITE + ability.getName() + ChatColor.GOLD + "...");
-//        ability.onActivate(sender);
-//    }
-//
-//    @Command(names = { "ability cooldown", "a cooldown" }, permission = "brawl.command.ability")
-//    public static void execute(Player sender, Ability ability, int cooldown) {
-//        sender.sendMessage(ChatColor.GOLD + "Changed " + ChatColor.WHITE + ability.getName() + ChatColor.GOLD + " cooldown to " + cooldown + " seconds.");
-//        ability.setCooldown(cooldown);
-//        Brawl.getInstance().getAbilityHandler().save();
-//    }
-//
-//    @Command(names = { "a vampire power" }, permission = "op", description = "Sets the multiplier for Bat Booster")
-//    public static void setVampirePower(Player sender, @Param(defaultValue = "0.4") double power) {
-//        BatBlaster batBlaster = ah.getAbilityByClass(BatBlaster.class);
-//        batBlaster.power = power;
-//        sender.sendMessage("Set power to " + power);
-//    }
-
     @Command(names = { "ability" }, permission = "op", description = "Manage abilities")
     public static void manage(Player sender, Ability ability) {
-        sender.sendMessage(ability.getColor() + ability.getName() + ChatColor.YELLOW + " info:");
+        sender.sendMessage(ability.getColor() + ability.getName() + ChatColor.GOLD + " properties:");
         ability.getProperties().forEach((name, property) -> {
-            sender.sendMessage(ChatColor.YELLOW + " - " + WordUtils.capitalizeFully(name) + ": " + ChatColor.WHITE + property.toString());
+            new FancyMessage(ChatColor.GRAY + " - " + ChatColor.GOLD + WordUtils.capitalizeFully(name) + ": " + ChatColor.WHITE + property.toString())
+                    .tooltip(ChatColor.GRAY + (property.getDescription() == null ? "No description provided" : property.getDescription()))
+                    .suggest("/ability set " + ability.getName().toLowerCase() + " " + name + " " + property.toString())
+                            .send(sender);
         });
+        sender.sendMessage(ChatColor.GRAY + "Hover a property for more information");
         sender.sendMessage(ChatColor.RED + "Usage: /ability set " + ability.getName().toLowerCase() + " <property> <newValue>");
+    }
+
+    @Command(names = { "ability debug" }, permission = "op", description = "Enable debug ability")
+    public static void debug(Player sender, Ability ability) {
+        boolean newValue = !Ability.DEBUG;
+        sender.sendMessage(ChatColor.GOLD + "Set ability debug mode: " + ChatColor.WHITE + newValue);
+        Ability.DEBUG = newValue;
     }
 
     @Command(names = { "ability set" }, permission = "op", description = "Manage abilities")
     public static void set(Player sender, Ability ability, String property, String newValue) {
-        if (ability.getProperties().containsKey(property)) {
-            AbilityProperty<?> abilityProperty = ability.getProperties().get(property);
+        String key = property.toLowerCase();
+        if (ability.getProperties().containsKey(key)) {
+            AbilityProperty<?> abilityProperty = ability.getProperties().get(key);
             try {
-                ability.getProperties().put(property.toLowerCase(), abilityProperty.parse(newValue));
-                sender.sendMessage(ability.getColor() + ability.getName() + ChatColor.YELLOW + " " + property + ChatColor.YELLOW + " set to " + ChatColor.WHITE + newValue + ChatColor.YELLOW + ".");
+                Object oldValue = abilityProperty.value();
+                sender.sendMessage(ability.getColor() + ability.getName() + ChatColor.GOLD + " set value of " + ChatColor.WHITE + WordUtils.capitalizeFully(property) + ChatColor.GOLD + ": " + ChatColor.RED + oldValue + ChatColor.WHITE + " --> " + ChatColor.GREEN + newValue);
+                ability.getProperties().put(key, abilityProperty.parse(newValue));
             } catch (PropertyParseException e) {
                 sender.sendMessage(ChatColor.RED + e.getMessage());
             }

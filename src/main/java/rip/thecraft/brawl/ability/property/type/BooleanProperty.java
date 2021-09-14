@@ -2,7 +2,6 @@ package rip.thecraft.brawl.ability.property.type;
 
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.ability.property.exception.PropertyParseException;
 

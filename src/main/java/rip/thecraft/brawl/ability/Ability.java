@@ -1,8 +1,10 @@
 package rip.thecraft.brawl.ability;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.mongodb.lang.Nullable;
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -15,7 +17,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.event.AbilityCooldownEvent;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
-import rip.thecraft.brawl.ability.property.type.IntegerProperty;
+import rip.thecraft.brawl.ability.property.type.BooleanProperty;
+import rip.thecraft.brawl.ability.property.type.DoubleProperty;
+import rip.thecraft.brawl.ability.property.type.StringProperty;
 import rip.thecraft.brawl.challenges.ChallengeType;
 import rip.thecraft.brawl.challenges.player.PlayerChallenge;
 import rip.thecraft.brawl.duelarena.match.Match;
@@ -36,14 +40,16 @@ public abstract class Ability {
 
     protected static final int EFFECT_DISTANCE = 25;
 
-    @Setter protected int cooldown;
+    public static boolean DEBUG = false;
 
     public Map<String, AbilityProperty<?>> properties = new HashMap<>();
 
     public Ability() {
-        cooldown = getDefaultCooldown();
+        properties.put("cooldown", new DoubleProperty(getDefaultCooldown()));
+    }
 
-        properties.put("cooldown", new IntegerProperty(cooldown));
+    public String getInfo() {
+        return null;
     }
 
     public String getDescription() {
@@ -62,7 +68,7 @@ public abstract class Ability {
         return 0;
     }
 
-    public int getDefaultCooldown() {
+    public double getDefaultCooldown() {
         return 25;
     }
 
@@ -127,6 +133,11 @@ public abstract class Ability {
 
     }
 
+    public void reload() {
+        JsonObject jsonObject = toJson();
+
+    }
+
     /**
      * Triggers when a projectile is launched
      * @param player Attacked
@@ -152,12 +163,42 @@ public abstract class Ability {
     public JsonObject toJson() {
         JsonObject object = new JsonObject();
         object.addProperty("name", this.getName());
-        object.addProperty("cooldown", this.cooldown);
+
+        JsonObject data = new JsonObject();
+        properties.forEach((key, value) -> {
+            Object valueObj = value.value();
+            if (valueObj instanceof Number) {
+                data.addProperty(key, (Number) valueObj);
+            } else if (valueObj instanceof Boolean) {
+                data.addProperty(key, (Boolean) valueObj);
+            } else {
+                data.addProperty(key, value.toString());
+            }
+        });
+        object.add("properties", data);
         return object;
     }
 
     public void fromJson(JsonObject object) {
-        this.cooldown = object.get("cooldown").getAsInt();
+        if (object.has("properties")) {
+            JsonObject data = object.getAsJsonObject("properties");
+            for (Map.Entry<String, JsonElement> entry : data.entrySet()) {
+                String key = entry.getKey();
+                JsonElement value = entry.getValue();
+                AbilityProperty<?> property = null;
+                if (value.isJsonPrimitive()) {
+                    JsonPrimitive primitive = value.getAsJsonPrimitive();
+                    if (primitive.isBoolean()) {
+                        property = new BooleanProperty(primitive.getAsBoolean());
+                    } else if (primitive.isNumber()) {
+                        property = new DoubleProperty(primitive.getAsDouble());
+                    } else {
+                        property = new StringProperty(primitive.getAsString());
+                    }
+                }
+                properties.put(key, property);
+            }
+        }
     }
 
     public boolean hasEquipped(Player player) {
@@ -171,8 +212,17 @@ public abstract class Ability {
         return false;
     }
 
+    public void setCooldown(int cooldown) {
+        AbilityProperty<Integer> property = (AbilityProperty<Integer>) properties.get("cooldown");
+        property.set(cooldown);
+    }
+
     private long getCooldown() {
-        return TimeUnit.SECONDS.toMillis(this.cooldown);
+        Double cooldown = (Double) properties.get("cooldown").value();
+        if (cooldown == null) {
+            cooldown = getDefaultCooldown();
+        }
+        return TimeUnit.SECONDS.toMillis(cooldown.longValue());
     }
 
     public boolean hasCooldown(Player player, boolean notify) {
@@ -242,4 +292,22 @@ public abstract class Ability {
         return playerData.getCooldown("ABILITY_" + this.getName());
     }
 
+    public Double getProperty(String key) {
+        return (double) properties.get(key).value();
+    }
+
+    public Boolean isProperty(String key) {
+        return (boolean) properties.get(key).value();
+    }
+
+    public void sendDebug(@Nullable Player player, String message) {
+        if (Ability.DEBUG) {
+            String formattedMessage = ChatColor.translateAlternateColorCodes('&', "[Debug] [A:" + getColor() + getName() + ChatColor.RESET + "] " + message);
+            if (player == null) {
+                Brawl.broadcastOps(formattedMessage);
+            } else {
+                player.sendMessage(formattedMessage);
+            }
+        }
+    }
 }

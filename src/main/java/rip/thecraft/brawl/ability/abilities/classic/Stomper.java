@@ -1,15 +1,20 @@
 package rip.thecraft.brawl.ability.abilities.classic;
 
-import com.google.gson.JsonObject;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.property.type.BooleanProperty;
+import rip.thecraft.brawl.ability.property.type.DoubleProperty;
+import rip.thecraft.brawl.util.BlockUtil;
 import rip.thecraft.brawl.util.ParticleEffect;
 import rip.thecraft.brawl.util.PlayerUtil;
 
@@ -20,12 +25,25 @@ public class Stomper extends Ability implements Listener {
     private static final String STOMPER_METADATA = "Stomper";
     private static final String CHARGE_METADATA = "StomperCharge";
 
-    private double impactDistance = 5;
-    private double damageReduction = 3.25;
-    private double fallDamageReduction = 5;
+    public Stomper() {
+        properties.put("impact-distance", new DoubleProperty(5.)
+                .description("Radius of nearby players to damage on impact"));
 
-    private double boost = 3;
-    private double multiplier = 1.25;
+        properties.put("boost-direction", new BooleanProperty(false)
+                .description("Boost the direction the player is facing"));
+
+        properties.put("damage-reduction", new DoubleProperty(4.)
+                .description("Damage calculated by fall damage is divided"));
+
+        properties.put("fall-damage-reduction", new DoubleProperty(3.2)
+                .description("Reduces inflicted fall distance damage"));
+
+        properties.put("boost", new DoubleProperty(3.)
+                .description("Launch multiplier into the air (Y)"));
+
+        properties.put("multiplier", new DoubleProperty(1.25)
+                .description("Launch multiplier in direction player is facing"));
+    }
 
     @Override
     public Material getType() {
@@ -42,82 +60,106 @@ public class Stomper extends Ability implements Listener {
         return "Launch yourself into the air and then sneak to thrust yourself down, dealing massive damage to whoever is on the ground below you.";
     }
 
+    private long delay;
+
     @Override
     public void onActivate(Player player) {
         if (hasCooldown(player, true)) return;
+
+        if (player.hasMetadata(CHARGE_METADATA)) {
+            thrust(player); // Allow thrusting down by clicking the ability again
+            return;
+        }
+
+        if (player.hasMetadata(STOMPER_METADATA)) return; // Already using ability.
 
         if (player.getLocation().getBlockY() >= 150) {
             player.sendMessage(ChatColor.RED + "You can't use this ability here!");
             return;
         }
 
-        if (!player.hasMetadata(STOMPER_METADATA)) {
-            Vector directionVector = player.getLocation().getDirection().clone()
-                    .multiply(multiplier)
-                    .setY(boost);
-
-            player.setMetadata(STOMPER_METADATA, new FixedMetadataValue(Brawl.getInstance(), null));
-            player.setMetadata(CHARGE_METADATA, new FixedMetadataValue(Brawl.getInstance(), null));
-
-            player.setVelocity(directionVector);
-
-            player.playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1.0F, 0.0F);
+        if (!BlockUtil.isOnGround(player.getLocation(), 1)) {
+            player.sendMessage(ChatColor.RED + "You must be on the ground to activate this ability.");
+            return;
         }
+
+        boolean boostDirection = isProperty("boost-direction");
+        Vector vector = boostDirection ? player.getLocation().getDirection().clone()
+                .multiply(getProperty("multiplier"))
+                .setY(getProperty("boost")) : new Vector(0, getProperty("boost"), 0);
+
+        player.setFireTicks(0); // Prevent fire from interfering with velocity
+        player.setMetadata(STOMPER_METADATA, new FixedMetadataValue(Brawl.getInstance(), null));
+        player.setVelocity(vector);
+        Bukkit.getServer().getScheduler().runTask(Brawl.getInstance(), () -> {
+            player.setMetadata(CHARGE_METADATA, new FixedMetadataValue(Brawl.getInstance(), System.currentTimeMillis()));
+            sendDebug(null, "Charge up meta applied.");
+        });
+        delay = System.currentTimeMillis();
+
+        player.playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1.0F, 0.0F);
+
     }
 
-    @Override
-    public void onGround(Player player, boolean onGround) {
-        if (onGround && player.hasMetadata(STOMPER_METADATA)) {
-            onDeactivate(player); // Removes player metadata
-
-            double baseDamage = Math.min(50, player.getFallDistance()) / damageReduction;
-
-            List<Player> nearbyPlayers = PlayerUtil.getNearbyPlayers(player, impactDistance);
-            for (Player nearbyPlayer : nearbyPlayers) {
-                nearbyPlayer.damage(baseDamage / (nearbyPlayer.isSneaking() ? 2 : 1));
-            }
-
-            ParticleEffect.EXPLOSION_HUGE.display(0, 0, 0, 0, 1, player.getLocation(), EFFECT_DISTANCE);
-            player.playSound(player.getLocation(), Sound.ANVIL_LAND, 1.0F, 0.0F);
-            player.setFallDistance((float) (player.getFallDistance() / fallDamageReduction)); // Fall damage should still apply to stompers but be reduced
-            addCooldown(player); // Reset the cooldown
-        }
-    }
-
-    @Override
-    public void onSneak(Player player, boolean sneaking) {
+    public void thrust(Player player) {
         if (player.hasMetadata(STOMPER_METADATA) && player.hasMetadata(CHARGE_METADATA)) {
+            long timestamp = player.getMetadata(CHARGE_METADATA).get(0).asLong();
+            if (System.currentTimeMillis() - timestamp <= 250L) {
+                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "STOMPER " + ChatColor.GRAY + "Not enough momentum to thrust downward. (wait longer)");
+                return;
+            }
             player.removeMetadata(CHARGE_METADATA, Brawl.getInstance());
+            sendDebug(player, ChatColor.DARK_PURPLE + "DOWN FORCE " + (System.currentTimeMillis() - timestamp) + "ms");
 
-            player.setVelocity(player.getLocation().getDirection().setY(player.getVelocity().getY() - boost).multiply(multiplier + 0.75));
+            player.setVelocity(player.getLocation().getDirection().setY(player.getVelocity().getY() - getProperty("boost")).multiply(getProperty("multiplier") + 0.75));
 
             player.playSound(player.getLocation(), Sound.BAT_LOOP, 1.0F, 0.0F);
             ParticleEffect.CLOUD.display(0, 0, 0, 0, 1, player.getLocation(), EFFECT_DISTANCE);
         }
     }
 
+    @EventHandler
+    public void onPlayerVelocity(PlayerVelocityEvent event) {
+        Player player = event.getPlayer();
+        // Patch - Prevent other velocity when CHARGING UP (from player damage)
+        if (!player.isDead() && player.hasMetadata(CHARGE_METADATA)) {
+            long timestamp = player.getMetadata(CHARGE_METADATA).get(0).asLong();
+            if (System.currentTimeMillis() - timestamp <= 10L) return;
+
+            sendDebug(null, "[Delay: " + (System.currentTimeMillis() - delay) + "ms] [Meta delay: " + (System.currentTimeMillis() - timestamp) + "ms]" + "Cancelled external velocity " + event.getVelocity().toString());
+            event.setCancelled(true);
+        }
+    }
+
+
+    @Override
+    public void onGround(Player player, boolean onGround) {
+        if (onGround && player.hasMetadata(STOMPER_METADATA)) {
+            onDeactivate(player); // Removes player metadata
+
+            double baseDamage = Math.min(50, player.getFallDistance()) / getProperty("damage-reduction");
+            sendDebug(player, "Damage info: " + "(Fall: " + player.getFallDistance() + " - Applied: " + (Math.min(50, player.getFallDistance()) + ") (Damage reduc: " + getProperty("fall-damage-reduction") + ") (Applied: " + baseDamage + ")"));
+
+            List<Player> nearbyPlayers = PlayerUtil.getNearbyPlayers(player, getProperty("impact-distance"));
+            for (Player nearbyPlayer : nearbyPlayers) {
+                nearbyPlayer.damage(baseDamage / (nearbyPlayer.isSneaking() ? 2 : 1));
+            }
+
+            ParticleEffect.EXPLOSION_HUGE.display(0, 0, 0, 0, 1, player.getLocation(), EFFECT_DISTANCE);
+            player.playSound(player.getLocation(), Sound.ANVIL_LAND, 1.0F, 0.0F);
+            player.setFallDistance((float) (player.getFallDistance() / getProperty("fall-damage-reduction"))); // Fall damage should still apply to stompers but be reduced
+            addCooldown(player); // Reset the cooldown
+        }
+    }
+
+    @Override
+    public void onSneak(Player player, boolean sneaking) {
+        thrust(player);
+    }
+
     @Override
     public void onDeactivate(Player player) {
         player.removeMetadata(STOMPER_METADATA, Brawl.getInstance());
         player.removeMetadata(CHARGE_METADATA, Brawl.getInstance());
-    }
-
-    @Override
-    public JsonObject toJson() {
-        JsonObject data = super.toJson();
-        data.addProperty("impact-distance", impactDistance);
-        data.addProperty("boost", boost);
-        data.addProperty("multiplier", multiplier);
-        data.addProperty("damage-reduction", damageReduction);
-
-        return data;
-    }
-
-    @Override
-    public void fromJson(JsonObject object) {
-        impactDistance = object.get("impact-distance").getAsDouble();
-        damageReduction = object.get("damage-reduction").getAsDouble();
-        multiplier = object.get("multiplier").getAsDouble();
-        boost = object.get("boost").getAsDouble();
     }
 }

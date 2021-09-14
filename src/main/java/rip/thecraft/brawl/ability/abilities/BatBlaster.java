@@ -59,7 +59,7 @@ public class BatBlaster extends Ability {
     }
 
     @Override
-    public int getDefaultCooldown() {
+    public double getDefaultCooldown() {
         return 15;
     }
 

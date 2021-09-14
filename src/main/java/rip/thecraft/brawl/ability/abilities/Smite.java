@@ -33,7 +33,6 @@ public class Smite extends Ability implements Listener {
     @Override
     public void onActivate(Player player) {
         if (this.hasCooldown(player, false)) return;
-        this.addCooldown(player);
 
         List<Block> blocks = player.getLastTwoTargetBlocks(new HashSet<Material>(), smiteRadius);
         if (!blocks.isEmpty() && blocks.size() > 1) {
