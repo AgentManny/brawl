@@ -33,6 +33,14 @@ public class Level {
         return MathUtil.getPercent(currentExp, getMaxExperience());
     }
 
+    public void updateBar() {
+        Player player = playerData.getPlayer();
+        if (player == null) return;
+
+        player.setExp((float) (getPercentageExp() * 0.01F));
+        player.setLevel(getCurrentLevel());
+    }
+
     public void addExp(Player player, int exp, String action) {
         if (player != null) {
             player.setExp((float) (getPercentageExp() * 0.01F));

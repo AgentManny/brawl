@@ -1,9 +1,9 @@
 package rip.thecraft.brawl.ability.abilities.classic;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,7 +14,6 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.property.type.BooleanProperty;
 import rip.thecraft.brawl.ability.property.type.DoubleProperty;
-import rip.thecraft.brawl.util.BlockUtil;
 import rip.thecraft.brawl.util.ParticleEffect;
 import rip.thecraft.brawl.util.PlayerUtil;
 
@@ -71,15 +70,8 @@ public class Stomper extends Ability implements Listener {
             return;
         }
 
-        if (player.hasMetadata(STOMPER_METADATA)) return; // Already using ability.
-
-        if (player.getLocation().getBlockY() >= 150) {
+        if (player.getLocation().getBlockY() >= 150 || player.getLocation().getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
             player.sendMessage(ChatColor.RED + "You can't use this ability here!");
-            return;
-        }
-
-        if (!BlockUtil.isOnGround(player.getLocation(), 1)) {
-            player.sendMessage(ChatColor.RED + "You must be on the ground to activate this ability.");
             return;
         }
 
@@ -89,13 +81,9 @@ public class Stomper extends Ability implements Listener {
                 .setY(getProperty("boost")) : new Vector(0, getProperty("boost"), 0);
 
         player.setFireTicks(0); // Prevent fire from interfering with velocity
-        player.setMetadata(STOMPER_METADATA, new FixedMetadataValue(Brawl.getInstance(), null));
         player.setVelocity(vector);
-        Bukkit.getServer().getScheduler().runTask(Brawl.getInstance(), () -> {
-            player.setMetadata(CHARGE_METADATA, new FixedMetadataValue(Brawl.getInstance(), System.currentTimeMillis()));
-            sendDebug(null, "Charge up meta applied.");
-        });
-        delay = System.currentTimeMillis();
+        player.setMetadata(STOMPER_METADATA, new FixedMetadataValue(Brawl.getInstance(), null));
+        player.setMetadata(CHARGE_METADATA, new FixedMetadataValue(Brawl.getInstance(), System.currentTimeMillis()));
 
         player.playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1.0F, 0.0F);
 
@@ -109,7 +97,6 @@ public class Stomper extends Ability implements Listener {
                 return;
             }
             player.removeMetadata(CHARGE_METADATA, Brawl.getInstance());
-            sendDebug(player, ChatColor.DARK_PURPLE + "DOWN FORCE " + (System.currentTimeMillis() - timestamp) + "ms");
 
             player.setVelocity(player.getLocation().getDirection().setY(player.getVelocity().getY() - getProperty("boost")).multiply(getProperty("multiplier") + 0.75));
 
@@ -125,8 +112,6 @@ public class Stomper extends Ability implements Listener {
         if (!player.isDead() && player.hasMetadata(CHARGE_METADATA)) {
             long timestamp = player.getMetadata(CHARGE_METADATA).get(0).asLong();
             if (System.currentTimeMillis() - timestamp <= 10L) return;
-
-            sendDebug(null, "[Delay: " + (System.currentTimeMillis() - delay) + "ms] [Meta delay: " + (System.currentTimeMillis() - timestamp) + "ms]" + "Cancelled external velocity " + event.getVelocity().toString());
             event.setCancelled(true);
         }
     }
@@ -138,8 +123,6 @@ public class Stomper extends Ability implements Listener {
             onDeactivate(player); // Removes player metadata
 
             double baseDamage = Math.min(50, player.getFallDistance()) / getProperty("damage-reduction");
-            sendDebug(player, "Damage info: " + "(Fall: " + player.getFallDistance() + " - Applied: " + (Math.min(50, player.getFallDistance()) + ") (Damage reduc: " + getProperty("fall-damage-reduction") + ") (Applied: " + baseDamage + ")"));
-
             List<Player> nearbyPlayers = PlayerUtil.getNearbyPlayers(player, getProperty("impact-distance"));
             for (Player nearbyPlayer : nearbyPlayers) {
                 nearbyPlayer.damage(baseDamage / (nearbyPlayer.isSneaking() ? 2 : 1));

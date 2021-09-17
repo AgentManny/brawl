@@ -274,14 +274,15 @@ public abstract class Ability {
                         this.cancel();
                         return;
                     }
+                    player.setExp(0);
                     player.setLevel(timeLeft);
                 }
 
                 @Override
                 public synchronized void cancel() throws IllegalStateException {
                     super.cancel();
-                    player.setLevel(0);
-                    player.setExp(0);
+
+                    playerData.getLevel().updateBar();
                     playerData.setEnderpearlTask(null);
                 }
             }.runTaskTimer(Brawl.getInstance(), 10L, 10L));
@@ -293,11 +294,11 @@ public abstract class Ability {
     }
 
     public Double getProperty(String key) {
-        return (double) properties.get(key).value();
+        return (Double) properties.get(key).value();
     }
 
     public Boolean isProperty(String key) {
-        return (boolean) properties.get(key).value();
+        return (Boolean) properties.get(key).value();
     }
 
     public void sendDebug(@Nullable Player player, String message) {
