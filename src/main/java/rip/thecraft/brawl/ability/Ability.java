@@ -69,7 +69,7 @@ public abstract class Ability {
     }
 
     public double getDefaultCooldown() {
-        return 25;
+        return 15;
     }
 
     public void cleanup() {
@@ -291,6 +291,14 @@ public abstract class Ability {
 
     public Cooldown toCooldown(PlayerData playerData) {
         return playerData.getCooldown("ABILITY_" + this.getName());
+    }
+
+    public void addProperty(String key, double defaultValue, @Nullable String description) {
+        DoubleProperty property = new DoubleProperty(defaultValue);
+        if (description != null) {
+            property.description(description);
+        }
+        properties.put(key, property);
     }
 
     public Double getProperty(String key) {
