@@ -33,7 +33,7 @@ public class Assassin extends Ability implements Listener {
 
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 200, 0));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 80, 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 80, 0));
 
         player.sendMessage(ChatColor.LIGHT_PURPLE + "You are now in your stealth state!");
         player.sendMessage(ChatColor.GRAY + "You are hidden from normal players and your damage has increased.");

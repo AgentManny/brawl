@@ -64,7 +64,7 @@ public class Shurikens extends Ability {
                     item.getNearbyEntities(1, 2.5, 1).stream().filter(other -> other instanceof Player && !player.equals(other)).findAny().ifPresent(player2 -> {
                         hit = (Player) player2;
                         if (hit != null && !hit.isDead()) {
-                            double damageHealth = 0.5; // 0.5 hearts
+                            double damageHealth = 3; // 0.5 hearts
                             if (hit.getHealth() - damageHealth > 0) {
                                 hit.setHealth(hit.getHealth() - damageHealth);
                                 addCooldown(player, 5);
