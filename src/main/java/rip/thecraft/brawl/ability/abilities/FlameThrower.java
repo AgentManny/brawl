@@ -1,12 +1,9 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.ability.Ability;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,6 +11,8 @@ import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.Ability;
 
 import java.util.Random;
 
@@ -33,15 +32,15 @@ public class FlameThrower extends Ability implements Listener {
         return ChatColor.GOLD;
     }
 
-    @Override
-    public void onApply(Player player) {
-        player.addPotionEffect(potionEffect);
-    }
-
-    @Override
-    public void onRemove(Player player) {
-        player.getActivePotionEffects().removeIf(potionEffect -> this.potionEffect.getType().equals(potionEffect.getType()));
-    }
+//    @Override
+//    public void onApply(Player player) {
+//        player.addPotionEffect(potionEffect);
+//    }
+//
+//    @Override
+//    public void onRemove(Player player) {
+//        player.getActivePotionEffects().removeIf(potionEffect -> this.potionEffect.getType().equals(potionEffect.getType()));
+//    }
 
     @Override
     public void onActivate(Player player) {
@@ -62,11 +61,9 @@ public class FlameThrower extends Ability implements Listener {
                     return;
                 }
 
-                for (int i = 0; i < 5; i ++) {
-                    FallingBlock block = location.getWorld().spawnFallingBlock(location.clone().add(r.nextInt(2) - 1, r.nextInt(2) - 1, r.nextInt(2) - 1), Material.FIRE, (byte) 0);
-                    block.setVelocity(location.getDirection().multiply(5));
-                    block.setDropItem(false);
-                    block.setFireTicks(20);
+                if (!player.isDead()) {
+                } else {
+                    cancel();
                 }
             }
 

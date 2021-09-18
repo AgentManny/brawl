@@ -11,8 +11,10 @@ import rip.thecraft.brawl.util.PlayerUtil;
 
 public class TimeLock extends Ability {
 
-    private double radius = 10.0;
-    private int durationTicks = 50; // Freeze time for X ticks (1s = 20 tick)
+    public TimeLock() {
+        addProperty("radius", 10.0, "Radius of where it should slow");
+        addProperty("duration-ticks", 100., "Freeze time for X ticks (1s = 20 tick)");
+    }
 
     @Override
     public String getName() {
@@ -35,9 +37,10 @@ public class TimeLock extends Ability {
         addCooldown(player);
 
         int enemiesFrozen = 0;
-        for (Player enemy : PlayerUtil.getNearbyPlayers(player, radius)) {
+        for (Player enemy : PlayerUtil.getNearbyPlayers(player, getProperty("radius").intValue())) {
             if (!Protection.isAlly(player, enemy)) {
-                enemy.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, durationTicks, 100, false, true));
+                enemy.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, getProperty("duration-ticks").intValue(), 100, false, true));
+                enemy.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, getProperty("duration-ticks").intValue(), 240, false, true));
                 enemiesFrozen++;
             }
         }
