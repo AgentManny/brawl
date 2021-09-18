@@ -56,6 +56,7 @@ public class Gambler extends Ability {
         PotionEffect potionEffect = randomEffect.applyTo(random, player);
         player.sendMessage(ChatColor.YELLOW + "You've taken a gamble and received " + BukkitUtil.getFriendlyName(potionEffect) + ChatColor.YELLOW + ".");
     }
+
     @NoArgsConstructor
     @AllArgsConstructor
     private enum GamblerEffect {

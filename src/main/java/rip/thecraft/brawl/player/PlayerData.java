@@ -375,6 +375,8 @@ public class PlayerData {
         if (this.selectedKit != null) {
             this.selectedKit.getAbilities().forEach(ability -> {
                 ability.onRemove(this.getPlayer());
+                ability.onDeactivate(this.getPlayer());
+
                 String cooldown = "ABILITY_" + ability.getName();
                 Cooldown cd = this.getCooldown(cooldown);
                 if (cd != null) {
