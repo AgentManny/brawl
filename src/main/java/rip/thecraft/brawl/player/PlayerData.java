@@ -19,6 +19,8 @@ import rip.thecraft.brawl.duelarena.queue.QueueData;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.kit.Kit;
+import rip.thecraft.brawl.kit.event.KitActivateEvent;
+import rip.thecraft.brawl.kit.event.KitDeactivateEvent;
 import rip.thecraft.brawl.kit.type.RankType;
 import rip.thecraft.brawl.kit.type.RefillType;
 import rip.thecraft.brawl.levels.Level;
@@ -372,18 +374,27 @@ public class PlayerData {
     }
 
     public void setSelectedKit(Kit selectedKit) {
+        Player player = getPlayer();
         if (this.selectedKit != null) {
-            this.selectedKit.getAbilities().forEach(ability -> {
-                ability.onRemove(this.getPlayer());
-                ability.onDeactivate(this.getPlayer());
+            if (player != null) {
+                this.selectedKit.getAbilities().forEach(ability -> {
+                    ability.onRemove(player);
+                    ability.onDeactivate(player);
 
-                String cooldown = "ABILITY_" + ability.getName();
-                Cooldown cd = this.getCooldown(cooldown);
-                if (cd != null) {
-                    cd.setExpire(0);
-                    cd.setNotified(true);
+                    String cooldown = "ABILITY_" + ability.getName();
+                    Cooldown cd = this.getCooldown(cooldown);
+                    if (cd != null) {
+                        cd.setExpire(0);
+                        cd.setNotified(true);
+                    }
+                });
+                if (selectedKit != this.selectedKit) {
+                    Brawl.getInstance().getServer().getPluginManager().callEvent(new KitDeactivateEvent(player, selectedKit));
                 }
-            });
+            }
+        }
+        if (selectedKit != null && player != null) {
+            Brawl.getInstance().getServer().getPluginManager().callEvent(new KitActivateEvent(player, selectedKit));
         }
         this.selectedKit = selectedKit;
     }

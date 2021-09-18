@@ -46,11 +46,11 @@ import rip.thecraft.brawl.scoreboard.BrawlNametagAdapter;
 import rip.thecraft.brawl.scoreboard.BrawlScoreboardAdapter;
 import rip.thecraft.brawl.spectator.SpectatorManager;
 import rip.thecraft.brawl.task.SaveTask;
-import rip.thecraft.brawl.task.SoupTask;
 import rip.thecraft.brawl.team.Team;
 import rip.thecraft.brawl.team.TeamHandler;
 import rip.thecraft.brawl.team.adapter.TeamTypeAdapter;
 import rip.thecraft.brawl.upgrade.UpgradeManager;
+import rip.thecraft.brawl.util.EffectRestorer;
 import rip.thecraft.brawl.util.EntityHider;
 import rip.thecraft.brawl.visual.VisualManager;
 import rip.thecraft.brawl.warp.Warp;
@@ -65,7 +65,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 @Getter
 public class Brawl extends JavaPlugin {
@@ -104,6 +103,7 @@ public class Brawl extends JavaPlugin {
     private ItemHandler itemHandler;
 
     private EntityHider entityHider;
+    private EffectRestorer effectRestorer;
 
     private Map<String, Location> locationMap = new HashMap<>();
 
@@ -119,6 +119,7 @@ public class Brawl extends JavaPlugin {
         loadDatabase();
 
         this.entityHider = new EntityHider(this, EntityHider.Policy.BLACKLIST);
+        this.effectRestorer = new EffectRestorer(this);
 
         this.loadLocations();
         this.registerHandlers();

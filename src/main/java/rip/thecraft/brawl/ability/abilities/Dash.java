@@ -3,9 +3,7 @@ package rip.thecraft.brawl.ability.abilities;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PotionEffectExpireEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -33,14 +31,7 @@ public class Dash extends Ability implements Listener {
                 .findAny()
                 .ifPresent(effect -> player.setMetadata("LastEffect", new FixedMetadataValue(Brawl.getInstance(), effect)));
 
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 30, 10), true);
-    }
-
-    @EventHandler
-    public void onEffectExpire(PotionEffectExpireEvent event) {
-        if (event.getEntity().hasMetadata("LastEffect")) {
-            event.getEntity().addPotionEffect((PotionEffect) event.getEntity().getMetadata("LastEffect").get(0));
-        }
+        Brawl.getInstance().getEffectRestorer().setRestoreEffect(player, new PotionEffect(PotionEffectType.SPEED, 30, 10));
     }
 
     @Override
