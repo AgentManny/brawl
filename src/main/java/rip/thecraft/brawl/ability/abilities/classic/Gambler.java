@@ -67,7 +67,7 @@ public class Gambler extends Ability {
         JUMP,
         REGENERATION,
         DAMAGE_RESISTANCE,
-        HEALTH_BOOST,
+        HEALTH_BOOST(),
         ABSORPTION,
 
 
@@ -134,6 +134,10 @@ public class Gambler extends Ability {
                 }
             } else {
                 player.addPotionEffect(potionEffect);
+                if (this == HEALTH_BOOST) {
+                    double healthDiff = player.getMaxHealth() - player.getHealth();
+                    player.setHealth(Math.max(player.getMaxHealth(), player.getHealth() + healthDiff));
+                }
             }
             return potionEffect;
         }
