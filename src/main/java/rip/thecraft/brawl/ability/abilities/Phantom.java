@@ -1,12 +1,12 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.util.MathUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.util.MathUtil;
 
 public class Phantom extends Ability {
 
@@ -24,8 +24,9 @@ public class Phantom extends Ability {
 
     @Override
     public void onActivate(Player player) {
-        if (this.hasCooldown(player, true)) return;
-        this.addCooldown(player);
+        if (hasCooldown(player, true)) return;
+        addCooldown(player);
+
         player.setAllowFlight(true);
         player.setFlying(true);
         new BukkitRunnable() {
@@ -35,5 +36,11 @@ public class Phantom extends Ability {
                 player.setAllowFlight(false);
             }
         }.runTaskLater(plugin, MathUtil.convertSecondstoTicks(MathUtil.getRandomInt(5, 10)));
+    }
+
+    @Override
+    public void onDeactivate(Player player) {
+        player.setFlying(false);
+        player.setAllowFlight(false);
     }
 }
