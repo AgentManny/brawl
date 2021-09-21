@@ -196,7 +196,12 @@ public abstract class Ability {
                         property = new StringProperty(primitive.getAsString());
                     }
                 }
-                properties.put(key, property);
+                if (property != null) {
+                    if (properties.containsKey(key)) {
+                        property.description(properties.get(key).getDescription());
+                    }
+                    properties.put(key, property);
+                }
             }
         }
     }

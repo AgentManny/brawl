@@ -39,6 +39,24 @@ public class PlayerUtil {
         }
         return players;
     }
+
+    /**
+     * Returns nearby players from a location.
+     *
+     * @param location Target location
+     * @param radius Radius to check
+     *
+     * @return Returns list of nearby players
+     */
+    public static List<Player> getNearbyPlayers(Location location, double radius) {
+        List<Player> players = new ArrayList<>();
+        for (Entity entity : location.getNearbyEntities(radius, radius, radius)) {
+            if (entity instanceof Player) {
+                players.add((Player) entity);
+            }
+        }
+        return players;
+    }
     /**
      * Resets a player's inventory (and other associated data, such as health, food, etc) to their default state.
      *

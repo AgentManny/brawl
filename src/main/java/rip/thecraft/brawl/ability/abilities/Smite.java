@@ -3,22 +3,27 @@ package rip.thecraft.brawl.ability.abilities;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.entity.LightningStrike;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.metadata.FixedMetadataValue;
-import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.AbilityTask;
+import rip.thecraft.brawl.player.protection.Protection;
+import rip.thecraft.brawl.util.PlayerUtil;
 
 import java.util.HashSet;
 import java.util.List;
 
 public class Smite extends Ability implements Listener {
+    // Smite nearby players where target is looking at.
+    // We should allow smiting 3 times
 
-    private int smiteRadius = 15;
+    public Smite() {
+        addProperty("strike-radius", 20., "Radius how far smiting can be applied");
+        addProperty("damage-radius", 3., "Radius of damage being striked to players nearby");
+        addProperty("damage", 3, "Damage applied for each smite");
+    }
 
     @Override
     public ChatColor getColor() {
@@ -27,46 +32,56 @@ public class Smite extends Ability implements Listener {
 
     @Override
     public Material getType() {
-        return Material.WOOD_AXE;
+        return Material.GOLD_AXE;
     }
 
     @Override
     public void onActivate(Player player) {
         if (this.hasCooldown(player, false)) return;
 
-        List<Block> blocks = player.getLastTwoTargetBlocks(new HashSet<Material>(), smiteRadius);
-        if (!blocks.isEmpty() && blocks.size() > 1) {
-            Block targetBlock = blocks.get(1);
-            Location location = player.getWorld().getHighestBlockAt(targetBlock.getLocation()).getLocation().clone()
-                    .add(0, 1, 0);
-            for (int i = 0; i < 3; i++) {
-                LightningStrike strike = player.getWorld().strikeLightning(location);
-            }
-            this.addCooldown(player);
-
+        Location location;
+        List<Block> blocks = player.getLastTwoTargetBlocks((HashSet<Byte>)null, getProperty("strike-radius").intValue());
+        if (blocks.size() > 1 && blocks.get(1).getType() == Material.AIR) {
+            Location maxLocation = player.getLocation().add(player.getLocation().getDirection().multiply(getProperty("strike-radius")));
+            location = player.getWorld().getHighestBlockAt(maxLocation).getLocation();
         } else {
-            player.sendMessage(ChatColor.RED + "You can't smite here!");
-
+            location = blocks.get(0).getLocation();
         }
+
+        if (location == null) {
+            player.sendMessage(ChatColor.RED + "You can't smite here!");
+            return;
+        }
+        new SmiteTask(player, location).start();
+        addCooldown(player);
     }
 
-    @Override
-    public void onApply(Player player) {
-        player.setMetadata("Smite", new FixedMetadataValue(Brawl.getInstance(), null));
-    }
+    private class SmiteTask extends AbilityTask {
 
-    @Override
-    public void onDeactivate(Player player) {
-        player.removeMetadata("Smite", Brawl.getInstance());
-    }
+        private World world;
+        private Location location;
 
-    @EventHandler
-    public void onEntityDamage(EntityDamageEvent event) {
-        if (event.getCause() == EntityDamageEvent.DamageCause.LIGHTNING) {
-            if (event.getEntity().hasMetadata("Smite")) {
-                event.setCancelled(true);
+        public SmiteTask(Player player, Location location) {
+            super(player, 2250L, 15L);
+
+            this.world = location.getWorld();
+            this.location = location;
+        }
+
+        @Override
+        public void onTick() {
+            location.getWorld().strikeLightningEffect(location);
+            double damage = getProperty("damage");
+            for (Player nearbyPlayer : PlayerUtil.getNearbyPlayers(location, getProperty("damage-radius"))) {
+                if (nearbyPlayer == player) continue; // Don't apply to player
+                world.strikeLightningEffect(nearbyPlayer.getLocation());
+                nearbyPlayer.damage(Protection.isAlly(nearbyPlayer, player) ? damage / 2 : damage, player);
             }
         }
-    }
 
+        @Override
+        public void onCancel() {
+
+        }
+    }
 }
