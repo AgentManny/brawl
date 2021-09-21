@@ -7,6 +7,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.region.RegionType;
+import rip.thecraft.brawl.util.BlockUtil;
 
 import java.util.HashSet;
 import java.util.List;
@@ -51,14 +52,16 @@ public class Flash extends Ability {
     public void onActivate(Player player) {
         if (this.hasCooldown(player, true)) return;
 
+        Location blockLoc;
         List<Block> blocks = player.getLastTwoTargetBlocks((HashSet<Byte>)null, maxTeleportDistance);
         if (blocks.size() > 1 && blocks.get(1).getType() == Material.AIR) {
-            player.sendMessage(ChatColor.RED + "You can't teleport this far!");
-            return;
+            Location maxLocation = player.getLocation().add(player.getLocation().getDirection().multiply(maxTeleportDistance));
+            blockLoc = BlockUtil.isOnGround(maxLocation, 1) ? maxLocation : player.getWorld().getHighestBlockAt(maxLocation).getLocation();
+        } else {
+            blockLoc = blocks.get(0).getLocation();
         }
 
         Location playerLoc = player.getLocation();
-        Location blockLoc = blocks.get(0).getLocation().clone();
         double distance = playerLoc.distance(blockLoc);
         if (distance > 2) {
             Location loc = blockLoc.add(0.5, 0.5, 0.5);

@@ -22,7 +22,7 @@ public class Smite extends Ability implements Listener {
     public Smite() {
         addProperty("strike-radius", 20., "Radius how far smiting can be applied");
         addProperty("damage-radius", 3., "Radius of damage being striked to players nearby");
-        addProperty("damage", 3, "Damage applied for each smite");
+        addProperty("damage", 4, "Damage applied for each smite");
     }
 
     @Override
