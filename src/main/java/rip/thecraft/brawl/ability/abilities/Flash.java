@@ -16,7 +16,7 @@ public class Flash extends Ability {
 
     private static final HashSet<Byte> invalidBlocks = new HashSet<>();
 
-    private boolean giveWeakness = true;
+    private boolean giveWeakness = false;
     private int maxTeleportDistance = 100;
 
     static {
