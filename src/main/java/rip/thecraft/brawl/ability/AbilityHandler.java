@@ -87,7 +87,9 @@ public class AbilityHandler {
                 new Assassin(),
                 new Phantom(),
 
-                new Illusioner()
+                new Illusioner(),
+
+                new Dragon()
         );
         this.load();
 
