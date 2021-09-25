@@ -87,6 +87,7 @@ public class PlayerData {
 
     private SpawnData spawnData = new SpawnData(this);
     private QueueData queueData = new QueueData();
+    private long teleportDuration = 0;
 
     private Map<String, Cooldown> cooldownMap = new HashMap<>();
 
@@ -290,7 +291,10 @@ public class PlayerData {
 
         if (tpTask != null) {
             tpTask.cancel();
+            teleportDuration = 0;
         }
+
+        teleportDuration = teleportDuration = System.currentTimeMillis() + (seconds * 1000L);;
 
         tpTask = new BukkitRunnable() {
             @Override
@@ -304,13 +308,13 @@ public class PlayerData {
                     combatTaggedTil = -1;
                     getCooldownMap().remove("ENDERPEARL");
                     player.sendMessage(ChatColor.YELLOW + "Warped to " + ChatColor.LIGHT_PURPLE + name + ChatColor.YELLOW + ".");
-
                     if (onTp != null && onTp.length > 0) {
                         for (Runnable rb : onTp) {
                             rb.run();
                         }
                     }
                     getPlayer().teleport(loc);
+                    teleportDuration = 0;
                 }
 
             }
@@ -325,6 +329,7 @@ public class PlayerData {
 
     public void cancelWarp() {
         getPlayer().sendMessage(ChatColor.RED + "Warp cancelled!");
+        teleportDuration = 0;
         tpTask.cancel();
         tpTask = null;
     }

@@ -149,6 +149,11 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
         if (playerData.hasCombatLogged()) {
             toReturn.add(ChatColor.WHITE + "Combat: " + ChatColor.RED + TimeUnit.MILLISECONDS.toSeconds(playerData.getCombatTaggedTil() - System.currentTimeMillis()) + "s");
         }
+
+        if (playerData.isWarping() && playerData.getTeleportDuration() > System.currentTimeMillis()) {
+            toReturn.add(ChatColor.WHITE + "Teleport: " + ChatColor.AQUA + TimeUnit.MILLISECONDS.toSeconds(playerData.getTeleportDuration() - System.currentTimeMillis()) + "s");
+        }
+
         toReturn.add(ChatColor.WHITE + "Killstreak: " + ChatColor.RED + (int) statistic.get(StatisticType.KILLSTREAK));
 //        toReturn.add("    ");
 //        toReturn.add(ChatColor.WHITE + "State: " + ChatColor.GOLD + "SafeZone");

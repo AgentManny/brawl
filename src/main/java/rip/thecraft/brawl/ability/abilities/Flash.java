@@ -17,7 +17,7 @@ public class Flash extends Ability {
     private static final HashSet<Byte> invalidBlocks = new HashSet<>();
 
     private boolean giveWeakness = false;
-    private int maxTeleportDistance = 100;
+    private int maxTeleportDistance = 75;
 
     static {
         invalidBlocks.add((byte) Material.BARRIER.getId());
@@ -86,6 +86,11 @@ public class Flash extends Ability {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, (int) ((distance / 2) * 20), 1), true);
             }
 
+            if (player.getFallDistance() > 10) {
+                // half the damage if teleporting down from high places
+                player.setFallDistance(player.getFallDistance() / 2);
+            }
+            player.sendMessage("distance: " + distance);
             addCooldown(player);
         } else {
             player.sendMessage(ChatColor.RED + "You can't teleport this close!");
