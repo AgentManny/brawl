@@ -69,7 +69,7 @@ public class Shurikens extends Ability {
                                 hit.setHealth(hit.getHealth() - damageHealth);
                                 addCooldown(player, 5);
                             }
-                            hit.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 125, 1));
+                            hit.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 1));
                             hit.damage(damageHealth, player); // make it so it counts as a player kill
 
                         }
