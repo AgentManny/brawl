@@ -227,13 +227,13 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
 
     private List<String> getLobbyGame(Player player, PlayerData playerData, List<String> toReturn) {
         GameLobby lobby = Brawl.getInstance().getGameHandler().getLobby();
-        toReturn.add(ChatColor.DARK_PURPLE + "Players: " + ChatColor.LIGHT_PURPLE + lobby.getPlayers().size() + "/" + lobby.getGameType().getMaxPlayers());
-        toReturn.add(ChatColor.DARK_PURPLE + "Starting in " + ChatColor.LIGHT_PURPLE + lobby.getStartTime() + "s");
+        toReturn.add(ChatColor.WHITE + "Players: " + ChatColor.LIGHT_PURPLE + lobby.getPlayers().size() + "/" + lobby.getGameType().getMaxPlayers());
+        toReturn.add(ChatColor.WHITE + "Starting in " + ChatColor.LIGHT_PURPLE + lobby.getStartTime() + "s");
         toReturn.add("  ");
-        toReturn.add(ChatColor.DARK_PURPLE + "Map Votes:");
+        toReturn.add(ChatColor.WHITE + "Map Votes:");
         int i = 0;
         for (Map.Entry<String, Integer> entry : lobby.getSortedVotes().entrySet()) {
-            toReturn.add(ChatColor.DARK_PURPLE + " - " + ChatColor.WHITE + entry.getKey() + " " + ChatColor.LIGHT_PURPLE + entry.getValue());
+            toReturn.add(ChatColor.LIGHT_PURPLE + " ● " + ChatColor.WHITE + entry.getKey() + " " + ChatColor.LIGHT_PURPLE + entry.getValue());
             if (i++ == 5) break;
 
         }

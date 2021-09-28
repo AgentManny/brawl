@@ -8,11 +8,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.meta.AbilityMeta;
 import rip.thecraft.brawl.util.SchedulerUtil;
 
 public class Fisherman extends Ability implements Listener {
 
+
+    @AbilityMeta(id = "range")
     private double range = 15;
+
+    @AbilityMeta(id = "speed")
     private double speed = 0.425;
 
     @Override
