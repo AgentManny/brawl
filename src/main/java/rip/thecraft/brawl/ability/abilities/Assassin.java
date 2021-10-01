@@ -51,7 +51,7 @@ public class Assassin extends Ability implements Listener {
                 }
             }
 
-        }.runTaskLater(Brawl.getInstance(), 200L).getTaskId();
+        }.runTaskLater(Brawl.getInstance(), 110L).getTaskId();
 
         player.getInventory().setArmorContents(null);
         player.setMetadata(STEALTH_METADATA, new FixedMetadataValue(Brawl.getInstance(), taskId));
