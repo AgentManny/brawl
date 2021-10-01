@@ -43,7 +43,7 @@ public class MathUtil {
      * @return The percent out of 100
      */
     public static final double getPercent(double n, double v){
-        return round(((n * 100) / v), 1);
+        return (n * 100) / v;
     }
 
 

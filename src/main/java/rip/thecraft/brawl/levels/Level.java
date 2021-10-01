@@ -42,6 +42,9 @@ public class Level {
     }
 
     public void addExp(Player player, int exp, String action) {
+        playerData.getStatistic().add(StatisticType.TOTAL_EXPERIENCE, exp);
+        currentExp += exp;
+
         if (player != null) {
             player.setExp((float) (getPercentageExp() * 0.01F));
             String message = ChatColor.GREEN + "+" + exp + " exp";
@@ -50,9 +53,6 @@ public class Level {
             }
             player.sendMessage(message);
         }
-
-        playerData.getStatistic().add(StatisticType.TOTAL_EXPERIENCE, exp);
-        currentExp += exp;
 
         for (PlayerChallenge challenge : playerData.getChallengeTracker().getChallenges().values()) {
             if (challenge.isActive() && challenge.getChallenge().getType() == ChallengeType.EXPERIENCE) {
@@ -102,19 +102,21 @@ public class Level {
 
     public static String getColor(int level) {
         ChatColor color;
-        if (level < 5) {
+        if (level < 10) {
             color = ChatColor.GRAY;
-        } else if (level < 10) {
-            color = ChatColor.WHITE;
-        } else if (level < 15) {
-            color = ChatColor.GOLD;
         } else if (level < 20) {
-            color = ChatColor.AQUA;
-        } else if (level < 25) {
-            color = ChatColor.DARK_AQUA;
+            color = ChatColor.WHITE;
+        } else if (level < 30) {
+            color = ChatColor.YELLOW;
+        } else if (level < 40) {
+            color = ChatColor.GOLD;
         } else if (level < 50) {
-            color = ChatColor.LIGHT_PURPLE;
+            color = ChatColor.AQUA;
+        } else if (level < 60) {
+            color = ChatColor.DARK_AQUA;
         } else if (level < 75) {
+            color = ChatColor.LIGHT_PURPLE;
+        } else if (level >= 100) {
             color = ChatColor.DARK_PURPLE;
         } else {
             color = ChatColor.WHITE;
