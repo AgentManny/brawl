@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.warp;
 
-import com.google.common.base.Strings;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -23,13 +22,13 @@ public class WarpTypeAdapter implements ParameterType<Warp> {
                 return null;
             }
 
-            String line = CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 35);
-            sender.sendMessage(line);
-            sender.sendMessage(ChatColor.LIGHT_PURPLE + "Warps");
-            for (Warp warp : wm.getWarps().values()) {
-                sender.sendMessage(CC.YELLOW + " - " + warp.getName() + (warp.getKit() != null && !warp.getKit().isEmpty() ? CC.LIGHT_PURPLE + " [" + warp.getKit() + "]" : ""));
+            sender.sendMessage(" ");
+            sender.sendMessage(ChatColor.DARK_PURPLE.toString() + "*** Warps ***");
+            for (Warp warp : Brawl.getInstance().getWarpManager().getWarps().values()) {
+                sender.sendMessage(CC.GRAY + " - " + ChatColor.WHITE + warp.getName() + (warp.getKit() != null && !warp.getKit().isEmpty() ? CC.LIGHT_PURPLE + " [" + warp.getKit() + "]" : ""));
             }
-            sender.sendMessage(line);
+            sender.sendMessage(ChatColor.GRAY + "Type /warp <warp> to teleport to a warp");
+            sender.sendMessage(" ");
             return null;
         }
 
