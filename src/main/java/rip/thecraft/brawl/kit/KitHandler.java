@@ -27,6 +27,8 @@ import java.util.List;
 
 public class KitHandler {
 
+    public static boolean FREE_KITS = true;
+
     protected static final File KIT_DIRECTORY;
 
     private final Brawl plugin;
