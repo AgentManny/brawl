@@ -29,7 +29,7 @@ public class BrawlNametagAdapter extends NametagProvider {
         Profile profile = Falcon.getInstance().getProfileHandler().getByPlayer(toRefresh);
         PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(toRefresh);
 
-        String color = CC.translate(profile.getColor());
+        String color = profile == null ? ChatColor.WHITE.toString() : CC.translate(profile.getColor());
 
         PlayerData refreshPlayerData = plugin.getPlayerDataHandler().getPlayerData(refreshFor);
         if (playerData == null || refreshPlayerData == null) return createNametag(color, "");

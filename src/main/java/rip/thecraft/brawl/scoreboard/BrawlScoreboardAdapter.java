@@ -45,7 +45,7 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
         if (Brawl.getInstance().getGameHandler().getLobby() != null && Brawl.getInstance().getGameHandler().getLobby().getPlayers().contains(player.getUniqueId())) {
             return ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + Brawl.getInstance().getGameHandler().getLobby().getGameType().getShortName().toUpperCase();
         }
-        return "       " + ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "KAZE" + ChatColor.GRAY + " " + Brawl.getVersion() + "       ";
+        return "     " + ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "KAZE" + ChatColor.GRAY + " " + Brawl.getVersion() + "     ";
     }
 
     @Override
@@ -57,7 +57,7 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
             lines.add(LINE_SEPARATOR);
         } else {
             //lines.add(ChatColor.GRAY + "Season One      ");
-            lines.add("                      ");
+            lines.add("      ");
         }
         switch (playerData.getPlayerState()) {
             case SPECTATING: {
@@ -94,7 +94,7 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
             lines.add(ChatColor.WHITE + LINE_SEPARATOR);
         } else {
             lines.add("   ");
-            lines.add(ChatColor.LIGHT_PURPLE + "kaze.gg        ");
+            lines.add(ChatColor.LIGHT_PURPLE + "kaze.gg");
         }
     }
 
