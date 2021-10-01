@@ -279,18 +279,18 @@ public abstract class Ability {
                         this.cancel();
                         return;
                     }
-                    player.setExp(0);
-                    player.setLevel(timeLeft);
+//                    player.setExp(0);
+//                    player.setLevel(timeLeft);
                 }
 
                 @Override
                 public synchronized void cancel() throws IllegalStateException {
                     super.cancel();
 
-                    playerData.getLevel().updateBar();
+                    //playerData.getLevel().updateBar();
                     playerData.setEnderpearlTask(null);
                 }
-            }.runTaskTimer(Brawl.getInstance(), 10L, 10L));
+            }.runTaskTimer(Brawl.getInstance(), 20L, 20L));
         }
     }
 
