@@ -9,7 +9,7 @@ import rip.thecraft.spartan.command.Param;
 
 public class ExpModifyCommand {
 
-    @Command(names = "exp add")
+    @Command(names = "exp add", permission = "op")
     public static void addExp(CommandSender sender, @Param(defaultValue = "self") PlayerData playerData, @Param(name = "experience") int exp) {
         Level level = playerData.getLevel();
         level.addExp(playerData.getPlayer(), exp, "Added by " + sender.getName());
@@ -17,7 +17,7 @@ public class ExpModifyCommand {
         sender.sendMessage(ChatColor.WHITE + playerData.getName() + ChatColor.GREEN + " experience is now " + level.getCurrentExp() + "/" + level.getMaxExperience() + " (" + level.getCurrentLevel() + "L)");
     }
 
-    @Command(names = "exp set")
+    @Command(names = "exp set", permission = "op")
     public static void setExp(CommandSender sender, @Param(defaultValue = "self") PlayerData playerData, @Param(name = "experience") int exp) {
         Level level = playerData.getLevel();
         level.setCurrentExp(exp);
