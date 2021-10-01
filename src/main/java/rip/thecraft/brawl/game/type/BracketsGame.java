@@ -212,10 +212,10 @@ public class BracketsGame extends Game {
     @Override
     public List<String> getSidebar(Player player) {
         List<String> toReturn = new ArrayList<>();
-        toReturn.add(CC.DARK_PURPLE + "Event: " + CC.LIGHT_PURPLE + getType().getShortName());
-        toReturn.add(CC.DARK_PURPLE + "Players: " + CC.LIGHT_PURPLE + getAlivePlayers().size() + "/" + getPlayers().size());
-        toReturn.add(CC.DARK_PURPLE + "Round: " + CC.LIGHT_PURPLE + this.round + (this.state == GameState.FINISHED ? "" : (getTime() >= 0 ? CC.GRAY + " (" + getTime() + "s)" : "")));
-        toReturn.add(CC.BLUE + CC.SCOREBAORD_SEPARATOR);
+        toReturn.add(CC.WHITE + "Event: " + CC.LIGHT_PURPLE + getType().getShortName());
+        toReturn.add(CC.WHITE + "Players: " + CC.LIGHT_PURPLE + getAlivePlayers().size() + "/" + getPlayers().size());
+        toReturn.add(CC.WHITE + "Round: " + CC.LIGHT_PURPLE + this.round + (this.state == GameState.FINISHED ? "" : (getTime() >= 0 ? CC.GRAY + " (" + getTime() + "s)" : "")));
+        toReturn.add(ChatColor.BLUE + "     ");
         if (this.state == GameState.STARTED) {
 
             GamePlayer playerOne = player1;
@@ -225,21 +225,21 @@ public class BracketsGame extends Game {
                 playerTwo = player1;
             }
 
-            toReturn.add(CC.DARK_PURPLE + playerOne.getName() + CC.LIGHT_PURPLE + " vs. " + CC.DARK_PURPLE + playerTwo.getName());
-            toReturn.add(CC.DARK_PURPLE + "(" + CC.LIGHT_PURPLE + playerOne.getCPS() + "CPS" + CC.DARK_PURPLE + ") vs. (" + CC.LIGHT_PURPLE + playerTwo.getCPS() + "CPS" + CC.DARK_PURPLE + ")");
-            toReturn.add(CC.DARK_PURPLE + "(" + CC.LIGHT_PURPLE + playerOne.getPing() + "ms" + CC.DARK_PURPLE + ") vs. (" + CC.LIGHT_PURPLE + playerTwo.getPing() + "ms" + CC.DARK_PURPLE + ")");
+            //toReturn.add(CC.LIGHT_PURPLE + playerOne.getDisplayName() + CC.WHITE + " vs. " + CC.LIGHT_PURPLE + playerTwo.getDisplayName());
+//            toReturn.add(CC.DARK_PURPLE + "(" + CC.LIGHT_PURPLE + playerOne.getCPS() + "CPS" + CC.DARK_PURPLE + ") vs. (" + CC.LIGHT_PURPLE + playerTwo.getCPS() + "CPS" + CC.DARK_PURPLE + ")");
+//            toReturn.add(CC.DARK_PURPLE + "(" + CC.LIGHT_PURPLE + playerOne.getPing() + "ms" + CC.DARK_PURPLE + ") vs. (" + CC.LIGHT_PURPLE + playerTwo.getPing() + "ms" + CC.DARK_PURPLE + ")");
 
         } else if (this.state == GameState.FINISHED) {
             boolean winners = this.winners.size() > 1;
             if (winners) {
-                toReturn.add(CC.DARK_PURPLE + "Winners: ");
+                toReturn.add(CC.WHITE + "Winners: ");
                 for (GamePlayer winner : this.winners) {
                     toReturn.add(CC.LIGHT_PURPLE + "  " + winner.getName());
                 }
             } else if (!this.winners.isEmpty()) {
-                toReturn.add(CC.DARK_PURPLE + "Winner: " + CC.LIGHT_PURPLE + this.winners.get(0).getName());
+                toReturn.add(CC.WHITE + "Winner: " + CC.LIGHT_PURPLE + this.winners.get(0).getName());
             } else {
-                toReturn.add(CC.DARK_PURPLE + "Winner: " + CC.RED + "None");
+                toReturn.add(CC.WHITE + "Winner: " + CC.RED + "None");
             }
         } else {
             toReturn.add(CC.LIGHT_PURPLE + "Waiting...");

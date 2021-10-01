@@ -29,9 +29,9 @@ import java.util.concurrent.TimeUnit;
 @Setter
 public class KOTH extends Event {
 
-    public static final String PREFIX = CC.DARK_PURPLE + "[KingOfTheHill] " + CC.WHITE;
+    public static final String PREFIX = CC.DARK_PURPLE + "[ControlPoint] " + CC.WHITE;
 
-    public static int DEFAULT_CAPTURE_TIME = (int) TimeUnit.MINUTES.toSeconds(3);
+    public static int DEFAULT_CAPTURE_TIME = 90;
 
     private final String name;
 
@@ -49,7 +49,7 @@ public class KOTH extends Event {
     }
 
     public void start(Player host) {
-        new ImageMessage("koth").appendText(" ", " ", PREFIX, ChatColor.WHITE + name + " KOTH", ChatColor.YELLOW + "can be contested now.").broadcast();
+        new ImageMessage("controlpoint").appendText(" ", " ", PREFIX, ChatColor.WHITE + name + " Event", ChatColor.YELLOW + "can be contested now.").broadcast();
 
         if (captureZone == null) {
             finish(null);
@@ -91,8 +91,8 @@ public class KOTH extends Event {
             Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(winner);
             String name = (team == null ? "" : ChatColor.GRAY + "[" + team.getDisplayName(winner) + ChatColor.GRAY + "]") + ChatColor.WHITE + winner.getDisplayName();
             Bukkit.broadcastMessage(PREFIX + ChatColor.LIGHT_PURPLE + this.name + ChatColor.YELLOW + " has been controlled by " + name + ChatColor.YELLOW + "!");
-            Bukkit.broadcastMessage(PREFIX + CC.YELLOW + "Awarded " + ChatColor.YELLOW + credits + " credits" + ChatColor.YELLOW + " to " + name + ChatColor.YELLOW + ".");
-            Brawl.getInstance().getPlayerDataHandler().getPlayerData(winner).getStatistic().add(StatisticType.CREDITS, credits);
+            //Bukkit.broadcastMessage(PREFIX + CC.YELLOW + "Awarded " + ChatColor.YELLOW + credits + " credits" + ChatColor.YELLOW + " to " + name + ChatColor.YELLOW + ".");
+            //Brawl.getInstance().getPlayerDataHandler().getPlayerData(winner).getStatistic().add(StatisticType.CREDITS, credits);
         }
 
         if (task != null) {
@@ -114,10 +114,10 @@ public class KOTH extends Event {
 
     public List<String> getScoreboard(Player player) {
         List<String> lines = new ArrayList<>();
-        lines.add(CC.GOLD + CC.SCOREBAORD_SEPARATOR);
-        lines.add(CC.GOLD + CC.BOLD + this.name + ": " + CC.YELLOW + getTimeLeft());
-        String capturing = captureTime < DEFAULT_CAPTURE_TIME - 30 ? CC.WHITE + cappingPlayer.getDisplayName() : CC.GRAY + "???";
-        lines.add(CC.GOLD + "Capturing: " + CC.YELLOW + capturing);
+        lines.add(CC.WHITE + this.name + ": " + CC.RED + getTimeLeft());
+        String capturing = captureTime < DEFAULT_CAPTURE_TIME - 30 ? CC.WHITE + cappingPlayer.getDisplayName() : CC.RED + "Unknown";
+        lines.add(CC.LIGHT_PURPLE + " ● " + CC.WHITE + capturing);
+        lines.add(ChatColor.YELLOW + " ");
         return lines;
     }
 

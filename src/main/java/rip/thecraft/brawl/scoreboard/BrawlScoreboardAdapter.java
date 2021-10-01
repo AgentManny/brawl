@@ -146,44 +146,16 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
             }
             toReturn.add(ChatColor.BLACK + " ");
         }
+        if (plugin.getEventHandler().getActiveKOTH() != null) {
+            toReturn.addAll(plugin.getEventHandler().getActiveKOTH().getScoreboard(player));
+        }
         if (playerData.hasCombatLogged()) {
             toReturn.add(ChatColor.WHITE + "Combat: " + ChatColor.RED + TimeUnit.MILLISECONDS.toSeconds(playerData.getCombatTaggedTil() - System.currentTimeMillis()) + "s");
         }
 
-        if (playerData.isWarping() && playerData.getTeleportDuration() > System.currentTimeMillis()) {
-            toReturn.add(ChatColor.WHITE + "Teleport: " + ChatColor.AQUA + TimeUnit.MILLISECONDS.toSeconds(playerData.getTeleportDuration() - System.currentTimeMillis()) + "s");
-        }
-
         toReturn.add(ChatColor.WHITE + "Killstreak: " + ChatColor.RED + (int) statistic.get(StatisticType.KILLSTREAK));
-//        toReturn.add("    ");
-//        toReturn.add(ChatColor.WHITE + "State: " + ChatColor.GOLD + "SafeZone");
-//
-//
-//
-//        toReturn.add(ChatColor.DARK_PURPLE  + "Kills: " + ChatColor.LIGHT_PURPLE + (int) statistic.get(StatisticType.KILLS));
-//        toReturn.add(ChatColor.DARK_PURPLE + "Deaths: " + ChatColor.LIGHT_PURPLE + (int) statistic.get(StatisticType.DEATHS));
-//        toReturn.add(ChatColor.DARK_PURPLE + "Killstreak: " + ChatColor.LIGHT_PURPLE + (int) statistic.get(StatisticType.KILLSTREAK));
-//        if (playerData.isSpawnProtection()) {
-//            toReturn.add(ChatColor.DARK_PURPLE  + "Highest Killstreak: " + ChatColor.LIGHT_PURPLE  + (int) statistic.get(StatisticType.HIGHEST_KILLSTREAK));
-//            toReturn.add(ChatColor.DARK_PURPLE + "KDR: " + ChatColor.LIGHT_PURPLE  + (int) statistic.get(StatisticType.KDR));
-//            toReturn.add(ChatColor.DARK_PURPLE + "Credits: " + ChatColor.LIGHT_PURPLE  + (int) statistic.get(StatisticType.CREDITS));
-//            toReturn.add(ChatColor.DARK_PURPLE + "Level: " + ChatColor.LIGHT_PURPLE + level.getCurrentLevel() + " (" + level.getCurrentExp() + "/" + level.getMaxExperience() + " XP)");
-//        }
-
         if (playerData.hasCooldown("ENDERPEARL")) {
-            toReturn.add(ChatColor.DARK_RED + "Enderpearl: " + ChatColor.RED + DurationFormatter.getRemaining(playerData.getCooldown("ENDERPEARL").getRemaining()));
-        }
-
-//        if (kit != null) {
-//                for (Ability ability : kit.getAbilities()) {
-//                    ability.getProperties(player).forEach((key, value) -> toReturn.add(ChatColor.GOLD + key + ": " + ChatColor.YELLOW + value));
-//                    if (ability.hasCooldown(playerData.getPlayer(), false)) {
-//                        toReturn.add(ChatColor.DARK_RED + ability.getName() + ": " + ChatColor.RED + DurationFormatter.getRemaining(ability.toCooldown(playerData).getRemaining()));
-//                    }
-//                }
-//        }
-        if (plugin.getEventHandler().getActiveKOTH() != null) {
-            toReturn.addAll(plugin.getEventHandler().getActiveKOTH().getScoreboard(player));
+            toReturn.add(ChatColor.WHITE+ "Enderpearl: " + ChatColor.RED + DurationFormatter.getRemaining(playerData.getCooldown("ENDERPEARL").getRemaining()));
         }
         return toReturn;
     }

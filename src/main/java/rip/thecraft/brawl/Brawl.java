@@ -200,6 +200,10 @@ public class Brawl extends JavaPlugin {
 
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.challenges.command");
 
+        // Event commands
+        MCommandHandler.registerPackage(this, "rip.thecraft.brawl.event.koth.command");
+        MCommandHandler.registerPackage(this, "rip.thecraft.brawl.event.command");
+
         // Team commands
         MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command");
         /*
