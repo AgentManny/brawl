@@ -63,17 +63,17 @@ public class Shurikens extends Ability {
 
                     item.getNearbyEntities(1, 3, 1).stream().filter(other -> other instanceof Player && !player.equals(other)).findAny().ifPresent(player2 -> {
                         hit = (Player) player2;
-                        if (hit != null && !hit.isDead()) {
+                        if (!hit.isDead()) {
                             double damageHealth = 3; // 0.5 hearts
                             if (hit.getHealth() - damageHealth > 0) {
                                 hit.setHealth(hit.getHealth() - damageHealth);
                                 addCooldown(player, 5);
                             }
-                            hit.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 1));
                             hit.damage(damageHealth, player); // make it so it counts as a player kill
-
+                            hit.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 1, true, false));
+                            cancel();
+                            return;
                         }
-                        cancel();
                     });
 
                 }
