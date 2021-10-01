@@ -127,8 +127,8 @@ public class PlayerStatistic {
     }
 
     public KitStatistic get(Kit kit) {
-        this.kitStatistics.putIfAbsent(kit.getName(), new KitStatistic());
-        return this.kitStatistics.get(kit.getName());
+        this.kitStatistics.putIfAbsent(kit.getName().toLowerCase(), new KitStatistic());
+        return this.kitStatistics.get(kit.getName().toLowerCase());
     }
 
     public double get(StatisticType statisticType) {
