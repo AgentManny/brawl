@@ -101,12 +101,12 @@ public class Shurikens extends Ability {
             if (item == null) continue;
             if (item.isSimilar(new ItemStack(Material.NETHER_STAR))) {
                 fireball = item;
-                item.setAmount(item.getAmount() + 5);
+                item.setAmount(item.getAmount() + 3);
             }
         }
 
         if (fireball == null) {
-            player.getInventory().setItem(1, new ItemStack(Material.NETHER_STAR, 5));
+            player.getInventory().setItem(1, new ItemStack(Material.NETHER_STAR, 3));
         }
         player.updateInventory();
     }
