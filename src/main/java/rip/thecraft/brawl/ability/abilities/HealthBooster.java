@@ -2,10 +2,11 @@ package rip.thecraft.brawl.ability.abilities;
 
 import com.google.gson.JsonObject;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.util.SchedulerUtil;
 
-public class HealthBooster extends Ability {
+public class HealthBooster extends Ability implements Listener {
 
     private double boost = 40;
 
@@ -22,7 +23,9 @@ public class HealthBooster extends Ability {
         SchedulerUtil.runTask(() -> {
             if (player != null) {
                 player.setMaxHealth(20);
-                player.setHealth(player.getMaxHealth());
+                if (!player.isDead()) {
+                    player.setHealth(player.getMaxHealth());
+                }
             }
         }, false);
     }
