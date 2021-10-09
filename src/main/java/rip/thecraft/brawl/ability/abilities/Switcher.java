@@ -66,4 +66,21 @@ public class Switcher extends Ability {
         }
         return false;
     }
+    @Override
+    public void onKill(Player player) {
+        ItemStack switcher = null;
+
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item == null) continue;
+            if (item.isSimilar(new ItemStack(Material.SNOW_BALL))) {
+                switcher = item;
+                item.setAmount(item.getAmount() + 3);
+            }
+        }
+
+        if (switcher == null) {
+            player.getInventory().setItem(1, new ItemStack(Material.SNOW_BALL, 3));
+        }
+        player.updateInventory();
+    }
 }
