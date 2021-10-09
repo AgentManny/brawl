@@ -65,28 +65,24 @@ public class Stomper extends Ability implements Listener {
     public void onActivate(Player player) {
         if (hasCooldown(player, true)) return;
 
-        if (player.hasMetadata(CHARGE_METADATA)) {
-            thrust(player); // Allow thrusting down by clicking the ability again
-            return;
-        }
-
         if (player.getLocation().getBlockY() >= 150 || player.getLocation().getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
             player.sendMessage(ChatColor.RED + "You can't use this ability here!");
             return;
         }
 
-        boolean boostDirection = isProperty("boost-direction");
-        Vector vector = boostDirection ? player.getLocation().getDirection().clone()
-                .multiply(getProperty("multiplier"))
-                .setY(getProperty("boost")) : new Vector(0, getProperty("boost"), 0);
+        if (!player.hasMetadata(STOMPER_METADATA)) {
+            boolean boostDirection = isProperty("boost-direction");
+            Vector vector = boostDirection ? player.getLocation().getDirection().clone()
+                    .multiply(getProperty("multiplier"))
+                    .setY(getProperty("boost")) : new Vector(0, getProperty("boost"), 0);
 
-        player.setFireTicks(0); // Prevent fire from interfering with velocity
-        player.setVelocity(vector);
-        player.setMetadata(STOMPER_METADATA, new FixedMetadataValue(Brawl.getInstance(), null));
-        player.setMetadata(CHARGE_METADATA, new FixedMetadataValue(Brawl.getInstance(), System.currentTimeMillis()));
+            player.setFireTicks(0); // Prevent fire from interfering with velocity
+            player.setVelocity(vector);
+            player.setMetadata(STOMPER_METADATA, new FixedMetadataValue(Brawl.getInstance(), null));
+            player.setMetadata(CHARGE_METADATA, new FixedMetadataValue(Brawl.getInstance(), System.currentTimeMillis()));
 
-        player.playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1.0F, 0.0F);
-
+            player.playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1.0F, 0.0F);
+        }
     }
 
     public void thrust(Player player) {
@@ -129,6 +125,7 @@ public class Stomper extends Ability implements Listener {
             }
 
             ParticleEffect.EXPLOSION_HUGE.display(0, 0, 0, 0, 1, player.getLocation(), EFFECT_DISTANCE);
+            player.removeMetadata(STOMPER_METADATA, Brawl.getInstance());
             player.playSound(player.getLocation(), Sound.ANVIL_LAND, 1.0F, 0.0F);
             player.setFallDistance((float) (player.getFallDistance() / getProperty("fall-damage-reduction"))); // Fall damage should still apply to stompers but be reduced
             addCooldown(player); // Reset the cooldown
