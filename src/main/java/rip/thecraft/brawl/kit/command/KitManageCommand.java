@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.item.item.Armor;
@@ -16,6 +17,7 @@ import rip.thecraft.brawl.kit.editor.menu.KitEditMenu;
 import rip.thecraft.brawl.kit.editor.menu.KitEditorMenu;
 import rip.thecraft.brawl.kit.type.RankType;
 import rip.thecraft.brawl.util.conversation.PromptBuilder;
+import rip.thecraft.falcon.command.player.RenameCommand;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.command.Command;
 import rip.thecraft.spartan.command.Param;
@@ -34,6 +36,21 @@ public class KitManageCommand {
     @Command(names = { "kit editor", "k editor" }, permission = "op")
     public static void editor(Player player) {
         new KitEditorMenu().openMenu(player);
+    }
+
+
+    @Command(names = { "ek unbreaking", "unbreaking" }, permission = "op")
+    public static void edit(Player player) {
+        ItemStack itemStack = player.getItemInHand();
+        if (itemStack != null && itemStack.getType() != Material.AIR) {
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            itemMeta.spigot().setUnbreakable(true);
+            itemStack.setItemMeta(itemMeta);
+            player.updateInventory();
+            player.sendMessage(ChatColor.GREEN + "Set item to unbreaking");
+        } else {
+            player.sendMessage(ChatColor.RED + "You don't have an item in your hand!");
+        }
     }
 
 
