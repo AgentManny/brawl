@@ -9,10 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -36,7 +33,6 @@ import rip.thecraft.spartan.util.ItemBuilder;
 import rip.thecraft.spartan.util.PlayerUtils;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -45,8 +41,9 @@ public class DamageListener implements Listener {
     private final Brawl plugin;
 
     @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent event) {
-        Player player = event.getEntity();
+    public void onPlayerDeath(EntityDeathEvent event) {
+        if (!(event.getEntity() instanceof Player)) return;
+        Player player = (Player) event.getEntity();
         PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
 
         event.setDroppedExp(0);
@@ -101,7 +98,7 @@ public class DamageListener implements Listener {
         }
 
         Player killer = player.getKiller();
-        if(killer != null && killer != player) {
+        if(killer != null && !killer.getUniqueId().equals(player.getUniqueId())) {
 
             PlayerData killerData = plugin.getPlayerDataHandler().getPlayerData(killer);
             plugin.getServer().getPluginManager().callEvent(new PlayerKillEvent(killer, killerData.getPlayerState(), player)); // We only use this
@@ -141,11 +138,16 @@ public class DamageListener implements Listener {
             }
         }
 
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> player.spigot().respawn(), 4L);
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> player.spigot().respawn(), 5L);
 
         player.setVelocity(new Vector(0, 0, 0));
+        event.getDrops().clear();
+    }
+
+    @EventHandler
+    public void onPlayerDead(PlayerDeathEvent event) {
         event.setDeathMessage(null);
-        event.getDrops().clear();}
+    }
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
