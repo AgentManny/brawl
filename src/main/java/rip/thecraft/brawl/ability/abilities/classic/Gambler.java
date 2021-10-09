@@ -126,13 +126,15 @@ public class Gambler extends Ability {
             if (this == SATURATION || this == HUNGER) {
                 PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
                 ItemStack item = playerData.getRefillType().getItem();
-                for (int i = 0; i < (duration * amplifier); i++) {
+                int soups = random.nextInt(0, 5);
+                for (int i = 0; i < soups; i++) {
                     if (negative) {
                         player.getInventory().remove(item);
                     } else {
                         player.getInventory().addItem(item);
                     }
                 }
+                player.sendMessage(ChatColor.YELLOW + "You " + (negative ? ChatColor.RED + "lost" : ChatColor.GREEN + "gained") + ChatColor.YELLOW + ChatColor.WHITE + soups + "x soups" + ChatColor.YELLOW + " because of your " + BukkitUtil.getFriendlyName(potionEffect) + ChatColor.YELLOW + ".");
             } else {
                 player.addPotionEffect(potionEffect);
                 if (this == HEALTH_BOOST) {
