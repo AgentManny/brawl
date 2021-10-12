@@ -12,6 +12,8 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.event.AbilityCooldownEvent;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
+import rip.thecraft.brawl.ability.property.codec.Codec;
+import rip.thecraft.brawl.ability.property.codec.Codecs;
 import rip.thecraft.brawl.challenges.ChallengeType;
 import rip.thecraft.brawl.challenges.player.PlayerChallenge;
 import rip.thecraft.brawl.duelarena.match.Match;
@@ -83,7 +85,10 @@ public abstract class Ability {
             try {
                 AbilityProperty property = field.getAnnotation(AbilityProperty.class);
                 if (property != null) {
-                    document.put(property.id().isEmpty() ? field.getName() : property.id(), field.get(this));
+                    Class<?> type = field.getType();
+                    Codec<?> codec = Codecs.getCodecByClass(type);
+                    Object value = field.get(this);
+                    properties.put(property.id(), codec != null ? codec.encode(value) : value);
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -94,17 +99,20 @@ public abstract class Ability {
     }
 
     public void deserialize(Document document) {
-        if (document.containsKey("properties")) {
-            Document properties = document.get("properties", Document.class);
-            for (Field field : getClass().getFields()) {
-                try {
-                    AbilityProperty property = field.getAnnotation(AbilityProperty.class);
-                    if (property != null && properties.containsKey(property.id().isEmpty() ? field.getName() : property.id())) {
-                        field.set(this, properties.get(property.id().isEmpty() ? field.getName() : property.id()));
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+        if (!document.containsKey("properties")) return;
+
+        Document properties = document.get("properties", Document.class);
+        for (Field field : getClass().getFields()) {
+            try {
+                AbilityProperty property = field.getAnnotation(AbilityProperty.class);
+                if (property != null && properties.containsKey(property.id())) {
+                    Class<?> type = field.getType();
+                    Codec<?> codec = Codecs.getCodecByClass(type);
+                    Object value = codec != null ? codec.decode(properties.getString(property.id())) : properties.get(property.id());
+                    field.set(this, value);
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
