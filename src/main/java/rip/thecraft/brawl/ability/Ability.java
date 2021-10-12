@@ -1,25 +1,17 @@
 package rip.thecraft.brawl.ability;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import com.mongodb.lang.Nullable;
 import lombok.Getter;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.event.AbilityCooldownEvent;
+import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
-import rip.thecraft.brawl.ability.property.type.BooleanProperty;
-import rip.thecraft.brawl.ability.property.type.DoubleProperty;
-import rip.thecraft.brawl.ability.property.type.StringProperty;
 import rip.thecraft.brawl.challenges.ChallengeType;
 import rip.thecraft.brawl.challenges.player.PlayerChallenge;
 import rip.thecraft.brawl.duelarena.match.Match;
@@ -27,12 +19,12 @@ import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.upgrade.perk.Perk;
+import rip.thecraft.brawl.util.SchedulerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.Cooldown;
 import rip.thecraft.spartan.util.ItemBuilder;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.Field;
 import java.util.concurrent.TimeUnit;
 
 @Getter
@@ -42,90 +34,124 @@ public abstract class Ability {
 
     public static boolean DEBUG = false;
 
-    public Map<String, AbilityProperty<?>> properties = new HashMap<>();
+    /** Returns the name of the ability */
+    private String name = getClass().getSimpleName();
 
-    public Ability() {
-        properties.put("cooldown", new DoubleProperty(getDefaultCooldown()));
-    }
+    /** Returns the color displayed for an ability */
+    private ChatColor color = ChatColor.DARK_PURPLE;
 
-    public String getInfo() {
-        return null;
-    }
+    /** Returns the description for an ability */
+    private String description = null;
 
-    public String getDescription() {
-        return null;
-    }
+    /** Returns the icon displayed for an ability */
+    private Material icon = null;
 
-    public String getName() {
-        return getClass().getSimpleName();
-    }
+    /** Returns the data for an ability */
+    private byte data = 0;
 
-    public Material getType() {
-        return null;
-    }
+    /** Returns the cooldown timer set for an ability */
+    @AbilityProperty(id = "cooldown", description = "Timer before ability can be used again")
+    public int cooldown = 15;
 
-    public byte getData() {
-        return 0;
-    }
-
-    public double getDefaultCooldown() {
-        return 15;
-    }
-
-    public void cleanup() {
-
-    }
-
-    public ItemStack getIcon() {
-        if (getType() == null) return null;
-        ItemBuilder data = new ItemBuilder(getType())
-                .name(CC.GRAY + "\u00bb " + getColor() + CC.BOLD + getName() + CC.GRAY + " \u00ab")
-                .data(getData());
-
-        if (getDescription() != null) {
-            data.lore(ItemBuilder.wrap(getDescription(), ChatColor.GRAY.toString()));
+    /**
+     * Loads ability data from AbilityData
+     * @param data Ability data to load
+     */
+    public void load(AbilityData data) {
+        if (!data.name().isEmpty()) {
+            this.name = data.name();
         }
-        return data.create();
+        if (data.color() != null) {
+            this.color = data.color();
+        }
+        if (!data.description().isEmpty()) {
+            this.description = data.description();
+        }
+
+        if (data.icon() != Material.AIR) {
+            this.icon = data.icon();
+            this.data = data.data();
+        }
     }
 
-    public Perk[] getDisabledPerks() {
-        return new Perk[]{ };
+    public Document serialize() {
+        Document document = new Document();
+        document.put("name", name);
+
+        Document properties = new Document();
+        for (Field field : getClass().getFields()) {
+            try {
+                AbilityProperty property = field.getAnnotation(AbilityProperty.class);
+                if (property != null) {
+                    document.put(property.id().isEmpty() ? field.getName() : property.id(), field.get(this));
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        document.put("properties", properties);
+        return document;
     }
 
-    public ChatColor getColor() {
-        return ChatColor.DARK_PURPLE;
+    public void deserialize(Document document) {
+        if (document.containsKey("properties")) {
+            Document properties = document.get("properties", Document.class);
+            for (Field field : getClass().getFields()) {
+                try {
+                    AbilityProperty property = field.getAnnotation(AbilityProperty.class);
+                    if (property != null && properties.containsKey(property.id().isEmpty() ? field.getName() : property.id())) {
+                        field.set(this, properties.get(property.id().isEmpty() ? field.getName() : property.id()));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
-
+    /**
+     * Called when the player equips a kit
+     *
+     * @param player Player applying kit
+     */
     public void onApply(Player player) {
 
     }
 
+    /**
+     * Called when the player removes a kit
+     * through clearing, elimination or dying
+     *
+     * @param player Player removing kit
+     */
     public void onRemove(Player player) {
 
     }
 
+    /**
+     * Called when a player activates an ability
+     * through interacting with the icon
+     *
+     * @param player Player using ability
+     */
     public void onActivate(Player player) {
 
     }
 
+    /**
+     * Called when an ability is deactivated manually
+     * or through the kit being removed
+     * @param player Player using ability
+     */
     public void onDeactivate(Player player) {
 
     }
 
     /**
-     * Called upon killing a player
-     * @param player Killer
+     * Removes cache data on server shutdown or
+     * server clean up
      */
-    public void onKill(Player player) {
-
-    }
-
-    public void onGround(Player player, boolean onGround) {
-
-    }
-
-    public void onSneak(Player player, boolean sneaking) {
+    public void cleanup() {
 
     }
 
@@ -133,79 +159,15 @@ public abstract class Ability {
 
     }
 
-    public void reload() {
-        JsonObject jsonObject = toJson();
-
-    }
-
-    /**
-     * Triggers when a projectile is launched
-     * @param player Attacked
-     * @param entityType Attacked by
-     * @return Whether or not it should be cancelled
-     */
-    public boolean onProjectileLaunch(Player player, EntityType entityType) {
-        return false;
-    }
-
     public boolean onInteractItem(Player player, Action action, ItemStack item) {
         return false; // True to cancel
     }
 
-    public boolean onProjectileHit(Player shooter, Player victim, EntityDamageByEntityEvent event) {
-        return false;
-    }
-
-    public Map<String, String> getProperties(Player player) {
-        return new HashMap<>();
-    }
-
-    public JsonObject toJson() {
-        JsonObject object = new JsonObject();
-        object.addProperty("name", this.getName());
-
-        JsonObject data = new JsonObject();
-        properties.forEach((key, value) -> {
-            Object valueObj = value.value();
-            if (valueObj instanceof Number) {
-                data.addProperty(key, (Number) valueObj);
-            } else if (valueObj instanceof Boolean) {
-                data.addProperty(key, (Boolean) valueObj);
-            } else {
-                data.addProperty(key, value.toString());
-            }
-        });
-        object.add("properties", data);
-        return object;
-    }
-
-    public void fromJson(JsonObject object) {
-        if (object.has("properties")) {
-            JsonObject data = object.getAsJsonObject("properties");
-            for (Map.Entry<String, JsonElement> entry : data.entrySet()) {
-                String key = entry.getKey();
-                JsonElement value = entry.getValue();
-                AbilityProperty<?> property = null;
-                if (value.isJsonPrimitive()) {
-                    JsonPrimitive primitive = value.getAsJsonPrimitive();
-                    if (primitive.isBoolean()) {
-                        property = new BooleanProperty(primitive.getAsBoolean());
-                    } else if (primitive.isNumber()) {
-                        property = new DoubleProperty(primitive.getAsDouble());
-                    } else {
-                        property = new StringProperty(primitive.getAsString());
-                    }
-                }
-                if (property != null) {
-                    if (properties.containsKey(key)) {
-                        property.description(properties.get(key).getDescription());
-                    }
-                    properties.put(key, property);
-                }
-            }
-        }
-    }
-
+    /**
+     * Checks whether a player has this ability equipped
+     * @param player Player using ability
+     * @return Whether player has ability equipped
+     */
     public boolean hasEquipped(Player player) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
         Match match = Brawl.getInstance().getMatchHandler().getMatch(player);
@@ -213,21 +175,20 @@ public abstract class Ability {
         return !RegionType.SAFEZONE.appliesTo(player.getLocation()) && selectedKit != null && selectedKit.getAbilities().contains(this) ;
     }
 
+    /**
+     * Should this ability be permitted in regions that
+     * abilities aren't allowed (useful for passive abilities)
+     * @return Ability access
+     */
     public boolean bypassAbilityPreventZone() {
         return false;
     }
 
-    public void setCooldown(int cooldown) {
-        AbilityProperty<Integer> property = (AbilityProperty<Integer>) properties.get("cooldown");
-        property.set(cooldown);
-    }
-
+    /**
+     * @return Cooldown timer in millis
+     */
     private long getCooldown() {
-        Double cooldown = (Double) properties.get("cooldown").value();
-        if (cooldown == null) {
-            cooldown = getDefaultCooldown();
-        }
-        return TimeUnit.SECONDS.toMillis(cooldown.longValue());
+        return TimeUnit.SECONDS.toMillis(cooldown);
     }
 
     public boolean hasCooldown(Player player, boolean notify) {
@@ -258,70 +219,35 @@ public abstract class Ability {
             }
         }
 
-        if (playerData.getEnderpearlTask() == null) {
-            playerData.setEnderpearlTask(new BukkitRunnable() {
+        Cooldown cooldown = toCooldown(playerData);
+        SchedulerUtil.runTaskLater(() -> {
+            if (player == null || cooldown == null) return;
 
-                final Cooldown cooldown = toCooldown(playerData);
-
-                @Override
-                public void run() {
-                    if (playerData == null || cooldown == null || playerData.getEnderpearlTask() == null) {
-                        cancel();
-                        return;
-                    }
-
-                    int timeLeft = (int) TimeUnit.MILLISECONDS.toSeconds(cooldown.getRemaining());
-                    if (timeLeft <= 0 && playerData.getEnderpearlTask() != null) {
-                        if (!cooldown.isNotified()) {
-                            cooldown.setNotified(true);
-                            player.sendMessage(ChatColor.GREEN + "You can now use " + ChatColor.BOLD + getName() + ChatColor.GREEN + " again.");
-                        }
-                        this.cancel();
-                        return;
-                    }
-//                    player.setExp(0);
-//                    player.setLevel(timeLeft);
-                }
-
-                @Override
-                public synchronized void cancel() throws IllegalStateException {
-                    super.cancel();
-
-                    //playerData.getLevel().updateBar();
-                    playerData.setEnderpearlTask(null);
-                }
-            }.runTaskTimer(Brawl.getInstance(), 20L, 20L));
-        }
+            if (!cooldown.isNotified()) {
+                player.sendMessage(ChatColor.GREEN + "You can now use " + ChatColor.BOLD + getName() + ChatColor.GREEN + " again.");
+                cooldown.setNotified(true);
+                onCooldownExpire(player);
+            }
+        }, 20L * this.cooldown, false);
     }
 
     public Cooldown toCooldown(PlayerData playerData) {
         return playerData.getCooldown("ABILITY_" + this.getName());
     }
 
-    public void addProperty(String key, double defaultValue, @Nullable String description) {
-        DoubleProperty property = new DoubleProperty(defaultValue);
-        if (description != null) {
-            property.description(description);
+    public ItemStack getIcon() {
+        if (icon == null || icon == Material.AIR) return null;
+        ItemBuilder item = new ItemBuilder(icon)
+                .name(CC.GRAY + "\u00bb " + getColor() + CC.BOLD + getName() + CC.GRAY + " \u00ab")
+                .data(data);
+
+        if (getDescription() != null) {
+            item.lore(ItemBuilder.wrap(getDescription(), ChatColor.GRAY.toString()));
         }
-        properties.put(key, property);
+        return item.create();
     }
 
-    public Double getProperty(String key) {
-        return (Double) properties.get(key).value();
-    }
-
-    public Boolean isProperty(String key) {
-        return (Boolean) properties.get(key).value();
-    }
-
-    public void sendDebug(@Nullable Player player, String message) {
-        if (Ability.DEBUG) {
-            String formattedMessage = ChatColor.translateAlternateColorCodes('&', "[Debug] [A:" + getColor() + getName() + ChatColor.RESET + "] " + message);
-            if (player == null) {
-                Brawl.broadcastOps(formattedMessage);
-            } else {
-                player.sendMessage(formattedMessage);
-            }
-        }
+    public Perk[] getDisabledPerks() {
+        return new Perk[]{ };
     }
 }

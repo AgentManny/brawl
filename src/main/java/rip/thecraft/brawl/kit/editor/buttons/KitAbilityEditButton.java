@@ -26,7 +26,7 @@ public class KitAbilityEditButton extends Button {
 
     @Override
     public Material getMaterial(Player player) {
-        return ability.getType();
+        return ability.getIcon().getType();
     }
 
     @Override

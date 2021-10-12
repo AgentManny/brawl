@@ -10,10 +10,14 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.handlers.AbilityKillHandler;
+import rip.thecraft.brawl.ability.handlers.AbilityProjectileHitHandler;
+import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.server.util.chatcolor.CC;
 
-public class Archer extends Ability {
+@AbilityData
+public class Archer extends Ability implements AbilityProjectileHitHandler, AbilityKillHandler {
 
     @Override
     public boolean onProjectileHit(Player shooter, Player victim, EntityDamageByEntityEvent event) {
@@ -65,9 +69,9 @@ public class Archer extends Ability {
     }
 
     @Override
-    public void onKill(Player player) {
-        player.getInventory().addItem(new ItemStack(Material.ENDER_PEARL));
-        for (ItemStack armor : player.getInventory().getArmorContents()) {
+    public void onKill(Player killer, Player victim) {
+        killer.getInventory().addItem(new ItemStack(Material.ENDER_PEARL));
+        for (ItemStack armor : killer.getInventory().getArmorContents()) {
             if (armor != null) {
                 armor.setDurability((short) (armor.getDurability() - 10));
             }

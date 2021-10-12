@@ -9,21 +9,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.property.AbilityData;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@AbilityData(icon = Material.BONE, color = ChatColor.DARK_RED)
 public class Hellhound extends Ability {
-
-    @Override
-    public Material getType() {
-        return Material.BONE;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.DARK_RED;
-    }
 
     @Override
     public void onActivate(Player player) {

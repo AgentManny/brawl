@@ -1,18 +1,18 @@
-package rip.thecraft.brawl.ability.abilities;
+package rip.thecraft.brawl.ability.abilities.legacy;
 
-import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.player.protection.Protection;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.player.protection.Protection;
 
-public class ShadowShift extends Ability implements Listener {
+// TODO REWORK THIS ABILITY
+public class ShadowShift extends Ability {
 
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent event) {

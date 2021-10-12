@@ -13,15 +13,27 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
 
 public class Grappler extends Ability implements Listener {
 
-    private double hookThreshold = 0.25;
-    private double hForceMult = 0.3;
-    private double hForceMax = 5;
-    private double vForceMult = 0.25;
-    private double vForceBonus = 0.5;
-    private double vForceMax = 1.5;
+    @AbilityProperty
+    public double hookThreshold = 0.25;
+
+    @AbilityProperty
+    public double hForceMult = 0.3;
+
+    @AbilityProperty
+    public double hForceMax = 5;
+
+    @AbilityProperty
+    public double vForceMult = 0.25;
+
+    @AbilityProperty
+    public double vForceBonus = 0.5;
+
+    @AbilityProperty
+    public double vForceMax = 1.5;
 
     @EventHandler
     public void onPlayerFish(PlayerFishEvent event) {

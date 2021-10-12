@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -12,29 +11,17 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.property.AbilityData;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@RequiredArgsConstructor
+@AbilityData(
+        name = "Web Shooter",
+        icon = Material.WEB,
+        color = ChatColor.WHITE
+)
 public class WebShooter extends Ability {
-
-    private final Brawl plugin;
-
-    @Override
-    public Material getType() {
-        return Material.WEB;
-    }
-
-    @Override
-    public String getName() {
-        return "Web Shooter";
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.WHITE;
-    }
 
     @Override
     public void cleanup() {
@@ -47,12 +34,11 @@ public class WebShooter extends Ability {
 
     @Override
     public void onActivate(Player player) {
-        if (this.hasCooldown(player, true)) return;
-        this.addCooldown(player);
+        if (hasCooldown(player, true)) return;
+        addCooldown(player);
 
-
-        FallingBlock block = player.getWorld().spawnFallingBlock(player.getEyeLocation(), Material.WEB, (byte)0);
-        block.setMetadata("webshooter", new FixedMetadataValue(plugin, player.getUniqueId()));
+        FallingBlock block = player.getWorld().spawnFallingBlock(player.getEyeLocation(), Material.WEB, (byte) 0);
+        block.setMetadata("webshooter", new FixedMetadataValue(Brawl.getInstance(), player.getUniqueId()));
         block.setDropItem(false);
         block.setVelocity(player.getEyeLocation().getDirection().multiply(1.25));
         new BukkitRunnable() {
@@ -89,15 +75,14 @@ public class WebShooter extends Ability {
                 }
                 super.cancel();
             }
-        }.runTaskTimer(plugin, 5L, 5L);
+        }.runTaskTimer(Brawl.getInstance(), 5L, 5L);
 
     }
-
 
     private List<BlockState> storedLocations = new ArrayList<>();
 
     private void stuck(Location location) {
-        if(location.getBlock().isLiquid()) {
+        if (location.getBlock().isLiquid()) {
             location = location.add(0, 1.0D, 0);
         }
 
@@ -117,7 +102,7 @@ public class WebShooter extends Ability {
             storedLocations.add(state.getState());
         }
 
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+        Brawl.getInstance().getServer().getScheduler().runTaskLater(Brawl.getInstance(), () -> {
             for (Location loc : locations) {
                 Block state = loc.getBlock();
 
@@ -130,5 +115,4 @@ public class WebShooter extends Ability {
         }, 120L);
 
     }
-
 }

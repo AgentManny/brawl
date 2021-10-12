@@ -1,59 +1,47 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.AbilityTask;
-import rip.thecraft.brawl.util.BrawlUtil;
+import rip.thecraft.brawl.ability.property.AbilityData;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.util.ParticleEffect;
-import rip.thecraft.brawl.util.PlayerUtil;
 
+@AbilityData(
+        name = "Fire Breathe",
+        color = ChatColor.GOLD,
+        icon = Material.FIREBALL
+)
 public class Dragon extends Ability implements Listener {
 
-    public Dragon() {
-        addProperty("duration", 2500, "Duration of the task");
-        addProperty("distanceMultiplier", 1.5, "idk just play with it");
-        addProperty("circularNumber", 1.25, "honestly no idea just play with it");
-        addProperty("damagePerTick", 3, "Adjust the amount of damage a player is dealt per tick");
-        addProperty("fireTicks", 5, "Adjust the amount of ticks the player is set on fire for");
-    }
+    @AbilityProperty(id = "duration", description = "Duration of the task")
+    public long taskDuration = 2500;
 
-    long taskDuration = 2500;
-    double distanceMultiplier = 1.5;
-    double circularNumber = 1.25;
-    double damagePerTick = 7;
-    int fireTicks = 40;
+    @AbilityProperty(id = "distance-multiplier", description = "Distance of flame")
+    public double distanceMultiplier = 1.5;
 
-    @Override
-    public String getName() {
-        return "Fire Breathe";
-    }
+    @AbilityProperty(id = "circular-number", description = "Intervals of flame directional change")
+    public double circularNumber = 1.25;
 
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.GOLD;
-    }
+    @AbilityProperty(id = "damage-per-tick", description = "Adjust amount of damage a player is dealt per tick")
+    public double damagePerTick = 7;
 
-    @Override
-    public Material getType() {
-        return Material.FIREBALL;
-    }
+    @AbilityProperty(id = "fire-ticks", description = "Adjust amount of ticks player is set on fire for")
+    public int fireTicks = 40;
 
     public void onActivate(Player player) {
-        if (this.hasCooldown(player, true)) return;
-
-//        taskDuration = getProperty("duration").longValue();
-//        distanceMultiplier = getProperty("distanceMultiplier");
-//        circularNumber = getProperty("circularNumber");
-//        damagePerTick = getProperty("damagePerTick");
-//        fireTicks = getProperty("fireTicks").intValue();
+        if (hasCooldown(player, true)) return;
+        addCooldown(player);
 
         new DragonTask(player).start();
         player.playSound(player.getLocation(), Sound.ENDERDRAGON_GROWL, 10, 2);
-        addCooldown(player);
     }
 
     public class DragonTask extends AbilityTask {
@@ -96,6 +84,4 @@ public class Dragon extends Ability implements Listener {
         @Override
         public void onCancel() { }
     }
-
-
 }

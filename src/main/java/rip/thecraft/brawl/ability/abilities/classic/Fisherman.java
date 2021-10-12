@@ -8,44 +8,33 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.meta.AbilityMeta;
+import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.util.SchedulerUtil;
 
+@AbilityData(color = ChatColor.BLUE)
 public class Fisherman extends Ability implements Listener {
-
-
-    @AbilityMeta(id = "range")
-    private double range = 15;
-
-    @AbilityMeta(id = "speed")
-    private double speed = 0.425;
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.BLUE;
-    }
 
     @EventHandler
     public void onPlayerFish(PlayerFishEvent event) {
         Player player = event.getPlayer();
-        if(this.hasEquipped(player)) {
-            if (event.getCaught() instanceof Player) {
-                if (this.hasCooldown(player, true)) return;
-                this.addCooldown(player);
+        if (event.getCaught() instanceof Player) {
+            if (hasEquipped(player)) {
+                if (hasCooldown(player, true)) return;
+                addCooldown(player);
 
                 Player caught = (Player) event.getCaught();
 
                 float yaw = caught.getLocation().getYaw();
                 float pitch = caught.getLocation().getPitch();
 
-                Location loc  = player.getLocation().clone();
+                Location loc = player.getLocation().clone();
                 loc.setYaw(yaw);
                 loc.setPitch(pitch);
 
                 caught.teleport(loc);
 
                 caught.damage(0, player);
-                SchedulerUtil.runTask(() ->  caught.setVelocity(new Vector()), false);
+                SchedulerUtil.runTask(() -> caught.setVelocity(new Vector()), false);
             }
         }
     }

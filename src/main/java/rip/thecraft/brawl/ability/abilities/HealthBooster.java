@@ -1,14 +1,15 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import com.google.gson.JsonObject;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.handlers.AbilityKillHandler;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.util.SchedulerUtil;
 
-public class HealthBooster extends Ability implements Listener {
+public class HealthBooster extends Ability implements AbilityKillHandler  {
 
-    private double boost = 40;
+    @AbilityProperty(id = "max-health")
+    public double maxHealth = 40;
 
     @Override
     public void onApply(Player player) {
@@ -31,25 +32,10 @@ public class HealthBooster extends Ability implements Listener {
     }
 
     @Override
-    public void onKill(Player player) {
-        double newHealth = player.getMaxHealth() + 4;
-
-        if (newHealth <= boost) {
-            player.setMaxHealth(newHealth);
+    public void onKill(Player killer, Player victim) {
+        double newHealth = killer.getMaxHealth() + 4;
+        if (newHealth <= maxHealth) {
+            killer.setMaxHealth(newHealth);
         }
-    }
-
-    @Override
-    public JsonObject toJson() {
-        JsonObject object = super.toJson();
-        object.addProperty("boost", this.boost);
-        return object;
-    }
-
-    @Override
-    public void fromJson(JsonObject object) {
-        super.fromJson(object);
-        this.boost = object.get("boost").getAsDouble();
-
     }
 }

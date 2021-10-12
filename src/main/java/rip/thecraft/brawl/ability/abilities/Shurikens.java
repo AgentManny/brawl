@@ -10,12 +10,16 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.handlers.AbilityKillHandler;
+import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.spartan.util.ItemBuilder;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-public class Shurikens extends Ability {
+// TODO Rework how ninja stars get shot as they are always inaccurate
+@AbilityData(icon = Material.NETHER_STAR)
+public class Shurikens extends Ability implements AbilityKillHandler {
 
     @Override
     public boolean bypassAbilityPreventZone() {
@@ -36,8 +40,8 @@ public class Shurikens extends Ability {
 
             Item item = player.getWorld().dropItem(player.getEyeLocation(),
                     new ItemBuilder(Material.NETHER_STAR)
-                    .name("Shurikens" + ThreadLocalRandom.current().nextInt(1, 1000))
-                    .create()
+                            .name("Shurikens" + ThreadLocalRandom.current().nextInt(1, 1000))
+                            .create()
             );
             item.setPickupDelay(Integer.MAX_VALUE);
             item.setVelocity(player.getEyeLocation().getDirection().multiply(1.4));
@@ -85,16 +89,14 @@ public class Shurikens extends Ability {
                     super.cancel();
                 }
             }.runTaskTimer(Brawl.getInstance(), 4L, 4L);
-
             return true;
         }
 
         return false;
     }
 
-
     @Override
-    public void onKill(Player player) {
+    public void onKill(Player player, Player victim) {
         ItemStack fireball = null;
 
         for (ItemStack item : player.getInventory().getContents()) {
@@ -110,5 +112,4 @@ public class Shurikens extends Ability {
         }
         player.updateInventory();
     }
-
 }

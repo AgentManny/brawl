@@ -9,40 +9,36 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.AbilityTask;
+import rip.thecraft.brawl.ability.property.AbilityData;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.player.protection.Protection;
 import rip.thecraft.brawl.util.PlayerUtil;
 
 import java.util.HashSet;
 import java.util.List;
 
+@AbilityData(icon = Material.GOLD_AXE, color = ChatColor.WHITE)
 public class Smite extends Ability implements Listener {
     // Smite nearby players where target is looking at.
     // We should allow smiting 3 times
 
-    public Smite() {
-        addProperty("strike-radius", 20., "Radius how far smiting can be applied");
-        addProperty("damage-radius", 3., "Radius of damage being striked to players nearby");
-        addProperty("damage", 4, "Damage applied for each smite");
-    }
+    @AbilityProperty(id = "strike-radius", description = "Radius how far smiting can be applied")
+    public int strikeRadius = 20;
 
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.DARK_RED;
-    }
+    @AbilityProperty(id = "damage-radius", description = "Radius of damage being striked to players nearby")
+    public int damageRadius = 3;
 
-    @Override
-    public Material getType() {
-        return Material.GOLD_AXE;
-    }
+    @AbilityProperty(id = "damage", description = "Damage applied for each smite")
+    public int damage = 4;
 
     @Override
     public void onActivate(Player player) {
-        if (this.hasCooldown(player, false)) return;
+        if (hasCooldown(player, false)) return;
 
         Location location;
-        List<Block> blocks = player.getLastTwoTargetBlocks((HashSet<Byte>)null, getProperty("strike-radius").intValue());
+        List<Block> blocks = player.getLastTwoTargetBlocks((HashSet<Byte>) null, strikeRadius);
         if (blocks.size() > 1 && blocks.get(1).getType() == Material.AIR) {
-            Location maxLocation = player.getLocation().add(player.getLocation().getDirection().multiply(getProperty("strike-radius")));
+            Location maxLocation = player.getLocation().add(player.getLocation().getDirection().multiply(strikeRadius));
             location = player.getWorld().getHighestBlockAt(maxLocation).getLocation();
         } else {
             location = blocks.get(0).getLocation();
@@ -71,11 +67,10 @@ public class Smite extends Ability implements Listener {
         @Override
         public void onTick() {
             location.getWorld().strikeLightningEffect(location);
-            double damage = getProperty("damage");
-            for (Player nearbyPlayer : PlayerUtil.getNearbyPlayers(location, getProperty("damage-radius"))) {
+            for (Player nearbyPlayer : PlayerUtil.getNearbyPlayers(location, damageRadius)) {
                 if (nearbyPlayer == player) continue; // Don't apply to player
                 world.strikeLightningEffect(nearbyPlayer.getLocation());
-                nearbyPlayer.damage(Protection.isAlly(nearbyPlayer, player) ? damage / 2 : damage, player);
+                nearbyPlayer.damage(Protection.isAlly(nearbyPlayer, player) ? damage / 2. : damage, player);
             }
         }
 

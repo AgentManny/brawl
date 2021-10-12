@@ -11,25 +11,20 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.property.AbilityData;
 
+@AbilityData(
+        icon = Material.SULPHUR,
+        color = ChatColor.BLUE
+)
 public class Assassin extends Ability implements Listener {
 
     private static String STEALTH_METADATA = "Stealth";
 
     @Override
-    public Material getType() {
-        return Material.SULPHUR;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.BLUE;
-    }
-
-    @Override
     public void onActivate(Player player) {
-        if (this.hasCooldown(player, true)) return;
-        this.addCooldown(player);
+        if (hasCooldown(player, true)) return;
+        addCooldown(player);
 
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 200, 0));

@@ -1,6 +1,5 @@
-package rip.thecraft.brawl.ability.abilities;
+package rip.thecraft.brawl.ability.abilities.legacy;
 
-import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,34 +13,22 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.player.protection.Protection;
 import rip.thecraft.brawl.util.ParticleEffect;
 
-@RequiredArgsConstructor
+// TODO REWORK THIS ABILITY
+@AbilityData(
+        color = ChatColor.DARK_GRAY,
+        icon = Material.MONSTER_EGG,
+        data = 58
+)
 public class Vortex extends Ability {
-
-    private final Brawl plugin;
-
-    @Override
-    public Material getType() {
-        return Material.MONSTER_EGG;
-    }
-
-    @Override
-    public byte getData() {
-        return 58;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.DARK_GRAY;
-    }
-
 
     @Override
     public void onActivate(Player player) {
-        if (this.hasCooldown(player, true)) return;
-        this.addCooldown(player);
+        if (hasCooldown(player, true)) return;
+        addCooldown(player);
 
         Item item = player.getWorld().dropItem(player.getEyeLocation(), new ItemStack(Material.MONSTER_EGG, 1, (short) 58));
         item.setVelocity(player.getEyeLocation().getDirection().multiply(1.25));
@@ -84,7 +71,7 @@ public class Vortex extends Ability {
                 super.cancel();
 
             }
-        }.runTaskTimer(plugin, 4L, 4L);
+        }.runTaskTimer(Brawl.getInstance(), 4L, 4L);
     }
 
     private void createVortex(Player player, Item item, Location loc) {

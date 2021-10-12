@@ -275,7 +275,6 @@ public class PlayerData {
     }
 
     public void warp(String name, Location loc, int seconds, Runnable... onTp) {
-
         if (canWarp()) {
             for (Runnable rb : onTp) {
                 rb.run();

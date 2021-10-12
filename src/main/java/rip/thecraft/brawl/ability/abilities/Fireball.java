@@ -1,12 +1,15 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import rip.thecraft.brawl.ability.Ability;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
+import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.handlers.AbilityKillHandler;
+import rip.thecraft.brawl.ability.property.AbilityData;
 
-public class Fireball extends Ability {
+@AbilityData
+public class Fireball extends Ability implements AbilityKillHandler {
 
     @Override
     public boolean onInteractItem(Player player, Action action, ItemStack item) {
@@ -24,7 +27,7 @@ public class Fireball extends Ability {
     }
 
     @Override
-    public void onKill(Player player) {
+    public void onKill(Player player, Player victim) {
         ItemStack fireball = null;
 
         for (ItemStack item : player.getInventory().getContents()) {

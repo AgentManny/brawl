@@ -8,6 +8,7 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.handlers.AbilityScoreboardHandler;
 import rip.thecraft.brawl.duelarena.loadout.MatchLoadout;
 import rip.thecraft.brawl.duelarena.match.Match;
 import rip.thecraft.brawl.duelarena.match.MatchState;
@@ -139,7 +140,9 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
         if (kit != null) {
             toReturn.add(ChatColor.WHITE + "Kit: " + ChatColor.LIGHT_PURPLE + kit.getName());
             for (Ability ability : kit.getAbilities()) {
-                ability.getProperties(player).forEach((key, value) -> toReturn.add(ChatColor.GOLD + key + ": " + ChatColor.YELLOW + value));
+                if (ability instanceof AbilityScoreboardHandler) {
+                    ((AbilityScoreboardHandler) ability).getScoreboard(player).forEach((key, value) -> toReturn.add(ChatColor.GOLD + key + ": " + ChatColor.YELLOW + value));
+                }
                 if (ability.hasCooldown(playerData.getPlayer(), false)) {
                     toReturn.add(ChatColor.WHITE + ability.getName() + ": " + ChatColor.RED + DurationFormatter.getRemaining(ability.toCooldown(playerData).getRemaining()));
                 }
@@ -181,7 +184,7 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
 
         if (kit != null) {
             for (Ability ability : kit.getAbilities()) {
-                ability.getProperties(player).forEach((key, value) -> toReturn.add(ChatColor.GOLD + key + ": " + ChatColor.YELLOW + value));
+                // ability.getProperties(player).forEach((key, value) -> toReturn.add(ChatColor.GOLD + key + ": " + ChatColor.YELLOW + value));
                 if (ability.hasCooldown(playerData.getPlayer(), false)) {
                     toReturn.add(ChatColor.DARK_RED + ability.getName() + ": " + ChatColor.RED + DurationFormatter.getRemaining(ability.toCooldown(playerData).getRemaining()));
                 }

@@ -6,18 +6,24 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.property.AbilityData;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.util.BlockUtil;
 
 import java.util.HashSet;
 import java.util.List;
 
+@AbilityData(icon = Material.REDSTONE_TORCH_ON, color = ChatColor.RED)
 public class Flash extends Ability {
 
     private static final HashSet<Byte> invalidBlocks = new HashSet<>();
 
-    private boolean giveWeakness = false;
-    private int maxTeleportDistance = 50;
+    @AbilityProperty(id = "weakness", description = "Should weakness be applied on teleport")
+    public boolean giveWeakness = false;
+
+    @AbilityProperty(id = "max-teleport-distance")
+    public int maxTeleportDistance = 50;
 
     static {
         invalidBlocks.add((byte) Material.BARRIER.getId());
@@ -38,19 +44,10 @@ public class Flash extends Ability {
         invalidBlocks.add((byte) Material.WATER_LILY.getId());
     }
 
-    @Override
-    public Material getType() {
-        return Material.REDSTONE_TORCH_ON;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.RED;
-    }
 
     @Override
     public void onActivate(Player player) {
-        if (this.hasCooldown(player, true)) return;
+        if (hasCooldown(player, true)) return;
 
         Location blockLoc;
         List<Block> blocks = player.getLastTwoTargetBlocks((HashSet<Byte>)null, maxTeleportDistance);

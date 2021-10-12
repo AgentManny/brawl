@@ -11,39 +11,29 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.property.AbilityData;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@AbilityData(
+        name = "Snow Globe",
+        icon = Material.TRIPWIRE_HOOK,
+        color = ChatColor.GOLD
+)
+// TODO Block should have global availability
 public class SnowGlobe extends Ability {
 
     @Override
-    public Material getType() {
-        return Material.TRIPWIRE_HOOK;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.GOLD;
-    }
-
-
-    @Override
-    public String getName() {
-        return "Fluffy Handcuffs";
-    }
-
-    @Override
     public void onActivate(Player player) {
-        if (this.hasCooldown(player, true)) return;
+        if (hasCooldown(player, true)) return;
 
         if (!player.isOnGround()) {
             player.sendMessage(ChatColor.RED + "You must be on the ground to activate this ability.");
             return;
         }
 
-
-        this.addCooldown(player);
+        addCooldown(player);
 
         generateSphere(player.getLocation(), 5);
         player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 5, 1));
@@ -151,5 +141,4 @@ public class SnowGlobe extends Ability {
         }.runTaskLater(Brawl.getInstance(), 20L * 5);
 
     }
-
 }

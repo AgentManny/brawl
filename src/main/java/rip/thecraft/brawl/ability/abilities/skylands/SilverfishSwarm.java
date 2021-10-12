@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.ability.abilities.skylands;
 
-import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,46 +16,37 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.property.AbilityData;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.util.SchedulerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@RequiredArgsConstructor
+@AbilityData(
+        name = "Silverfish Swarm",
+        color = ChatColor.DARK_AQUA,
+        icon = Material.INK_SACK,
+        data = 6
+)
 public class SilverfishSwarm extends Ability implements Listener {
 
-    private double duration = 10;
-    private double slowDuration = 5;
-    private double health = 15;
+    @AbilityProperty(id = "duration")
+    public double duration = 10;
 
-    private double radius = 2.5;
+    @AbilityProperty(id = "slow-duration")
+    public double slowDuration = 5;
 
-    private final Brawl brawl;
+    @AbilityProperty(id = "health", description = "Health of each silverfish")
+    public double health = 15;
 
-    @Override
-    public Material getType() {
-        return Material.INK_SACK;
-    }
-
-    @Override
-    public byte getData() {
-        return 6;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.DARK_AQUA;
-    }
-
-    @Override
-    public String getName() {
-        return "Silverfish Swarm";
-    }
+    @AbilityProperty(id = "radius")
+    public double radius = 2.5;
 
     @Override
     public void onActivate(Player player) {
-        if (this.hasCooldown(player, true)) return;
-        this.addCooldown(player);
+        if (hasCooldown(player, true)) return;
+        addCooldown(player);
 
         List<Entity> entities = new ArrayList<>();
         Location location = player.getLocation().clone();
@@ -67,7 +57,7 @@ public class SilverfishSwarm extends Ability implements Listener {
             location.add(x, 0, z );
 
             Silverfish entity = (Silverfish) player.getWorld().spawnEntity(location, EntityType.SILVERFISH);
-            entity.setMetadata("swarm", new FixedMetadataValue(brawl, player.getUniqueId().toString()));
+            entity.setMetadata("swarm", new FixedMetadataValue(Brawl.getInstance(), player.getUniqueId().toString()));
             entity.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
             entity.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 1));
             entity.setMaxHealth(health);

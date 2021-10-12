@@ -1,7 +1,5 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.region.RegionType;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -10,13 +8,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.handlers.AbilityKillHandler;
+import rip.thecraft.brawl.ability.handlers.AbilityProjectileHitHandler;
+import rip.thecraft.brawl.ability.handlers.AbilityProjectileLaunchHandler;
+import rip.thecraft.brawl.ability.property.AbilityData;
+import rip.thecraft.brawl.region.RegionType;
 
-public class Switcher extends Ability {
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.LIGHT_PURPLE;
-    }
+@AbilityData(color = ChatColor.LIGHT_PURPLE)
+public class Switcher extends Ability implements AbilityProjectileLaunchHandler, AbilityProjectileHitHandler, AbilityKillHandler {
 
     @Override
     public boolean onProjectileLaunch(Player player, EntityType entityType) {
@@ -66,8 +66,9 @@ public class Switcher extends Ability {
         }
         return false;
     }
+
     @Override
-    public void onKill(Player player) {
+    public void onKill(Player player, Player victim) {
         ItemStack switcher = null;
 
         for (ItemStack item : player.getInventory().getContents()) {

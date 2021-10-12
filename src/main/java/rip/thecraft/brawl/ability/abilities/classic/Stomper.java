@@ -12,54 +12,43 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.property.type.BooleanProperty;
-import rip.thecraft.brawl.ability.property.type.DoubleProperty;
+import rip.thecraft.brawl.ability.handlers.AbilityGroundHandler;
+import rip.thecraft.brawl.ability.handlers.AbilitySneakHandler;
+import rip.thecraft.brawl.ability.property.AbilityData;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.util.ParticleEffect;
 import rip.thecraft.brawl.util.PlayerUtil;
 
 import java.util.List;
 
-public class Stomper extends Ability implements Listener {
+@AbilityData(
+        name = "Stomper Charge",
+        description = "Launch yourself into the air and then sneak to thrust yourself down, dealing massive damage to whoever is on the ground below you.",
+        icon = Material.ANVIL,
+        color = ChatColor.YELLOW
+)
+public class Stomper extends Ability implements Listener, AbilityGroundHandler, AbilitySneakHandler {
 
     private static final String STOMPER_METADATA = "Stomper";
     private static final String CHARGE_METADATA = "StomperCharge";
 
-    public Stomper() {
-        properties.put("impact-distance", new DoubleProperty(5.)
-                .description("Radius of nearby players to damage on impact"));
+    @AbilityProperty(id = "impact-distance", description = "Radius of nearby players to damage on impact")
+    public int impactDistance = 5;
 
-        properties.put("boost-direction", new BooleanProperty(false)
-                .description("Boost the direction the player is facing"));
+    @AbilityProperty(id = "boost-direction", description = "Boost the direction the player is facing")
+    public boolean boostDirection = false;
 
-        properties.put("damage-reduction", new DoubleProperty(4.)
-                .description("Damage calculated by fall damage is divided"));
+    @AbilityProperty(id = "damage-reduction", description = "Damage calculated by fall damage is divided")
+    public double damageReduction = 3.5;
 
-        properties.put("fall-damage-reduction", new DoubleProperty(3.2)
-                .description("Reduces inflicted fall distance damage"));
+    @AbilityProperty(id = "fall-damage-reduction", description = "Reduces inflicted fall distance damage")
+    public double fallDamageReduction = 3.2;
 
-        properties.put("boost", new DoubleProperty(3.)
-                .description("Launch multiplier into the air (Y)"));
+    @AbilityProperty(id = "boost", description = "Launch multiplier into the air (Y)")
+    public double boost = 3.2;
 
-        properties.put("multiplier", new DoubleProperty(1.25)
-                .description("Launch multiplier in direction player is facing"));
-    }
-
-    @Override
-    public Material getType() {
-        return Material.ANVIL;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.YELLOW;
-    }
-
-    @Override
-    public String getDescription() {
-        return "Launch yourself into the air and then sneak to thrust yourself down, dealing massive damage to whoever is on the ground below you.";
-    }
-
-    private long delay;
+    @AbilityProperty(id = "multiplier", description = "Launch multiplier in direction player is facing")
+    public double multiplier = 1.25;
 
     @Override
     public void onActivate(Player player) {
@@ -71,10 +60,9 @@ public class Stomper extends Ability implements Listener {
         }
 
         if (!player.hasMetadata(STOMPER_METADATA)) {
-            boolean boostDirection = isProperty("boost-direction");
             Vector vector = boostDirection ? player.getLocation().getDirection().clone()
-                    .multiply(getProperty("multiplier"))
-                    .setY(getProperty("boost")) : new Vector(0, getProperty("boost"), 0);
+                    .multiply(multiplier)
+                    .setY(boost) : new Vector(0, boost, 0);
 
             player.setFireTicks(0); // Prevent fire from interfering with velocity
             player.setVelocity(vector);
@@ -85,7 +73,7 @@ public class Stomper extends Ability implements Listener {
         }
     }
 
-    public void thrust(Player player) {
+    private void thrust(Player player) {
         if (player.hasMetadata(STOMPER_METADATA) && player.hasMetadata(CHARGE_METADATA)) {
             long timestamp = player.getMetadata(CHARGE_METADATA).get(0).asLong();
             if (System.currentTimeMillis() - timestamp <= 250L) {
@@ -94,7 +82,7 @@ public class Stomper extends Ability implements Listener {
             }
             player.removeMetadata(CHARGE_METADATA, Brawl.getInstance());
 
-            player.setVelocity(player.getLocation().getDirection().setY(player.getVelocity().getY() - getProperty("boost")).multiply(getProperty("multiplier") + 0.75));
+            player.setVelocity(player.getLocation().getDirection().setY(player.getVelocity().getY() - boost).multiply(multiplier + 0.75));
 
             player.playSound(player.getLocation(), Sound.BAT_LOOP, 1.0F, 0.0F);
             ParticleEffect.CLOUD.display(0, 0, 0, 0, 1, player.getLocation(), EFFECT_DISTANCE);
@@ -112,14 +100,13 @@ public class Stomper extends Ability implements Listener {
         }
     }
 
-
     @Override
     public void onGround(Player player, boolean onGround) {
         if (onGround && player.hasMetadata(STOMPER_METADATA)) {
             onDeactivate(player); // Removes player metadata
 
-            double baseDamage = Math.min(50, player.getFallDistance()) / getProperty("damage-reduction");
-            List<Player> nearbyPlayers = PlayerUtil.getNearbyPlayers(player, getProperty("impact-distance"));
+            double baseDamage = Math.min(50, player.getFallDistance()) / damageReduction;
+            List<Player> nearbyPlayers = PlayerUtil.getNearbyPlayers(player, impactDistance);
             for (Player nearbyPlayer : nearbyPlayers) {
                 nearbyPlayer.damage(baseDamage / (nearbyPlayer.isSneaking() ? 2 : 1));
             }
@@ -127,7 +114,7 @@ public class Stomper extends Ability implements Listener {
             ParticleEffect.EXPLOSION_HUGE.display(0, 0, 0, 0, 1, player.getLocation(), EFFECT_DISTANCE);
             player.removeMetadata(STOMPER_METADATA, Brawl.getInstance());
             player.playSound(player.getLocation(), Sound.ANVIL_LAND, 1.0F, 0.0F);
-            player.setFallDistance((float) (player.getFallDistance() / getProperty("fall-damage-reduction"))); // Fall damage should still apply to stompers but be reduced
+            player.setFallDistance((float) (player.getFallDistance() / fallDamageReduction)); // Fall damage should still apply to stompers but be reduced
             addCooldown(player); // Reset the cooldown
         }
     }

@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -15,34 +14,26 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.handlers.AbilityKillHandler;
+import rip.thecraft.brawl.ability.property.AbilityData;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.server.util.chatcolor.CC;
 
-@RequiredArgsConstructor
-public class Rider extends Ability implements Listener {
+@AbilityData(icon = Material.DIAMOND_BARDING, color = ChatColor.BLUE)
+public class Rider extends Ability implements Listener, AbilityKillHandler {
 
-    private final Brawl plugin;
-
-    private int duration = 10; // Seconds
-
-    @Override
-    public Material getType() {
-        return Material.DIAMOND_BARDING;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.BLUE;
-    }
+    @AbilityProperty(id = "duration")
+    public int duration = 10; // Seconds
 
     @Override
     public void onActivate(Player player) {
-        if (this.hasCooldown(player, true)) return;
-        this.addCooldown(player);
+        if (hasCooldown(player, true)) return;
+        addCooldown(player);
 
         Horse horse = (Horse) player.getWorld().spawnEntity(player.getLocation().add(0, 1, 0), EntityType.HORSE);
         horse.setAdult();
 
-        horse.setCustomName(player.getDisplayName() + ChatColor.WHITE + "'s Horse");
+        horse.setCustomName(player.getDisplayName() + ChatColor.WHITE + "'s Horse"); // TODO Reduce length of name
         horse.setCustomNameVisible(true);
 
         horse.setMaxHealth(40);
@@ -69,11 +60,11 @@ public class Rider extends Ability implements Listener {
                 }
             }
 
-        }.runTaskLater(plugin, duration * 20L);
+        }.runTaskLater(Brawl.getInstance(), duration * 20L);
     }
 
     @Override
-    public void onKill(Player player) {
+    public void onKill(Player player, Player victim) {
         if (player.getVehicle() != null && player.getVehicle() instanceof Horse) {
             Horse entity = (Horse) player.getVehicle();
             entity.setMaxHealth(40);
@@ -83,7 +74,7 @@ public class Rider extends Ability implements Listener {
     }
 
     @EventHandler
-    public void onIteract(PlayerInteractEntityEvent event) {
+    public void onHorseInteract(PlayerInteractEntityEvent event) {
         Player player = event.getPlayer();
         if (event.getRightClicked() instanceof Horse) {
             Horse horse = (Horse) event.getRightClicked();
@@ -94,7 +85,5 @@ public class Rider extends Ability implements Listener {
                 }
             }
         }
-
     }
-
 }

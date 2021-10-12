@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import lombok.RequiredArgsConstructor;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
@@ -10,30 +9,19 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.util.ArmorUtil;
 import rip.thecraft.brawl.util.BrawlUtil;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-@RequiredArgsConstructor
+@AbilityData(icon = Material.REDSTONE_TORCH_ON, color = ChatColor.RED)
 public class Detonator extends Ability {
-
-    private final Brawl plugin;
-
-    @Override
-    public Material getType() {
-        return Material.REDSTONE_TORCH_ON;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.RED;
-    }
 
     @Override
     public void onActivate(Player player) {
-        if (this.hasCooldown(player, true)) return;
-        this.addCooldown(player);
+        if (hasCooldown(player, true)) return;
+        addCooldown(player);
 
         if (ArmorUtil.contains(ArmorUtil.LEATHER, player)) {
             new BukkitRunnable() {
@@ -80,7 +68,7 @@ public class Detonator extends Ability {
                         explode(player);
                     }
                 }
-            }.runTaskTimer(plugin, 4L, 4L);
+            }.runTaskTimer(Brawl.getInstance(), 4L, 4L);
         } else {
             explode(player);
         }
@@ -97,12 +85,12 @@ public class Detonator extends Ability {
         player.setVelocity(player.getLocation().getDirection().clone().normalize().multiply(2.5));
         player.sendMessage(ChatColor.YELLOW + "You were boosted away from the explosion!");
 
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+        Brawl.getInstance().getServer().getScheduler().runTaskLater(Brawl.getInstance(), () -> {
 
             for (int i = 0; i < 3; i++) {
                 TNTPrimed tnt = location.getWorld().spawn(location, TNTPrimed.class);
                 tnt.setFuseTicks(ThreadLocalRandom.current().nextInt(2, 5) + i);
-                tnt.setMetadata("tnt", new FixedMetadataValue(this.plugin, Boolean.TRUE));
+                tnt.setMetadata("tnt", new FixedMetadataValue(Brawl.getInstance(), Boolean.TRUE));
             }
 
             if (player != null) {

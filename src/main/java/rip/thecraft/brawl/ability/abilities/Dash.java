@@ -9,23 +9,15 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.property.AbilityData;
 
+@AbilityData(icon = Material.SUGAR, color = ChatColor.DARK_AQUA)
 public class Dash extends Ability implements Listener {
 
     @Override
-    public Material getType() {
-        return Material.SUGAR;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.DARK_AQUA;
-    }
-
-    @Override
     public void onActivate(Player player) {
-        if (this.hasCooldown(player, true)) return;
-        this.addCooldown(player);
+        if (hasCooldown(player, true)) return;
+        addCooldown(player);
 
         player.getActivePotionEffects().stream().filter(effect -> effect.getType().equals(PotionEffectType.SPEED))
                 .findAny()
@@ -34,8 +26,4 @@ public class Dash extends Ability implements Listener {
         Brawl.getInstance().getEffectRestorer().setRestoreEffect(player, new PotionEffect(PotionEffectType.SPEED, 30, 10));
     }
 
-    @Override
-    public double getDefaultCooldown() {
-        return 10;
-    }
 }

@@ -1,32 +1,15 @@
 package rip.thecraft.brawl.ability.property;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import rip.thecraft.brawl.ability.property.exception.PropertyParseException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@NoArgsConstructor
-@RequiredArgsConstructor
-public abstract class AbilityProperty<T> {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface AbilityProperty {
 
-    @NonNull protected T value;
+    String id() default "";
 
-    @Getter private transient String description = null;
-
-    public abstract T value();
-
-    public abstract void set(T newValue);
-
-    public abstract AbilityProperty<T> parse(String value) throws PropertyParseException;
-
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    public AbilityProperty<T> description(String description) {
-        this.description = description;
-        return this;
-    }
-
+    String description() default "";
 }

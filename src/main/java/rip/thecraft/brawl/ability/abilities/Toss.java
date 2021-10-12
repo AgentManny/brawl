@@ -9,19 +9,16 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.property.AbilityData;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@AbilityData(description = "Right click players with your fist to pick them up.")
 public class Toss extends Ability implements Listener {
 
     private Map<UUID, Long> times = new HashMap<>();
-
-    @Override
-    public String getDescription() {
-        return "Right click players with your fist to pick them up.";
-    }
 
     @EventHandler
     public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event) {

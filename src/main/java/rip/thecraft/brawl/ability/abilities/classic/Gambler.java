@@ -11,50 +11,40 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.property.AbilityData;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.BukkitUtil;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
+/* TODO Dual wielding effect
+ * Passive (Right Click) | Attack (Left Click)
+ *
+ * Potency of negative effects would be reduced including
+ * cooldown applied by 25%
+ */
+@AbilityData(
+        description = "Gives you random effects that can help you positively or negatively",
+        icon = Material.POTION,
+        color = ChatColor.DARK_AQUA
+)
 public class Gambler extends Ability {
 
-    // Gambler - Random potion effects
-    // Passive (Right Click) / Attack ability (Left Click)
-    //
-    // Reduce the potency of negative effects (and cooldown applied to it by 25%)
-    //
-
-    public Gambler() {
-        addProperty("passive-negative-cooldown", 10., "Cooldown applied to negative effects applied to actor.");
-
-    }
-
-    public Material getType() {
-        return Material.POTION;
-    }
-
-    public ChatColor getColor() {
-        return ChatColor.DARK_AQUA;
-    }
-
-    @Override
-    public String getDescription() {
-        return "Gives you random effects that can help you positively or negatively";
-    }
+    @AbilityProperty(id = "negative-cooldown", description = "Cooldown applied to negative effects applied to actor.")
+    public int negativeCooldown = 10;
 
     public void onActivate(Player player) {
-        if (hasCooldown(player, true)) {
-            return;
-        }
+        if (hasCooldown(player, true)) return;
+
         ThreadLocalRandom random = ThreadLocalRandom.current();
         GamblerEffect randomEffect = GamblerEffect.values()[random.nextInt(0, GamblerEffect.values().length - 1)];
 
-        Double cooldown = randomEffect.isNegative() ? getProperty("passive-negative-cooldown") : getProperty("cooldown");
-        addCooldown(player, TimeUnit.SECONDS.toMillis(cooldown.longValue()));
+        int cooldown = randomEffect.isNegative() ? negativeCooldown : this.cooldown;
+        addCooldown(player, TimeUnit.SECONDS.toMillis(cooldown));
 
-        PotionEffect potionEffect = randomEffect.applyTo(random, player);
-        player.sendMessage(ChatColor.YELLOW + "You've taken a gamble and received " + BukkitUtil.getFriendlyName(potionEffect) + ChatColor.YELLOW + ".");
+        randomEffect.applyTo(random, player);
     }
 
     @NoArgsConstructor
@@ -93,17 +83,26 @@ public class Gambler extends Ability {
         WITHER(true),
         ;
 
-        /** Returns the max potency of effect */
+        /**
+         * Returns the max potency of effect
+         */
         private int maxAmplifier = 3;
 
-        /** Returns the min duration of effect */
+        /**
+         * Returns the min duration of effect
+         */
         private int minDuration = 80;
 
-        /** Returns the max duration of effect */
+        /**
+         * Returns the max duration of effect
+         */
         private int maxDuration = 300; // 300 = 15 seconds
 
-        /** Returns whether an effect is negative */
-        @Getter private boolean negative = false;
+        /**
+         * Returns whether an effect is negative
+         */
+        @Getter
+        private boolean negative = false;
 
         GamblerEffect(boolean negative) {
             this.negative = negative;
@@ -115,6 +114,7 @@ public class Gambler extends Ability {
 
         /**
          * Apply an effect to a player
+         *
          * @param player Player to apply potion effect to
          */
         public PotionEffect applyTo(ThreadLocalRandom random, Player player) {
@@ -126,21 +126,22 @@ public class Gambler extends Ability {
             if (this == SATURATION || this == HUNGER) {
                 PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
                 ItemStack item = playerData.getRefillType().getItem();
-                int soups = random.nextInt(0, 5);
-                for (int i = 0; i < soups; i++) {
+                int soups = random.nextInt(1, 5);
+                for (int i = 1; i <= soups; i++) {
                     if (negative) {
                         player.getInventory().remove(item);
                     } else {
                         player.getInventory().addItem(item);
                     }
                 }
-                player.sendMessage(ChatColor.YELLOW + "You " + (negative ? ChatColor.RED + "lost" : ChatColor.GREEN + "gained") + ChatColor.YELLOW + ChatColor.WHITE + soups + "x soups" + ChatColor.YELLOW + " because of your " + BukkitUtil.getFriendlyName(potionEffect) + ChatColor.YELLOW + ".");
+                player.sendMessage(ChatColor.YELLOW + "You've taken a gambler and " + (negative ? ChatColor.RED + "lost" : ChatColor.GREEN + "gained") + ChatColor.YELLOW + " " + ChatColor.WHITE + soups + "x soups" + ChatColor.YELLOW + " because of your " + BukkitUtil.getFriendlyName(potionEffect) + ChatColor.YELLOW + ".");
             } else {
                 player.addPotionEffect(potionEffect);
                 if (this == HEALTH_BOOST) {
                     double healthDiff = player.getMaxHealth() - player.getHealth();
                     player.setHealth(Math.max(player.getMaxHealth(), player.getHealth() + healthDiff));
                 }
+                player.sendMessage(ChatColor.YELLOW + "You've taken a gamble and received " + BukkitUtil.getFriendlyName(potionEffect) + ChatColor.YELLOW + ".");
             }
             return potionEffect;
         }

@@ -6,24 +6,18 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.property.AbilityData;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
 
+@AbilityData(icon = Material.FIREWORK, color = ChatColor.YELLOW)
 public class Kangaroo extends Ability {
 
+    @AbilityProperty(id = "jump-height")
     public float jumpHeight = 4F;
 
     @Override
-    public Material getType() {
-        return Material.FIREWORK;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.YELLOW;
-    }
-
-    @Override
     public void onActivate(Player player) {
-        if (this.hasCooldown(player, true)) return;
+        if (hasCooldown(player, true)) return;
         addCooldown(player);
 
         player.setFallDistance(-(jumpHeight + 1));

@@ -6,21 +6,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.util.MathUtil;
 
+@AbilityData(icon = Material.FEATHER, color = ChatColor.GRAY)
 public class Phantom extends Ability {
-
-    private final Brawl plugin = Brawl.getInstance();
-
-    @Override
-    public Material getType() {
-        return Material.FEATHER;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.GRAY;
-    }
 
     @Override
     public void onActivate(Player player) {
@@ -35,7 +25,7 @@ public class Phantom extends Ability {
                 player.setFlying(false);
                 player.setAllowFlight(false);
             }
-        }.runTaskLater(plugin, MathUtil.convertSecondstoTicks(MathUtil.getRandomInt(5, 10)));
+        }.runTaskLater(Brawl.getInstance(), MathUtil.convertSecondstoTicks(MathUtil.getRandomInt(5, 10)));
     }
 
     @Override

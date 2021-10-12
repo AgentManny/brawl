@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.ability.abilities.skylands;
 
-import com.google.gson.JsonObject;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -8,8 +7,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.util.Vector;
-import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.handlers.AbilityScoreboardHandler;
+import rip.thecraft.brawl.ability.property.AbilityData;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.brawl.util.DurationFormatter;
 import rip.thecraft.brawl.util.ParticleEffect;
@@ -18,41 +19,45 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class Charger extends Ability implements Listener {
-
-    private final Brawl brawl;
+@AbilityData(color = ChatColor.GOLD)
+public class Charger extends Ability implements Listener, AbilityScoreboardHandler {
 
     private HashMap<UUID, Long> chargeup = new HashMap<>();
 
-    private ParticleEffect chargeParticle = ParticleEffect.CLOUD;
-    private Sound chargeSound = Sound.CLICK;
+    @AbilityProperty(id = "charge-particle")
+    public ParticleEffect chargeParticle = ParticleEffect.CLOUD;
 
-    private ParticleEffect activateParticle = ParticleEffect.EXPLOSION_LARGE;
-    private Sound activateSound = Sound.HORSE_LAND;
+    @AbilityProperty(id = "charge-sound")
+    public Sound chargeSound = Sound.CLICK;
 
-    private double multiplier = 0.5D;
-    private int capacity = 5;
+    @AbilityProperty(id = "activate-particle")
+    public ParticleEffect activateParticle = ParticleEffect.EXPLOSION_LARGE;
 
-    public Charger(Brawl brawl) {
-        this.brawl = brawl;
+    @AbilityProperty(id = "activate-sound")
+    public Sound activateSound = Sound.HORSE_LAND;
+
+    @AbilityProperty(id = "impact-multiplier", description = "Impact to throw players away from you")
+    public double multiplier = 0.5D;
+
+    @AbilityProperty(id = "capacity", description = "Duration for maximum charge time")
+    public int capacity = 5;
+
+    @Override
+    public void cleanup() {
+        chargeup.clear();
     }
 
     @Override
-    public Map<String, String> getProperties(Player player) {
+    public Map<String, String> getScoreboard(Player player) {
         Map<String, String> properties = new HashMap<>();
         if (chargeup.containsKey(player.getUniqueId())) {
             long time = System.currentTimeMillis() - this.chargeup.get(player.getUniqueId());
-            if (time > (capacity * 1000)) {
-                time = (capacity * 1000);
+            if (time > (capacity * 1000L)) {
+                time = (capacity * 1000L);
             }
             properties.put("Charge Up", DurationFormatter.getTrailing((time / capacity) * 100) + '%');
         }
         return properties;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.GOLD;
     }
 
     @EventHandler
@@ -72,8 +77,8 @@ public class Charger extends Ability implements Listener {
                 }
             } else if(this.chargeup.containsKey(player.getUniqueId())) {
                 long time = System.currentTimeMillis() - this.chargeup.get(player.getUniqueId());
-                if (time > (capacity * 1000)) {
-                    time = (capacity * 1000);
+                if (time > (capacity * 1000L)) {
+                    time = (capacity * 1000L);
                 }
                 double kb = multiplier * (time / 1000.);
                 for (Player nearby : BrawlUtil.getNearbyPlayers(player, kb)) {
@@ -96,29 +101,5 @@ public class Charger extends Ability implements Listener {
                 this.addCooldown(player);
             }
         }
-    }
-
-    @Override
-    public JsonObject toJson() {
-        JsonObject object = super.toJson();
-        object.addProperty("activateParticle", this.activateParticle == null ? null : this.activateParticle.name());
-        object.addProperty("activateSound", this.activateSound == null ? null : this.activateSound.name());
-        object.addProperty("sneakParticle", this.chargeParticle == null ? null : this.chargeParticle.name());
-        object.addProperty("sneakSound", this.chargeSound == null ? null : this.chargeSound.name());
-        object.addProperty("capacity", this.capacity);
-        object.addProperty("multiplier", this.multiplier);
-        return object;
-    }
-
-    @Override
-    public void fromJson(JsonObject object) {
-        this.activateParticle = object.get("activateParticle") == null ? null : ParticleEffect.valueOf(object.get("activateParticle").getAsString());
-        this.activateSound = object.get("activateSound") == null ? null : Sound.valueOf(object.get("activateSound").getAsString());
-
-        this.chargeParticle = object.get("chargeParticle") == null ? null : ParticleEffect.valueOf(object.get("chargeParticle").getAsString());
-        this.chargeSound = object.get("chargeSound") == null ? null : Sound.valueOf(object.get("chargeSound").getAsString());
-
-        this.capacity = object.get("capacity").getAsInt();
-        this.multiplier = object.get("multiplier").getAsDouble();
     }
 }

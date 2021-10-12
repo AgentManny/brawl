@@ -9,30 +9,22 @@ import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.brawl.util.ParticleEffect;
 
 import java.util.HashSet;
 import java.util.List;
 
+@AbilityData(icon = Material.BLAZE_POWDER, color = ChatColor.GOLD)
 public class Blaze extends Ability implements Listener {
 
     private final Brawl plugin = Brawl.getInstance();
 
     @Override
-    public Material getType() {
-        return Material.BLAZE_POWDER;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.GOLD;
-    }
-
-    @Override
     public void onActivate(Player player) {
-        if (this.hasCooldown(player, true)) return;
-        this.addCooldown(player, 15000);
+        if (hasCooldown(player, true)) return;
+        addCooldown(player);
         new BukkitRunnable() {
 
             private int times = 0;

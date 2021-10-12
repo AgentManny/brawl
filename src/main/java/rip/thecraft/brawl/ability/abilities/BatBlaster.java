@@ -11,7 +11,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.AbilityTask;
-import rip.thecraft.brawl.ability.property.type.DoubleProperty;
+import rip.thecraft.brawl.ability.property.AbilityData;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.brawl.util.ParticleEffect;
 import rip.thecraft.brawl.util.PlayerUtil;
@@ -20,29 +21,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+@AbilityData(
+        name = "Bat Blaster",
+        description = "Releases a swarm of bats in the pointed direction.",
+        color = ChatColor.BLUE,
+        icon = Material.IRON_BARDING
+)
 public class BatBlaster extends Ability {
 
-    private final long duration = TimeUnit.SECONDS.toMillis(2);
+    @AbilityProperty(id = "duration", description = "Duration in millis")
+    public long duration = TimeUnit.SECONDS.toMillis(2);
 
-    public BatBlaster() {
-        properties.put("power", new DoubleProperty(0.7));
-        properties.put("vertical", new DoubleProperty(0.72));
-    }
+    @AbilityProperty(id = "power")
+    public double power = 0.7;
 
-    @Override
-    public String getName() {
-        return "Bat Blaster";
-    }
-
-    @Override
-    public Material getType() {
-        return Material.IRON_BARDING;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.BLUE;
-    }
+    @AbilityProperty(id = "vertical", description = "Speed of bats rising upwards")
+    public double vertical = 0.72;
 
     @Override
     public void onActivate(Player player) {
@@ -50,17 +44,6 @@ public class BatBlaster extends Ability {
         addCooldown(player);
 
         new BatBlastTask(player).start();
-    }
-
-
-    @Override
-    public String getDescription() {
-        return "Releases a swarm of bats in the pointed direction.";
-    }
-
-    @Override
-    public double getDefaultCooldown() {
-        return 15;
     }
 
     private class BatBlastTask extends AbilityTask {
@@ -77,7 +60,6 @@ public class BatBlaster extends Ability {
             }
 
             location = player.getEyeLocation().clone();
-
         }
 
         @Override
@@ -93,12 +75,12 @@ public class BatBlaster extends Ability {
 
                             Vector unitVector = other.getLocation().toVector().subtract(bat.getLocation().toVector()).normalize();
                             other.setVelocity(unitVector
-                                    .multiply((Double)properties.get("power").value())
-                                    .setY((Double)properties.get("vertical").value())
+                                    .multiply(power)
+                                    .setY(vertical)
                             );
 
                             ParticleEffect.SMOKE_LARGE.display(0, 0, 0, 0, 1, bat.getLocation(), 12);
-                            bat.getWorld().playSound(bat.getLocation(), Sound.BAT_HURT, 1.0F, 1.0F);
+                            other.playSound(bat.getLocation(), Sound.BAT_HURT, 1.0F, 1.0F);
                             // bat.remove(); // Bat gets removed after it tags a player
                         }
                     }
@@ -113,5 +95,4 @@ public class BatBlaster extends Ability {
             }
         }
     }
-
 }

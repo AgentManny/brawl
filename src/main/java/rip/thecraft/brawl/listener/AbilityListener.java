@@ -19,6 +19,10 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.handlers.AbilityGroundHandler;
+import rip.thecraft.brawl.ability.handlers.AbilityProjectileHitHandler;
+import rip.thecraft.brawl.ability.handlers.AbilityProjectileLaunchHandler;
+import rip.thecraft.brawl.ability.handlers.AbilitySneakHandler;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.KitHandler;
 
@@ -32,7 +36,11 @@ public class AbilityListener implements Listener {
         Player player = event.getPlayer();
         Kit selectedKit = KitHandler.getEquipped(player);
         if (selectedKit != null) {
-            selectedKit.getAbilities().forEach(ability -> ability.onGround(player, event.getOnGround()));
+            selectedKit.getAbilities().forEach(ability -> {
+                if (ability instanceof AbilityGroundHandler) {
+                    ((AbilityGroundHandler) ability).onGround(player, event.getOnGround());
+                }
+            });
         }
     }
 
@@ -41,7 +49,11 @@ public class AbilityListener implements Listener {
         Player player = event.getPlayer();
         Kit selectedKit = KitHandler.getEquipped(player);
         if (selectedKit != null) {
-            selectedKit.getAbilities().forEach(ability -> ability.onSneak(player, event.isSneaking()));
+            selectedKit.getAbilities().forEach(ability -> {
+                if (ability instanceof AbilitySneakHandler) {
+                    ((AbilitySneakHandler) ability).onSneak(player, event.isSneaking());
+                }
+            });
         }
     }
 
@@ -86,9 +98,11 @@ public class AbilityListener implements Listener {
             Kit selectedKit = KitHandler.getEquipped(player);
             if (selectedKit != null) {
                 for (Ability ability : selectedKit.getAbilities()) {
-                    if (ability.onProjectileLaunch(player, event.getEntityType())) {
-                        event.setCancelled(true);
-                        break;
+                    if (ability instanceof AbilityProjectileLaunchHandler) {
+                        if (((AbilityProjectileLaunchHandler) ability).onProjectileLaunch(player, event.getEntityType())) {
+                            event.setCancelled(true);
+                            break;
+                        }
                     }
                 }
             }
@@ -110,9 +124,11 @@ public class AbilityListener implements Listener {
             Kit selectedKit = KitHandler.getEquipped(shooter);
             if (selectedKit != null) {
                 for (Ability ability : selectedKit.getAbilities()) {
-                    if (ability.onProjectileHit(shooter, (Player) event.getEntity(), event)) {
-                        event.setCancelled(true);
-                        break;
+                    if (ability instanceof AbilityProjectileHitHandler) {
+                        if (((AbilityProjectileHitHandler) ability).onProjectileHit(shooter, (Player) event.getEntity(), event)) {
+                            event.setCancelled(true);
+                            break;
+                        }
                     }
                 }
             }
