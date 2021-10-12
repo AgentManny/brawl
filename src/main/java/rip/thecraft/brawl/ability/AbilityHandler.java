@@ -13,7 +13,6 @@ import rip.thecraft.brawl.ability.abilities.classic.Fisherman;
 import rip.thecraft.brawl.ability.abilities.classic.Gambler;
 import rip.thecraft.brawl.ability.abilities.classic.Stomper;
 import rip.thecraft.brawl.ability.abilities.legacy.Grappler;
-import rip.thecraft.brawl.ability.abilities.legacy.ShadowShift;
 import rip.thecraft.brawl.ability.abilities.legacy.Vortex;
 import rip.thecraft.brawl.ability.abilities.skylands.Archer;
 import rip.thecraft.brawl.ability.abilities.skylands.Charger;
@@ -82,7 +81,7 @@ public class AbilityHandler {
                 new Switcher(),
                 new Grappler(),
                 new Medic(),
-                new ShadowShift(),
+                // new ShadowShift(),
                 new Smite(),
 
                 new Shurikens(),
@@ -155,7 +154,6 @@ public class AbilityHandler {
             JsonElement element = new JsonParser().parse(reader);
             if (element != null && element.isJsonObject()) {
                 String json = element.toString();
-                System.out.println(json);
                 Document document = Document.parse(json);
                 document.forEach((key, value) -> getAbility(key).ifPresent(ability -> {
                     ability.deserialize((Document) value);

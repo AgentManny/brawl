@@ -7,9 +7,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.property.AbilityProperty;
+import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.player.protection.Protection;
 
+@AbilityData
 // TODO REWORK MEDIC
 public class Medic extends Ability implements Listener {
 

@@ -13,14 +13,14 @@ import rip.thecraft.brawl.ability.property.AbilityProperty;
 public class Kangaroo extends Ability {
 
     @AbilityProperty(id = "jump-height")
-    public float jumpHeight = 4F;
+    public double jumpHeight = 4;
 
     @Override
     public void onActivate(Player player) {
         if (hasCooldown(player, true)) return;
         addCooldown(player);
 
-        player.setFallDistance(-(jumpHeight + 1));
+        player.setFallDistance((float) -(jumpHeight + 1));
 
         Vector vector = player.getEyeLocation().getDirection();
         vector.multiply(1.25F);

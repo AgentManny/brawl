@@ -13,8 +13,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 
+@AbilityData
 public class Grappler extends Ability implements Listener {
 
     @AbilityProperty

@@ -22,7 +22,7 @@ import rip.thecraft.brawl.util.PlayerUtil;
 import java.util.List;
 
 @AbilityData(
-        name = "Stomper Charge",
+        name = "Stomper",
         description = "Launch yourself into the air and then sneak to thrust yourself down, dealing massive damage to whoever is on the ground below you.",
         icon = Material.ANVIL,
         color = ChatColor.YELLOW
