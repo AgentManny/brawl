@@ -1,45 +1,74 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
+import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.bukkit.*;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.handlers.InteractItemHandler;
 import rip.thecraft.brawl.ability.handlers.KillHandler;
-import rip.thecraft.brawl.ability.handlers.ProjectileHitHandler;
-import rip.thecraft.brawl.ability.handlers.ProjectileLaunchHandler;
+import rip.thecraft.brawl.ability.handlers.ProjectileHandler;
 import rip.thecraft.brawl.ability.property.AbilityData;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.region.RegionType;
+import rip.thecraft.brawl.util.ParticleEffect;
+import rip.thecraft.brawl.util.ProjectileEffect;
 
 import java.util.concurrent.TimeUnit;
 
 @AbilityData(color = ChatColor.LIGHT_PURPLE)
-public class Switcher extends Ability implements ProjectileLaunchHandler, ProjectileHitHandler, KillHandler {
+public class Switcher extends Ability implements InteractItemHandler, ProjectileHandler, KillHandler {
+
+    private static final String SWITCHER_META = "Switcher";
+
+    @AbilityProperty(id = "miss-cooldown")
+    public int missCooldown = 3;
 
     @Override
-    public boolean onProjectileLaunch(Player player, EntityType entityType) {
-        if (entityType == EntityType.SNOWBALL) {
-            boolean cancellable = this.hasCooldown(player, true);
-            if (!cancellable) {
-                this.addCooldown(player, TimeUnit.SECONDS.toMillis(5));
-            } else {
-                player.getInventory().addItem(new ItemStack(Material.SNOW_BALL));
-                player.updateInventory();
+    public boolean onInteractItem(Player player, Action action, ItemStack item) {
+        if (item.getType() == Material.SNOW_BALL) {
+            if (hasCooldown(player, true)) return true;
+
+            if (player.hasMetadata(SWITCHER_META)) {
+                long projectileTimer = player.getMetadata(SWITCHER_META, Brawl.getInstance()).asLong();
+                if (projectileTimer >= System.currentTimeMillis()) {
+                    player.sendMessage(ChatColor.RED + "You must wait " + ChatColor.BOLD + DurationFormatUtils.formatDurationWords(projectileTimer - System.currentTimeMillis(), true, true) + ChatColor.RED + " before throwing this again.");
+                    return true;
+                }
             }
-            return cancellable;
+            player.setMetadata(SWITCHER_META, new FixedMetadataValue(Brawl.getInstance(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(missCooldown)));
+        }
+        return false;
+    }
+
+    @Override // Visuals
+    public boolean onProjectileLaunch(Player player, Projectile projectile) {
+        if (projectile instanceof Snowball) {
+            // Interact sometimes ignores snowballs - Ensures they don't spawn
+            if (player.hasMetadata(SWITCHER_META) && player.getMetadata(SWITCHER_META, Brawl.getInstance()).asLong() >= System.currentTimeMillis()) {
+                return true;
+            }
+            new ProjectileEffect(projectile, ParticleEffect.SPELL_MOB)
+                    .color(Color.WHITE)
+                    .intervals(1)
+                    .duration(3) // You should be switching within this time anyways
+                    .expiry((entity) -> player.removeMetadata(SWITCHER_META, Brawl.getInstance()))
+                    .killExpiry(true)
+                    .start();
         }
         return false;
     }
 
     @Override
-    public boolean onProjectileHit(Player shooter, Player victim, EntityDamageByEntityEvent event) {
-        if (event.getDamager() instanceof Snowball) {
-            if (this.hasCooldown(shooter, true)) return true;
-
+    public boolean onProjectileCollide(Player shooter, Entity entity, Projectile projectile) {
+        if (projectile instanceof Snowball && entity instanceof Player) {
+            Player victim = (Player) entity;
             if ((RegionType.SAFEZONE.appliesTo(shooter.getLocation()) || RegionType.SAFEZONE.appliesTo(victim.getLocation()))) {
                 shooter.sendMessage(ChatColor.RED + "You cannot use abilities in spawn.");
                 shooter.getInventory().addItem(new ItemStack(Material.SNOW_BALL));
@@ -54,8 +83,6 @@ public class Switcher extends Ability implements ProjectileLaunchHandler, Projec
                 return true;
             }
 
-            addCooldown(shooter);
-
             Location shooterLoc = shooter.getLocation().clone();
             Location victimLoc = victim.getLocation().clone();
 
@@ -68,6 +95,10 @@ public class Switcher extends Ability implements ProjectileLaunchHandler, Projec
             shooter.teleport(victimLoc);
             victim.teleport(shooterLoc);
 
+            addCooldown(shooter);
+
+            shooter.playSound(shooterLoc, Sound.CHICKEN_EGG_POP, .75f, 1);
+            victim.playSound(victimLoc, Sound.CHICKEN_EGG_POP, .75f, 1);
         }
         return false;
     }
