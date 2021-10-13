@@ -2,6 +2,7 @@ package rip.thecraft.brawl.listener;
 
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.Event;
@@ -17,6 +18,7 @@ import org.bukkit.event.player.PlayerOnGroundEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
+import org.github.paperspigot.event.entity.ProjectileCollideEvent;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.handlers.*;
@@ -96,7 +98,27 @@ public class AbilityListener implements Listener {
             if (selectedKit != null) {
                 for (Ability ability : selectedKit.getAbilities()) {
                     if (ability instanceof ProjectileLaunchHandler) {
-                        if (((ProjectileLaunchHandler) ability).onProjectileLaunch(player, event.getEntityType())) {
+                        if (((ProjectileLaunchHandler) ability).onProjectileLaunch(player, event.getEntity())) {
+                            event.setCancelled(true);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onProjectileCollide(ProjectileCollideEvent event) {
+        Projectile projectile = event.getEntity();
+        if (projectile.getShooter() instanceof Player) {
+            Player player = (Player) projectile.getShooter();
+            Entity victim = event.getCollidedWith();
+            Kit selectedKit = KitHandler.getEquipped(player);
+            if (selectedKit != null) {
+                for (Ability ability : selectedKit.getAbilities()) {
+                    if (ability instanceof ProjectileCollideHandler) {
+                        if (((ProjectileCollideHandler) ability).onProjectileCollide(player, victim, projectile)) {
                             event.setCancelled(true);
                             break;
                         }
