@@ -10,7 +10,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.handlers.AbilityKillHandler;
+import rip.thecraft.brawl.ability.handlers.InteractItemHandler;
+import rip.thecraft.brawl.ability.handlers.KillHandler;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.spartan.util.ItemBuilder;
 
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 // TODO Rework how ninja stars get shot as they are always inaccurate
 @AbilityData(icon = Material.NETHER_STAR)
-public class Shurikens extends Ability implements AbilityKillHandler {
+public class Shurikens extends Ability implements KillHandler, InteractItemHandler {
 
     @Override
     public boolean bypassAbilityPreventZone() {

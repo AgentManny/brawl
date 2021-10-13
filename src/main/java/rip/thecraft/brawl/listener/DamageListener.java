@@ -17,7 +17,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.ability.handlers.AbilityKillHandler;
+import rip.thecraft.brawl.ability.handlers.KillHandler;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameElimination;
 import rip.thecraft.brawl.game.GameFlag;
@@ -119,8 +119,8 @@ public class DamageListener implements Listener {
 
                     if (killerData.getSelectedKit() != null) {
                         killerData.getSelectedKit().getAbilities().forEach(ability -> {
-                            if (ability instanceof AbilityKillHandler) {
-                                ((AbilityKillHandler) ability).onKill(killer, player);
+                            if (ability instanceof KillHandler) {
+                                ((KillHandler) ability).onKill(killer, player);
                             }
                         });
                     }

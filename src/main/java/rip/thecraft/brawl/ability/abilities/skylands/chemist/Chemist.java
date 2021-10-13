@@ -4,11 +4,11 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.handlers.AbilityKillHandler;
+import rip.thecraft.brawl.ability.handlers.KillHandler;
 import rip.thecraft.brawl.ability.property.AbilityData;
 
 @AbilityData
-public class Chemist extends Ability implements AbilityKillHandler {
+public class Chemist extends Ability implements KillHandler {
 
     @Override
     public void onKill(Player killer, Player victim) {

@@ -8,7 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.AbilityTask;
+import rip.thecraft.brawl.ability.task.AbilityTask;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.player.protection.Protection;

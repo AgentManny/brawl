@@ -2,7 +2,7 @@ package rip.thecraft.brawl.ability.handlers;
 
 import org.bukkit.entity.Player;
 
-public interface AbilityGroundHandler extends AbilityHandler {
+public interface GroundHandler extends AbilityHandler {
 
     /**
      * Called when a player lands on the ground

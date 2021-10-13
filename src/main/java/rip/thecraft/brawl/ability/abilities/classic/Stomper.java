@@ -12,8 +12,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.handlers.AbilityGroundHandler;
-import rip.thecraft.brawl.ability.handlers.AbilitySneakHandler;
+import rip.thecraft.brawl.ability.handlers.GroundHandler;
+import rip.thecraft.brawl.ability.handlers.SneakHandler;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.util.ParticleEffect;
@@ -27,7 +27,7 @@ import java.util.List;
         icon = Material.ANVIL,
         color = ChatColor.YELLOW
 )
-public class Stomper extends Ability implements Listener, AbilityGroundHandler, AbilitySneakHandler {
+public class Stomper extends Ability implements Listener, GroundHandler, SneakHandler {
 
     private static final String STOMPER_METADATA = "Stomper";
     private static final String CHARGE_METADATA = "StomperCharge";

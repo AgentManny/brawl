@@ -3,7 +3,7 @@ package rip.thecraft.brawl.ability.handlers;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
-public interface AbilityProjectileLaunchHandler extends AbilityHandler {
+public interface ProjectileLaunchHandler extends AbilityHandler {
 
     /**
      * Triggered when a projectile is launched

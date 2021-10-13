@@ -2,13 +2,13 @@ package rip.thecraft.brawl.ability.abilities;
 
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.handlers.AbilityKillHandler;
+import rip.thecraft.brawl.ability.handlers.KillHandler;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.util.SchedulerUtil;
 
 @AbilityData
-public class HealthBooster extends Ability implements AbilityKillHandler  {
+public class HealthBooster extends Ability implements KillHandler {
 
     @AbilityProperty(id = "max-health")
     public double maxHealth = 40;

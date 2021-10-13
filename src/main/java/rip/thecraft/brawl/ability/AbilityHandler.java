@@ -21,6 +21,7 @@ import rip.thecraft.brawl.ability.abilities.skylands.WaterGun;
 import rip.thecraft.brawl.ability.abilities.skylands.chemist.Chemist;
 import rip.thecraft.brawl.ability.abilities.skylands.chemist.SmokeBomb;
 import rip.thecraft.brawl.ability.property.AbilityData;
+import rip.thecraft.brawl.ability.task.AbilityTask;
 import rip.thecraft.server.CraftServer;
 import rip.thecraft.server.handler.MovementHandler;
 import rip.thecraft.server.handler.PacketHandler;
@@ -45,7 +46,7 @@ public class AbilityHandler {
     public AbilityHandler(Brawl plugin) {
         this.plugin = plugin;
 
-
+        plugin.getLogger().info("[Ability Manager] Loading abilities...");
         Arrays.asList(
                 new Chemist(),
                 new SmokeBomb(),
@@ -92,6 +93,7 @@ public class AbilityHandler {
                 new Dragon()
         ).forEach(this::registerAbility);
         load();
+        plugin.getLogger().info("[Ability Manager] Loaded " + abilities.size() + " abilities.");
     }
 
     /**
@@ -159,7 +161,7 @@ public class AbilityHandler {
                     ability.deserialize((Document) value);
                 }));
             } else {
-                plugin.getLogger().severe("Could not load " + file.getName() + " as it isn't a json object.");
+                plugin.getLogger().severe("[Ability Manager] Could not load " + file.getName() + " as it isn't a json object.");
             }
         } catch (IOException e) {
             e.printStackTrace();

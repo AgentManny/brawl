@@ -8,7 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.handlers.AbilityScoreboardHandler;
+import rip.thecraft.brawl.ability.handlers.ScoreboardHandler;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.util.BrawlUtil;
@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @AbilityData(color = ChatColor.GOLD)
-public class Charger extends Ability implements Listener, AbilityScoreboardHandler {
+public class Charger extends Ability implements Listener, ScoreboardHandler {
 
     private HashMap<UUID, Long> chargeup = new HashMap<>();
 

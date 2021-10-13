@@ -5,11 +5,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.handlers.AbilityKillHandler;
+import rip.thecraft.brawl.ability.handlers.InteractItemHandler;
+import rip.thecraft.brawl.ability.handlers.KillHandler;
 import rip.thecraft.brawl.ability.property.AbilityData;
 
 @AbilityData
-public class Fireball extends Ability implements AbilityKillHandler {
+public class Fireball extends Ability implements KillHandler, InteractItemHandler {
 
     @Override
     public boolean onInteractItem(Player player, Action action, ItemStack item) {

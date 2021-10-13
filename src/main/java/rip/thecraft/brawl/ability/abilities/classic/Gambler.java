@@ -36,13 +36,13 @@ public class Gambler extends Ability {
     public int negativeCooldown = 10;
 
     public void onActivate(Player player) {
-        if (hasCooldown(player, true)) return;
+//        if (hasCooldown(player, true)) return;
 
         ThreadLocalRandom random = ThreadLocalRandom.current();
         GamblerEffect randomEffect = GamblerEffect.values()[random.nextInt(0, GamblerEffect.values().length - 1)];
 
         int cooldown = randomEffect.isNegative() ? negativeCooldown : this.cooldown;
-        addCooldown(player, TimeUnit.SECONDS.toMillis(cooldown));
+        //addCooldown(player, TimeUnit.SECONDS.toMillis(cooldown));
 
         randomEffect.applyTo(random, player);
     }

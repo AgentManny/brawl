@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.event.AbilityCooldownEvent;
@@ -167,10 +166,6 @@ public abstract class Ability {
 
     }
 
-    public boolean onInteractItem(Player player, Action action, ItemStack item) {
-        return false; // True to cancel
-    }
-
     /**
      * Checks whether a player has this ability equipped
      * @param player Player using ability
@@ -231,12 +226,14 @@ public abstract class Ability {
         SchedulerUtil.runTaskLater(() -> {
             if (player == null || cooldown == null) return;
 
-            if (!cooldown.isNotified()) {
-                player.sendMessage(ChatColor.GREEN + "You can now use " + ChatColor.BOLD + getName() + ChatColor.GREEN + " again.");
-                cooldown.setNotified(true);
-                onCooldownExpire(player);
+            if (hasCooldown(player, false)) {
+                if (!cooldown.isNotified()) {
+                    player.sendMessage(ChatColor.GREEN + "You can now use " + ChatColor.BOLD + getName() + ChatColor.GREEN + " again.");
+                    cooldown.setNotified(true);
+                    onCooldownExpire(player);
+                }
             }
-        }, 20L * this.cooldown, false);
+        }, 20L * TimeUnit.MILLISECONDS.toSeconds(countdown), false);
     }
 
     public Cooldown toCooldown(PlayerData playerData) {

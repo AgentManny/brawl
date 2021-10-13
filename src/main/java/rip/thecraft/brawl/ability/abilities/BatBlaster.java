@@ -10,7 +10,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.AbilityTask;
+import rip.thecraft.brawl.ability.task.AbilityTask;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.util.BrawlUtil;

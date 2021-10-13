@@ -10,14 +10,14 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.handlers.AbilityKillHandler;
-import rip.thecraft.brawl.ability.handlers.AbilityProjectileHitHandler;
+import rip.thecraft.brawl.ability.handlers.KillHandler;
+import rip.thecraft.brawl.ability.handlers.ProjectileHitHandler;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.server.util.chatcolor.CC;
 
 @AbilityData
-public class Archer extends Ability implements AbilityProjectileHitHandler, AbilityKillHandler {
+public class Archer extends Ability implements ProjectileHitHandler, KillHandler {
 
     @Override
     public boolean onProjectileHit(Player shooter, Player victim, EntityDamageByEntityEvent event) {

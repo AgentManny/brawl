@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Map;
 
-public interface AbilityScoreboardHandler extends AbilityHandler {
+public interface ScoreboardHandler extends AbilityHandler {
 
     /**
      * Prints additional data to scoreboard

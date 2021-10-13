@@ -2,7 +2,7 @@ package rip.thecraft.brawl.ability.handlers;
 
 import org.bukkit.entity.Player;
 
-public interface AbilityKillHandler extends AbilityHandler {
+public interface KillHandler extends AbilityHandler {
 
     /**
      * Called when killing a player

@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.ability;
+package rip.thecraft.brawl.ability.task;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;

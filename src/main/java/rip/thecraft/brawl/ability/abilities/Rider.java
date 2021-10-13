@@ -14,13 +14,13 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.handlers.AbilityKillHandler;
+import rip.thecraft.brawl.ability.handlers.KillHandler;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.server.util.chatcolor.CC;
 
 @AbilityData(icon = Material.DIAMOND_BARDING, color = ChatColor.BLUE)
-public class Rider extends Ability implements Listener, AbilityKillHandler {
+public class Rider extends Ability implements Listener, KillHandler {
 
     @AbilityProperty(id = "duration")
     public int duration = 10; // Seconds
