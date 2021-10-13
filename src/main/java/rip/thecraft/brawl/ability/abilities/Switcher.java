@@ -58,11 +58,14 @@ public class Switcher extends Ability implements InteractItemHandler, Projectile
                     .color(Color.WHITE)
                     .intervals(1)
                     .duration(3) // You should be switching within this time anyways
-                    .expiry((entity) -> player.removeMetadata(SWITCHER_META, Brawl.getInstance()))
-                    .killExpiry(true)
                     .start();
         }
         return false;
+    }
+
+    @Override
+    public void onDeactivate(Player player) {
+        player.removeMetadata(SWITCHER_META, Brawl.getInstance());
     }
 
     @Override
