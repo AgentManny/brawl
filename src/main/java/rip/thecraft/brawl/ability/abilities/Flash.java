@@ -14,7 +14,12 @@ import rip.thecraft.brawl.util.BlockUtil;
 import java.util.HashSet;
 import java.util.List;
 
-@AbilityData(icon = Material.REDSTONE_TORCH_ON, color = ChatColor.RED)
+@AbilityData(
+        name = "Flash",
+        description = "Quickly teleport from one location to another, at the speed of light.",
+        icon = Material.REDSTONE_TORCH_ON,
+        color = ChatColor.RED
+)
 public class Flash extends Ability {
 
     private static final HashSet<Byte> invalidBlocks = new HashSet<>();

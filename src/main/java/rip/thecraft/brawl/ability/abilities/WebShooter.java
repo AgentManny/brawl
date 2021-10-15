@@ -18,6 +18,7 @@ import java.util.List;
 
 @AbilityData(
         name = "Web Shooter",
+        description = "Shoot a cluster of sticky webs to trap your enemies.",
         icon = Material.WEB,
         color = ChatColor.WHITE
 )

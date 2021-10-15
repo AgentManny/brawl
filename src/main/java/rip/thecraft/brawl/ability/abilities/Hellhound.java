@@ -14,7 +14,12 @@ import rip.thecraft.brawl.ability.property.AbilityData;
 import java.util.ArrayList;
 import java.util.List;
 
-@AbilityData(icon = Material.BONE, color = ChatColor.DARK_RED)
+@AbilityData(
+        name = "Hell Hounds",
+        description = "Summon a pack of hounds from hell to attack your enemies.",
+        icon = Material.BONE,
+        color = ChatColor.DARK_RED
+)
 public class Hellhound extends Ability {
 
     @Override

@@ -26,7 +26,8 @@ import java.util.List;
 // TODO Ability WIP
 // TODO Make block changes global reference
 @AbilityData(
-        name = "water Gun",
+        name = "Water Gun",
+        description = "Shoot a heap of water that will slow your enemies.",
         color = ChatColor.AQUA,
         icon = Material.INK_SACK,
         data = 12

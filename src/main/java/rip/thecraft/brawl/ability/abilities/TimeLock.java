@@ -13,6 +13,7 @@ import rip.thecraft.brawl.util.PlayerUtil;
 
 @AbilityData(
         name = "Time Lock",
+        description = "Freeze nearby enemies in time.",
         color = ChatColor.GOLD,
         icon = Material.WATCH
 )

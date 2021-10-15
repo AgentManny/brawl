@@ -23,6 +23,7 @@ import java.util.Set;
 
 @AbilityData(
         name = "Smoke Bomb",
+        description = "Throw a smoke bomb to confuse your enemies and escape easily.",
         icon = Material.FIREWORK_CHARGE,
         color = ChatColor.DARK_GRAY
 )

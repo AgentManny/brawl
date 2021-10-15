@@ -9,7 +9,12 @@ import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 
-@AbilityData(icon = Material.FIREWORK, color = ChatColor.YELLOW)
+@AbilityData(
+        name = "Kangaroo",
+        description = "Jump high and far like a kangaroo.",
+        icon = Material.FIREWORK,
+        color = ChatColor.YELLOW
+)
 public class Kangaroo extends Ability {
 
     @AbilityProperty(id = "jump-height")

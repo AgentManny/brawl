@@ -25,6 +25,7 @@ import java.util.List;
 
 @AbilityData(
         name = "Silverfish Swarm",
+        description = "Spawn a swarm of silverfish to attack surrounding enemies.",
         color = ChatColor.DARK_AQUA,
         icon = Material.INK_SACK,
         data = 6

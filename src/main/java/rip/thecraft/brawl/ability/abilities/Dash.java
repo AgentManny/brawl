@@ -11,7 +11,12 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.property.AbilityData;
 
-@AbilityData(icon = Material.SUGAR, color = ChatColor.DARK_AQUA)
+@AbilityData(
+        name = "Dash",
+        description = "Gain a short burst of speed.",
+        icon = Material.SUGAR,
+        color = ChatColor.DARK_AQUA
+)
 public class Dash extends Ability implements Listener {
 
     @Override

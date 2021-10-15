@@ -9,7 +9,12 @@ import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.util.MathUtil;
 
-@AbilityData(icon = Material.FEATHER, color = ChatColor.GRAY)
+@AbilityData(
+        name = "Phantom",
+        description = "Fly past your enemies to escape.",
+        icon = Material.FEATHER,
+        color = ChatColor.GRAY
+)
 public class Phantom extends Ability {
 
     @Override
