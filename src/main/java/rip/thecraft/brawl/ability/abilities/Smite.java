@@ -8,9 +8,9 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.task.AbilityTask;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
+import rip.thecraft.brawl.ability.task.AbilityTask;
 import rip.thecraft.brawl.player.protection.Protection;
 import rip.thecraft.brawl.util.PlayerUtil;
 
@@ -48,7 +48,7 @@ public class Smite extends Ability implements Listener {
             player.sendMessage(ChatColor.RED + "You can't smite here!");
             return;
         }
-        new SmiteTask(player, location).start();
+        new SmiteTask(this, player, location).start();
         addCooldown(player);
     }
 
@@ -57,8 +57,8 @@ public class Smite extends Ability implements Listener {
         private World world;
         private Location location;
 
-        public SmiteTask(Player player, Location location) {
-            super(player, 2250L, 15L);
+        public SmiteTask(Ability ability, Player player, Location location) {
+            super(ability, player, 2250L, 15L);
 
             this.world = location.getWorld();
             this.location = location;

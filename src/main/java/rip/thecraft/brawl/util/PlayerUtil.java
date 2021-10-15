@@ -13,6 +13,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.falcon.util.EntityUtils;
 
 import java.lang.reflect.Field;
@@ -136,7 +137,7 @@ public class PlayerUtil {
 
         Vector3D observerStart = new Vector3D(observerPos);
 
-        return target != entity && hasIntersection(observerStart, targetPos, minimum, maximum) && target.getLocation().distanceSquared(observerPos) >
+        return !RegionType.SAFEZONE.appliesTo(target.getLocation()) && target != entity && hasIntersection(observerStart, targetPos, minimum, maximum) && target.getLocation().distanceSquared(observerPos) >
                 entity.getLocation().distanceSquared(observerPos);
     }
 

@@ -1,6 +1,7 @@
 package rip.thecraft.brawl.ability.abilities.classic;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
@@ -16,6 +17,7 @@ import rip.thecraft.brawl.ability.handlers.GroundHandler;
 import rip.thecraft.brawl.ability.handlers.SneakHandler;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
+import rip.thecraft.brawl.util.BlockUtil;
 import rip.thecraft.brawl.util.ParticleEffect;
 import rip.thecraft.brawl.util.PlayerUtil;
 
@@ -54,7 +56,7 @@ public class Stomper extends Ability implements Listener, GroundHandler, SneakHa
     public void onActivate(Player player) {
         if (hasCooldown(player, true)) return;
 
-        if (player.getLocation().getBlockY() >= 150 || player.getLocation().getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
+        if (player.getLocation().getBlockY() >= 150 || player.getLocation().getBlock().getRelative(BlockFace.UP).getType() != Material.AIR || Brawl.getInstance().getPlayerDataHandler().getPlayerData(player).isNoFallDamage()) {
             player.sendMessage(ChatColor.RED + "You can't use this ability here!");
             return;
         }
@@ -63,6 +65,20 @@ public class Stomper extends Ability implements Listener, GroundHandler, SneakHa
             Vector vector = boostDirection ? player.getLocation().getDirection().clone()
                     .multiply(multiplier)
                     .setY(boost) : new Vector(0, boost, 0);
+
+            int y = player.getLocation().getBlockY();
+            final int maxY = y + 20;
+            while (y <= maxY) {
+                Location loc = player.getLocation().clone();
+                loc.setY(y);
+                if (loc.getBlock().getType() != Material.AIR) {
+                    player.sendMessage(ChatColor.RED + "You can't use this ability here.");
+                    return;
+                }
+
+                y++;
+            }
+            player.sendMessage("Stomper Debug: " + String.format("maxY=%s ", maxY));
 
             player.setFireTicks(0); // Prevent fire from interfering with velocity
             player.setVelocity(vector);
@@ -111,10 +127,16 @@ public class Stomper extends Ability implements Listener, GroundHandler, SneakHa
                 nearbyPlayer.damage(baseDamage / (nearbyPlayer.isSneaking() ? 2 : 1));
             }
 
-            ParticleEffect.EXPLOSION_HUGE.display(0, 0, 0, 0, 1, player.getLocation(), EFFECT_DISTANCE);
             player.removeMetadata(STOMPER_METADATA, Brawl.getInstance());
-            player.playSound(player.getLocation(), Sound.ANVIL_LAND, 1.0F, 0.0F);
             player.setFallDistance((float) (player.getFallDistance() / fallDamageReduction)); // Fall damage should still apply to stompers but be reduced
+
+            Location location = player.getLocation();
+            ParticleEffect.EXPLOSION_HUGE.display(0, 0, 0, 5, 1, location, EFFECT_DISTANCE);
+            BlockUtil.getNearbyBlocks(location.getBlock().getRelative(BlockFace.DOWN).getLocation(), impactDistance - 1, true).forEach(block -> {
+                ParticleEffect.BLOCK_DUST.display(new ParticleEffect.BlockData(block.getType(), block.getData()), 0, 0, 0, .75f, 12, block.getLocation(), EFFECT_DISTANCE);
+            });
+            player.playSound(location, Sound.ANVIL_LAND, 1.0F, 0.0F);
+
             addCooldown(player); // Reset the cooldown
         }
     }

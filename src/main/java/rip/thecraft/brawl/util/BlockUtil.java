@@ -1,9 +1,13 @@
 package rip.thecraft.brawl.util;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class BlockUtil {
@@ -86,6 +90,29 @@ public class BlockUtil {
 
     public static boolean isOnStairs(Location location, int down) {
         return isUnderBlock(location, blockStairsSet, down);
+    }
+
+    public static List<Block> getNearbyBlocks(Location location, int radius) {
+        return getNearbyBlocks(location, radius, true);
+    }
+
+    public static List<Block> getNearbyBlocks(Location location, int radius, boolean ignoreAir) {
+        int cx = location.getBlockX();
+        int cz = location.getBlockZ();
+
+        int rSquared = radius * radius;
+
+        List<Block> blocks = new ArrayList<>();
+        for (int x = cx - radius; x <= cx + radius; x++) {
+            for (int z = cz - radius; z <= cz + radius; z++) {
+                if ((cx - x) * (cx - x) + (cz - z) * (cz - z) <= rSquared) {
+                    Block block = location.getWorld().getBlockAt(x, location.getBlockY(), z);
+                    if (ignoreAir && block.getType() == Material.AIR) continue;
+                        blocks.add(block);
+                }
+            }
+        }
+        return blocks;
     }
 
     private static boolean isUnderBlock(Location location, Set<Byte> itemIDs, int down) {

@@ -13,6 +13,7 @@ import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.ability.property.codec.Codec;
 import rip.thecraft.brawl.ability.property.codec.Codecs;
+import rip.thecraft.brawl.ability.task.AbilityTasks;
 import rip.thecraft.brawl.challenges.ChallengeType;
 import rip.thecraft.brawl.challenges.player.PlayerChallenge;
 import rip.thecraft.brawl.duelarena.match.Match;
@@ -37,6 +38,8 @@ public abstract class Ability {
 
     /** Returns the name of the ability */
     private String name = getClass().getSimpleName();
+
+    protected AbilityTasks tasks = new AbilityTasks();
 
     /** Returns the color displayed for an ability */
     private ChatColor color = ChatColor.DARK_PURPLE;
@@ -160,6 +163,15 @@ public abstract class Ability {
      */
     public void cleanup() {
 
+    }
+
+    /**
+     * Removes cache data when ability is deactivated
+     * or through kit being removed
+     * @param player Player using ability
+     */
+    public void cleanup(Player player) {
+        tasks.clear(player.getUniqueId());
     }
 
     public void onCooldownExpire(Player player) {

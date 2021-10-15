@@ -1,6 +1,8 @@
 package rip.thecraft.brawl.ability.abilities;
 
+import net.minecraft.server.v1_8_R3.EntityItem;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftSnowball;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -53,6 +55,7 @@ public class Shurikens extends Ability implements KillHandler, InteractItemHandl
 
                 long timestamp = System.currentTimeMillis();
                 Player hit;
+
 
                 @Override
                 public void run() {

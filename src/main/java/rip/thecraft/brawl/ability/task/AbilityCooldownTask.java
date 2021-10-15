@@ -1,11 +1,12 @@
 package rip.thecraft.brawl.ability.task;
 
 import org.bukkit.entity.Player;
+import rip.thecraft.brawl.ability.Ability;
 
 public class AbilityCooldownTask extends AbilityTask{
 
-    protected AbilityCooldownTask(Player player, long duration, long ticks) {
-        super(player, duration, ticks);
+    protected AbilityCooldownTask(Ability ability, Player player, long duration, long ticks) {
+        super(ability, player, duration, ticks);
     }
 
     @Override

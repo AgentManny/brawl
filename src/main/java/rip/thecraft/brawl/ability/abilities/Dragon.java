@@ -4,15 +4,16 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.task.AbilityTask;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
+import rip.thecraft.brawl.ability.task.AbilityTask;
+import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.util.ParticleEffect;
+import rip.thecraft.brawl.util.PlayerUtil;
 
 @AbilityData(
         name = "Fire Breathe",
@@ -22,7 +23,7 @@ import rip.thecraft.brawl.util.ParticleEffect;
 public class Dragon extends Ability implements Listener {
 
     @AbilityProperty(id = "duration", description = "Duration of the task")
-    public long taskDuration = 2500;
+    public long taskDuration = 10000; // Temp - To debug tasks
 
     @AbilityProperty(id = "distance-multiplier", description = "Distance of flame")
     public double distanceMultiplier = 1.5;
@@ -40,19 +41,19 @@ public class Dragon extends Ability implements Listener {
         if (hasCooldown(player, true)) return;
         addCooldown(player);
 
-        new DragonTask(player).start();
+        new DragonTask(this, player).start();
         player.playSound(player.getLocation(), Sound.ENDERDRAGON_GROWL, 10, 2);
     }
 
-    public class DragonTask extends AbilityTask {
+    private class DragonTask extends AbilityTask {
 
         double t;
         double o;
         Vector direction;
         Location location;
 
-        protected DragonTask(Player player) {
-            super(player, taskDuration, 1L);
+        protected DragonTask(Dragon dragon, Player player) {
+            super(dragon, player, taskDuration, 1L);
 
             direction = player.getLocation().clone().getDirection().normalize();
             location = player.getLocation().clone();
@@ -70,15 +71,27 @@ public class Dragon extends Ability implements Listener {
             ParticleEffect.FLAME.display(0, 0, 0, 0, 1, location, 50);
             ParticleEffect.FLAME.display(1, 0, 1, 0, 1, location, 50);
             ParticleEffect.FLAME.display(-1, 0, -1, 0, 1, location, 50);
-            for (Entity entity : location.getChunk().getEntities()) {
-                double distance = entity.getLocation().distance(location);
-                if (entity instanceof Player && !entity.equals(player) && distance < 2.90) {
-                    ((Player) entity).damage(damagePerTick, player);
-                    ((Player) entity).setFireTicks(fireTicks);
+
+            for (Player other : PlayerUtil.getNearbyPlayers(location, 1)) {
+                if (!other.equals(player)) {
+                    double distance = other.getLocation().distance(location);
+                    if (distance < 2.90) {
+                        other.damage(damagePerTick, player);
+                        other.setFireTicks(fireTicks);
+                    }
+
                 }
             }
-
             location.subtract(x, y, z);
+        }
+
+        @Override
+        public boolean shouldCancel() {
+            boolean cancel = super.shouldCancel();
+            if (RegionType.SAFEZONE.appliesTo(location)) {
+                cancel = true;
+            }
+            return cancel;
         }
 
         @Override

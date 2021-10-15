@@ -3,16 +3,16 @@ package rip.thecraft.brawl.ability.abilities;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.task.AbilityTask;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
+import rip.thecraft.brawl.ability.task.AbilityTask;
+import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.brawl.util.ParticleEffect;
 import rip.thecraft.brawl.util.PlayerUtil;
@@ -43,7 +43,7 @@ public class BatBlaster extends Ability {
         if (hasCooldown(player, true)) return;
         addCooldown(player);
 
-        new BatBlastTask(player).start();
+        new BatBlastTask(this, player).start();
     }
 
     private class BatBlastTask extends AbilityTask {
@@ -51,8 +51,8 @@ public class BatBlaster extends Ability {
         private final Location location;
         private final List<Bat> bats = new ArrayList<>();
 
-        public BatBlastTask(Player player) {
-            super(player, duration, 1L);
+        public BatBlastTask(Ability ability, Player player) {
+            super(ability, player, duration, 1L);
 
             for (int i = 0; i < 16; i++) {
                 Bat bat = player.getWorld().spawn(player.getEyeLocation(), Bat.class);
@@ -65,22 +65,27 @@ public class BatBlaster extends Ability {
         @Override
         public void onTick() {
             for (Bat bat : bats) {
+                if (bat.isDead()) continue;
+                Location location = bat.getLocation();
                 Vector rand = new Vector((Math.random() - 0.5D) / 3.0D, (Math.random() - 0.5D) / 3.0D, (Math.random() - 0.5D) / 3.0D);
-                bat.setVelocity(location.getDirection().clone().multiply(0.5D).add(rand));
-
+                bat.setVelocity(this.location.getDirection().clone().multiply(0.5D).add(rand));
+                if (RegionType.SAFEZONE.appliesTo(location)) {
+                    bat.remove();
+                    continue;
+                }
                 for (Player other : BrawlUtil.getNearbyPlayers(bat, 1)) {
                     if (!other.equals(player)) {
                         if (PlayerUtil.hit(bat, other)) {
-                            other.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 30, 3));
+                            other.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 50, 3));
 
-                            Vector unitVector = other.getLocation().toVector().subtract(bat.getLocation().toVector()).normalize();
+                            Vector unitVector = other.getLocation().toVector().subtract(location.toVector()).normalize();
                             other.setVelocity(unitVector
                                     .multiply(power)
                                     .setY(vertical)
                             );
 
                             ParticleEffect.SMOKE_LARGE.display(0, 0, 0, 0, 1, bat.getLocation(), 12);
-                            other.playSound(bat.getLocation(), Sound.BAT_HURT, 1.0F, 1.0F);
+                            // other.playSound(location, Sound.BAT_HURT, 1.0F, 1.0F);
                             // bat.remove(); // Bat gets removed after it tags a player
                         }
                     }
