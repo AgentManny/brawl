@@ -231,6 +231,7 @@ public class PlayerData {
 
         this.spawnProtection = true;
         this.duelArena = false;
+        this.event = false;
 
         if (this.selectedKit == null) {
             if (!player.hasMetadata("staffmode")) {

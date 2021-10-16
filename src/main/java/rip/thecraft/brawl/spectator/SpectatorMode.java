@@ -1,6 +1,7 @@
 package rip.thecraft.brawl.spectator;
 
 import com.mongodb.lang.Nullable;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -19,6 +20,7 @@ import rip.thecraft.brawl.game.lobby.GameLobby;
 import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
+import rip.thecraft.brawl.util.VisibilityUtils;
 import rip.thecraft.brawl.util.location.LocationType;
 import rip.thecraft.spartan.nametag.NametagHandler;
 
@@ -132,7 +134,7 @@ public class SpectatorMode {
         cleanup();
 
         List<UUID> hiddenPlayers = new ArrayList<>();
-        SpectatorType type = SpectatorType.NONE;
+        SpectatorType type = SpectatorType.SPAWN;
         Location location = Brawl.getInstance().getLocationByName("SPAWN");
         String message = null;
 
@@ -185,6 +187,9 @@ public class SpectatorMode {
 
         if (message != null) {
             spectator.sendMessage(ChatColor.GREEN + "You are now spectating: " + ChatColor.WHITE + message);
+        } else {
+            spectator.sendMessage(ChatColor.LIGHT_PURPLE + "You are now in " + ChatColor.LIGHT_PURPLE + "Spectator Mode" + ChatColor.YELLOW + ".");
+            spectator.sendMessage(ChatColor.GRAY + "Type " + ChatColor.WHITE + "/spec <player>" + ChatColor.GRAY + " to spectate a player");
         }
 
         spectator.teleport(teleportTo == null ? location : teleportTo);
@@ -199,8 +204,23 @@ public class SpectatorMode {
         NametagHandler.reloadOthersFor(spectator);
     }
 
+    public void updateVisibility() {
+        Player spectator = getPlayer();
+        if (spectator == null) {
+            leave();
+            return;
+        }
+
+        List<UUID> hiddenPlayers = new ArrayList<>(this.hiddenPlayers); // Store so we don't re-hide already hidden players
+        for (Player player : Bukkit.getOnlinePlayers()) {
+
+        }
+
+    }
+
     public void leave() {
         SpectatorManager specManager = Brawl.getInstance().getSpectatorManager();
+        specManager.spectators.remove(spectator);
         Player player = getPlayer();
         if (player != null) { // make sure they didn't disconnect
             player.setAllowFlight(false);
@@ -214,9 +234,22 @@ public class SpectatorMode {
                 playerData.spawn();
                 player.teleport(LocationType.SPAWN.getLocation());
             }
+            VisibilityUtils.updateVisibility(player);
         }
+    }
 
-        specManager.spectators.remove(spectator);
+    public boolean treatAsVisible(Player target, SpectatorMode spectatorMode) {
+        if (spectatorMode != null) {
+            if (showSpectators) {
+                if (match != null && spectatorMode.getMatch() != null) {
+                    return match == spectatorMode.getMatch(); // Could be watching different matches in same arena
+                } else if (game != null && spectatorMode.getGame() != null && game.getSpectators().contains(target.getUniqueId())) {
+                    return true;
+                }
+                return spectatorMode.getSpectating() == spectating;
+            }
+        }
+        return false;
     }
 
     private void cleanup() {
@@ -230,16 +263,20 @@ public class SpectatorMode {
         return Bukkit.getPlayer(spectator);
     }
 
+    @Getter
+    @AllArgsConstructor
     public enum SpectatorType {
 
-        SPAWN,
-        DUEL_ARENA,
-        GAME_LOBBY,
+        SPAWN("Warzone"),
+        DUEL_ARENA("Duel Arena"),
+        GAME_LOBBY("Game Lobby"),
 
-        MATCH,
-        GAME,
-        PLAYER,
-        NONE
+        MATCH("Match"),
+        GAME("Game"),
+        PLAYER("Player"),
+        NONE("None");
+
+        private String name;
 
     }
 }

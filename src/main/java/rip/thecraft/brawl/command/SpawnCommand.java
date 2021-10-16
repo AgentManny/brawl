@@ -45,7 +45,7 @@ public class SpawnCommand {
                 if (game.containsPlayer(sender)) {
                     GamePlayer gamePlayer = game.getGamePlayer(sender);
                     if (gamePlayer.isAlive()) {
-                        game.handleElimination(sender, sender.getLocation(), GameElimination.OTHER);
+                        game.handleElimination(sender, sender.getLocation(), GameElimination.LEFT);
                     }
                 }
 

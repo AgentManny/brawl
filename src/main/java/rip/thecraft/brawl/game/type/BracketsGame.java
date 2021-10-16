@@ -13,6 +13,7 @@ import rip.thecraft.brawl.kit.type.RefillType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
+import rip.thecraft.spartan.nametag.NametagHandler;
 import rip.thecraft.spartan.util.TimeUtils;
 
 import java.util.*;
@@ -74,9 +75,11 @@ public class BracketsGame extends Game {
             task = null;
         }
 
+        // Teleports existing players back to lobby
         for (GamePlayer player : this.getMatch()) {
-            if (player != null && player.toPlayer() != null) {
+            if (player != null && player.toPlayer() != null && player.isAlive()) {
                 player.toPlayer().teleport(this.getLocationByName("Lobby"));
+                NametagHandler.reloadPlayer(player.toPlayer());
             }
         }
 
@@ -88,13 +91,14 @@ public class BracketsGame extends Game {
             player.sendMessage(Game.PREFIX + ChatColor.YELLOW + "Your opponent is " + ChatColor.LIGHT_PURPLE + getOpposite(gamePlayer).getName() + ChatColor.YELLOW + ".");
             player.playSound(player.getLocation(), Sound.FIREWORK_TWINKLE, 1.0F, 1.0F);
             PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
+            NametagHandler.reloadPlayer(player);
         }
 
         setTime(3);
 
         task = new BukkitRunnable() {
             public void run() {
-                if (player1 == null || player1.toPlayer() == null || player2 == null || player2.toPlayer() == null) {
+                if (state == GameState.FINISHED || player1 == null || player1.toPlayer() == null || player2 == null || player2.toPlayer() == null) {
                     cancel();
                     return;
                 }
@@ -119,7 +123,7 @@ public class BracketsGame extends Game {
 
                 setTime(getTime() - 1);
             }
-        }.runTaskTimerAsynchronously(Brawl.getInstance(), 20L, 20L);
+        }.runTaskTimer(Brawl.getInstance(), 20L, 20L);
     }
 
     @Override
@@ -158,6 +162,7 @@ public class BracketsGame extends Game {
         Kit kit = getKit();
         for (int i = 0; i < getMatch().length; i++) {
             GamePlayer gamer = getMatch()[i];
+            //Bukkit.broadcastMessage("Is this primary thread teleport: " + Bukkit.isPrimaryThread());
             Player player = gamer.toPlayer();
             player.teleport(getLocationByName("ArenaLocation" + (i + 1)));
             if (kit != null) {
@@ -210,11 +215,31 @@ public class BracketsGame extends Game {
     }
 
     @Override
+    public String handleNametag(Player toRefresh, Player refreshFor) {
+        GamePlayer[] match = getMatch();
+        if (match != null && match[0] != null && match[1] != null) {
+            Player player1 = match[0].toPlayer();
+            Player player2 = match[1].toPlayer();
+            if (player1 != null && player2 != null) { // Ensures match exists
+                // Check if toRefresh is playing in game
+                if (player1 == toRefresh || player2 == toRefresh) {
+                    if (refreshFor == player1 || refreshFor == player2) {
+                        return ChatColor.RED.toString();
+                    }
+                    return player1 == toRefresh ? ChatColor.GREEN.toString() : ChatColor.RED.toString();
+                }
+            }
+            return ChatColor.LIGHT_PURPLE.toString();
+        }
+        return super.handleNametag(toRefresh, refreshFor);
+    }
+
+    @Override
     public List<String> getSidebar(Player player) {
         List<String> toReturn = new ArrayList<>();
         toReturn.add(CC.WHITE + "Event: " + CC.LIGHT_PURPLE + getType().getShortName());
         toReturn.add(CC.WHITE + "Players: " + CC.LIGHT_PURPLE + getAlivePlayers().size() + "/" + getPlayers().size());
-        toReturn.add(CC.WHITE + "Round: " + CC.LIGHT_PURPLE + this.round + (this.state == GameState.FINISHED ? "" : (getTime() >= 0 ? CC.GRAY + " (" + getTime() + "s)" : "")));
+        toReturn.add(CC.WHITE + "Round: " + CC.LIGHT_PURPLE + this.round + (this.state == GameState.FINISHED ? "" : (time > 0 ? CC.GRAY + " (" + time + "s)" : "")));
         toReturn.add(ChatColor.BLUE + "     ");
         if (this.state == GameState.STARTED) {
 
@@ -225,9 +250,9 @@ public class BracketsGame extends Game {
                 playerTwo = player1;
             }
 
-            //toReturn.add(CC.LIGHT_PURPLE + playerOne.getDisplayName() + CC.WHITE + " vs. " + CC.LIGHT_PURPLE + playerTwo.getDisplayName());
-//            toReturn.add(CC.DARK_PURPLE + "(" + CC.LIGHT_PURPLE + playerOne.getCPS() + "CPS" + CC.DARK_PURPLE + ") vs. (" + CC.LIGHT_PURPLE + playerTwo.getCPS() + "CPS" + CC.DARK_PURPLE + ")");
-//            toReturn.add(CC.DARK_PURPLE + "(" + CC.LIGHT_PURPLE + playerOne.getPing() + "ms" + CC.DARK_PURPLE + ") vs. (" + CC.LIGHT_PURPLE + playerTwo.getPing() + "ms" + CC.DARK_PURPLE + ")");
+            toReturn.add(CC.LIGHT_PURPLE + playerOne.getName() + CC.WHITE + " vs. " + CC.LIGHT_PURPLE + playerTwo.getName());
+                toReturn.add(CC.WHITE + "(" + CC.LIGHT_PURPLE + playerOne.getCPS() + "CPS" + CC.WHITE + ") vs. (" + CC.LIGHT_PURPLE + playerTwo.getCPS() + "CPS" + CC.WHITE + ")");
+            toReturn.add(CC.WHITE + "(" + CC.LIGHT_PURPLE + playerOne.getPing() + "ms" + CC.WHITE + ") vs. (" + CC.LIGHT_PURPLE + playerTwo.getPing() + "ms" + CC.WHITE + ")");
 
         } else if (this.state == GameState.FINISHED) {
             boolean winners = this.winners.size() > 1;

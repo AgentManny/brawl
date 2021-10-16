@@ -19,6 +19,7 @@ import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.duelarena.match.Match;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameElimination;
+import rip.thecraft.brawl.game.lobby.GameLobby;
 import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.killstreak.Killstreak;
 import rip.thecraft.brawl.kit.Kit;
@@ -138,7 +139,12 @@ public class PlayerListener implements Listener {
         playerData.setSelectedKit(null);
 
         if (playerData.isEvent()) {
-            Game game = Brawl.getInstance().getGameHandler().getActiveGame();
+            GameLobby lobby = plugin.getGameHandler().getLobby();
+            if (lobby != null && lobby.getPlayers().contains(player.getUniqueId())) {
+                lobby.leave(player.getUniqueId());
+            }
+
+            Game game = plugin.getGameHandler().getActiveGame();
             if (game != null && game.containsPlayer(player)) {
                 game.handleElimination(player, event.getPlayer().getLocation(), GameElimination.QUIT);
             }

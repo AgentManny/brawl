@@ -13,4 +13,8 @@ public class Sumo extends BracketsGame {
         this.flags.add(GameFlag.NO_DAMAGE);
     }
 
+    @Override
+    public int getRefillAmount() {
+        return 0;
+    }
 }

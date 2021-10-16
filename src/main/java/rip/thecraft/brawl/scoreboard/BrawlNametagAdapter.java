@@ -34,22 +34,27 @@ public class BrawlNametagAdapter extends NametagProvider {
         PlayerData refreshPlayerData = plugin.getPlayerDataHandler().getPlayerData(refreshFor);
         if (playerData == null || refreshPlayerData == null) return createNametag(color, "");
 
-        switch (playerData.getPlayerState()) {
+        PlayerState playerState = playerData.getPlayerState();
+        PlayerState refreshPlayerState = refreshPlayerData.getPlayerState();
+        boolean showLevel = true;
+        switch (playerState) {
             case GAME: {
-                if (refreshPlayerData.getPlayerState() == PlayerState.GAME) {
+                if (refreshPlayerState == PlayerState.GAME) {
                     Game game = plugin.getGameHandler().getActiveGame();
                     if (game != null) {
                         String prefix = game.handleNametag(toRefresh, refreshFor);
                         if (prefix != null) {
                             color = prefix;
+                            showLevel = false;
                         }
                     }
                 }
                 break;
             }
             case GAME_LOBBY: {
-                if (refreshPlayerData.getPlayerState() == PlayerState.GAME_LOBBY) {
+                if (refreshPlayerState == PlayerState.GAME_LOBBY) {
                     color = ChatColor.LIGHT_PURPLE.toString();
+                    showLevel = false;
                 }
                 break;
             }

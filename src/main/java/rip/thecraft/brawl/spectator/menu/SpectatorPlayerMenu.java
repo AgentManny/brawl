@@ -11,37 +11,38 @@ import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.spartan.menu.Button;
-import rip.thecraft.spartan.menu.Menu;
+import rip.thecraft.spartan.menu.pagination.PaginatedMenu;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SpectatorPlayerMenu extends Menu {
+public class SpectatorPlayerMenu extends PaginatedMenu {
     {
         setAutoUpdate(true);
     }
 
     @Override
-    public String getTitle(Player player) {
-        return "Spectate Player";
-    }
-
-    @Override
-    public Map<Integer, Button> getButtons(Player player) {
+    public Map<Integer, Button> getAllPagesButtons(Player player) {
         Map<Integer, Button> buttons = new HashMap<>();
-
         int i = 0;
         for (Player online : Bukkit.getOnlinePlayers()) {
             if (online != player && online.canSee(player) && !(online.hasMetadata("hidden") || online.hasMetadata("staffmode"))) {
                 PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(online);
                 PlayerState state = playerData.getPlayerState();
-                buttons.put(++i, new SpectatorPlayerButton(online, state));
+                buttons.put(i, new SpectatorPlayerButton(online, state));
+                i++;
             }
         }
         return buttons;
     }
+
+    @Override
+    public String getPrePaginatedTitle(Player player) {
+        return "Spectate Player";
+    }
+
 
     @AllArgsConstructor
     private class SpectatorPlayerButton extends Button {

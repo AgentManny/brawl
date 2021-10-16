@@ -1,7 +1,6 @@
 package rip.thecraft.brawl.scoreboard;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -43,9 +42,9 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
 
     @Override
     public String getTitle(Player player) {
-        if (Brawl.getInstance().getGameHandler().getLobby() != null && Brawl.getInstance().getGameHandler().getLobby().getPlayers().contains(player.getUniqueId())) {
-            return ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + Brawl.getInstance().getGameHandler().getLobby().getGameType().getShortName().toUpperCase();
-        }
+//        if (Brawl.getInstance().getGameHandler().getLobby() != null && Brawl.getInstance().getGameHandler().getLobby().getPlayers().contains(player.getUniqueId())) {
+//            return ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + Brawl.getInstance().getGameHandler().getLobby().getGameType().getShortName().toUpperCase();
+//        }
         return "     " + ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "KAZE" + ChatColor.GRAY + " " + Brawl.getVersion() + "     ";
     }
 
@@ -103,13 +102,25 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
         SpectatorMode spectatorMode = plugin.getSpectatorManager().getSpectator(player);
         SpectatorMode.SpectatorType spectating = spectatorMode.getSpectating();
 
-        lines.add(ChatColor.DARK_PURPLE + "Spectating: " + ChatColor.LIGHT_PURPLE + WordUtils.capitalizeFully(spectating.name()));
-        if (spectatorMode.getFollow() != null) {
-            Player follow = Bukkit.getPlayer(spectatorMode.getFollow());
-            if (follow != null) {
-                lines.add(ChatColor.DARK_PURPLE + "Following: " + ChatColor.LIGHT_PURPLE + follow.getName());
-            }
-        }
+        lines.add(ChatColor.DARK_PURPLE.toString() + ChatColor.ITALIC + "[Spectator Mode]");
+        lines.add(ChatColor.GRAY + spectating.getName());
+//        lines.add("   ");
+//        lines.add(ChatColor.WHITE + "Players: " + ChatColor.LIGHT_PURPLE + "49");
+//        lines.add(ChatColor.WHITE + "Spectators: " + ChatColor.LIGHT_PURPLE + "1");
+//        lines.add("      ");
+//        lines.add(ChatColor.LIGHT_PURPLE + "Top Kits");
+//        lines.add(ChatColor.LIGHT_PURPLE + "1. " + ChatColor.WHITE + "PvP: " + ChatColor.LIGHT_PURPLE + "20");
+//        lines.add(ChatColor.LIGHT_PURPLE + "2. " + ChatColor.WHITE + "Stomper: " + ChatColor.LIGHT_PURPLE + "11");
+//        lines.add(ChatColor.LIGHT_PURPLE + "3. " + ChatColor.WHITE + "Archer: " + ChatColor.LIGHT_PURPLE + "2");
+//        lines.add(ChatColor.WHITE + "Wanted player: " + ChatColor.DARK_RED + "Mannys");
+//        lines.add(" ");
+//
+//        if (spectatorMode.getFollow() != null) {
+//            Player follow = Bukkit.getPlayer(spectatorMode.getFollow());
+//            if (follow != null) {
+//                lines.add(ChatColor.DARK_PURPLE + "Following: " + ChatColor.LIGHT_PURPLE + follow.getName());
+//            }
+//        }
         switch (spectating) {
             case GAME: {
                 Game game = spectatorMode.getGame();
@@ -122,10 +133,11 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
                 // todo add spectator scoreboard stuff
                 break;
             }
-        }
+            default: {
 
-        lines.add(" ");
-        lines.add(ChatColor.RED.toString() + "Spectator Mode (Beta)");
+                //lines.addAll(getKazeSpawn(player, playerData, lines));
+            }
+        }
     }
 
     private List<String> getKazeSpawn(Player player, PlayerData playerData, List<String> toReturn) {

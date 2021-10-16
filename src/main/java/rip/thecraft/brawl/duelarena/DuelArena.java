@@ -11,7 +11,7 @@ import rip.thecraft.spartan.nametag.NametagHandler;
 
 public class DuelArena {
 
-    public static final boolean DISABLED = true;
+    public static final boolean DISABLED = false;
 
     public static void join(Player player) {
         if (DISABLED) {

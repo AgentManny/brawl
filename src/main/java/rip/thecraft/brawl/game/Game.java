@@ -23,6 +23,7 @@ import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.brawl.util.Tasks;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.nametag.NametagHandler;
+import rip.thecraft.spartan.util.PlayerUtils;
 import rip.thecraft.spartan.util.TimeUtils;
 
 import java.util.*;
@@ -54,7 +55,7 @@ public abstract class Game {
 
     private Location defaultLocation;
 
-    private int time;
+    protected int time;
 
     public Game(GameType type, GameFlag... flags) {
         this.type = type;
@@ -81,7 +82,7 @@ public abstract class Game {
     }
 
     public String getEliminateMessage(Player player, GameElimination elimination) {
-        return ChatColor.DARK_RED + player.getName() + ChatColor.RED + (elimination == GameElimination.QUIT ? " disconnected" : " has been eliminated") + ".";
+        return ChatColor.DARK_RED + player.getName() + ChatColor.RED + " " + elimination.getMessage() + ".";
     }
 
     public void cleanup() {
@@ -162,10 +163,15 @@ public abstract class Game {
     public boolean eliminate(Player player, Location location, GameElimination elimination) {
         GamePlayer eliminated = getGamePlayer(player);
         if (eliminated == null || !eliminated.isAlive() || this.state == GameState.FINISHED) return false;
-
         eliminated.setAlive(false); // Died
 
-        if (elimination != GameElimination.QUIT) {
+        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+        playerData.setEvent(false); // No longer in event (doesn't count if spectating event)
+        if (elimination == GameElimination.LEFT) {
+            eliminated.spawn();
+        } else if (elimination != GameElimination.QUIT) { // Add to spectator
+            PlayerUtils.animateDeath(player);
+
             SpectatorMode spectatorMode = Brawl.getInstance().getSpectatorManager().addSpectator(player, location);
             spectatorMode.setSpectating(SpectatorMode.SpectatorType.GAME);
             for (int i = 0; i < 8; i++) { // Only add the LEAVE SPECTATOR item (in the 9th slot)
@@ -201,7 +207,6 @@ public abstract class Game {
         if (spectators.contains(toRefresh.getUniqueId())) {
             return CC.GRAY;
         }
-
         return CC.LIGHT_PURPLE;
     }
 
