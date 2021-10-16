@@ -139,6 +139,19 @@ public abstract class Ability {
     }
 
     /**
+     * Called when a player activates an ability that
+     * has different stages.
+     *
+     * TODO add more infrastructure for Kit Leveling
+     *
+     * @param player Player using ability
+     * @param level Level of ability
+     */
+    public void onActivate(Player player, int level) {
+
+    }
+
+    /**
      * Called when a player activates an ability
      * through interacting with the icon
      *
