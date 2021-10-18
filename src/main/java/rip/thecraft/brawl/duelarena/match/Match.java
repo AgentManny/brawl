@@ -126,9 +126,14 @@ public class Match {
         if (winner != null) {
             getMatchData().getWins().put(winner.getUniqueId(), getMatchData().getWins().getOrDefault(winner.getUniqueId(), 0) + 1);
 
-
             if (!quitEnded && getMatchData().getWins().get(winner.getUniqueId()) < matchAmount) {
                 again.set(true);
+            }
+        }
+
+        if (arena.getArenaType() == ArenaType.ARCADE && kit != null) {
+            for (Player player : getPlayers()) {
+                kit.getAbilities().forEach(ability -> ability.getTasks().clear(player.getUniqueId()));
             }
         }
 

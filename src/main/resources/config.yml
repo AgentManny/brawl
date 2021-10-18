@@ -78,13 +78,18 @@ LANGUAGE:
         TYPE: IRON_SWORD
         NAME: '&7» &d&lUnranked Queue &7«'
         META: DUEL_ARENA_UNRANKED
-      '1':
-        TYPE: DIAMOND_SWORD
-        NAME: '&7» &5&lRanked Queue &7«'
-        META: DUEL_ARENA_RANKED
+      '4':
+        TYPE: REDSTONE_TORCH_ON
+        NAME: '&7» &c&lSpectator Mode &7«'
+        META: SPECTATE_ARENA
+      '7':
+        TYPE: 351
+        DATA: 8
+        NAME: '&7» &a&lQuick Queue &7«'
+        META: DUEL_ARENA_QUICK_QUEUE
       '8':
-        TYPE: INK_SACK
-        DATA: 14
+        TYPE: 351
+        DATA: 1
         NAME: '&7» &cReturn to &lSpawn &7«'
         META: DUEL_ARENA_LEAVE
     SPAWN:

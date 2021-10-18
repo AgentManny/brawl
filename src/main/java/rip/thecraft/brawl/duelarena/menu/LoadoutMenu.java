@@ -24,6 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class LoadoutMenu extends Menu {
     {
+        setPlaceholder(true);
         setAutoUpdate(true);
     }
     
@@ -38,12 +39,23 @@ public class LoadoutMenu extends Menu {
     public Map<Integer, Button> getButtons(Player player) {
         Map<Integer, Button> buttonMap = new HashMap<>();
 
-        int i = 0;
+        int x = 1;
+        int y = 1;
         for (MatchLoadout loadout : Brawl.getInstance().getMatchHandler().getLoadouts()) {
-            buttonMap.put(i++, new LoadoutButton(loadout, queueType));
+            buttonMap.put(getSlot(x, y), new LoadoutButton(loadout, queueType));
+            if (x++ >= 7) {
+                x = 1;
+
+                y++;
+            }
         }
 
         return buttonMap;
+    }
+
+    @Override
+    public int size(Map<Integer, Button> buttons) {
+        return 27;
     }
 
     @RequiredArgsConstructor
@@ -66,20 +78,24 @@ public class LoadoutMenu extends Menu {
         public ItemStack getButtonItem(Player player) {
             PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
             List<String> lore = new ArrayList<>();
-            lore.add(CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 25));
-            lore.add(CC.DARK_PURPLE + "Queued: " + CC.LIGHT_PURPLE + Brawl.getInstance().getMatchHandler().getQueued(loadout, queueType));
-            lore.add(CC.DARK_PURPLE + "Playing: " + CC.LIGHT_PURPLE + Brawl.getInstance().getMatchHandler().getPlaying(loadout));
+
+            lore.add(CC.GRAY + "Queued: " + CC.WHITE + Brawl.getInstance().getMatchHandler().getQueued(loadout, queueType));
+            lore.add(CC.GRAY + "Playing: " + CC.WHITE + Brawl.getInstance().getMatchHandler().getPlaying(loadout));
             if (queueType == QueueType.RANKED) {
                 lore.add(" ");
-                lore.add(CC.DARK_PURPLE + "Your Elo: " + CC.LIGHT_PURPLE + playerData.getStatistic().get(loadout));
+                lore.add(CC.GRAY + "Your Elo: " + CC.LIGHT_PURPLE + playerData.getStatistic().get(loadout));
             }
-            lore.add(CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 25));
+            lore.add(" ");
+            lore.add(CC.GRAY + "\u00bb " + ChatColor.GREEN + "Click to join this queue" + CC.GRAY + " \u00ab");
+
+            // Add liners
+            lore.add(0, CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 31));
+            lore.add(CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 31));
             return new ItemBuilder(loadout.getIcon())
                     .data(loadout.getIconData())
                     .name(loadout.getColor() + CC.BOLD + loadout.getName())
                     .lore(lore)
                     .create();
-
         }
 
         @Override

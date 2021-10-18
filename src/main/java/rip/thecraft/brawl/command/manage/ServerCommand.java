@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ServerCommand {
 
@@ -37,9 +38,9 @@ public class ServerCommand {
         Map<Ability, Integer> abilityTasks = new HashMap<>();
         int totalTasks = 0;
         for (Ability ability : abilityHandler.getAbilities().values()) {
-            Collection<List<Integer>> tasks = ability.getTasks().getRepeatingTasks().values();
+            Collection<ConcurrentLinkedQueue<Integer>> tasks = ability.getTasks().getRepeatingTasks().values();
             int totalAbilityTasks = 0;
-            for (List<Integer> task : tasks) {
+            for (ConcurrentLinkedQueue<Integer> task : tasks) {
                 totalAbilityTasks += task.size();
             }
             totalTasks += totalAbilityTasks;

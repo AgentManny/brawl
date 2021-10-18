@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.duelarena;
 
-import com.comphenix.protocol.collections.ExpireHashMap;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -89,6 +88,19 @@ public class DuelArenaHandler {
         saveArenas();
     }
 
+    public boolean hasQuickmatch() {
+        return quickmatch != null || !unrankedQueue.isEmpty();
+    }
+
+    private void refreshQuickqueue() {
+        for (Player other : Bukkit.getOnlinePlayers()) {
+            PlayerData targetData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(other);
+            if (targetData.isDuelArena() && !isInMatch(other)) {
+                targetData.getQueueData().updateQuickQueue(other);
+            }
+        }
+    }
+
     public void createMatch(Player playerTwo, Player playerOne, MatchLoadout loadout, QueueType queueType) {
         List<Player> players = Arrays.asList(playerOne, playerTwo);
         players.forEach(player -> cleanup(player.getUniqueId()));
@@ -111,6 +123,9 @@ public class DuelArenaHandler {
             arena.setPlayable(false); // Prevents others from joining.
 
         }
+
+        refreshQuickqueue();
+
         Match match = new Match(new ObjectId().toHexString(), queueType, arena, playerOne.getUniqueId(), playerTwo.getUniqueId(), loadout, kit);
 
         for (Player player : players) {
@@ -130,7 +145,6 @@ public class DuelArenaHandler {
 
         match.broadcast(ChatColor.YELLOW + "You are playing on arena " + ChatColor.LIGHT_PURPLE + match.getArena().getName() + ChatColor.YELLOW + ".");
         match.setMatchAmount(arena.getArenaType() == ArenaType.SUMO ? 3 : 1);
-
 
         match.setup();
         this.matches.add(match);
@@ -203,7 +217,7 @@ public class DuelArenaHandler {
         Player targetPlayer = Bukkit.getPlayer(acceptedInvite.getTarget());
         if (senderPlayer != null && targetPlayer != null) {
 
-            senderPlayer.sendMessage(ChatColor.LIGHT_PURPLE + targetPlayer.getName() + ChatColor.YELLOW + " has accepted your " + ChatColor.LIGHT_PURPLE + acceptedInvite.getKitType().getName() + ChatColor.YELLOW + (acceptedInvite.isRematch() ? " rematch " : " duel ") + " request.");
+            senderPlayer.sendMessage(ChatColor.LIGHT_PURPLE + targetPlayer.getName() + ChatColor.YELLOW + " has accepted your " + ChatColor.LIGHT_PURPLE + acceptedInvite.getKitType().getName() + ChatColor.YELLOW + (acceptedInvite.isRematch() ? " rematch " : " duel ") + "request.");
             targetPlayer.sendMessage(ChatColor.YELLOW + "You have accepted " + ChatColor.LIGHT_PURPLE + senderPlayer.getName() + ChatColor.YELLOW + " with kit " + ChatColor.LIGHT_PURPLE + acceptedInvite.getKitType().getName() + ChatColor.YELLOW + ".");
 
             createMatch(senderPlayer, targetPlayer, acceptedInvite.getKitType(), QueueType.DUEL);
@@ -306,17 +320,25 @@ public class DuelArenaHandler {
             }
 
             unrankedQueue.remove(loadout);
-
         }
 
         unrankedQueue.entrySet().removeIf(e -> e.getValue() == clicker.getUniqueId());
         unrankedQueue.put(loadout, clicker.getUniqueId());
+
+        refreshQuickqueue();
+
         clicker.sendMessage(ChatColor.YELLOW + "You were added to the " + ChatColor.LIGHT_PURPLE + "Unranked " + loadout.getName() + ChatColor.YELLOW + " queue.");
         Brawl.getInstance().getItemHandler().apply(clicker, InventoryType.QUEUE);
 
     }
 
+    private static boolean RANKED_DISABLED  = true;
+
     public void joinRankedQueue(Player clicker, MatchLoadout loadout) {
+        if (RANKED_DISABLED) {
+            clicker.sendMessage(ChatColor.RED + "Ranked is currently disabled.");
+            return;
+        }
         if (this.isInQueue(clicker) || this.isInMatch(clicker)) return;
 
         cleanup(clicker.getUniqueId());
@@ -350,6 +372,7 @@ public class DuelArenaHandler {
             loadout = rankedQueue.entries().stream().filter(e -> e.getValue() == player.getUniqueId()).findAny().orElse(null).getKey();
             type = QueueType.RANKED;
         } else return; // weird thing
+
 
         player.sendMessage(ChatColor.YELLOW + "You were removed from the " + ChatColor.LIGHT_PURPLE + type.getName() + (loadout == null ? "" : " " + loadout.getName()) + ChatColor.YELLOW + " queue.");
         cleanup(player.getUniqueId());
