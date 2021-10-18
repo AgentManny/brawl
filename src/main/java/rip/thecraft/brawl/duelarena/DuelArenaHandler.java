@@ -1,5 +1,6 @@
 package rip.thecraft.brawl.duelarena;
 
+import com.comphenix.protocol.collections.ExpireHashMap;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -60,7 +61,7 @@ public class DuelArenaHandler {
     private BiMap<MatchLoadout, UUID> unrankedQueue = HashBiMap.create();
     private Multimap<MatchLoadout, UUID> rankedQueue = ArrayListMultimap.create();
 
-    private Map<String, MatchSnapshot> snapshotMap = new HashMap<>();
+    private Map<String, MatchSnapshot> snapshotMap = new HashMap<>(); // TODO make this expire
 
     private Map<UUID, BukkitTask> queueTask = new HashMap<>();
 

@@ -23,10 +23,10 @@ import rip.thecraft.brawl.duelarena.match.queue.QueueType;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.StatisticType;
+import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.brawl.util.EloRating;
 import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
-import rip.thecraft.spartan.util.PlayerUtils;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -202,7 +202,6 @@ public class Match {
             }
 
 
-
             MatchSnapshot snapshot = new MatchSnapshot(id);
             snapshot.getInventories().putAll(matchData.getInventories());
             Brawl.getInstance().getMatchHandler().addSnapshot(snapshot);
@@ -236,6 +235,14 @@ public class Match {
                 if (player == null) continue;
 
                 player.closeInventory();
+                SpectatorMode spectator = Brawl.getInstance().getSpectatorManager().getSpectator(player);
+                if (spectator != null) {
+                    if (spectator.getFollow() != null) {
+                        spectator.spectate(player); // Update spectating
+                    } else {
+                        spectator.leave();
+                    }
+                }
                 //todo finish
 //                Brawl.getInstance().getSpectatorHandler().removeMatch(uuid, true);
 
@@ -293,6 +300,7 @@ public class Match {
                 if (other != null) {
                     other.playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 1.0F, 1.0F);
                     ((CraftPlayer) other).getHandle().playerConnection.sendPacket(packet);
+                    player.setItemInHand(null);
                     PlayerUtil.animateDeath(player, other);
                 }
             }

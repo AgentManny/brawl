@@ -221,6 +221,12 @@ public class SpectatorMode {
     public void leave() {
         SpectatorManager specManager = Brawl.getInstance().getSpectatorManager();
         specManager.spectators.remove(spectator);
+        if (match != null) {
+            match.getMatchData().getSpectators().remove(spectator);
+        }
+        if (game != null) {
+            game.getSpectators().remove(spectator);
+        }
         Player player = getPlayer();
         if (player != null) { // make sure they didn't disconnect
             player.setAllowFlight(false);
