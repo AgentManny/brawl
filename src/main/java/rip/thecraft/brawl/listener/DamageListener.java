@@ -93,6 +93,12 @@ public class DamageListener implements Listener {
                     playerData.setPreviousKit(selectedKit);
                     playerData.setSelectedKit(null);
                 }
+
+                if(player.getVehicle() != null){
+                    player.getVehicle().remove();
+                    player.eject();
+                }
+
                 player.teleport(plugin.getLocationByName("SPAWN"));
                 break;
             }
@@ -205,7 +211,6 @@ public class DamageListener implements Listener {
             case GOLD_BOOTS:
             case LEATHER_HELMET:
             case LEATHER_BOOTS:
-            case BOWL:
             case MUSHROOM_SOUP:
                 return Math.random() * 100 < 70;
             default: {
@@ -298,7 +303,7 @@ public class DamageListener implements Listener {
                 }
 
             }
-            if (!e.isCancelled()) {
+            if (!e.isCancelled() && e.getCause() != EntityDamageEvent.DamageCause.FALL) {
                 playerData.getSpawnData().damagedBy(damager, e.getDamage());
             }
         }

@@ -96,6 +96,7 @@ public class MovementListener implements MovementHandler, Listener {
 
             if (StaffMode.hasStaffMode(player)) return;
             if (state == PlayerState.SPECTATING) return;
+            if (player.getGameMode() == GameMode.CREATIVE) return;
 
             if (playerData.isSpawnProtection()) {
                 if (RegionType.SAFEZONE.appliesTo(from) && !RegionType.SAFEZONE.appliesTo(to)) {
