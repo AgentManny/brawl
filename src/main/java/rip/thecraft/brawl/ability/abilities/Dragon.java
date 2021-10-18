@@ -17,6 +17,7 @@ import rip.thecraft.brawl.util.PlayerUtil;
 
 @AbilityData(
         name = "Fire Breathe",
+        description = "Spit fire onto your enemies, burning them.",
         color = ChatColor.GOLD,
         icon = Material.FIREBALL
 )

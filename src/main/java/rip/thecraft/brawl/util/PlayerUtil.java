@@ -74,6 +74,8 @@ public class PlayerUtil {
      * @param gameMode The gamemode to reset the player to. null if their current gamemode should be kept.
      */
     public static void resetInventory(Player player, GameMode gameMode) {
+        player.closeInventory(); // fixes kit mixing bug
+        player.getInventory().clear();
         player.setHealth(player.getMaxHealth());
         player.setFallDistance(0.0f);
         player.setFoodLevel(20);

@@ -18,6 +18,7 @@ import java.util.List;
 
 @AbilityData(
         name = "Snow Globe",
+        description = "Encase yourself and your enemies in a frigid snow globe.",
         icon = Material.TRIPWIRE_HOOK,
         color = ChatColor.GOLD
 )

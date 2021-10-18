@@ -17,7 +17,12 @@ import rip.thecraft.brawl.util.PlayerUtil;
 import java.util.HashSet;
 import java.util.List;
 
-@AbilityData(icon = Material.GOLD_AXE, color = ChatColor.WHITE)
+@AbilityData(
+        name = "Smite",
+        description = "Summon bolts of lightning to damage your enemies.",
+        icon = Material.GOLD_AXE,
+        color = ChatColor.WHITE
+)
 public class Smite extends Ability implements Listener {
     // Smite nearby players where target is looking at.
     // We should allow smiting 3 times
@@ -33,7 +38,7 @@ public class Smite extends Ability implements Listener {
 
     @Override
     public void onActivate(Player player) {
-        if (hasCooldown(player, false)) return;
+        if (hasCooldown(player, true)) return;
 
         Location location;
         List<Block> blocks = player.getLastTwoTargetBlocks((HashSet<Byte>) null, strikeRadius);

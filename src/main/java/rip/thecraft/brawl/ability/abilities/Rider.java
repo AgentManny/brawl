@@ -19,7 +19,12 @@ import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.server.util.chatcolor.CC;
 
-@AbilityData(icon = Material.DIAMOND_BARDING, color = ChatColor.BLUE)
+@AbilityData(
+        name = "Horse Spawn",
+        description = "Summon your trusty steed to ride into battle.",
+        icon = Material.DIAMOND_BARDING,
+        color = ChatColor.BLUE
+)
 public class Rider extends Ability implements Listener, KillHandler {
 
     @AbilityProperty(id = "duration")

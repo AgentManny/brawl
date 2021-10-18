@@ -12,12 +12,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.property.AbilityData;
+import rip.thecraft.brawl.region.RegionType;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @AbilityData(
         name = "Web Shooter",
+        description = "Shoot a cluster of sticky webs to trap your enemies.",
         icon = Material.WEB,
         color = ChatColor.WHITE
 )
@@ -82,6 +84,8 @@ public class WebShooter extends Ability {
     private List<BlockState> storedLocations = new ArrayList<>();
 
     private void stuck(Location location) {
+        if(RegionType.SAFEZONE.appliesTo(location)) return;
+
         if (location.getBlock().isLiquid()) {
             location = location.add(0, 1.0D, 0);
         }

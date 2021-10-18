@@ -14,6 +14,8 @@ import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.property.AbilityData;
 
 @AbilityData(
+        name = "Assassin",
+        description = "Enter your stealth state and deal increased damage, at the cost of your armor.",
         icon = Material.SULPHUR,
         color = ChatColor.BLUE
 )

@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.Potion;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.duelarena.match.Match;
@@ -62,6 +63,18 @@ public class PlayerListener implements Listener {
                 }
                 playerData.addCooldown("ENDERPEARL", TimeUnit.SECONDS.toMillis(16));
             }
+
+            if(item != null && item.getType() == Material.POTION){
+                Potion potion = Potion.fromItemStack(item);
+
+                if(potion.isSplash()){
+                    if(RegionType.SAFEZONE.appliesTo(player.getLocation())){
+                        event.setCancelled(true);
+                        player.updateInventory();
+                    }
+                }
+            }
+
             Match match = plugin.getMatchHandler().getMatch(player);
             Kit kit = match != null && match.getKit() != null ? match.getKit() : playerData.getSelectedKit();
 
@@ -151,7 +164,7 @@ public class PlayerListener implements Listener {
         } else if (playerData.hasCombatLogged()) {
             Player damageSource = PlayerUtils.getDamageSource(player);
             if (damageSource != null) {
-                playerData.getSpawnData().killed(damageSource);
+                player.setHealth(0.0);
             }
         }
 
