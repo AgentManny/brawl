@@ -262,7 +262,7 @@ public abstract class Game {
                 setTime(getTime() - 1);
             }
 
-        }.runTaskTimerAsynchronously(Brawl.getInstance(), 20L, 20L);
+        }.runTaskTimer(Brawl.getInstance(), 20L, 20L);
     }
 
     public List<GamePlayer> getAlivePlayers() {

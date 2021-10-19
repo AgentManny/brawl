@@ -17,7 +17,7 @@ import java.util.List;
 @Deprecated
 public class GameScoreboard {
 
-    private static String PRIMARILY_COLOUR = CC.DARK_PURPLE;
+    private static String PRIMARILY_COLOUR = CC.WHITE;
     private static String SECONDARY_COLOUR = CC.LIGHT_PURPLE;
     private static String WARNING_COLOUR = CC.RED;
 
@@ -36,13 +36,13 @@ public class GameScoreboard {
     private static List<String> getState(Game game) {
         List<String> toReturn = new ArrayList<>();
         if (game.getState() == GameState.GRACE_PERIOD) {
-            toReturn.add(CC.BLUE + CC.SCOREBAORD_SEPARATOR);
+            toReturn.add(CC.BLUE + "   ");
 
-            long seconds = game.getTime();
+            long seconds = game.getTime() + 1;
 
             toReturn.add(PRIMARILY_COLOUR + "Starting in " + SECONDARY_COLOUR + seconds + "s");
         } else if (game.getState() == GameState.FINISHED) {
-            toReturn.add(CC.GREEN + CC.STRIKETHROUGH);
+            toReturn.add(CC.GREEN + "    ");
             boolean winners = game.getWinners().size() > 1;
             if (winners) {
                 toReturn.add(PRIMARILY_COLOUR + "Winners: ");

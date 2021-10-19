@@ -44,7 +44,8 @@ public class GameHandler {
                 new Tag(),
                 new OITC(),
                 new WoolShuffle(),
-                new Brackets()
+                new Brackets(),
+                new Thimble()
         ).forEach(this::register);
     }
 

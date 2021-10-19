@@ -227,22 +227,23 @@ public class WoolShuffle extends Game implements Listener {
     @Override
     public List<String> getSidebar(Player player) {
         List<String> toReturn = new ArrayList<>();
-        toReturn.add(CC.DARK_PURPLE + "Players: " + CC.LIGHT_PURPLE + getAlivePlayers().size() + "/" + getPlayers().size());
-        toReturn.add(CC.DARK_PURPLE + "Round: " + CC.LIGHT_PURPLE + this.round + (state == GameState.STARTED ? CC.GRAY + " (" + TimeUnit.MILLISECONDS.toSeconds(currentTime - System.currentTimeMillis()) + "s)" : ""));
-        toReturn.add(CC.BLUE + CC.SCOREBAORD_SEPARATOR);
+        toReturn.add(ChatColor.WHITE + "Game: " + ChatColor.LIGHT_PURPLE + getType().getShortName());
+        toReturn.add(CC.WHITE + "Players: " + CC.LIGHT_PURPLE + getAlivePlayers().size() + "/" + getPlayers().size());
+        toReturn.add(CC.WHITE + "Round: " + CC.LIGHT_PURPLE + this.round + (state == GameState.STARTED ? CC.GRAY + " (" + TimeUnit.MILLISECONDS.toSeconds(currentTime - System.currentTimeMillis()) + "s)" : ""));
+        toReturn.add(CC.BLUE + "   ");
         if (this.state == GameState.STARTED) {
-            toReturn.add(CC.DARK_PURPLE + "Color: "  + (chosenColor == null ? "None" : BukkitUtil.getFriendlyName(chosenColor)));
+            toReturn.add(CC.WHITE + "Color: "  + (chosenColor == null ? "None" : BukkitUtil.getFriendlyName(chosenColor)));
         } else if (this.state == GameState.FINISHED) {
             boolean winners = this.winners.size() > 1;
             if (winners) {
-                toReturn.add(CC.DARK_PURPLE + "Winners: ");
+                toReturn.add(CC.WHITE + "Winners: ");
                 for (GamePlayer winner : this.winners) {
                     toReturn.add(CC.LIGHT_PURPLE + "  " + winner.getName());
                 }
             } else if (!this.winners.isEmpty()) {
-                toReturn.add(CC.DARK_PURPLE + "Winner: " + CC.LIGHT_PURPLE + this.winners.get(0).getName());
+                toReturn.add(CC.WHITE + "Winner: " + CC.LIGHT_PURPLE + this.winners.get(0).getName());
             } else {
-                toReturn.add(CC.DARK_PURPLE + "Winner: " + CC.RED + "None");
+                toReturn.add(CC.WHITE + "Winner: " + CC.RED + "None");
             }
         } else {
             toReturn.add(CC.LIGHT_PURPLE + "Waiting...");

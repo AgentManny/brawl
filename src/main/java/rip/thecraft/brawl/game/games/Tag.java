@@ -97,7 +97,7 @@ public class Tag extends Game implements Listener {
 
                 setTime(getTime() - 1);
             }
-        }.runTaskTimerAsynchronously(Brawl.getInstance(), 20L, 20L);
+        }.runTaskTimer(Brawl.getInstance(), 20L, 20L);
 
 
     }
@@ -180,7 +180,7 @@ public class Tag extends Game implements Listener {
                 explodeTimer--;
 
             }
-        }.runTaskTimerAsynchronously(Brawl.getInstance(), 20L, 20L);
+        }.runTaskTimer(Brawl.getInstance(), 20L, 20L);
     }
 
     @Override

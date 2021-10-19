@@ -21,6 +21,7 @@ import rip.thecraft.brawl.duelarena.match.MatchState;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameElimination;
 import rip.thecraft.brawl.game.GameFlag;
+import rip.thecraft.brawl.game.games.Thimble;
 import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
@@ -82,9 +83,13 @@ public class MovementListener implements MovementHandler, Listener {
             Game game = Brawl.getInstance().getGameHandler().getActiveGame();
             if (game != null && game.containsPlayer(player)) {
                 GamePlayer gamePlayer = game.getGamePlayer(player);
-                if (gamePlayer.isAlive() && game.getFlags().contains(GameFlag.WATER_ELIMINATE)) {
-                    if (to.getBlock().isLiquid()) {
-                        game.handleElimination(player, to, GameElimination.WATER);
+                if (gamePlayer.isAlive()) {
+                    if (game.getFlags().contains(GameFlag.WATER_ELIMINATE)) {
+                        if (to.getBlock().isLiquid()) {
+                            game.handleElimination(player, to, GameElimination.WATER);
+                        }
+                    } else if (game instanceof Thimble) {
+                        ((Thimble) game).processMovement(player, gamePlayer, to);
                     }
                 }
             }

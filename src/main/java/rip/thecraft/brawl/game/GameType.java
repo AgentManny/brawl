@@ -1,11 +1,11 @@
 package rip.thecraft.brawl.game;
 
-import rip.thecraft.brawl.kit.type.RankType;
-import rip.thecraft.spartan.util.ItemBuilder;
 import lombok.Getter;
 import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import rip.thecraft.brawl.kit.type.RankType;
+import rip.thecraft.spartan.util.ItemBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,6 +68,16 @@ public enum GameType {
 			2,
 			50,
 			Arrays.asList("Lobby", "Pos1", "Pos2")
+	),
+
+	THIMBLE(
+			"Thimble",
+			new ItemBuilder(Material.WATER_BUCKET).build(),
+			RankType.MASTER,
+			"Jump in the water and avoid obstacles. Last man standing wins.",
+			2,
+			50,
+			Arrays.asList("Lobby", "Jump", "Pos1", "Pos2")
 	),
 
 	TNT_TAG("TNT Tag", "Tag",

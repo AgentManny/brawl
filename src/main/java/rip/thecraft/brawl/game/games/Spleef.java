@@ -2,11 +2,12 @@ package rip.thecraft.brawl.game.games;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
+import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameFlag;
 import rip.thecraft.brawl.game.GameType;
@@ -37,13 +38,20 @@ public class Spleef extends Game {
 
     @EventHandler
     public void onProjectileLand(ProjectileHitEvent event) {
-        Entity entity = event.getEntity();
-        if (entity.getLocation().getBlock() != null && event.getEntity().getLocation().getBlock().getType() == Material.SNOW_BLOCK) {
-            if (this.containsOption(StoreBlockOption.class)) {
-                StoreBlockOption option = (StoreBlockOption) this.getOptions().get(StoreBlockOption.class);
-                option.getData().put(event.getEntity().getLocation(), event.getEntity().getLocation().getBlock().getState());
+        Projectile entity = event.getEntity();
+        if (entity.getShooter() instanceof Player) {
+            Player player = (Player) entity.getShooter();
+            if (Brawl.getInstance().getGameHandler().getActiveGame() instanceof Spleef) {
+                if (containsPlayer(player)) {
+                    if (entity.getLocation().getBlock() != null && event.getEntity().getLocation().getBlock().getType() == Material.SNOW_BLOCK) {
+                        if (this.containsOption(StoreBlockOption.class)) {
+                            StoreBlockOption option = (StoreBlockOption) this.getOptions().get(StoreBlockOption.class);
+                            option.getData().put(event.getEntity().getLocation(), event.getEntity().getLocation().getBlock().getState());
 
-                event.getEntity().getLocation().getBlock().breakNaturally();
+                            event.getEntity().getLocation().getBlock().breakNaturally();
+                        }
+                    }
+                }
             }
         }
     }
