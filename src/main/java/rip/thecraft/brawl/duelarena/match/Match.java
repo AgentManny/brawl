@@ -22,6 +22,7 @@ import rip.thecraft.brawl.duelarena.match.data.PostMatchData;
 import rip.thecraft.brawl.duelarena.match.queue.QueueType;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.brawl.util.EloRating;
@@ -165,7 +166,9 @@ public class Match {
             PlayerData ld = Brawl.getInstance().getPlayerDataHandler().getPlayerData(getOpposite(winner.getUniqueId()));
 
             wd.getStatistic().add(StatisticType.DUEL_WINS);
+            wd.getStatistic().add(StatisticType.DUEL_WIN_STREAK);
             ld.getStatistic().add(StatisticType.DUEL_LOSSES);
+            ld.getStatistic().set(StatisticType.DUEL_WIN_STREAK, 0);
 
             String eloMessage = null;
             if (queueType == QueueType.RANKED) {

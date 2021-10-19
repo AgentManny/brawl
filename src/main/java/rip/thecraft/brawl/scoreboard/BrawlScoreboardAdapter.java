@@ -7,10 +7,7 @@ import rip.thecraft.brawl.duelarena.match.Match;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
-import rip.thecraft.brawl.scoreboard.type.DuelLobbyScoreboardProvider;
-import rip.thecraft.brawl.scoreboard.type.GameLobbyScoreboardProvider;
-import rip.thecraft.brawl.scoreboard.type.MatchScoreboardProvider;
-import rip.thecraft.brawl.scoreboard.type.SpawnScoreboardProvider;
+import rip.thecraft.brawl.scoreboard.type.*;
 import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.spartan.scoreboard.ScoreboardAdapter;
 import rip.thecraft.spartan.util.LinkedList;
@@ -34,6 +31,7 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
         providers.put(PlayerState.GAME_LOBBY, new GameLobbyScoreboardProvider());
         providers.put(PlayerState.ARENA, new DuelLobbyScoreboardProvider());
         providers.put(PlayerState.MATCH, new MatchScoreboardProvider());
+        providers.put(PlayerState.SPECTATING, new SpectatorScoreboardProvider());
     }
 
     @Override
@@ -50,7 +48,7 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
 
         switch (playerData.getPlayerState()) {
             case SPECTATING: {
-                this.getSpectatorMode(player, playerData, lines);
+                providers.get(PlayerState.SPECTATING).getLines(player, playerData, lines);
                 break;
             }
             case GAME: {

@@ -50,7 +50,7 @@ public class DuelArenaHandler {
     public static final int INVITE_TIMEOUT = 30;
     public static final int REMATCH_TIMEOUT = 15;
 
-    private Set<Match> matches = new HashSet<>();
+    public Set<Match> matches = new HashSet<>();
 
     private List<Arena> arenas = new ArrayList<>();
     private List<MatchLoadout> loadouts = new ArrayList<>();

@@ -31,7 +31,8 @@ public enum StatisticType {
     EVENT_WINS("Event Wins", ChatColor.GREEN, Material.GOLD_BLOCK),
 
     DUEL_WINS("Duel Wins", ChatColor.AQUA, Material.DIAMOND_BLOCK, true),
-    DUEL_LOSSES("Duel Losses", ChatColor.RED, Material.REDSTONE_BLOCK, true);
+    DUEL_LOSSES("Duel Losses", ChatColor.RED, Material.REDSTONE_BLOCK, true),
+    DUEL_WIN_STREAK("Duel Win Streak", ChatColor.GREEN, Material.EMERALD_BLOCK, true);
 
     private final String name;
 

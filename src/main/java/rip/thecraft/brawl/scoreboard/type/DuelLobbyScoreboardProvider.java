@@ -25,7 +25,7 @@ public class DuelLobbyScoreboardProvider implements ScoreboardProvider {
         lines.add(ChatColor.WHITE + "Duel Wins: " + ChatColor.GREEN + (int)statistic.get(StatisticType.DUEL_WINS));
         lines.add(ChatColor.WHITE + "Duel Losses: " + ChatColor.RED + (int)statistic.get(StatisticType.DUEL_LOSSES));
         lines.add("  ");
-        lines.add(ChatColor.WHITE + "Winstreak: " + ChatColor.LIGHT_PURPLE + (int)statistic.get(StatisticType.DUEL_WINS));
+        lines.add(ChatColor.WHITE + "Winstreak: " + ChatColor.LIGHT_PURPLE + (int)statistic.get(StatisticType.DUEL_WIN_STREAK));
         if (plugin.getMatchHandler().isInQueue(player)) {
             lines.add("    ");
             lines.add(ChatColor.LIGHT_PURPLE + plugin.getMatchHandler().getFriendlyQueue(player));

@@ -66,7 +66,7 @@ public class Flash extends Ability {
         Location playerLoc = player.getLocation();
         double distance = playerLoc.distance(blockLoc);
         if (distance > 2) {
-            Location loc = blockLoc.add(0.5, 0.5, 0.5);
+            Location loc = blockLoc.add(0.5, 1.5, 0.5);
             loc.setPitch(playerLoc.getPitch());
             loc.setYaw(playerLoc.getYaw());
 

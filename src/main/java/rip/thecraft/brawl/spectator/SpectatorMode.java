@@ -41,6 +41,7 @@ public class SpectatorMode {
 
     private SpectatorType spectating = SpectatorType.NONE;
 
+    private Player spectatedPlayer;
     private UUID follow; // If they are following a player
 
     private Match match; // If they are spectating a match
@@ -180,6 +181,7 @@ public class SpectatorMode {
 
             } else {
                 type = SpectatorType.PLAYER;
+                spectatedPlayer = spectating;
                 location = spectating.getLocation();
                 message = spectating.getName();
             }
@@ -263,6 +265,7 @@ public class SpectatorMode {
         this.lobby = null;
         this.game = null;
         this.follow = null;
+        this.spectatedPlayer = null;
     }
 
     public Player getPlayer() {

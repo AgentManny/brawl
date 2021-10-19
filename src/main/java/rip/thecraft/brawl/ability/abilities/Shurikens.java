@@ -1,28 +1,37 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import net.minecraft.server.v1_8_R3.EntityItem;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftSnowball;
-import org.bukkit.entity.Item;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.handlers.InteractItemHandler;
+import rip.thecraft.brawl.ability.handlers.ItemProjectileHitHandler;
 import rip.thecraft.brawl.ability.handlers.KillHandler;
 import rip.thecraft.brawl.ability.property.AbilityData;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
+import rip.thecraft.brawl.region.RegionType;
+import rip.thecraft.brawl.util.moreprojectiles.event.CustomProjectileHitEvent;
+import rip.thecraft.brawl.util.moreprojectiles.event.ItemProjectileHitEvent;
+import rip.thecraft.brawl.util.moreprojectiles.projectile.ItemProjectile;
 import rip.thecraft.spartan.util.ItemBuilder;
 
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-// TODO Rework how ninja stars get shot as they are always inaccurate
-@AbilityData(icon = Material.NETHER_STAR)
-public class Shurikens extends Ability implements KillHandler, InteractItemHandler {
+@AbilityData(
+        name = "Shurikens",
+        description = "Throw a shuriken that deals damage and blindness to your enemies.",
+        color = ChatColor.DARK_PURPLE,
+        icon = Material.NETHER_STAR
+)
+public class Shurikens extends Ability implements KillHandler, InteractItemHandler, ItemProjectileHitHandler {
+
+    @AbilityProperty(id = "damage-value", description = "Amount of damage to deal to player")
+    public double damageValue = 8.0D;
 
     @Override
     public boolean bypassAbilityPreventZone() {
@@ -41,61 +50,30 @@ public class Shurikens extends Ability implements KillHandler, InteractItemHandl
                 player.getInventory().remove(player.getItemInHand());
             }
 
-            Item item = player.getWorld().dropItem(player.getEyeLocation(),
-                    new ItemBuilder(Material.NETHER_STAR)
-                            .name("Shurikens" + ThreadLocalRandom.current().nextInt(1, 1000))
-                            .create()
-            );
-            item.setPickupDelay(Integer.MAX_VALUE);
-            item.setVelocity(player.getEyeLocation().getDirection().multiply(1.4));
-
-
-            // detect if it be hitting someone since there isnt a collision check for dropped items and i dont want it riding a snowball
-            new BukkitRunnable() {
-
-                long timestamp = System.currentTimeMillis();
-                Player hit;
-
-
-                @Override
-                public void run() {
-                    if ((System.currentTimeMillis() - timestamp) > 1500L || item == null) {
-                        cancel();
-                        return;
-                    }
-
-                    if (item.isDead()) {
-                        cancel();
-                        return;
-                    }
-
-                    item.getNearbyEntities(1, 3, 1).stream().filter(other -> other instanceof Player && !player.equals(other)).findAny().ifPresent(player2 -> {
-                        hit = (Player) player2;
-                        if (!hit.isDead()) {
-                            double damageHealth = 3; // 0.5 hearts
-                            if (hit.getHealth() - damageHealth > 0) {
-                                hit.setHealth(hit.getHealth() - damageHealth);
-                                addCooldown(player, 5);
-                            }
-                            hit.damage(damageHealth, player); // make it so it counts as a player kill
-                            hit.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 1, true, false));
-                            cancel();
-                            return;
-                        }
-                    });
-
-                }
-
-                @Override
-                public synchronized void cancel() throws IllegalStateException {
-                    item.remove();
-
-                    super.cancel();
-                }
-            }.runTaskTimer(Brawl.getInstance(), 4L, 4L);
+            new ItemProjectile("shurikens", player, new ItemBuilder(Material.NETHER_STAR).build(), 1f);
+            player.getWorld().playSound(player.getLocation(), Sound.PISTON_EXTEND, 1f, 1f);
             return true;
         }
 
+        return false;
+    }
+
+    private boolean canAttack(Player player){
+        return !RegionType.SAFEZONE.appliesTo(player.getLocation());
+    }
+
+    @Override
+    public boolean onItemProjectileHit(Player shooter, Player hit, ItemProjectileHitEvent event) {
+        if(event.getHitType() == CustomProjectileHitEvent.HitType.ENTITY && event.getProjectile().getProjectileName().equals("shurikens")){
+            if(!canAttack(hit)) return true;
+            if(hit == shooter) return true;
+
+            if(!hit.isDead()){
+                hit.damage(damageValue, shooter);
+                hit.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 1, true, false));
+                hit.playSound(hit.getLocation(), Sound.BLAZE_HIT, 2f, 2f);
+            }
+        }
         return false;
     }
 
