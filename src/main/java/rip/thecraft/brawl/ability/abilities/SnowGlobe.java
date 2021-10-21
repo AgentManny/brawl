@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -19,10 +20,9 @@ import java.util.List;
 @AbilityData(
         name = "Snow Globe",
         description = "Encase yourself and your enemies in a frigid snow globe.",
-        icon = Material.TRIPWIRE_HOOK,
-        color = ChatColor.GOLD
+        icon = Material.PACKED_ICE,
+        color = ChatColor.WHITE
 )
-// TODO Block should have global availability
 public class SnowGlobe extends Ability {
 
     @Override
@@ -39,6 +39,19 @@ public class SnowGlobe extends Ability {
         generateSphere(player.getLocation(), 5);
         player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 5, 1));
     }
+
+    @Override
+    public void cleanup() {
+        storedLocations.forEach(state -> {
+            if (state.getType() == Material.WEB) {
+                state.getBlock().setType(Material.AIR);
+            }
+        });
+    }
+
+
+    private List<BlockState> storedLocations = new ArrayList<>();
+
 
     /**
      * @param centerBlock Define the center of the sphere
@@ -113,7 +126,7 @@ public class SnowGlobe extends Ability {
 
         for (Block state : circleBlocks) {
             if (state.getType() == Material.AIR) {
-
+                this.storedLocations.add(state.getState());
                 state.setType(Material.ICE);
             }
         }
@@ -125,6 +138,7 @@ public class SnowGlobe extends Ability {
                 for (Block state : circleBlocks) {
                     if (state.getType() == Material.ICE) {
                         state.setType(Material.AIR);
+                        storedLocations.remove(state.getState());
                     }
                 }
 
@@ -135,6 +149,7 @@ public class SnowGlobe extends Ability {
                 for (Block state : circleBlocks) {
                     if (state.getType() == Material.ICE) {
                         state.setType(Material.AIR);
+                        storedLocations.remove(state.getState());
                     }
                 }
                 super.cancel();

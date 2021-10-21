@@ -11,8 +11,10 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.handlers.BlockProjectileHitHandler;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.region.RegionType;
+import rip.thecraft.brawl.util.moreprojectiles.event.BlockProjectileHitEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +25,7 @@ import java.util.List;
         icon = Material.WEB,
         color = ChatColor.WHITE
 )
-public class WebShooter extends Ability {
+public class WebShooter extends Ability implements BlockProjectileHitHandler {
 
     @Override
     public void cleanup() {
@@ -38,6 +40,8 @@ public class WebShooter extends Ability {
     public void onActivate(Player player) {
         if (hasCooldown(player, true)) return;
         addCooldown(player);
+
+
 
         FallingBlock block = player.getWorld().spawnFallingBlock(player.getEyeLocation(), Material.WEB, (byte) 0);
         block.setMetadata("webshooter", new FixedMetadataValue(Brawl.getInstance(), player.getUniqueId()));
@@ -117,6 +121,10 @@ public class WebShooter extends Ability {
             }
 
         }, 120L);
+    }
 
+    @Override
+    public boolean onBlockProjectileHit(Player shooter, Player hit, BlockProjectileHitEvent event) {
+        return false;
     }
 }
