@@ -47,7 +47,7 @@ public class KitManageCommand {
 
     @Command(names = {"kit apply", "kit force", "k apply", "k force"}, permission = "falcon.command.kit.apply")
     public static void apply(Player player, Kit kit, Player target){
-        kit.apply(target, true, true);
+        kit.apply(target, false, true);
         player.sendMessage(ChatColor.YELLOW + "You have applied kit " + ChatColor.DARK_PURPLE + kit.getName() + ChatColor.YELLOW + " to " + target.getName()
                 + ChatColor.YELLOW + ".");
     }

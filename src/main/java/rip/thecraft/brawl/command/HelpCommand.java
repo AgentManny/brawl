@@ -14,7 +14,7 @@ public class HelpCommand {
         sender.sendMessage(ChatColor.GRAY + "/kit [name]" + ChatColor.GRAY + " - Choose a kit by their name.");
         sender.sendMessage(ChatColor.GRAY + "/settings " + ChatColor.GRAY + " - Modify your settings");
         sender.sendMessage(ChatColor.GRAY + "/stats [player] " + ChatColor.GRAY + " - View a player's statistics");
-        sender.sendMessage(ChatColor.GRAY + "/refill [soup|potion] " + ChatColor.GRAY + " - Set your healing method");
+        sender.sendMessage(ChatColor.GRAY + "/setrefill [soup|potion] " + ChatColor.GRAY + " - Set your healing method");
         sender.sendMessage(ChatColor.GRAY + "/team " + ChatColor.GRAY + " - View team commands");
         sender.sendMessage("");
         sender.sendMessage(ChatColor.DARK_PURPLE.toString() + "*** Teleportation Commands ***");

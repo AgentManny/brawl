@@ -19,7 +19,12 @@ public class WarpCommand {
     public static void execute(Player sender, @Param(defaultValue = "list", name = "warp") Warp warp) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(sender);
         if (playerData.getPlayerState() == PlayerState.SPAWN || playerData.getPlayerState() == PlayerState.FIGHTING) {
-            playerData.warp(warp.getName(), warp.getLocation(), 10, () -> {
+            if(playerData.hasCombatLogged()){
+                sender.sendMessage(ChatColor.RED + "You cannot warp while in combat.");
+                return;
+            }
+
+            playerData.warp(warp.getName(), warp.getLocation(), 5, () -> {
                 playerData.setSpawnProtection(false);
                 playerData.setDuelArena(false);
                 Kit kit = Brawl.getInstance().getKitHandler().getKit(warp.getKit());
