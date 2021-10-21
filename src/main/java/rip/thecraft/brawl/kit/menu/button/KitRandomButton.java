@@ -1,7 +1,7 @@
 package rip.thecraft.brawl.kit.menu.button;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -35,12 +35,10 @@ public class KitRandomButton extends Button {
     @Override
     public ItemStack getButtonItem(Player player) {
         List<String> lore = ItemBuilder.wrap("Not sure what to pick? Click to choose a random kit that you have access to.", CC.GRAY, 30);
-        lore.add(0, CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 31));
         lore.add("");
-        lore.add(CC.GRAY + "\u00bb " + CC.LIGHT_PURPLE + "Click to use a random kit" + CC.GRAY + " \u00ab");
-        lore.add(CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 31));
+        lore.add(CC.GRAY + "\u00bb " + CC.LIGHT_PURPLE + "Click to use a random kit");
         return new ItemBuilder(kit.getIcon())
-                .name(CC.LIGHT_PURPLE + "Select a random kit").lore(lore).amount(1).create();
+                .name(CC.LIGHT_PURPLE + ChatColor.BOLD + "Random kit").lore(lore).amount(1).create();
     }
 
     @Override

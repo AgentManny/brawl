@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.kit.menu.button;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
@@ -13,10 +12,10 @@ import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.statistic.KitStatistic;
 import rip.thecraft.brawl.kit.type.RankType;
 import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.util.DurationFormatter;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
 import rip.thecraft.spartan.util.ItemBuilder;
+import rip.thecraft.spartan.util.TimeUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -40,48 +39,48 @@ public class KitButton extends Button {
 
     @Override
     public ItemStack getButtonItem(Player player) {
+        List<String> lore = ItemBuilder.wrap(kit.getDescription(), CC.GRAY, 32, false);
+
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
-        List<String> lore = ItemBuilder.wrap(kit.getDescription(), CC.GRAY, 30, false);
-        lore.add(0, CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 31));
-//            lore.add(playerData.hasKit(kit) ? CC.GREEN + CC.BOLD + "UNLOCKED" : (kit.getRankType() != RankType.NONE ? CC.GRAY + "Exclusive to " + CC.WHITE + kit.getRankType().getDisplayName() : CC.GRAY + "Price: " + CC.WHITE + kit.getPrice() + " coins"));
+        KitStatistic statistic = playerData.getStatistic().get(kit);
+
+        Map<String, Long> kitRentals = playerData.getKitRentals();
+        boolean rental = kitRentals.containsKey(kit.getName()) && kitRentals.get(kit.getName()) > System.currentTimeMillis();
+        boolean canTrial = statistic != null && statistic.getTrialPass() >= 1;
+        boolean unlocked = playerData.hasKit(kit);
+
+        lore.add(0, " ");
+        lore.add(0, ChatColor.DARK_GRAY + (kit.isFree() ? "Free" : unlocked ? "Unlocked" : "Locked"));
+
         if (!kit.getDescription().isEmpty()) {
             lore.add("");
         }
-        KitStatistic statistic = playerData.getStatistic().get(kit);
-        lore.add(CC.GRAY + "Kills: " + CC.WHITE + (statistic == null ? 0 : statistic.getKills()));
-        lore.add(CC.GRAY + "Deaths: " + CC.WHITE + (statistic == null ? 0 : statistic.getDeaths()));
-        lore.add(CC.GRAY + "Uses: " + CC.WHITE + (statistic == null ? 0 : statistic.getUses()));
         if (statistic != null) {
+            lore.add(CC.GRAY + "Kills: " + CC.WHITE + statistic.getKills());
+            lore.add(CC.GRAY + "Deaths: " + CC.WHITE + statistic.getDeaths());
+            lore.add(CC.GRAY + "Uses: " + CC.WHITE + statistic.getUses());
             statistic.getProperties().forEach((name, value) -> lore.add(CC.GRAY + WordUtils.capitalizeFully(name.toLowerCase().replace("_", " ")) + ": " + CC.WHITE + value));
         }
         lore.add("");
 
         String value;
-        boolean buy = false;
-        if (playerData.hasKit(kit)) {
+        if (rental) {
+            value = CC.YELLOW + "Time remaining: " + CC.WHITE + TimeUtils.formatIntoSimplifiedString((int) TimeUnit.MILLISECONDS.toSeconds(kitRentals.get(kit.getName()) - System.currentTimeMillis()));
+        } else if (unlocked) {
             value = CC.GREEN + "Click to use this kit";
+        } else if (canTrial) {
+            value = CC.LIGHT_PURPLE + "Click to trial this kit";
         } else if (kit.getRankType() != RankType.NONE) {
             value = CC.RED + "Exclusive to " + kit.getRankType().getDisplayName() + CC.RED + " rank";
-            buy = true;
         } else {
-            value = CC.RED + "Purchase this kit for " + CC.YELLOW + Math.round(kit.getPrice()) + CC.RED + " credits";
-            buy = true;
+            value = CC.YELLOW + "Click to unlock this kit";
         }
 
-        if (!playerData.hasKit(kit) && statistic != null && statistic.getTrialPass() >= 1) {
-            lore.add(ChatColor.YELLOW.toString() + ChatColor.BOLD + statistic.getTrialPass() + "x TRIAL PASS" + ChatColor.GRAY + " (Free access)");
-        }
-        Map<String, Long> kitRentals = playerData.getKitRentals();
-        if (kitRentals.containsKey(kit.getName()) && kitRentals.get(kit.getName()) > System.currentTimeMillis()) {
-            lore.add(ChatColor.YELLOW.toString() + ChatColor.BOLD + "TRIAL ACCESS TIME " + ChatColor.WHITE + DurationFormatter.getRemaining(kitRentals.get(kit.getName()) - System.currentTimeMillis()));
-        }
-
-//        if (buy && KitHandler.FREE_KITS) {
-//            lore.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "FREE KIT" + ChatColor.GRAY + " (Beta access)");
-//        }
-        lore.add(CC.GRAY + "\u00bb " + value + CC.GRAY + " \u00ab");
-        lore.add(CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 31));
-        return new ItemBuilder(kit.getIcon()).name((playerData.hasKit(kit) ? CC.GREEN : CC.RED) + kit.getName()).amount(1).lore(lore).create();
+        lore.add(CC.GRAY + "\u00bb " + value);
+        return new ItemBuilder(kit.getIcon())
+                .name((unlocked ? rental ? CC.YELLOW : CC.GREEN : canTrial ? CC.LIGHT_PURPLE : CC.RED) + CC.BOLD + kit.getName())
+                .amount(1).lore(lore)
+                .create();
     }
 
     @Override

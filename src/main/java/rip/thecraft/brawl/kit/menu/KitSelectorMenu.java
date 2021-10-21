@@ -5,6 +5,7 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.menu.button.KitButton;
 import rip.thecraft.brawl.kit.menu.button.KitRandomButton;
+import rip.thecraft.brawl.kit.menu.button.KitUnlockButton;
 import rip.thecraft.spartan.menu.Button;
 import rip.thecraft.spartan.menu.Menu;
 
@@ -37,8 +38,9 @@ public class KitSelectorMenu extends Menu {
             }
         }
 
-        int size = size(buttonMap) - 5;
-        buttonMap.put(size + 9, new KitRandomButton(Brawl.getInstance().getKitHandler().getKits().get(Brawl.RANDOM.nextInt(Brawl.getInstance().getKitHandler().getKits().size()))));
+        int size = size(buttonMap) + 9;
+        buttonMap.put(size - 6, new KitRandomButton(Brawl.getInstance().getKitHandler().getKits().get(Brawl.RANDOM.nextInt(Brawl.getInstance().getKitHandler().getKits().size()))));
+        buttonMap.put(size - 4, new KitUnlockButton());
         return buttonMap;
     }
 
