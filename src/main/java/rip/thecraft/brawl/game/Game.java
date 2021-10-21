@@ -183,6 +183,10 @@ public abstract class Game {
         return true;
     }
 
+    public void processMovement(Player player, GamePlayer gamePlayer, Location from, Location to) {
+
+    }
+
     public void handleElimination(Player player, Location location, GameElimination elimination) {
         if (eliminate(player, location, elimination)) {
             // Find a winner

@@ -197,12 +197,12 @@ public class Thimble extends Game implements Listener {
         }
     }
 
-    public void processMovement(Player player, GamePlayer gamePlayer, Location location) {
+    public void processMovement(Player player, GamePlayer gamePlayer, Location from, Location to) {
         if (state == GameState.STARTED) {
-            Block block = location.getBlock();
+            Block block = to.getBlock();
             if (block.isLiquid()) {
-                location.getBlock().setType(Material.GOLD_BLOCK);
-                location.getWorld().spawn(location, Firework.class);
+                to.getBlock().setType(Material.GOLD_BLOCK);
+                to.getWorld().spawn(to, Firework.class);
                 player.setFallDistance(0);
                 player.teleport(getLocationByName("Lobby"));
                 if (!alreadyPlayed.contains(gamePlayer)) {

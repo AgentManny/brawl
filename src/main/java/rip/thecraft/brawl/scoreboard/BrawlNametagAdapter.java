@@ -3,6 +3,7 @@ package rip.thecraft.brawl.scoreboard;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.duelarena.match.Match;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.levels.Level;
 import rip.thecraft.brawl.player.PlayerData;
@@ -38,6 +39,17 @@ public class BrawlNametagAdapter extends NametagProvider {
         PlayerState refreshPlayerState = refreshPlayerData.getPlayerState();
         boolean showLevel = true;
         switch (playerState) {
+            case SPECTATING: {
+                showLevel = false;
+                break;
+            }
+            case MATCH: {
+                Match match = plugin.getMatchHandler().getMatch(toRefresh);
+                if (match.contains(refreshFor)) {
+                    color = ChatColor.RED.toString();
+                }
+                break;
+            }
             case GAME: {
                 if (refreshPlayerState == PlayerState.GAME) {
                     Game game = plugin.getGameHandler().getActiveGame();
@@ -65,7 +77,7 @@ public class BrawlNametagAdapter extends NametagProvider {
         }
 
         Level level = playerData.getLevel();
-        String levelPrefix = Level.getColor(level.getCurrentLevel()) + level.getSimplePrefix() + ChatColor.translateAlternateColorCodes('&', profile.getColor());
+        String levelPrefix = (showLevel ? Level.getColor(level.getCurrentLevel()) + level.getSimplePrefix() : "") + ChatColor.translateAlternateColorCodes('&', profile.getColor());
 
         Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(toRefresh);
 

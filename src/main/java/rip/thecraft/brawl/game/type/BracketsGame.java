@@ -94,6 +94,24 @@ public class BracketsGame extends Game {
             NametagHandler.reloadPlayer(player);
         }
 
+        Kit kit = getKit();
+        for (int i = 0; i < getMatch().length; i++) {
+            GamePlayer gamer = getMatch()[i];
+            //Bukkit.broadcastMessage("Is this primary thread teleport: " + Bukkit.isPrimaryThread());
+            Player player = gamer.toPlayer();
+            player.teleport(getLocationByName("ArenaLocation" + (i + 1)));
+            if (kit != null) {
+                kit.apply(player, false, false);
+            } else {
+                PlayerUtil.resetInventory(player);
+            }
+
+            ItemStack item = getRefillType(player).getItem();
+            for (int refill = 0; refill < getRefillAmount(); refill++) {
+                player.getInventory().addItem(item);
+            }
+        }
+
         setTime(3);
 
         task = new BukkitRunnable() {
@@ -127,6 +145,16 @@ public class BracketsGame extends Game {
     }
 
     @Override
+    public void processMovement(Player player, GamePlayer gamePlayer, Location from, Location to) {
+        if (state == GameState.GRACE_PERIOD && contains(gamePlayer)) {
+            if (from.distance(to) > 0.1) {
+                player.teleport(from);
+                player.setFallDistance(0);
+            }
+        }
+    }
+
+    @Override
     public void handleElimination(Player player, Location location, GameElimination elimination) {
         if (eliminate(player, location, elimination)) {
             // Find a winner
@@ -157,24 +185,6 @@ public class BracketsGame extends Game {
         if(getMatch()[1] == null || !player2.isAlive()) {
             handleElimination(player2.toPlayer(), null, GameElimination.OTHER);
             return;
-        }
-
-        Kit kit = getKit();
-        for (int i = 0; i < getMatch().length; i++) {
-            GamePlayer gamer = getMatch()[i];
-            //Bukkit.broadcastMessage("Is this primary thread teleport: " + Bukkit.isPrimaryThread());
-            Player player = gamer.toPlayer();
-            player.teleport(getLocationByName("ArenaLocation" + (i + 1)));
-            if (kit != null) {
-                kit.apply(player, false, false);
-            } else {
-                PlayerUtil.resetInventory(player);
-            }
-
-            ItemStack item = getRefillType(player).getItem();
-            for (int refill = 0; refill < getRefillAmount(); refill++) {
-                player.getInventory().addItem(item);
-            }
         }
 
         this.playSound(Sound.NOTE_PIANO, 1L, 20L);

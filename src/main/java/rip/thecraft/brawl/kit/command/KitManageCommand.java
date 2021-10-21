@@ -16,11 +16,10 @@ import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.editor.menu.KitEditMenu;
 import rip.thecraft.brawl.kit.editor.menu.KitEditorMenu;
 import rip.thecraft.brawl.kit.type.RankType;
+import rip.thecraft.brawl.kit.unlock.UnlockMenu;
 import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.player.PlayerDataHandler;
 import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.brawl.util.conversation.PromptBuilder;
-import rip.thecraft.falcon.command.player.RenameCommand;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.command.Command;
 import rip.thecraft.spartan.command.Param;
@@ -39,6 +38,11 @@ public class KitManageCommand {
     @Command(names = { "kit editor", "k editor" }, permission = "op")
     public static void editor(Player player) {
         new KitEditorMenu().openMenu(player);
+    }
+
+    @Command(names = { "kit unlock", "k unlock" })
+    public static void unlock(Player player) {
+        new UnlockMenu(player).open(player);
     }
 
     @Command(names = {"kit apply", "kit force", "k apply", "k force"}, permission = "falcon.command.kit.apply")
