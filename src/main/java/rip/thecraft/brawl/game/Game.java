@@ -164,6 +164,7 @@ public abstract class Game {
         GamePlayer eliminated = getGamePlayer(player);
         if (eliminated == null || !eliminated.isAlive() || this.state == GameState.FINISHED) return false;
         eliminated.setAlive(false); // Died
+        player.getInventory().setItemInHand(null);
 
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
         playerData.setEvent(false); // No longer in event (doesn't count if spectating event)
