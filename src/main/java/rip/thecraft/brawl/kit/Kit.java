@@ -36,6 +36,8 @@ import static rip.thecraft.brawl.kit.KitHandler.KIT_DIRECTORY;
 @Data
 public class Kit implements Listener, Comparable<Kit> {
 
+    public static final int MAX_EXP_UNLOCK = 500;
+
     private final String name;
 
     private ItemStack icon = new ItemStack(Material.DIRT);
@@ -91,7 +93,7 @@ public class Kit implements Listener, Comparable<Kit> {
     }
 
     public boolean isFree() {
-        return this.price <= 0;
+        return rankType == RankType.NONE && this.price <= 0;
     }
 
     public JsonObject getJson() {

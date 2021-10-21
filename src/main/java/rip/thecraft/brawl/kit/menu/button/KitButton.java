@@ -10,15 +10,17 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.kit.Kit;
-import rip.thecraft.brawl.kit.KitHandler;
 import rip.thecraft.brawl.kit.statistic.KitStatistic;
 import rip.thecraft.brawl.kit.type.RankType;
 import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.util.DurationFormatter;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
 import rip.thecraft.spartan.util.ItemBuilder;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 
 @RequiredArgsConstructor
@@ -66,9 +68,17 @@ public class KitButton extends Button {
             buy = true;
         }
 
-        if (buy && KitHandler.FREE_KITS) {
-            lore.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "FREE KIT" + ChatColor.GRAY + " (Beta access)");
+        if (!playerData.hasKit(kit) && statistic != null && statistic.getTrialPass() >= 1) {
+            lore.add(ChatColor.YELLOW.toString() + ChatColor.BOLD + statistic.getTrialPass() + "x TRIAL PASS" + ChatColor.GRAY + " (Free access)");
         }
+        Map<String, Long> kitRentals = playerData.getKitRentals();
+        if (kitRentals.containsKey(kit.getName()) && kitRentals.get(kit.getName()) > System.currentTimeMillis()) {
+            lore.add(ChatColor.YELLOW.toString() + ChatColor.BOLD + "TRIAL ACCESS TIME " + ChatColor.WHITE + DurationFormatter.getRemaining(kitRentals.get(kit.getName()) - System.currentTimeMillis()));
+        }
+
+//        if (buy && KitHandler.FREE_KITS) {
+//            lore.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "FREE KIT" + ChatColor.GRAY + " (Beta access)");
+//        }
         lore.add(CC.GRAY + "\u00bb " + value + CC.GRAY + " \u00ab");
         lore.add(CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 31));
         return new ItemBuilder(kit.getIcon()).name((playerData.hasKit(kit) ? CC.GREEN : CC.RED) + kit.getName()).amount(1).lore(lore).create();
@@ -82,9 +92,11 @@ public class KitButton extends Button {
         if (playerData.hasKit(kit)) {
             kit.apply(player, true, true);
         } else {
-            if (KitHandler.FREE_KITS) {
-                kit.apply(player, true, true);
-                player.sendMessage(CC.GRAY + "* " + ChatColor.WHITE + kit.getName() + ChatColor.GRAY + " is free for a limited time.");
+            KitStatistic statistic = playerData.getStatistic().get(kit);
+            if (!playerData.hasKit(kit) && statistic != null && statistic.getTrialPass() >= 1) {
+                statistic.setTrialPass(statistic.getTrialPass() - 1);
+                playerData.addRentalKit(kit, 15, TimeUnit.MINUTES);
+                clicked(player, slot, clickType);
             } else {
                 player.sendMessage(CC.RED + "You don't have permission to use this kit.");
             }

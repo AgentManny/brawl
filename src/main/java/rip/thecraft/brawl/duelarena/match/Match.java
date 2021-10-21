@@ -22,12 +22,12 @@ import rip.thecraft.brawl.duelarena.match.data.PostMatchData;
 import rip.thecraft.brawl.duelarena.match.queue.QueueType;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.brawl.util.EloRating;
 import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
+import rip.thecraft.spartan.nametag.NametagHandler;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -85,14 +85,13 @@ public class Match {
             Bukkit.getScheduler().runTaskLater(Brawl.getInstance(), () -> getPlayers()[index].teleport(corners[index]), 5 * i);
         }
 
-        if (arena.getArenaType() == ArenaType.ARCADE) {
-            for (Player player : getPlayers()) {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 90, 2), true);
-            }
-        } else {
-            for (Player member : getPlayers()) {
+        for (Player member : getPlayers()) {
+            if (arena.getArenaType() == ArenaType.ARCADE) {
+                member.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 90, 2), true);
+            } else {
                 loadout.apply(member);
             }
+            NametagHandler.reloadPlayer(member, getOpposite(member));
         }
 
         if (task != null) {
@@ -324,6 +323,13 @@ public class Match {
             return player2;
         }
         return player1;
+    }
+
+    public Player getOpposite(Player player) {
+        if (player.getUniqueId().equals(player1)) {
+            return getPlayers()[1];
+        }
+        return getPlayers()[0];
     }
 
     public boolean contains(Player player) {

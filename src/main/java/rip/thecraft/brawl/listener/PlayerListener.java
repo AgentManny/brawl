@@ -28,6 +28,7 @@ import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.falcon.util.ErrorType;
+import rip.thecraft.spartan.nametag.NametagHandler;
 import rip.thecraft.spartan.util.PlayerUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -142,6 +143,7 @@ public class PlayerListener implements Listener {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             playerData.fromDocument(plugin.getPlayerDataHandler().getDocument(player.getUniqueId()));
             plugin.getPlayerDataHandler().create(playerData, false);
+            NametagHandler.reloadPlayer(player);
         });
     }
 

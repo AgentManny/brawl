@@ -1,7 +1,9 @@
 package rip.thecraft.brawl.util;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -27,6 +29,13 @@ public class BrawlUtil {
     public final static Pattern ALPHA_NUMERIC_PATTERN = Pattern.compile("[^a-zA-Z0-9]");
     private static final Pattern UUID_PATTERN = Pattern.compile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}");
 
+    public static String getProgressBar(int current, int maxValue, char symbol, int bars) {
+        float percent = (float) current / maxValue;
+        int progressBars = (int) (bars * percent);
+
+        return Strings.repeat("" + ChatColor.LIGHT_PURPLE + symbol, progressBars)
+                + Strings.repeat("" + ChatColor.GRAY + symbol, bars - progressBars);
+    }
     public static ItemStack[] convert(Material... materials) {
         List<ItemStack> items = new ArrayList<>();
         for(Material material : materials) {

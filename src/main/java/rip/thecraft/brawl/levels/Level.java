@@ -5,10 +5,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.bson.Document;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.challenges.ChallengeType;
 import rip.thecraft.brawl.challenges.player.PlayerChallenge;
+import rip.thecraft.brawl.kit.Kit;
+import rip.thecraft.brawl.kit.statistic.KitStatistic;
 import rip.thecraft.brawl.levels.task.LevelFlashTask;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.StatisticType;
@@ -59,21 +62,37 @@ public class Level {
                 challenge.increment(player, exp);
             }
         }
+
+        Kit unlockingKit = playerData.getUnlockingKit();
+        if (unlockingKit != null) {
+            KitStatistic kitStatistic = playerData.getStatistic().get(unlockingKit);
+            int newExp = kitStatistic.getExp() + exp;
+            if (newExp >= Kit.MAX_EXP_UNLOCK) {
+                kitStatistic.setExp(0);
+                playerData.setUnlockingKit(null);
+                playerData.addUnlockedKit(unlockingKit);
+            } else {
+                kitStatistic.setExp(newExp);
+            }
+        }
+
+        if (getCurrentLevel() >= MAX_LEVEL) {
+            if (player != null) {
+                player.sendMessage(ChatColor.RED + "You have reached the highest level! Type /prestige to advance.");
+            }
+            return;
+        }
+
         while (currentExp >= getMaxExperience()) {
             addLevel(player);
         }
     }
 
     public void addLevel(Player player) {
-        if (getCurrentLevel() >= MAX_LEVEL) {
-            player.sendMessage(ChatColor.RED + "You are not able to level up as the maximum level is 100!");
-            return;
-        }
-
         currentExp -= getMaxExperience();
         playerData.getStatistic().add(StatisticType.LEVEL);
-
         if (player != null) {
+            player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
             player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "LEVEL UNLOCKED! " + ChatColor.GRAY + "You've ranked up to level " + ChatColor.GREEN + getCurrentLevel() + ChatColor.GRAY + "!");
             new LevelFlashTask(player, this).runTaskTimer(Brawl.getInstance(), 0, 7); // Run cool animation :D
         }

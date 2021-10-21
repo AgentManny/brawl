@@ -1,0 +1,116 @@
+package rip.thecraft.brawl.kit.unlock;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.kit.Kit;
+import rip.thecraft.brawl.kit.menu.KitSelectorMenu;
+import rip.thecraft.brawl.kit.statistic.KitStatistic;
+import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.util.BrawlUtil;
+import rip.thecraft.brawl.util.menu.Menu;
+import rip.thecraft.brawl.util.menu.MenuButton;
+import rip.thecraft.brawl.util.menu.MenuRows;
+import rip.thecraft.server.util.chatcolor.CC;
+import rip.thecraft.spartan.util.ItemBuilder;
+
+import java.util.List;
+import java.util.Map;
+
+public class UnlockMenu extends Menu {
+
+    private final Player player;
+
+    public UnlockMenu(Player player) {
+        super("Unlock Kits", MenuRows.FIVE);
+        this.player = player;
+        addButtons(getButtons());
+    }
+
+    @Override
+    public Map<Integer, MenuButton> addButtons(Map<Integer, MenuButton> buttons) {
+        int x = 1;
+        int y = 1;
+        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+        for (Kit kit : Brawl.getInstance().getKitHandler().getKits()) {
+            if (kit.isFree() || playerData.hasKit(kit)) continue;
+
+            buttons.put(getSlot(x, y), new KitUnlockButton(kit));
+            if (x++ >= 7) {
+                x = 1;
+
+                y++;
+            }
+        }
+        addButton(3, 4,new MenuButton(Material.INK_SACK, 8, ChatColor.RED + "Go back", ChatColor.GRAY + "To Kit Selector")
+                .setClick((player, click) -> new KitSelectorMenu().openMenu(player)));
+
+        MenuButton button = playerData.getUnlockingKit() == null ? new MenuButton(Material.INK_SACK, 1, ChatColor.RED + "Not unlocking kit",
+                ChatColor.GRAY + "Choose a kit to start unlocking") : new KitUnlockButton(playerData.getUnlockingKit());
+        addButton(5, 4, button);
+        return buttons;
+    }
+
+
+    private class KitUnlockButton extends MenuButton {
+
+        private final Kit kit;
+
+        public KitUnlockButton(Kit kit) {
+            this.kit = kit;
+            setClick((player, clickData) -> {
+                PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+                if (playerData.hasKit(kit)) {
+                    createError(clickData, null, "You cannot unlock kits that you already own.", 20L);
+                    return;
+                }
+
+                if (playerData.getUnlockingKit() != kit) {
+                    player.sendMessage(ChatColor.YELLOW + "You are now unlocking " + ChatColor.LIGHT_PURPLE + kit.getName() + ChatColor.YELLOW + ".");
+                    player.sendMessage(ChatColor.GRAY + "Experience you accumulate will apply towards " + ChatColor.WHITE + kit.getName() + ChatColor.GRAY + "'s progression.");
+                    player.playSound(player.getLocation(), Sound.NOTE_PLING, 1, 2);
+                    playerData.setUnlockingKit(kit);
+                    player.closeInventory();
+                } else {
+                    createError(clickData, null, "You are already unlocking this kit", 20L);
+                }
+            });
+        }
+
+        @Override
+        public ItemStack getItem() {
+            PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+            List<String> lore = ItemBuilder.wrap(kit.getDescription(), CC.GRAY, 25, false);
+            if (!kit.getDescription().isEmpty()) {
+                lore.add("");
+            }
+            Kit unlockingKit = playerData.getUnlockingKit();
+
+            KitStatistic statistic = playerData.getStatistic().get(kit);
+            int exp = playerData.hasKit(kit) ? Kit.MAX_EXP_UNLOCK : statistic.getExp();
+            lore.add(ChatColor.GREEN + "Progress" + ChatColor.GRAY + " (" + ChatColor.WHITE + exp + "/" + Kit.MAX_EXP_UNLOCK + ChatColor.GRAY + " EXP)");
+            lore.add(BrawlUtil.getProgressBar(exp, Kit.MAX_EXP_UNLOCK, '\u25A0', 15));
+            lore.add("");
+
+            String value;
+            if (playerData.hasKit(kit)) {
+                value = CC.GREEN + "Already own this kit";
+            } else if (unlockingKit != kit) {
+                value = CC.GREEN + "Start unlocking this kit";
+            } else {
+                value = CC.YELLOW + "Already unlocking this kit";
+            }
+            lore.add(CC.GRAY + "\u00bb " + value + CC.GRAY);
+            ItemBuilder builder = new ItemBuilder(kit.getIcon()).name((playerData.hasKit(kit) ? CC.RED : unlockingKit == kit ? CC.YELLOW + CC.BOLD : CC.GREEN) + kit.getName()).amount(1)
+                    .lore(lore);
+            if (unlockingKit == kit) {
+                builder.enchant(Enchantment.LOOT_BONUS_BLOCKS, 1);
+            }
+            return builder.create();
+        }
+    }
+}

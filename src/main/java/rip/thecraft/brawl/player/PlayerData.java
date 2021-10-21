@@ -4,10 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.bson.Document;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -34,8 +31,10 @@ import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.nametag.NametagHandler;
 import rip.thecraft.spartan.util.Cooldown;
+import rip.thecraft.spartan.util.TimeUtils;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Setter
 @Getter
@@ -79,6 +78,9 @@ public class PlayerData {
 
     private Level level = new Level(this);
 
+    private Kit unlockingKit; // Kit that player is trying to unlock
+    private List<String> unlockedKits = new ArrayList<>();
+
     private Map<String, Long> kitRentals = new HashMap<>();
     private Map<String, Long> gameRentals = new HashMap<>();
 
@@ -113,6 +115,9 @@ public class PlayerData {
         List<String> unlockedPerks = new ArrayList<>();
         this.unlockedPerks.forEach(perk -> unlockedPerks.add(perk.name()));
 
+        List<String> unlockedKits = new ArrayList<>();
+        this.unlockedKits.forEach(perk -> unlockedKits.add(unlockingKit.getName()));
+
         Map<String, String> activePerks = new HashMap<>();
         for (int i = 0; i < this.activePerks.length; i++) {
             Perk perk = this.activePerks[i];
@@ -122,6 +127,8 @@ public class PlayerData {
         return new Document("uuid", this.uuid.toString())
                 .append("username", this.name)
                 .append("previous-kit", this.previousKit == null ? null : this.previousKit.getName())
+                .append("unlocking-kit", this.unlockingKit == null ? null : this.unlockingKit.getName())
+                .append("unlocked-kits", this.unlockedKits)
                 .append("cooldown", cooldownMap)
                 .append("rentals", this.kitRentals)
                 .append("gameRentals", this.gameRentals)
@@ -146,6 +153,14 @@ public class PlayerData {
         }
 
         this.previousKit = Brawl.getInstance().getKitHandler().getKit(document.getString("previous-kit"));
+
+        if (document.containsKey("unlocking-kit")) {
+            this.unlockingKit = Brawl.getInstance().getKitHandler().getKit(document.getString("unlocking-kit"));
+        }
+
+        if (document.containsKey("unlocked-kits")) {
+            this.unlockedKits = (List<String>) document.get("unlocked-kits");
+        }
 
         Map<String, Document> cooldowns = (Map<String, Document>) document.get("cooldown");
         cooldowns.forEach((name, cooldownDocument) -> this.cooldownMap.put(name, new Cooldown(cooldownDocument)));
@@ -355,6 +370,10 @@ public class PlayerData {
     }
 
     public boolean hasKit(Kit kit) {
+        if (this.unlockedKits.contains(kit.getName())) {
+            return true;
+        }
+
         if (this.kitRentals.containsKey(kit.getName()) && this.kitRentals.get(kit.getName()) < System.currentTimeMillis()) {
             this.kitRentals.remove(kit.getName());
         }
@@ -371,11 +390,43 @@ public class PlayerData {
     }
 
     public boolean hasGame(GameType gameType) {
-        if (this.gameRentals.containsKey(gameType.getName()) && this.gameRentals.get(gameType.getName()) < System.currentTimeMillis()) {
-            this.gameRentals.remove(gameType.getName());
+        if (this.gameRentals.containsKey(gameType.name()) && this.gameRentals.get(gameType.name()) < System.currentTimeMillis()) {
+            this.gameRentals.remove(gameType.name());
         }
 
-        return this.getPlayer().isOp() ||this.getPlayer().hasPermission("rank." + gameType.getRankType().getName().toLowerCase()) || this.getPlayer().hasPermission("game." + gameType.getName().toLowerCase()) ||  (gameRentals.containsKey(gameType.getName()) && gameRentals.get(gameType.getName()) > System.currentTimeMillis());
+        return this.getPlayer().isOp() ||this.getPlayer().hasPermission("rank." + gameType.getRankType().getName().toLowerCase()) || this.getPlayer().hasPermission("rank." + gameType.getRankType().name()) || this.getPlayer().hasPermission("game." + gameType.getName().toLowerCase()) ||  (gameRentals.containsKey(gameType.name()) && gameRentals.get(gameType.name()) > System.currentTimeMillis());
+    }
+
+    public void addUnlockedKit(Kit kit) {
+        if (unlockedKits.contains(kit.getName())) {
+            return;
+        }
+        unlockedKits.add(kit.getName());
+        Player player = getPlayer();
+        if (player != null) {
+            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "KIT UNLOCKED! " + ChatColor.GRAY + "You now have access to " + ChatColor.WHITE + kit.getName() + ChatColor.GRAY + ".");
+            player.playSound(player.getLocation(), Sound.FIREWORK_LAUNCH, 1, 1);
+        }
+    }
+
+    public void addRentalKit(Kit kit, int time, TimeUnit unit) {
+        long millis = unit.toMillis(time);
+        kitRentals.put(kit.getName(), System.currentTimeMillis() + millis);
+        Player player = getPlayer();
+        if (player != null) {
+            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "KIT UNLOCKED! " + ChatColor.GRAY + "You now have access to " + ChatColor.WHITE + kit.getName() + ChatColor.GRAY + " for " + ChatColor.YELLOW + TimeUtils.formatIntoSimplifiedString((int) TimeUnit.MILLISECONDS.toSeconds(millis)) + ChatColor.GRAY + ".");
+            player.playSound(player.getLocation(), Sound.FIREWORK_LAUNCH, 1, 1);
+        }
+    }
+
+    public void addRentalGame(GameType game, int time, TimeUnit unit) {
+        long millis = unit.toMillis(time);
+        gameRentals.put(game.name(), System.currentTimeMillis() + millis);
+        Player player = getPlayer();
+        if (player != null) {
+            player.sendMessage(ChatColor.AQUA.toString() + ChatColor.BOLD + "GAME UNLOCKED! " + ChatColor.GRAY + "You now have access to " + ChatColor.WHITE + game.getName() + ChatColor.GRAY + " for " + ChatColor.AQUA + TimeUtils.formatIntoSimplifiedString((int) TimeUnit.MILLISECONDS.toSeconds(millis)) + ChatColor.GRAY + ".");
+            player.playSound(player.getLocation(), Sound.FIREWORK_LAUNCH, 1, 1);
+        }
     }
 
     public void setSelectedKit(Kit selectedKit) {
