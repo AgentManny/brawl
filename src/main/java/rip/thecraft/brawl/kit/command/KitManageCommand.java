@@ -16,6 +16,9 @@ import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.editor.menu.KitEditMenu;
 import rip.thecraft.brawl.kit.editor.menu.KitEditorMenu;
 import rip.thecraft.brawl.kit.type.RankType;
+import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.player.PlayerDataHandler;
+import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.brawl.util.conversation.PromptBuilder;
 import rip.thecraft.falcon.command.player.RenameCommand;
 import rip.thecraft.server.util.chatcolor.CC;
@@ -36,6 +39,39 @@ public class KitManageCommand {
     @Command(names = { "kit editor", "k editor" }, permission = "op")
     public static void editor(Player player) {
         new KitEditorMenu().openMenu(player);
+    }
+
+    @Command(names = {"kit apply", "kit force", "k apply", "k force"}, permission = "falcon.command.kit.apply")
+    public static void apply(Player player, Kit kit, Player target){
+        kit.apply(target, true, true);
+        player.sendMessage(ChatColor.YELLOW + "You have applied kit " + ChatColor.DARK_PURPLE + kit.getName() + ChatColor.YELLOW + " to " + target.getName()
+                + ChatColor.YELLOW + ".");
+    }
+
+    @Command(names = {"kit clear", "kit forceclear", "k clear", "k forceclear"}, permission = "falcon.command.kit.clear")
+    public static void clear(Player player, PlayerData target){
+        target.setPreviousKit(target.getSelectedKit());
+        target.setSelectedKit(null);
+        PlayerUtil.resetInventory(target.getPlayer());
+        player.sendMessage(ChatColor.YELLOW + "You have cleared " + ChatColor.DARK_PURPLE + target.getName() + "'s " + ChatColor.YELLOW + "kit.");
+    }
+
+    @Command(names = {"rkit", "raiduskit"}, permission = "falcon.command.kit.rkit")
+    public static void rkit(Player player, Kit kit, int radius){
+        if(radius > 100){
+            player.sendMessage(ChatColor.RED + "Radius cannot be greater than 100");
+            return;
+        }
+
+        for(Player around : PlayerUtil.getNearbyPlayers(player.getLocation(), radius)){
+            PlayerData data = Brawl.getInstance().getPlayerDataHandler().getPlayerData(around);
+
+            kit.apply(data.getPlayer(), true, true);
+        }
+
+        int playersGiven = PlayerUtil.getNearbyPlayers(player.getLocation(), radius).size();
+        player.sendMessage(ChatColor.YELLOW + "You have applied kit " + ChatColor.DARK_PURPLE + kit.getName() + ChatColor.YELLOW + " to " +
+                ChatColor.DARK_PURPLE + playersGiven + ChatColor.YELLOW + " players in a radius of " + ChatColor.DARK_PURPLE + radius + ChatColor.YELLOW + ".");
     }
 
 

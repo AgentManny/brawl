@@ -277,6 +277,11 @@ public class DamageListener implements Listener {
                 playerData.setNoFallDamage(false);
             }
 
+            if(RegionType.SAFEZONE.appliesTo(player.getLocation())){
+                e.setCancelled(true);
+                return;
+            }
+
             Game game = plugin.getGameHandler().getActiveGame();
             if (game != null && game.containsPlayer(player) && game.getGamePlayer(player).isAlive()) {
                 if (game.getFlags().contains(GameFlag.NO_FALL) && e.getCause() == EntityDamageEvent.DamageCause.FALL) {

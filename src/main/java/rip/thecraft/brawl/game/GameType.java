@@ -87,6 +87,15 @@ public enum GameType {
 			2,
 			25,
 			Arrays.asList("Lobby")
+	),
+
+	ARCADE("Arcade",
+			new ItemBuilder(Material.IRON_CHESTPLATE).build(),
+			RankType.CHAMPION,
+			"FFA but with rotating kits.",
+			2,
+			50,
+			Arrays.asList("Lobby")
 	);
 
 	private final String name;
