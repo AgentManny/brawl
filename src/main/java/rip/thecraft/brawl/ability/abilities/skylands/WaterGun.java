@@ -5,18 +5,28 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.handlers.BlockProjectileHitBlockHandler;
+import rip.thecraft.brawl.ability.handlers.BlockProjectileHitHandler;
+import rip.thecraft.brawl.ability.handlers.ItemProjectileHitBlockHandler;
+import rip.thecraft.brawl.ability.handlers.ItemProjectileHitHandler;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.util.ParticleEffect;
+import rip.thecraft.brawl.util.moreprojectiles.event.BlockProjectileHitEvent;
+import rip.thecraft.brawl.util.moreprojectiles.event.ItemProjectileHitEvent;
+import rip.thecraft.brawl.util.moreprojectiles.projectile.BlockProjectile;
+import rip.thecraft.brawl.util.moreprojectiles.projectile.ItemProjectile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +42,7 @@ import java.util.List;
         icon = Material.INK_SACK,
         data = 12
 )
-public class WaterGun extends Ability implements Listener {
+public class WaterGun extends Ability implements Listener, BlockProjectileHitBlockHandler, BlockProjectileHitHandler {
 
     private PotionEffect potionEffect = new PotionEffect(PotionEffectType.SLOW, 120, 4);
 
@@ -55,63 +65,49 @@ public class WaterGun extends Ability implements Listener {
     public int delay = 5;
 
     @Override
+    public void cleanup() {
+        storedLocations.forEach(state -> {
+            if (state.getType() == Material.STATIONARY_WATER) {
+                state.getBlock().setType(Material.AIR);
+            }
+        });
+    }
+
+    @Override
     public void onActivate(Player player) {
         if (hasCooldown(player, true)) return;
         addCooldown(player);
 
-        FallingBlock block = player.getWorld().spawnFallingBlock(player.getEyeLocation(), Material.WATER, (byte) 0);
-        block.setMetadata("watergun", new FixedMetadataValue(Brawl.getInstance(), player.getUniqueId()));
-        block.setDropItem(false);
-        block.setVelocity(player.getEyeLocation().getDirection().multiply(1.5));
-
-        new BukkitRunnable() {
-
-            long timestamp = System.currentTimeMillis();
-            Player hit;
-
-            @Override
-            public void run() {
-                if ((System.currentTimeMillis() - timestamp) > 750L) {
-                    cancel();
-                    return;
-                }
-
-                if (block.isDead()) {
-                    cancel();
-                    stuck(hit != null ? hit.getLocation() : block.getLocation());
-                    return;
-                }
-
-                block.getNearbyEntities(1, 2, 1).stream().filter(other -> other instanceof Player && !player.equals(other)).findAny().ifPresent(player -> {
-                    hit = (Player) player;
-                    stuck(hit != null ? hit.getLocation() : block.getLocation());
-                    cancel();
-                });
-
-            }
-
-            @Override
-            public synchronized void cancel() throws IllegalStateException {
-                if (block == null || block.isDead() || !block.isValid()) {
-                    block.remove();
-                }
-                super.cancel();
-            }
-        }.runTaskTimer(Brawl.getInstance(), 5L, 5L);
-
+        new BlockProjectile("watergun", player, Material.ICE.getId(), 0, 1f); //throws ice atm, couldn't get it to throw a water block
     }
+
+    @Override
+    public boolean onBlockProjectileHitBlock(Player shooter, BlockProjectileHitEvent event) {
+        Block hitBlock = event.getHitBlock();
+        stuck(hitBlock.getLocation());
+        return false;
+    }
+
+    @Override
+    public boolean onBlockProjectileHit(Player shooter, Player hit, BlockProjectileHitEvent event) {
+        Block block = hit.getLocation().getBlock();
+        stuck(block.getLocation());
+        return false;
+    }
+
+    private List<BlockState> storedLocations = new ArrayList<>();
 
     private void stuck(Location location) {
         List<Location> locations = new ArrayList<>();
-        locations.add(location.clone().add(1.0D, 1.0D, -1.0D));
-        locations.add(location.clone().add(-1.0D, 1.0D, -1.0D));
-        locations.add(location.clone().add(1.0D, 1.0D, 1.0D));
-        locations.add(location.clone().add(-1.0D, 1.0D, 1.0D));
-        locations.add(location.clone().add(0.0D, 1.0D, 0.0D));
-        locations.add(location.clone().add(-1.0D, 1.0D, 0.0D));
-        locations.add(location.clone().add(1.0D, 1.0D, 0.0D));
-        locations.add(location.clone().add(0.0D, 1.0D, -1.0D));
-        locations.add(location.clone().add(0.0D, 1.0D, 1.0D));
+        locations.add(location.clone().add(1.0D, 0, -1.0D));
+        locations.add(location.clone().add(-1.0D, 0, -1.0D));
+        locations.add(location.clone().add(1.0D, 0, 1.0D));
+        locations.add(location.clone().add(-1.0D, 0, 1.0D));
+        locations.add(location.clone().add(0.0D, 0, 0.0D));
+        locations.add(location.clone().add(-1.0D, 0, 0.0D));
+        locations.add(location.clone().add(1.0D, 0, 0.0D));
+        locations.add(location.clone().add(0.0D, 0, -1.0D));
+        locations.add(location.clone().add(0.0D, 0, 1.0D));
 
         List<Location> changedBlocks = new ArrayList<>();
         for (Location loc : locations) {
@@ -119,18 +115,22 @@ public class WaterGun extends Ability implements Listener {
 
             if (state.getType() == Material.AIR) {
                 state.setMetadata("watergun", new FixedMetadataValue(Brawl.getInstance(), state.getType().name()));
-                state.setType(Material.WATER);
+                state.setType(Material.STATIONARY_WATER);
                 changedBlocks.add(loc);
             }
+
+            storedLocations.add(state.getState());
         }
 
         Brawl.getInstance().getServer().getScheduler().runTaskLater(Brawl.getInstance(), () -> {
             for (Location loc : changedBlocks) {
                 Block state = loc.getBlock();
 
-                if (state.getType() == Material.WATER) {
+                if (state.getType() == Material.STATIONARY_WATER || state.isLiquid()) {
                     state.setType(Material.AIR);
                 }
+
+                storedLocations.remove(state.getState());
             }
         }, 120L);
 

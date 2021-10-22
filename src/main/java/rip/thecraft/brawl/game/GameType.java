@@ -96,6 +96,15 @@ public enum GameType {
 			2,
 			50,
 			Arrays.asList("Lobby")
+	),
+
+	WOOL("Wool FFA",
+			new ItemBuilder(Material.WOOL).build(),
+			RankType.CHAMPION,
+			"FFA with the ability to place wool & sponges.",
+			2,
+			50,
+			Arrays.asList("Lobby")
 	);
 
 	private final String name;

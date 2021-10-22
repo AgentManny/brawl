@@ -158,24 +158,51 @@ public class AbilityListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onItemProjectileHitEntity(ItemProjectileHitEvent event){
-        if(!(event.getHitEntity() instanceof Player) || event.isCancelled()) return;
+        if(event.isCancelled()) return;
 
-        Player shooter = null;
+        if(event.getHitBlock() != null){
+            Player shooter = null;
 
-        if(event.getProjectile() != null){
-            if(event.getProjectile().getShooter() != null && event.getProjectile().getShooter() instanceof Player){
-                shooter = (Player) event.getProjectile().getShooter();
+            if(event.getProjectile() != null){
+                if(event.getProjectile().getShooter() != null && event.getProjectile().getShooter() instanceof Player){
+                    shooter = (Player) event.getProjectile().getShooter();
+                }
+
+                if(shooter != null){
+                    Kit selectedKit = KitHandler.getEquipped(shooter);
+
+                    if(selectedKit != null){
+                        for(Ability ability : selectedKit.getAbilities()){
+                            if(ability instanceof ItemProjectileHitBlockHandler){
+                                if(((ItemProjectileHitBlockHandler) ability).onItemProjectileHitBlock(shooter, event)){
+                                    event.setCancelled(true);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
             }
+        }
 
-            if(shooter != null){
-                Kit selectedKit = KitHandler.getEquipped(shooter);
+        if(event.getHitEntity() != null && event.getHitEntity() instanceof Player){
+            Player shooter = null;
 
-                if(selectedKit != null){
-                    for(Ability ability : selectedKit.getAbilities()){
-                        if(ability instanceof ItemProjectileHitHandler){
-                            if(((ItemProjectileHitHandler) ability).onItemProjectileHit(shooter, (Player) event.getHitEntity(), event)){
-                                event.setCancelled(true);
-                                break;
+            if(event.getProjectile() != null){
+                if(event.getProjectile().getShooter() != null && event.getProjectile().getShooter() instanceof Player){
+                    shooter = (Player) event.getProjectile().getShooter();
+                }
+
+                if(shooter != null){
+                    Kit selectedKit = KitHandler.getEquipped(shooter);
+
+                    if(selectedKit != null){
+                        for(Ability ability : selectedKit.getAbilities()){
+                            if(ability instanceof ItemProjectileHitHandler){
+                                if(((ItemProjectileHitHandler) ability).onItemProjectileHit(shooter, (Player) event.getHitEntity(), event)){
+                                    event.setCancelled(true);
+                                    break;
+                                }
                             }
                         }
                     }
@@ -186,24 +213,51 @@ public class AbilityListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onBlockProjectileHitEntity(BlockProjectileHitEvent event){
-        if(!(event.getHitEntity() instanceof Player) || event.isCancelled()) return;
+        if(event.isCancelled()) return;
 
-        Player shooter = null;
+        if(event.getHitBlock() != null){
+            Player shooter = null;
 
-        if(event.getProjectile() != null){
-            if(event.getProjectile().getShooter() != null && event.getProjectile().getShooter() instanceof Player){
-                shooter = (Player) event.getProjectile().getShooter();
+            if(event.getProjectile() != null){
+                if(event.getProjectile().getShooter() != null && event.getProjectile().getShooter() instanceof Player){
+                    shooter = (Player) event.getProjectile().getShooter();
+                }
+
+                if(shooter != null){
+                    Kit selectedKit = KitHandler.getEquipped(shooter);
+
+                    if(selectedKit != null){
+                        for(Ability ability : selectedKit.getAbilities()){
+                            if(ability instanceof BlockProjectileHitBlockHandler){
+                                if(((BlockProjectileHitBlockHandler) ability).onBlockProjectileHitBlock(shooter, event)){
+                                    event.setCancelled(true);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
             }
+        }
 
-            if(shooter != null){
-                Kit selectedKit = KitHandler.getEquipped(shooter);
+        if(event.getHitEntity() != null && event.getHitEntity() instanceof Player){
+            Player shooter = null;
 
-                if(selectedKit != null){
-                    for(Ability ability : selectedKit.getAbilities()){
-                        if(ability instanceof BlockProjectileHitHandler){
-                            if(((BlockProjectileHitHandler) ability).onBlockProjectileHit(shooter, (Player) event.getHitEntity(), event)){
-                                event.setCancelled(true);
-                                break;
+            if(event.getProjectile() != null){
+                if(event.getProjectile().getShooter() != null && event.getProjectile().getShooter() instanceof Player){
+                    shooter = (Player) event.getProjectile().getShooter();
+                }
+
+                if(shooter != null){
+                    Kit selectedKit = KitHandler.getEquipped(shooter);
+
+                    if(selectedKit != null){
+                        for(Ability ability : selectedKit.getAbilities()){
+                            if(ability instanceof BlockProjectileHitHandler){
+                                if(((BlockProjectileHitHandler) ability).onBlockProjectileHit(shooter, (Player) event.getHitEntity(), event)){
+                                    event.setCancelled(true);
+                                    break;
+                                }
                             }
                         }
                     }

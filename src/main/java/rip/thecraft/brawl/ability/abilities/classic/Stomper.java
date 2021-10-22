@@ -85,7 +85,7 @@ public class Stomper extends Ability implements Listener, GroundHandler, SneakHa
             player.setMetadata(STOMPER_METADATA, new FixedMetadataValue(Brawl.getInstance(), null));
             player.setMetadata(CHARGE_METADATA, new FixedMetadataValue(Brawl.getInstance(), System.currentTimeMillis()));
 
-            player.playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1.0F, 0.0F);
+            player.getWorld().playSound(player.getLocation(), Sound.FIREWORK_BLAST, 3f, 3f);
         }
     }
 
@@ -124,6 +124,7 @@ public class Stomper extends Ability implements Listener, GroundHandler, SneakHa
             double baseDamage = Math.min(50, player.getFallDistance()) / damageReduction;
             List<Player> nearbyPlayers = PlayerUtil.getNearbyPlayers(player, impactDistance);
             for (Player nearbyPlayer : nearbyPlayers) {
+                nearbyPlayer.damage(0, player);
                 nearbyPlayer.damage(baseDamage / (nearbyPlayer.isSneaking() ? 2 : 1));
             }
 
