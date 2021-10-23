@@ -51,16 +51,19 @@ public class SpectatorMode {
     // Debug
     private List<UUID> hiddenPlayers = new ArrayList<>();
 
-    public static SpectatorMode init(Player spectator) {
+    protected static SpectatorMode init(Player spectator) {
         return init(spectator, spectator, null);
     }
 
-    public static SpectatorMode init(Player spectator, @Nullable Player spectating, Location location) {
+    protected static SpectatorMode init(Player spectator, @Nullable Player spectating, Location location) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(spectator);
+        boolean wasDuelArena = playerData.isDuelArena();
 
         SpectatorMode mode = new SpectatorMode(spectator.getUniqueId(), playerData.getPlayerState());
         if (location != null) {
             mode.setTeleportTo(location);
+        } else {
+            mode.setTeleportTo((wasDuelArena ? LocationType.ARENA : LocationType.SPAWN).getLocation());
         }
 
         playerData.setSpawnProtection(false);
@@ -72,32 +75,10 @@ public class SpectatorMode {
 
         mode.spectate(spectating);
         Brawl.getInstance().getItemHandler().apply(spectator, InventoryType.SPECTATOR);
+        mode.setSpectating(wasDuelArena ? SpectatorType.DUEL_ARENA : SpectatorType.SPAWN);
         spectator.setAllowFlight(true);
         spectator.setFlying(true);
         return mode;
-    }
-
-    /**
-     * Spectate a certain section, this doesn't specify individual players
-     * @param type Area to spectate
-     */
-    @Deprecated
-    public void spec(SpectatorType type) {
-        Player spectator = getPlayer();
-        if (spectator == null) {
-            leave();
-            return;
-        }
-
-        switch (type) {
-            case SPAWN: {
-
-            }
-            default: {
-              //  getPlayer()
-                return;
-            }
-        }
     }
 
     public void spectateGame() {
@@ -120,6 +101,16 @@ public class SpectatorMode {
         spectator.sendMessage(ChatColor.GREEN + "You are now spectating: " + ChatColor.WHITE + gameType.getShortName() + (lobby != null ? " (Lobby)" : ""));
     }
 
+    public int getMaxRadius() {
+        switch (spectating) {
+            case MATCH:
+            case DUEL_ARENA: {
+                return 100;
+            }
+        }
+        return 200;
+    }
+
     public void spectate(Player spectating) {
         Player spectator = getPlayer();
         if (spectator == null) {
@@ -136,7 +127,7 @@ public class SpectatorMode {
 
         List<UUID> hiddenPlayers = new ArrayList<>();
         SpectatorType type = SpectatorType.SPAWN;
-        Location location = Brawl.getInstance().getLocationByName("SPAWN");
+        Location location = LocationType.SPAWN.getLocation();
         String message = null;
 
         if (spectating != null) {
@@ -189,13 +180,9 @@ public class SpectatorMode {
 
         if (message != null) {
             spectator.sendMessage(ChatColor.GREEN + "You are now spectating: " + ChatColor.WHITE + message);
-        } else {
-            spectator.sendMessage(ChatColor.LIGHT_PURPLE + "You are now in " + ChatColor.LIGHT_PURPLE + "Spectator Mode" + ChatColor.YELLOW + ".");
-            spectator.sendMessage(ChatColor.GRAY + "Type " + ChatColor.WHITE + "/spec <player>" + ChatColor.GRAY + " to spectate a player");
         }
-
         spectator.teleport(teleportTo == null ? location : teleportTo);
-        this.teleportTo = null;
+//        this.teleportTo = null;
 
         this.spectating = type;
 
@@ -234,6 +221,7 @@ public class SpectatorMode {
             player.setAllowFlight(false);
             player.setFlying(false);
             PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+            playerData.getLevel().updateExp(player);
             playerData.setSpawnProtection(true);
 
             if (lastState == PlayerState.ARENA) {

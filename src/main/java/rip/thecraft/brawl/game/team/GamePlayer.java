@@ -59,6 +59,8 @@ public class GamePlayer {
         playerData.setEvent(false);
         playerData.setSpawnProtection(true);
 
+        playerData.getLevel().updateExp(player);
+
         player.teleport(Brawl.getInstance().getLocationByName("SPAWN"));
         Brawl.getInstance().getItemHandler().apply(player, InventoryType.SPAWN);
 

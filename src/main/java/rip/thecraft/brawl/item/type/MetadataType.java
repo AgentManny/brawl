@@ -77,20 +77,21 @@ public enum MetadataType {
             spectator.spectateGame();
         }
     }),
+
     SPECTATE_ARENA((player, playerData) -> {
         SpectatorMode spectator = Brawl.getInstance().getSpectatorManager().getSpectator(player);
         if (spectator != null) { // Make sure they are actually spectating
             spectator.setTeleportTo(LocationType.ARENA.getLocation());
-            spectator.setSpectating(SpectatorMode.SpectatorType.DUEL_ARENA);
             spectator.spectate(null);
+            spectator.setSpectating(SpectatorMode.SpectatorType.DUEL_ARENA);
         }
     }),
     SPECTATE_SPAWN((player, playerData) -> {
         SpectatorMode spectator = Brawl.getInstance().getSpectatorManager().getSpectator(player);
         if (spectator != null) { // Make sure they are actually spectating
             spectator.setTeleportTo(LocationType.SPAWN.getLocation());
-            spectator.setSpectating(SpectatorMode.SpectatorType.DUEL_ARENA);
             spectator.spectate(null);
+            spectator.setSpectating(SpectatorMode.SpectatorType.SPAWN);
 
         }
     }),

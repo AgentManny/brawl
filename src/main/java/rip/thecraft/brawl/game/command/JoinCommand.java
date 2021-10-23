@@ -15,7 +15,7 @@ public class JoinCommand {
     public static void execute(Player sender) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(sender);
         if (Brawl.getInstance().getGameHandler().getActiveGame() != null) {
-            sender.sendMessage(CC.RED + "Event has already started.");
+            sender.sendMessage(CC.RED + "Game has already started.");
             return;
         }
 
@@ -25,7 +25,7 @@ public class JoinCommand {
             return;
         }
 
-        if (playerData.isSpawnProtection() && !playerData.isEvent() && !lobby.getPlayers().contains(sender.getUniqueId())) {
+        if ((playerData.isSpawnProtection() || playerData.isDuelArena()) && !playerData.isEvent() && !lobby.getPlayers().contains(sender.getUniqueId())) {
             lobby.join(sender);
         } else {
             sender.sendMessage(ChatColor.RED + "You need to be in spawn to join events.");

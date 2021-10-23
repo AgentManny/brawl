@@ -10,6 +10,7 @@ import com.mongodb.BasicDBObject;
 import lombok.Getter;
 import mkremins.fanciful.FancyMessage;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.WordUtils;
 import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -92,7 +93,7 @@ public class DuelArenaHandler {
         return quickmatch != null || !unrankedQueue.isEmpty();
     }
 
-    private void refreshQuickqueue() {
+    public void refreshQuickqueue() {
         for (Player other : Bukkit.getOnlinePlayers()) {
             PlayerData targetData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(other);
             if (targetData.isDuelArena() && !isInMatch(other)) {
@@ -107,7 +108,11 @@ public class DuelArenaHandler {
 
         Arena arena = getArena(loadout.getArena());
         if (arena == null) {
-            players.forEach(player -> player.sendMessage(ChatColor.RED + "There are no arenas available to create a match. Please try again later."));
+            players.forEach(player -> {
+                player.sendMessage(ChatColor.RED + "There are no arenas available for " + ChatColor.YELLOW + WordUtils.capitalizeFully(loadout.getArena().name().toLowerCase()) + ChatColor.RED + ". Please queue again later.");
+                DuelArena.respawn(player, false);
+            });
+            refreshQuickqueue();
             return;
         }
 
@@ -267,7 +272,7 @@ public class DuelArenaHandler {
             }
 
             Brawl.getInstance().getItemHandler().apply(clicker, InventoryType.QUEUE);
-            clicker.sendMessage(ChatColor.YELLOW + "You were added to the " + ChatColor.LIGHT_PURPLE + "Quickmatch" + ChatColor.YELLOW + " queue.");
+            clicker.sendMessage(ChatColor.GREEN + "You have joined the " + ChatColor.LIGHT_PURPLE + "Quickmatch" + ChatColor.GREEN + " queue.");
             clicker.playSound(clicker.getLocation(), Sound.NOTE_PIANO, 20F, 15F);
         } else {
             Player existing = Bukkit.getPlayer(quickmatch);
@@ -327,9 +332,8 @@ public class DuelArenaHandler {
 
         refreshQuickqueue();
 
-        clicker.sendMessage(ChatColor.YELLOW + "You were added to the " + ChatColor.LIGHT_PURPLE + "Unranked " + loadout.getName() + ChatColor.YELLOW + " queue.");
+        clicker.sendMessage(ChatColor.GREEN + "You have joined the " + ChatColor.LIGHT_PURPLE + loadout.getColor() + loadout.getName() + ChatColor.GREEN + " queue.");
         Brawl.getInstance().getItemHandler().apply(clicker, InventoryType.QUEUE);
-
     }
 
     private static boolean RANKED_DISABLED  = true;
@@ -354,7 +358,7 @@ public class DuelArenaHandler {
 
         task.runTaskTimer(Brawl.getInstance(), 20L, 20L);
 
-        clicker.sendMessage(ChatColor.YELLOW + "You were added to the " + ChatColor.LIGHT_PURPLE + "Ranked " + loadout.getName() + ChatColor.YELLOW + " queue.");
+        clicker.sendMessage(ChatColor.GREEN + "You have joined the " + ChatColor.LIGHT_PURPLE + loadout.getColor() + "Ranked " + loadout.getName() + ChatColor.GREEN + " queue.");
         Brawl.getInstance().getItemHandler().apply(clicker, InventoryType.QUEUE);
     }
 
@@ -374,7 +378,7 @@ public class DuelArenaHandler {
         } else return; // weird thing
 
 
-        player.sendMessage(ChatColor.YELLOW + "You were removed from the " + ChatColor.LIGHT_PURPLE + type.getName() + (loadout == null ? "" : " " + loadout.getName()) + ChatColor.YELLOW + " queue.");
+        player.sendMessage(ChatColor.RED + "You have left the " + (loadout == null ? ChatColor.LIGHT_PURPLE + type.getName() : loadout.getColor() + (type == QueueType.RANKED ? type.getName() + " " : "") + loadout.getName()) + ChatColor.RED + " queue.");
         cleanup(player.getUniqueId());
         for (Player other : Bukkit.getOnlinePlayers()) {
             if (other == player) continue;
@@ -410,7 +414,6 @@ public class DuelArenaHandler {
 
         if (quickmatch == uuid) {
             quickmatch = null;
-
         }
 
         PlayerData pd = Brawl.getInstance().getPlayerDataHandler().getPlayerData(uuid);

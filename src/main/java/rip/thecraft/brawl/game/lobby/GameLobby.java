@@ -19,6 +19,7 @@ import rip.thecraft.brawl.game.map.GameMap;
 import rip.thecraft.brawl.game.team.GameTeam;
 import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.brawl.util.location.LocationType;
@@ -61,15 +62,26 @@ public class GameLobby {
     }
 
     public void join(Player player) {
-        this.players.add(player.getUniqueId());
-
         PlayerData playerData = brawl.getPlayerDataHandler().getPlayerData(player);
+        boolean wasDuelArena = playerData.isDuelArena();
+        if (wasDuelArena) {
+            if (playerData.getPlayerState() == PlayerState.MATCH) {
+                player.sendMessage(ChatColor.RED + "You cannot join events while in a match.");
+                return;
+            }
+            brawl.getMatchHandler().cleanup(player.getUniqueId());
+            brawl.getMatchHandler().refreshQuickqueue();
+        }
+
         playerData.setSpawnProtection(false);
-        playerData.setSelectedKit(null);
         playerData.setDuelArena(false);
+        if (playerData.getSelectedKit() != null) {
+            playerData.setPreviousKit(playerData.getSelectedKit());
+            playerData.setSelectedKit(null);
+        }
         playerData.setEvent(true);
 
-
+        this.players.add(player.getUniqueId());
         this.broadcast(Game.PREFIX + ChatColor.WHITE + player.getDisplayName() + ChatColor.YELLOW + " has joined the event." + ChatColor.GRAY + " (" + this.players.size() + "/" + gameType.getMaxPlayers() + ")");
 
         player.teleport(LocationType.GAME_LOBBY.getLocation());

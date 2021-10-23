@@ -1,6 +1,7 @@
 package rip.thecraft.brawl.duelarena;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.item.type.InventoryType;
@@ -11,7 +12,7 @@ import rip.thecraft.spartan.nametag.NametagHandler;
 
 public class DuelArena {
 
-    public static final boolean DISABLED = false;
+    public static final boolean DISABLED = false; // Todo make disabling core features configurable in game in case there is a bug
 
     public static void join(Player player) {
         if (DISABLED) {
@@ -48,7 +49,12 @@ public class DuelArena {
             NametagHandler.reloadOthersFor(player);
         }
 
-        player.teleport(LocationType.ARENA.getLocation());
+        Location location = LocationType.ARENA.getLocation();
+        int yaw = (Brawl.RANDOM.nextInt(4) - 2) * 90;
+        if (yaw != 0) {
+            location.setYaw(yaw);
+        }
+        player.teleport(location);
     }
 
     public static void respawn(Player player, boolean teleport) {
@@ -87,6 +93,8 @@ public class DuelArena {
             player.sendMessage(ChatColor.RED + "You cannot warp while in a match.");
             return;
         }
+
+        Brawl.getInstance().getMatchHandler().leaveQueue(player);
 
         playerData.setSpawnProtection(true);
         playerData.setDuelArena(false);

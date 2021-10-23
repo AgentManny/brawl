@@ -26,6 +26,7 @@ import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.region.RegionType;
+import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.falcon.staff.StaffMode;
 import rip.thecraft.server.handler.MovementHandler;
 
@@ -98,7 +99,21 @@ public class MovementListener implements MovementHandler, Listener {
             }
 
             if (StaffMode.hasStaffMode(player)) return;
-            if (state == PlayerState.SPECTATING) return;
+
+            if (playerData.isSpectating()) {
+                SpectatorMode spectatorMode = plugin.getSpectatorManager().getSpectator(player);
+                int maxRadius = spectatorMode.getMaxRadius();
+                Location teleportTo = spectatorMode.getTeleportTo();
+                if (teleportTo != null && maxRadius > 0) {
+                    double distance = to.distance(teleportTo);
+                    if (distance > maxRadius) {
+                        player.teleport(teleportTo);
+                        player.sendMessage(ChatColor.RED + "You can't go more than " + maxRadius + " blocks from your Spectating point.");
+                    }
+                }
+                return;
+            }
+
             if (player.getGameMode() == GameMode.CREATIVE) return;
 
             if (playerData.isSpawnProtection()) {

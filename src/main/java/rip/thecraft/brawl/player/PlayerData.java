@@ -108,6 +108,8 @@ public class PlayerData {
     public void load() {
         Player player = getPlayer();
         if (player == null) return;
+
+        level.updateExp(player);
     }
 
     public Document toDocument() {
@@ -218,6 +220,11 @@ public class PlayerData {
     public void save() {
         needsSaving = false;
         Brawl.getInstance().getPlayerDataHandler().setDocument(this.toDocument(), this.uuid);
+    }
+
+    public boolean isSpectating() {
+        Player player = getPlayer();
+        return player != null && Brawl.getInstance().getSpectatorManager().isSpectating(player);
     }
 
     public PlayerState getPlayerState() {
