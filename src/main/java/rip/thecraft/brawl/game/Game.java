@@ -129,9 +129,14 @@ public abstract class Game {
 
             Brawl.getInstance().getSpectatorManager().removeSpectators(SpectatorMode.SpectatorType.GAME, this);
 
+            clear();
             Brawl.getInstance().getGameHandler().destroy();
 
         }, 60);
+    }
+
+    public void clear() {
+
     }
 
     public void setup() {

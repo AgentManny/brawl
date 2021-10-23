@@ -103,7 +103,7 @@ public class DamageListener implements Listener {
                 break;
             }
         }
-
+        
         Player killer = player.getKiller();
         if(killer != null && !killer.getUniqueId().equals(player.getUniqueId())) {
 

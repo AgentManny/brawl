@@ -78,6 +78,8 @@ public class PlayerData {
 
     private Level level = new Level(this);
 
+    private int globalKitPasses = 0; // Choose any kit for trialing
+
     private Kit unlockingKit; // Kit that player is trying to unlock
     private List<String> unlockedKits = new ArrayList<>();
 
@@ -129,6 +131,7 @@ public class PlayerData {
                 .append("previous-kit", this.previousKit == null ? null : this.previousKit.getName())
                 .append("unlocking-kit", this.unlockingKit == null ? null : this.unlockingKit.getName())
                 .append("unlocked-kits", this.unlockedKits)
+                .append("global-kit-passes", globalKitPasses)
                 .append("cooldown", cooldownMap)
                 .append("rentals", this.kitRentals)
                 .append("gameRentals", this.gameRentals)
@@ -161,6 +164,8 @@ public class PlayerData {
         if (document.containsKey("unlocked-kits")) {
             this.unlockedKits = (List<String>) document.get("unlocked-kits");
         }
+
+        this.globalKitPasses = document.getInteger("global-kit-passes", 0);
 
         Map<String, Document> cooldowns = (Map<String, Document>) document.get("cooldown");
         cooldowns.forEach((name, cooldownDocument) -> this.cooldownMap.put(name, new Cooldown(cooldownDocument)));

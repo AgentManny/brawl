@@ -21,6 +21,7 @@ import rip.thecraft.brawl.game.GameState;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.util.BukkitUtil;
+import rip.thecraft.brawl.util.DurationFormatter;
 import rip.thecraft.brawl.util.cuboid.Cuboid;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.ItemBuilder;
@@ -33,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 
 public class WoolShuffle extends Game implements Listener {
 
-    private static final long MINIMUM_TIME = TimeUnit.SECONDS.toMillis(2);
+    private static final long MINIMUM_TIME = 1750;
     private static final long DEFAULT_TIME = TimeUnit.SECONDS.toMillis(15);
     private long currentTime;
 
@@ -57,7 +58,7 @@ public class WoolShuffle extends Game implements Listener {
     @Override
     public void setup() {
         this.currentTime = System.currentTimeMillis() + DEFAULT_TIME;
-        this.round = 1;
+        this.round = 0;
         chosenColor = getRandomColor();
         posOne = getLocationByName("Pos1");
         posTwo = getLocationByName("Pos2");
@@ -73,20 +74,23 @@ public class WoolShuffle extends Game implements Listener {
     }
 
     @Override
+    public void clear() {
+        setArea(DyeColor.WHITE);
+    }
+
+    @Override
     public void end() {
         if (task != null) {
             task.cancel();
             task = null;
         }
-        setArea(DyeColor.WHITE);
-
         super.end();
     }
 
     public void startRound() {
         if (this.state == GameState.ENDED || this.state == GameState.FINISHED) return;
         state = GameState.GRACE_PERIOD;
-
+        round++;
 
         if (task != null) {
             task.cancel();
@@ -100,7 +104,7 @@ public class WoolShuffle extends Game implements Listener {
                     start();
                     // Add people their wool
                     setTime(-1);
-                    this.cancel();
+                    cancel();
                     return;
                 }
 
@@ -127,8 +131,7 @@ public class WoolShuffle extends Game implements Listener {
     @Override
     public void start() {
         state = GameState.STARTED;
-        round++;
-        this.currentTime = System.currentTimeMillis() + Math.max(MINIMUM_TIME, DEFAULT_TIME / round);
+        this.currentTime = System.currentTimeMillis() + getMaxTime();
         chosenColor = getRandomColor();
 
         regenerate();
@@ -142,8 +145,7 @@ public class WoolShuffle extends Game implements Listener {
                 }
 
                 int millisLeft = (int) (currentTime - System.currentTimeMillis());
-                float percentLeft = (float) millisLeft / Math.max(MINIMUM_TIME, DEFAULT_TIME / round);
-
+                float percentLeft = (float) millisLeft / getMaxTime();
 
                 getAlivePlayers().forEach(gamePlayer -> {
                     Player player = gamePlayer.toPlayer();
@@ -153,8 +155,10 @@ public class WoolShuffle extends Game implements Listener {
             }
 
         }.runTaskTimer(Brawl.getInstance(), 1L, 1L);
+    }
 
-
+    public long getMaxTime() {
+        return Math.max(MINIMUM_TIME, DEFAULT_TIME / Math.max(round, 1));
     }
 
     private Multimap<DyeColor, Location> blockData = ArrayListMultimap.create(); // Allows to remove specific colours
@@ -217,6 +221,7 @@ public class WoolShuffle extends Game implements Listener {
             for (int i = 0; i < 9; i++) {
                 player.getInventory().setItem(i, null);
             }
+            player.playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1, 1);
             player.updateInventory();
         });
 
@@ -229,11 +234,18 @@ public class WoolShuffle extends Game implements Listener {
         List<String> toReturn = new ArrayList<>();
         toReturn.add(ChatColor.WHITE + "Game: " + ChatColor.LIGHT_PURPLE + getType().getShortName());
         toReturn.add(CC.WHITE + "Players: " + CC.LIGHT_PURPLE + getAlivePlayers().size() + "/" + getPlayers().size());
-        toReturn.add(CC.WHITE + "Round: " + CC.LIGHT_PURPLE + this.round + (state == GameState.STARTED ? CC.GRAY + " (" + TimeUnit.MILLISECONDS.toSeconds(currentTime - System.currentTimeMillis()) + "s)" : ""));
-        toReturn.add(CC.BLUE + "   ");
+        toReturn.add("    ");
+        if (state != GameState.FINISHED) {
+            long millisLeft = currentTime - System.currentTimeMillis();
+            toReturn.add(CC.WHITE + "Round: " + CC.LIGHT_PURPLE + this.round + (state == GameState.STARTED && millisLeft > 0 ? CC.GRAY + " (" + DurationFormatter.getTrailing(millisLeft) + "s)" : ""));
+            toReturn.add(CC.WHITE + "Round Speed: " + CC.LIGHT_PURPLE + DurationFormatter.getRemaining(getMaxTime()));
+            toReturn.add(CC.BLUE + "   ");
+        }
         if (this.state == GameState.STARTED) {
             toReturn.add(CC.WHITE + "Color: "  + (chosenColor == null ? "None" : BukkitUtil.getFriendlyName(chosenColor)));
         } else if (this.state == GameState.FINISHED) {
+            toReturn.add(CC.WHITE + "Final Round: " + CC.LIGHT_PURPLE + this.round);
+            toReturn.add(CC.BLUE + "   ");
             boolean winners = this.winners.size() > 1;
             if (winners) {
                 toReturn.add(CC.WHITE + "Winners: ");

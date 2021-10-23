@@ -13,6 +13,7 @@ public class AbilityCommand {
 
     @Command(names = { "ability" }, permission = "op", description = "Manage abilities")
     public static void manage(Player sender, Ability ability) {
+        sender.sendMessage();
         sender.sendMessage(ability.getColor() + ability.getName() + ChatColor.GOLD + " properties:");
 //        ability.getProperties().forEach((name, property) -> {
 //            new FancyMessage(ChatColor.GRAY + " - " + ChatColor.GOLD + WordUtils.capitalizeFully(name) + ": " + ChatColor.WHITE + property.toString())
