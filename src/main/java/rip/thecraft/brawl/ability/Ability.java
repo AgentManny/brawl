@@ -27,6 +27,8 @@ import rip.thecraft.spartan.util.Cooldown;
 import rip.thecraft.spartan.util.ItemBuilder;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Getter
@@ -117,6 +119,25 @@ public abstract class Ability {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Get properties of abilities that are configurable
+     * @return Ability properties
+     */
+    public Map<String, Field> getProperties() {
+        Map<String, Field> properties = new HashMap<>();
+        for (Field field : getClass().getFields()) {
+            try {
+                AbilityProperty property = field.getAnnotation(AbilityProperty.class);
+                if (property != null) {
+                    properties.put(property.id(), field);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return properties;
     }
 
     /**
