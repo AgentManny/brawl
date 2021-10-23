@@ -4,10 +4,10 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.duelarena.DuelArenaHandler;
 import rip.thecraft.brawl.util.VisibilityUtils;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -50,6 +50,11 @@ public class SpectatorManager implements Listener {
     public SpectatorMode addSpectator(Player spectator, Player target, Location location) {
         SpectatorMode spectatorMode = SpectatorMode.init(spectator, target, location);
         spectators.put(spectator.getUniqueId(), spectatorMode);
+
+        DuelArenaHandler matchHandler = Brawl.getInstance().getMatchHandler();
+        matchHandler.cleanup(spectator.getUniqueId());
+        matchHandler.refreshQuickqueue();
+
         VisibilityUtils.updateVisibility(spectator);
         return spectatorMode;
     }
