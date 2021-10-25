@@ -46,7 +46,8 @@ public class GameHandler {
                 new WoolShuffle(),
                 new Brackets(),
                 new Thimble(),
-                new Arcade()
+                new Arcade(),
+                new Wool()
         ).forEach(this::register);
     }
 

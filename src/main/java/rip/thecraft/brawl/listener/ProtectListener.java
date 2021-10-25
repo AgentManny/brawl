@@ -100,9 +100,9 @@ public class ProtectListener implements Listener {
 
     @EventHandler
     public void onArrowStrike(ProjectileHitEvent event) {
-        if (event.getEntity() instanceof Arrow) {
-            event.getEntity().remove();
-        }
+//        if (event.getEntity() instanceof Arrow) {
+//            event.getEntity().remove();
+//        }
     }
 
     @EventHandler
@@ -172,14 +172,7 @@ public class ProtectListener implements Listener {
             e.setCancelled(true);
     }
 
-    @EventHandler
-    public void onBlockBreak(BlockPlaceEvent event) {
-        if (!event.getPlayer().hasMetadata("build")) {
-            event.setBuild(false);
-            event.setCancelled(true);
-            return;
-        }
-    }
+
 
     @EventHandler
     public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
@@ -247,6 +240,31 @@ public class ProtectListener implements Listener {
     }
 
     @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        Player player = event.getPlayer();
+
+        GameHandler gh = plugin.getGameHandler();
+        if (gh.getActiveGame() != null && gh.getActiveGame().containsPlayer(player) && gh.getActiveGame().getGamePlayer(player).isAlive()){
+            if (gh.getActiveGame().containsOption(StoreBlockOption.class)) {
+                StoreBlockOption option = (StoreBlockOption) gh.getActiveGame().getOptions().get(StoreBlockOption.class);
+                if (option.getAllowedBlocks().contains(event.getBlockPlaced().getType())) {
+                    option.getData().put(event.getBlockReplacedState().getLocation(), event.getBlockReplacedState());
+
+                    event.setBuild(true);
+                    event.setCancelled(false);
+                    return;
+                }
+            }
+        }
+
+        if (!event.getPlayer().hasMetadata("build")) {
+            event.setBuild(false);
+            event.setCancelled(true);
+            return;
+        }
+    }
+
+    @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
 
         Player player = event.getPlayer();
@@ -257,6 +275,16 @@ public class ProtectListener implements Listener {
             if (gh.getActiveGame().containsOption(StoreBlockOption.class)) {
                 StoreBlockOption option = (StoreBlockOption) gh.getActiveGame().getOptions().get(StoreBlockOption.class);
                 if (option.getAllowedBlocks().contains(event.getBlock().getType())) {
+                    if(option.getData().containsKey(event.getBlock().getLocation())){
+                        event.getBlock().setType(Material.AIR);
+
+                        if (!option.getPickable().isEmpty()) {
+                            int range = ThreadLocalRandom.current().nextInt(1, option.getRandomRange());
+                            option.getPickable().forEach(material -> player.getInventory().addItem(new ItemStack(material, range)));
+                        }
+                        return;
+                    }
+
                     option.getData().put(event.getBlock().getLocation(), event.getBlock().getState());
 
                     event.getBlock().setType(Material.AIR);
