@@ -208,7 +208,7 @@ public class GameLobby {
 
         for (SpectatorMode spectator : brawl.getSpectatorManager().getSpectators()) {
             if (spectator.getSpectating() == SpectatorMode.SpectatorType.GAME_LOBBY) {
-                spectator.spectateGame(); // Re-spectate to game
+                spectator.spectate(SpectatorMode.SpectatorType.GAME);
             }
         }
 

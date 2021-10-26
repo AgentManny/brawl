@@ -7,6 +7,7 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
+import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.brawl.util.location.LocationType;
 import rip.thecraft.spartan.nametag.NametagHandler;
 
@@ -26,6 +27,12 @@ public class DuelArena {
             return;
         }
 
+        if (playerData.isSpectating()) {
+            SpectatorMode spectator = Brawl.getInstance().getSpectatorManager().getSpectator(player);
+            spectator.spectate(SpectatorMode.SpectatorType.DUEL_ARENA);
+            return;
+        }
+        
         if (!playerData.isSpawnProtection()) {
             player.sendMessage(ChatColor.RED + "You must have spawn protection to warp to duel arena.");
             return;

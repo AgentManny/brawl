@@ -6,6 +6,7 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
+import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.brawl.warp.Warp;
 import rip.thecraft.brawl.warp.WarpManager;
 import rip.thecraft.spartan.command.Command;
@@ -18,7 +19,10 @@ public class WarpCommand {
     @Command(names = {"warp", "warps", "go", "goto"})
     public static void execute(Player sender, @Param(defaultValue = "list", name = "warp") Warp warp) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(sender);
-        if (playerData.getPlayerState() == PlayerState.SPAWN || playerData.getPlayerState() == PlayerState.FIGHTING) {
+        if (playerData.isSpectating()) {
+            SpectatorMode spectator = Brawl.getInstance().getSpectatorManager().getSpectator(sender);
+            spectator.spectate(warp);
+        } else if (playerData.getPlayerState() == PlayerState.SPAWN || playerData.getPlayerState() == PlayerState.FIGHTING) {
             if(playerData.hasCombatLogged()){
                 sender.sendMessage(ChatColor.RED + "You cannot warp while in combat.");
                 return;

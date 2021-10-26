@@ -16,7 +16,6 @@ import rip.thecraft.brawl.leaderboard.menu.LeaderboardMenu;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.brawl.spectator.menu.SpectatorPlayerMenu;
-import rip.thecraft.brawl.util.location.LocationType;
 
 import java.util.function.BiConsumer;
 
@@ -74,25 +73,21 @@ public enum MetadataType {
     SPECTATE_GAME((player, playerData) -> {
         SpectatorMode spectator = Brawl.getInstance().getSpectatorManager().getSpectator(player);
         if (spectator != null) { // Make sure they are actually spectating
-            spectator.spectateGame();
+            spectator.spectate(SpectatorMode.SpectatorType.GAME);
         }
     }),
 
     SPECTATE_ARENA((player, playerData) -> {
         SpectatorMode spectator = Brawl.getInstance().getSpectatorManager().getSpectator(player);
         if (spectator != null) { // Make sure they are actually spectating
-            spectator.setTeleportTo(LocationType.ARENA.getLocation());
-            spectator.spectate(null);
-            spectator.setSpectating(SpectatorMode.SpectatorType.DUEL_ARENA);
+            spectator.spectate(SpectatorMode.SpectatorType.DUEL_ARENA);
         }
     }),
+
     SPECTATE_SPAWN((player, playerData) -> {
         SpectatorMode spectator = Brawl.getInstance().getSpectatorManager().getSpectator(player);
         if (spectator != null) { // Make sure they are actually spectating
-            spectator.setTeleportTo(LocationType.SPAWN.getLocation());
-            spectator.spectate(null);
-            spectator.setSpectating(SpectatorMode.SpectatorType.SPAWN);
-
+            spectator.spectate(SpectatorMode.SpectatorType.SPAWN);
         }
     }),
 

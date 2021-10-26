@@ -22,6 +22,7 @@ import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.util.VisibilityUtils;
 import rip.thecraft.brawl.util.location.LocationType;
+import rip.thecraft.brawl.warp.Warp;
 import rip.thecraft.spartan.nametag.NametagHandler;
 
 import java.util.ArrayList;
@@ -44,12 +45,11 @@ public class SpectatorMode {
     private Player spectatedPlayer;
     private UUID follow; // If they are following a player
 
+    private Warp warp; // If they are spectating a warp
+
     private Match match; // If they are spectating a match
     private GameLobby lobby; // If they spectating a game beforehand.
     private Game game; // If they are spectating an event
-
-    // Debug
-    private List<UUID> hiddenPlayers = new ArrayList<>();
 
     protected static SpectatorMode init(Player spectator) {
         return init(spectator, spectator, null);
@@ -81,6 +81,7 @@ public class SpectatorMode {
         return mode;
     }
 
+    @Deprecated
     public void spectateGame() {
         Player spectator = getPlayer();
         GameLobby lobby = Brawl.getInstance().getGameHandler().getLobby();
@@ -102,16 +103,89 @@ public class SpectatorMode {
     }
 
     public int getMaxRadius() {
-        switch (spectating) {
-            case MATCH:
-            case DUEL_ARENA: {
-                return 100;
-            }
-        }
-        return 200;
+        return spectating.radius;
     }
 
     public void spectate(Player spectating) {
+        spectate(spectating, SpectatorType.SPAWN);
+    }
+
+    public void spectate(Warp warp) {
+        Player player = getPlayer();
+        if (player == null) {
+            leave();
+            return;
+        }
+
+        cleanup();
+        teleportTo = warp.getLocation();
+        spectating = SpectatorType.WARP;
+
+        teleport();
+        player.sendMessage(ChatColor.GREEN + "You are now spectating: " + ChatColor.WHITE + "Warp (" + warp.getName() + ")");
+    }
+
+    public void spectate() {
+        spectate(lastState == PlayerState.ARENA ? SpectatorType.DUEL_ARENA : SpectatorType.SPAWN);
+    }
+
+    public void spectate(SpectatorType spectatorType) {
+        Player player = getPlayer();
+        if (player == null) {
+            leave();
+            return;
+        }
+
+        cleanup();
+
+        Location location;
+        String message = spectatorType.getName();
+        switch (spectatorType) {
+            case NONE:
+            case SPAWN: {
+                location = LocationType.SPAWN.getLocation();
+                break;
+            }
+            case DUEL_ARENA: {
+                location = LocationType.ARENA.getLocation();
+                break;
+            }
+            case GAME_LOBBY:
+            case GAME: {
+                GameLobby lobby = Brawl.getInstance().getGameHandler().getLobby();
+                Game game = Brawl.getInstance().getGameHandler().getActiveGame();
+                if (lobby == null && game == null) {
+                    player.sendMessage(ChatColor.RED + "There isn't any games to spectate.");
+                    return;
+                }
+
+                location = lobby != null ? LocationType.GAME_LOBBY.getLocation() : game.getDefaultLocation();
+                this.game = game;
+                this.lobby = lobby;
+                spectatorType = lobby != null ? SpectatorType.GAME_LOBBY : SpectatorType.GAME;
+                message = "Game Lobby (" + lobby.getGameType().getShortName() + ")";
+                break;
+            }
+            default: {
+                player.sendMessage(ChatColor.RED + "You can't spectate a " + ChatColor.YELLOW + spectatorType.name.toLowerCase() + ChatColor.RED + " as it requires a parameter.");
+                return;
+            }
+        }
+
+        if (location != null) {
+            teleportTo = location;
+            spectating = spectatorType;
+
+            teleport();
+            player.sendMessage(ChatColor.GREEN + "You are now spectating: " + ChatColor.WHITE + message);
+        }
+    }
+
+    public void teleport() {
+        getPlayer().teleport(teleportTo);
+    }
+
+    public void spectate(Player spectating, SpectatorType type) {
         Player spectator = getPlayer();
         if (spectator == null) {
             leave();
@@ -126,7 +200,6 @@ public class SpectatorMode {
         cleanup();
 
         List<UUID> hiddenPlayers = new ArrayList<>();
-        SpectatorType type = SpectatorType.SPAWN;
         Location location = LocationType.SPAWN.getLocation();
         String message = null;
 
@@ -154,8 +227,8 @@ public class SpectatorMode {
 
                 message =
                         playerOne.getName() + (queue == QueueType.RANKED ? " (" + playerOneData.getStatistic().get(loadout) + ")" : "") +
-                        " vs. " +
-                        playerTwo.getName() + (queue == QueueType.RANKED ? " (" + playerTwoData.getStatistic().getArenaStatistics().get(loadout) + ")" : "");
+                                " vs. " +
+                                playerTwo.getName() + (queue == QueueType.RANKED ? " (" + playerTwoData.getStatistic().getArenaStatistics().get(loadout) + ")" : "");
 
                 type = SpectatorType.MATCH;
             } else if (lobby != null) {
@@ -167,9 +240,8 @@ public class SpectatorMode {
             } else if (game != null) {
                 type = SpectatorType.GAME;
                 location = game.getDefaultLocation();
-                message = game.getType().getName();
+                message = game.getType().getShortName();
                 this.game = game;
-
             } else {
                 type = SpectatorType.PLAYER;
                 spectatedPlayer = spectating;
@@ -182,29 +254,10 @@ public class SpectatorMode {
             spectator.sendMessage(ChatColor.GREEN + "You are now spectating: " + ChatColor.WHITE + message);
         }
         spectator.teleport(teleportTo == null ? location : teleportTo);
-//        this.teleportTo = null;
-
         this.spectating = type;
-
-        // debug
-        this.hiddenPlayers.addAll(hiddenPlayers);
 
         NametagHandler.reloadPlayer(spectator);
         NametagHandler.reloadOthersFor(spectator);
-    }
-
-    public void updateVisibility() {
-        Player spectator = getPlayer();
-        if (spectator == null) {
-            leave();
-            return;
-        }
-
-        List<UUID> hiddenPlayers = new ArrayList<>(this.hiddenPlayers); // Store so we don't re-hide already hidden players
-        for (Player player : Bukkit.getOnlinePlayers()) {
-
-        }
-
     }
 
     public void leave() {
@@ -223,7 +276,6 @@ public class SpectatorMode {
             PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
             playerData.getLevel().updateExp(player);
             playerData.setSpawnProtection(true);
-
             if (lastState == PlayerState.ARENA) {
                 DuelArena.join(player);
             } else { // Don't care about other states we're just going to teleport them back to spawn
@@ -234,21 +286,8 @@ public class SpectatorMode {
         }
     }
 
-    public boolean treatAsVisible(Player target, SpectatorMode spectatorMode) {
-        if (spectatorMode != null) {
-            if (showSpectators) {
-                if (match != null && spectatorMode.getMatch() != null) {
-                    return match == spectatorMode.getMatch(); // Could be watching different matches in same arena
-                } else if (game != null && spectatorMode.getGame() != null && game.getSpectators().contains(target.getUniqueId())) {
-                    return true;
-                }
-                return spectatorMode.getSpectating() == spectating;
-            }
-        }
-        return false;
-    }
-
     private void cleanup() {
+        this.warp = null;
         this.match = null;
         this.lobby = null;
         this.game = null;
@@ -264,16 +303,18 @@ public class SpectatorMode {
     @AllArgsConstructor
     public enum SpectatorType {
 
-        SPAWN("Warzone"),
-        DUEL_ARENA("Duel Arena"),
-        GAME_LOBBY("Game Lobby"),
+        SPAWN("Warzone", 200),
+        WARP("Warp", 100),
 
-        MATCH("Match"),
-        GAME("Game"),
-        PLAYER("Player"),
-        NONE("None");
+        DUEL_ARENA("Duel Arena", 100),
+        GAME_LOBBY("Game Lobby", 50),
+
+        MATCH("Match", 100),
+        GAME("Game", 150),
+        PLAYER("Player", 150),
+        NONE("None", -1);
 
         private String name;
-
+        private int radius;
     }
 }
