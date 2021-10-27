@@ -8,6 +8,7 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.game.map.GameMap;
 import rip.thecraft.brawl.game.map.GameMapHandler;
+import rip.thecraft.brawl.region.selection.Selection;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.command.Command;
 
@@ -43,6 +44,40 @@ public class GameMapCommand {
 
         mapHandler.removeMap(gameType, mapHandler.getMapByName(gameType, mapName));
         sender.sendMessage(ChatColor.RED + "Removed map " + mapName + " for " + gameType + ".");
+    }
+
+    @Command(names = { "game map addselection", "game map addsel" }, permission = "op")
+    public static void addSelection(Player sender, GameType gameType, String mapName, String selectionName) {
+        GameMapHandler mapHandler = Brawl.getInstance().getGameHandler().getMapHandler();
+        GameMap map = mapHandler.getMapByName(gameType, mapName);
+        if (map == null) {
+            sender.sendMessage(ChatColor.RED + "Game map " + mapName + " not found for " + gameType.getName() + ".");
+            return;
+        }
+
+        Selection selection = Selection.createOrGetSelection(sender);
+
+        if (!selection.isFullObject()) {
+            sender.sendMessage(ChatColor.RED + "You don't have a selection selected");
+            return;
+        }
+
+        if (gameType.isRandomLocations()) {
+            sender.sendMessage(ChatColor.RED + gameType.getShortName() + " does not support selections.");
+            return;
+        }
+
+        List<String> requiredLocations = gameType.getRequiredLocations();
+        for (int i = 1; i <= 2; i++) {
+            String locName = selectionName + i;
+            if (!requiredLocations.contains(locName)) {
+                sender.sendMessage(ChatColor.RED + "Selection cannot be created as " + locName + " is not a valid location for " + gameType.getShortName() + ".");
+                return;
+            }
+            map.getLocations().put(locName, i == 1 ? selection.getPoint1() : selection.getPoint2());
+            sender.sendMessage(ChatColor.GREEN + "Added " + ChatColor.WHITE + locName + ChatColor.GREEN + " location " + ChatColor.WHITE + map.getName() + ChatColor.GREEN + " for " + gameType.getName() + " game.");
+        }
+        sender.sendMessage(ChatColor.GREEN + "Added selection");
     }
 
     @Command(names = { "game map addlocation", "game map addloc" }, permission = "op")

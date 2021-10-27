@@ -77,7 +77,7 @@ public enum GameType {
 			"Jump in the water and avoid obstacles. Last man standing wins.",
 			2,
 			50,
-			Arrays.asList("Lobby", "Jump", "Pos1", "Pos2")
+			Arrays.asList("Lobby", "Jump", "Platform1", "Platform2", "JumpPlatform1", "JumpPlatform2")
 	),
 
 	TNT_TAG("TNT Tag", "Tag",

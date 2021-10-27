@@ -3,17 +3,20 @@ package rip.thecraft.brawl.listener;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.Potion;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
@@ -176,5 +179,19 @@ public class PlayerListener implements Listener {
         });
     }
 
-
+    private static final String NOT_ENOUGH_POWER_METADATA = "Arrow_Punch";
+    @EventHandler
+    public void onArcher(EntityShootBowEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            Arrow projectile = (Arrow) event.getProjectile();
+            if (projectile.getKnockbackStrength() >= 1 && event.getForce() < 0.90f) {
+                projectile.setKnockbackStrength(0);
+                if (!player.hasMetadata(NOT_ENOUGH_POWER_METADATA) || player.getMetadata(NOT_ENOUGH_POWER_METADATA, Brawl.getInstance()).asLong() < System.currentTimeMillis()) {
+                    player.setMetadata(NOT_ENOUGH_POWER_METADATA, new FixedMetadataValue(Brawl.getInstance(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(5)));
+                    player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Archer! " + ChatColor.GRAY + "Bow requires to be fully drawn for " + ChatColor.YELLOW + "Punch" + ChatColor.GRAY + " to be applied.");
+                }
+            }
+        }
+    }
 }

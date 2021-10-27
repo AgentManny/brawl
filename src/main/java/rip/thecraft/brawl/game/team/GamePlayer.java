@@ -41,6 +41,14 @@ public class GamePlayer {
         return Brawl.getInstance().getPlayerDataHandler().getPlayerData(this.uniqueId);
     }
 
+    public void setExp(int level, float experience) {
+        Player player = toPlayer();
+        if (player != null) {
+            player.setExp(experience);
+            player.setLevel(level);
+        }
+    }
+
     public void spawn() {
         Player player = toPlayer();
         if (player == null) return;

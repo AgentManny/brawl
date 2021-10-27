@@ -8,6 +8,7 @@ public enum GameElimination {
     WATER,
     PLAYER,
     DEATH,
+    FALL("fell from a high place"),
     OTHER("gave up"),
     LEFT("left"),
     QUIT("disconnected");

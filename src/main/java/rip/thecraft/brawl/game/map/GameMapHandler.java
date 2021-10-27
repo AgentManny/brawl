@@ -6,11 +6,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lombok.Getter;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.GameHandler;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.spartan.Spartan;
-import lombok.Getter;
 
 import java.io.File;
 import java.io.FileReader;
@@ -59,7 +59,7 @@ public class GameMapHandler {
 
     public List<String> getRequiredLocations(GameType gameType, GameMap map) {
         return gameType.getRequiredLocations().stream()
-                .filter(map.getLocations().keySet()::contains)
+                .filter(location -> !map.getLocations().containsKey(location))
                 .collect(Collectors.toList());
     }
 

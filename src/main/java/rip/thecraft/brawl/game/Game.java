@@ -75,6 +75,7 @@ public abstract class Game {
                 NametagHandler.reloadOthersFor(player);
             }
         });
+        defaultLocation = getLocationByName("Lobby");
     }
 
     public void addItems(Player player) {
@@ -88,6 +89,7 @@ public abstract class Game {
     public void cleanup() {
         startedAt = -1;
         endedAt = -1;
+        time = -1;
 
         spectators.clear();
 
@@ -179,7 +181,7 @@ public abstract class Game {
             PlayerUtils.animateDeath(player);
 
             SpectatorMode spectatorMode = Brawl.getInstance().getSpectatorManager().addSpectator(player, location);
-            spectatorMode.setSpectating(SpectatorMode.SpectatorType.GAME);
+            spectatorMode.spectate(SpectatorMode.SpectatorType.GAME, false);
             for (int i = 0; i < 8; i++) { // Only add the LEAVE SPECTATOR item (in the 9th slot)
                 player.getInventory().setItem(i, null);
             }
@@ -297,6 +299,37 @@ public abstract class Game {
                 .orElse(null);
     }
 
+    public void teleport() {
+        teleport(getDefaultLocation());
+    }
+
+    public void teleport(Location location) {
+        this.getAlivePlayers().forEach(gamePlayer -> {
+            if (!this.spectators.contains(gamePlayer.getUniqueId())) {
+                Player player = gamePlayer.toPlayer();
+                if (player != null) {
+                    player.teleport(location);
+                }
+            }
+        });
+    }
+
+    public void playSound(Location location, Sound sound, float volume, float pitch) {
+        this.getAlivePlayers().forEach(player -> {
+            if (!this.spectators.contains(player.getUniqueId())) {
+                if (player.toPlayer() != null) {
+                    player.toPlayer().playSound(location, sound, volume, pitch);
+                }
+            }
+        });
+
+        this.getSpectators().forEach(spectator -> {
+            Player player = Bukkit.getPlayer(spectator);
+            if(player != null) {
+                player.playSound(location, sound, volume, pitch);
+            }
+        });
+    }
 
     public void playSound(Sound sound, float one, float two) {
         this.getAlivePlayers().forEach(player -> {

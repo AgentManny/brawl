@@ -1,5 +1,6 @@
 package rip.thecraft.brawl.game.command;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
@@ -28,6 +29,29 @@ public class GameStartCommand {
             sender.sendMessage(ChatColor.RED + "No game lobby found.");
             return;
         }
+        lobby.setStartTime(1);
+        sender.sendMessage(ChatColor.GREEN + "Starting " + lobby.getGameType().getName() + ".");
+    }
+
+    @Command(names = "game manny", permission = "op")
+    public static void test(Player sender) {
+        Game game = Brawl.getInstance().getGameHandler().getActiveGame();
+        if (game != null) {
+            sender.sendMessage(ChatColor.RED + "Game already started.");
+            return;
+        }
+
+        GameLobby lobby = Brawl.getInstance().getGameHandler().getLobby();
+        if (lobby == null) {
+            sender.sendMessage(ChatColor.RED + "No game lobby found.");
+            return;
+        }
+
+        sender.sendMessage(ChatColor.GRAY + "Forcing " + Bukkit.getOnlinePlayers().size() + " players to join...");
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            lobby.join(onlinePlayer);
+        }
+
         lobby.setStartTime(1);
         sender.sendMessage(ChatColor.GREEN + "Starting " + lobby.getGameType().getName() + ".");
     }

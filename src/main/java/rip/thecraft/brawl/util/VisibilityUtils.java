@@ -74,23 +74,24 @@ public final class VisibilityUtils {
             }
 
             return false;
-        } else if (game != null && game.containsPlayer(viewer) && game.containsPlayer(target) && game.getState() != GameState.ENDED) {
-            if (game.getSpectators().contains(targetId) && !game.getSpectators().contains(observerId)) {
-                return false;
-            }
+        } else if (game != null && game.containsPlayer(viewer) && game.containsPlayer(target)) {
+            if (!(game.getState() == GameState.FINISHED || game.getState() == GameState.ENDED)) {
+                if (game.getSpectators().contains(targetId) && !game.getSpectators().contains(observerId)) {
+                    return false;
+                }
 
+                if (game.getSpectators().contains(targetId) && game.getSpectators().contains(observerId)) {
+                    return true;
+                }
 
-            if (game.getSpectators().contains(targetId) && game.getSpectators().contains(observerId)) {
+                if (game instanceof PartneredGame) {
+                    PartneredGame partneredGame = (PartneredGame) game;
+
+                    GameTeam<GamePlayer> team = ((PartneredGame) game).getTeam(target);
+                    return team == null || team.getGamePlayer(target).isAlive();
+                }
                 return true;
             }
-
-            if (game instanceof PartneredGame) {
-                PartneredGame partneredGame = (PartneredGame) game;
-
-                GameTeam<GamePlayer> team = ((PartneredGame) game).getTeam(target);
-                return team == null || team.getGamePlayer(target).isAlive();
-            }
-            return true;
         }  else {
             PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(viewer);
             PlayerState playerState = playerData.getPlayerState();

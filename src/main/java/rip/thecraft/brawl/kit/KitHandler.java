@@ -100,6 +100,7 @@ public class KitHandler {
 
     public void unregisterKit(Kit kit) {
         this.kits.remove(kit);
+        kit.getFile().delete();
         //todo unregister command
     }
 

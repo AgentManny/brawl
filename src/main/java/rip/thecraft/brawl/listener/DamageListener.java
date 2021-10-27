@@ -21,6 +21,7 @@ import rip.thecraft.brawl.ability.handlers.KillHandler;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameElimination;
 import rip.thecraft.brawl.game.GameFlag;
+import rip.thecraft.brawl.game.GameState;
 import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
@@ -284,8 +285,15 @@ public class DamageListener implements Listener {
 
             Game game = plugin.getGameHandler().getActiveGame();
             if (game != null && game.containsPlayer(player) && game.getGamePlayer(player).isAlive()) {
-                if (game.getFlags().contains(GameFlag.NO_FALL) && e.getCause() == EntityDamageEvent.DamageCause.FALL) {
-                    e.setCancelled(true);
+                if (e.getCause() == EntityDamageEvent.DamageCause.FALL) {
+                    if (game.getState() == GameState.STARTED && game.getFlags().contains(GameFlag.FALL_ELIMINATE)) {
+                        game.handleElimination(player, player.getLocation(), GameElimination.FALL);
+                        e.setCancelled(true);
+                    }
+
+                    if (game.getFlags().contains(GameFlag.NO_FALL)) {
+                        e.setCancelled(true);
+                    }
                 }
             }
 

@@ -25,8 +25,6 @@ import rip.thecraft.brawl.util.location.LocationType;
 import rip.thecraft.brawl.warp.Warp;
 import rip.thecraft.spartan.nametag.NametagHandler;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Getter @Setter
@@ -130,6 +128,10 @@ public class SpectatorMode {
     }
 
     public void spectate(SpectatorType spectatorType) {
+        spectate(spectatorType, false);
+    }
+
+    public void spectate(SpectatorType spectatorType, boolean sendMessage) {
         Player player = getPlayer();
         if (player == null) {
             leave();
@@ -154,16 +156,21 @@ public class SpectatorMode {
             case GAME: {
                 GameLobby lobby = Brawl.getInstance().getGameHandler().getLobby();
                 Game game = Brawl.getInstance().getGameHandler().getActiveGame();
-                if (lobby == null && game == null) {
+                if (lobby != null) {
+                    this.lobby = lobby;
+                    spectatorType = SpectatorType.GAME_LOBBY;
+                    location = LocationType.GAME_LOBBY.getLocation();
+                    message = "Game Lobby (" + lobby.getGameType().getShortName() + ")";
+                } else if (game != null) {
+                    this.game = game;
+                    spectatorType = SpectatorType.GAME;
+                    game.getSpectators().add(spectator);
+                    location = game.getDefaultLocation();
+                    message = game.getType().getShortName();
+                } else {
                     player.sendMessage(ChatColor.RED + "There isn't any games to spectate.");
                     return;
                 }
-
-                location = lobby != null ? LocationType.GAME_LOBBY.getLocation() : game.getDefaultLocation();
-                this.game = game;
-                this.lobby = lobby;
-                spectatorType = lobby != null ? SpectatorType.GAME_LOBBY : SpectatorType.GAME;
-                message = "Game Lobby (" + lobby.getGameType().getShortName() + ")";
                 break;
             }
             default: {
@@ -177,7 +184,9 @@ public class SpectatorMode {
             spectating = spectatorType;
 
             teleport();
-            player.sendMessage(ChatColor.GREEN + "You are now spectating: " + ChatColor.WHITE + message);
+            if (sendMessage) {
+                player.sendMessage(ChatColor.GREEN + "You are now spectating: " + ChatColor.WHITE + message);
+            }
         }
     }
 
@@ -199,7 +208,6 @@ public class SpectatorMode {
 
         cleanup();
 
-        List<UUID> hiddenPlayers = new ArrayList<>();
         Location location = LocationType.SPAWN.getLocation();
         String message = null;
 
