@@ -242,6 +242,8 @@ public abstract class Ability {
 
     public boolean hasCooldown(Player player, boolean notify) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+        if (playerData == null) return false;
+
         String key = "ABILITY_" + this.getName();
         Cooldown cooldown = playerData.getCooldown(key);
         boolean active = playerData.hasCooldown(key);

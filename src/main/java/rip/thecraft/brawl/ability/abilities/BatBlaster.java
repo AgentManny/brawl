@@ -1,9 +1,11 @@
 package rip.thecraft.brawl.ability.abilities;
 
 import org.bukkit.ChatColor;
+import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Bat;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -31,6 +33,9 @@ public class BatBlaster extends Ability {
 
     @AbilityProperty(id = "duration", description = "Duration in millis")
     public long duration = TimeUnit.SECONDS.toMillis(2);
+
+    @AbilityProperty(id = "capture-player", description = "Should bats capture their victims")
+    public boolean capturePlayer = true;
 
     @AbilityProperty(id = "power")
     public double power = 0.7;
@@ -73,16 +78,28 @@ public class BatBlaster extends Ability {
                     bat.remove();
                     continue;
                 }
+
+                if (capturePlayer && bat.getPassenger() != null && bat.getPassenger() instanceof Player) {
+                    Player victim = (Player) bat.getPassenger();
+                    victim.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 50, 3));
+                    continue;
+                }
+
                 for (Player other : BrawlUtil.getNearbyPlayers(bat, 1)) {
                     if (!other.equals(player)) {
                         if (PlayerUtil.hit(bat, other)) {
-                            other.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 50, 3));
-
-                            Vector unitVector = other.getLocation().toVector().subtract(location.toVector()).normalize();
-                            other.setVelocity(unitVector
-                                    .multiply(power)
-                                    .setY(vertical)
-                            );
+                            if (!capturePlayer) {
+                                other.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 50, 3));
+                                Vector unitVector = bat.getVelocity().normalize();
+                                other.setVelocity(unitVector
+                                        .multiply(power)
+                                        .setY(vertical)
+                                );
+                            } else {
+                                if (inRange(bat.getLocation(), player)) { // Don't make it trigger all the time but also able to catch them
+                                    capturePlayer(bat, other);
+                                }
+                            }
 
                             ParticleEffect.SMOKE_LARGE.display(0, 0, 0, 0, 1, bat.getLocation(), 12);
                             // other.playSound(location, Sound.BAT_HURT, 1.0F, 1.0F);
@@ -99,5 +116,44 @@ public class BatBlaster extends Ability {
                 bat.remove();
             }
         }
+    }
+
+    private void capturePlayer(Entity bat, Player victim) {
+        Vector v = bat.getLocation().getDirection();
+        v.normalize();
+        v.multiply(.4d);
+        v.setY(v.getY() + 0.2d);
+
+        if (v.getY() > 7.5) {
+            v.setY(7.5);
+        }
+
+        if (victim.isOnGround()) {
+            v.setY(v.getY() + 0.4d);
+        }
+
+        victim.setFallDistance(0);
+        bat.setPassenger(victim);
+
+        victim.playEffect(EntityEffect.WITCH_MAGIC);
+//        victim.playSound(victim.getLocation(), captureSound, 1.25f, 1.25f);
+
+        ParticleEffect.SMOKE_NORMAL.display(0, 0, 0, 1.5f, 1, bat.getLocation(), EFFECT_DISTANCE);
+    }
+
+    private boolean inRange(Location location, Player player) {
+        Vector locVec = location.add(0, -location.getY(), 0).toVector();
+        Vector playerVec = player.getLocation().add(0, -player.getLocation().getY(), 0).toVector();
+        double vecLength = locVec.subtract(playerVec).length();
+
+
+        if (vecLength < 0.8D) return true;
+
+        if (vecLength < 1.2) {
+            if ((location.getY() > player.getLocation().getY()) && (location.getY() < player.getEyeLocation().getY())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

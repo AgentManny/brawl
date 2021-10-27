@@ -1,10 +1,16 @@
 package rip.thecraft.brawl.region;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.Getter;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.spartan.Spartan;
 
@@ -19,7 +25,25 @@ public class RegionHandler implements Closeable {
 
     public RegionHandler() {
         this.load();
+
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(Brawl.getInstance(), PacketType.Play.Server.NAMED_SOUND_EFFECT) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                Player player = event.getPlayer();
+                if (player == null) return;
+
+                PacketContainer packet = event.getPacket();
+                String sound = packet.getStrings().read(0);
+                if (sound.contains("step")) {
+                    Region region = get(player.getLocation());
+                    if (region != null && region.getType() == RegionType.SAFEZONE) {
+                        event.setCancelled(true);
+                    }
+                }
+            }
+        });
     }
+
 
     private void load() {
         File file = getFile();

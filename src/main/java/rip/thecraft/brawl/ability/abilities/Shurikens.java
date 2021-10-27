@@ -25,8 +25,7 @@ import java.util.concurrent.TimeUnit;
 @AbilityData(
         name = "Shurikens",
         description = "Throw a shuriken that deals damage and blindness to your enemies.",
-        color = ChatColor.DARK_PURPLE,
-        icon = Material.NETHER_STAR
+        color = ChatColor.DARK_PURPLE
 )
 public class Shurikens extends Ability implements KillHandler, InteractItemHandler, ItemProjectileHitHandler {
 

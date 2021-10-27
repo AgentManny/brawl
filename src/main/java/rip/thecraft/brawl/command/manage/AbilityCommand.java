@@ -39,13 +39,13 @@ public class AbilityCommand {
                         .tooltip(
                                 ChatColor.GRAY + "Property " + ChatColor.WHITE + key,
                                 ChatColor.GRAY + "Description: " + (property.description().isEmpty() ? ChatColor.RED + "None" : ChatColor.WHITE + property.description())
-                        ).suggest("/ability set " + ability.getName() + " " + key + " " + propertyValue.toString())
+                        ).suggest("/ability set " + ability.getName().toLowerCase().replace(" ", "") + " " + key + " " + propertyValue.toString())
                         .send(sender);
             } catch (IllegalAccessException ignored) {
             }
         }
         sender.sendMessage(ChatColor.GRAY + "Hover a property for more information");
-        sender.sendMessage(ChatColor.RED + "Usage: /ability set " + ability.getName().toLowerCase() + " <property> <newValue>");
+        sender.sendMessage(ChatColor.RED + "Usage: /ability set " + ability.getName().toLowerCase().replace(" ", "") + " <property> <newValue>");
     }
 
     @Command(names = {"ability list"}, permission = "op", description = "List all abilities")
@@ -79,8 +79,8 @@ public class AbilityCommand {
                     Object transform = parameterType.transform(sender, newValue);
                     if (transform != null) {
                         try {
-                            field.set(ability, transform);
                             sender.sendMessage(ChatColor.YELLOW + "Set " + ChatColor.WHITE + ability.getName() + ChatColor.YELLOW + " property to " + ChatColor.LIGHT_PURPLE + getFriendlyName(id) + ChatColor.YELLOW + ": " + ChatColor.RED + field.get(ability) + ChatColor.GRAY + " --> " + ChatColor.GREEN + newValue);
+                            field.set(ability, transform);
                             ah.save();
                         } catch (Exception e) {
                             sender.sendMessage(ChatColor.RED + newValue + ChatColor.RED + " is not a valid " + type.getSimpleName().toLowerCase() + ".");
