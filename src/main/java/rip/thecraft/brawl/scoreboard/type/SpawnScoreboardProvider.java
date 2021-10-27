@@ -24,7 +24,7 @@ public class SpawnScoreboardProvider implements ScoreboardProvider {
         Level level = playerData.getLevel();
 
         lines.add(ChatColor.WHITE + "Level: " + level.getDisplayName());
-        lines.add(ChatColor.WHITE + "Required XP: " + ChatColor.LIGHT_PURPLE + (level.getMaxExperience() - level.getCurrentExp()));
+        lines.add(ChatColor.WHITE + "Required XP: " + ChatColor.YELLOW + (level.getMaxExperience() - level.getCurrentExp()));
         lines.add(ChatColor.WHITE + "Credits: " + ChatColor.GOLD + (int) statistic.get(StatisticType.CREDITS));
         lines.add("  ");
         if (kit != null) {

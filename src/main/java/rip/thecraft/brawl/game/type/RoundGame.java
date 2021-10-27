@@ -191,6 +191,9 @@ public abstract class RoundGame extends Game {
         if (round != 0) {
             long millisLeft = timeLeft - System.currentTimeMillis();
             String timeLeft = maxRoundTime > 0 && state == GameState.STARTED ? ChatColor.GRAY + " (" + DurationFormatter.getTrailing(millisLeft) + "s)" : "";
+            if (state == GameState.FINISHED) {
+                toReturn.add(CC.BLUE + "    ");
+            }
             toReturn.add(CC.WHITE + (state == GameState.FINISHED ? "Final " : "") + "Round: " + CC.LIGHT_PURPLE + round + timeLeft);
             if (state == GameState.STARTED) {
                 toReturn.add(CC.BLUE + "    ");

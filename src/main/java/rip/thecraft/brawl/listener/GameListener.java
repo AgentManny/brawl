@@ -4,13 +4,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.Game;
-import rip.thecraft.brawl.game.GameElimination;
 import rip.thecraft.brawl.game.GameFlag;
 import rip.thecraft.brawl.game.GameState;
-import rip.thecraft.brawl.game.games.Thimble;
 import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.game.type.BracketsGame;
 

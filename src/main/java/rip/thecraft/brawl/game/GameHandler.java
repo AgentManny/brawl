@@ -45,8 +45,7 @@ public class GameHandler {
                 new OITC(),
                 new WoolShuffle(),
                 new Brackets(),
-                new TestEvent(),
-//                new Thimble(),
+                new Thimble(),
                 new Arcade(),
                 new Wool()
         ).forEach(this::register);

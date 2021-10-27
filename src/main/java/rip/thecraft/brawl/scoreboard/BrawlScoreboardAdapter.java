@@ -3,17 +3,14 @@ package rip.thecraft.brawl.scoreboard;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.duelarena.match.Match;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.scoreboard.type.*;
-import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.spartan.scoreboard.ScoreboardAdapter;
 import rip.thecraft.spartan.util.LinkedList;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class BrawlScoreboardAdapter implements ScoreboardAdapter {
@@ -36,7 +33,7 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
 
     @Override
     public String getTitle(Player player) {
-        return SPACERS + ChatColor.DARK_PURPLE + ChatColor.BOLD + "KAZE" + ChatColor.GRAY + " " + Brawl.getVersion() + SPACERS;
+        return SPACERS + ChatColor.DARK_PURPLE + ChatColor.BOLD + "KITPVP" + SPACERS;
     }
 
     @Override
@@ -76,41 +73,6 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
             }
         }
         lines.add("   ");
-        lines.add(ChatColor.LIGHT_PURPLE + "kaze.gg");
-    }
-
-    private void getSpectatorMode(Player player, PlayerData playerData, List<String> lines) {
-        SpectatorMode spectatorMode = plugin.getSpectatorManager().getSpectator(player);
-        SpectatorMode.SpectatorType spectating = spectatorMode.getSpectating();
-
-        lines.add(ChatColor.DARK_PURPLE.toString() + ChatColor.ITALIC + "[Spectator Mode]");
-        lines.add(ChatColor.GRAY + spectating.getName());
-//
-//        if (spectatorMode.getFollow() != null) {
-//            Player follow = Bukkit.getPlayer(spectatorMode.getFollow());
-//            if (follow != null) {
-//                lines.add(ChatColor.DARK_PURPLE + "Following: " + ChatColor.LIGHT_PURPLE + follow.getName());
-//            }
-//        }
-        switch (spectating) {
-            case GAME: {
-                Game game = spectatorMode.getGame();
-                if (game != null) {
-                    lines.addAll(game.getSidebar(player));
-                }
-                break;
-            }
-            case MATCH: {
-                Match match = spectatorMode.getMatch();
-                if (match != null) {
-                }
-                // todo add spectator scoreboard stuff
-                break;
-            }
-            default: {
-
-                //lines.addAll(getKazeSpawn(player, playerData, lines));
-            }
-        }
+        lines.add(ChatColor.LIGHT_PURPLE + "play.kaze.gg");
     }
 }
