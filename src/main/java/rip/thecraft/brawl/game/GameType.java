@@ -14,28 +14,28 @@ import java.util.List;
 @Getter
 public enum GameType {
 
-	SPLEEF(
-			new ItemBuilder(Material.DIAMOND_SPADE).build(),
-			RankType.SILVER,
-			"Fight opponents. Last man standing wins.",
-			2,
-			40
-	),
-
 	FFA(
 			"Free For All", "FFA",
 			new ItemBuilder(Material.DIAMOND_SWORD).build(),
 			RankType.SILVER,
-			"Fight opponents. Last man standing wins.",
+			"Kill each other until one player is declared the champion.",
 			2,
 			50,
 			new ArrayList<>()
 	),
 
+	SPLEEF(
+			new ItemBuilder(Material.DIAMOND_SPADE).build(),
+			RankType.SILVER,
+			"Destroy blocks below other players, allowing them to fall off the playing field.",
+			2,
+			40
+	),
+
 	BRACKETS(
 			new ItemBuilder(Material.MUSHROOM_SOUP).build(),
 			RankType.GOLD,
-			"Fight opponents. Last man standing wins.",
+			"A series of 1v1 matches against players, whoever has the best skills wins.",
 			2,
 			50,
 			Arrays.asList("SpectatorLobby", "Lobby", "ArenaLocation1", "ArenaLocation2")
@@ -44,7 +44,7 @@ public enum GameType {
 	SUMO(
 			new ItemBuilder(Material.LEASH).build(),
 			RankType.PLATINUM,
-			"Fight opponents on a platform. Last man standing wins.",
+			"Punch opponents off a platform, being the last player standing to be declared victorious.",
 			2,
 			50,
 			Arrays.asList("SpectatorLobby", "Lobby", "ArenaLocation1", "ArenaLocation2")
@@ -92,7 +92,7 @@ public enum GameType {
 	ARCADE("Arcade",
 			new ItemBuilder(Material.IRON_CHESTPLATE).build(),
 			RankType.CHAMPION,
-			"FFA but with rotating kits.",
+			"Free for All with a twist. Players spawn with random kits.",
 			2,
 			50,
 			Arrays.asList("Lobby")
@@ -101,7 +101,7 @@ public enum GameType {
 	WOOL("Wool FFA",
 			new ItemBuilder(Material.WOOL).build(),
 			RankType.CHAMPION,
-			"FFA with the ability to place wool & sponges.",
+			"Free for All with a twist. Players spawn with the ability to place blocks.",
 			2,
 			50,
 			Arrays.asList("Lobby")

@@ -24,6 +24,7 @@ import rip.thecraft.brawl.levels.Level;
 import rip.thecraft.brawl.player.achievements.Achievement;
 import rip.thecraft.brawl.player.data.SpawnData;
 import rip.thecraft.brawl.player.statistic.PlayerStatistic;
+import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.team.Team;
 import rip.thecraft.brawl.upgrade.perk.Perk;
@@ -108,6 +109,10 @@ public class PlayerData {
     public void load() {
         Player player = getPlayer();
         if (player == null) return;
+
+        if (statistic.get(StatisticType.LEVEL) == 0) {
+            statistic.set(StatisticType.LEVEL, 1);
+        }
 
         level.updateExp(player);
     }

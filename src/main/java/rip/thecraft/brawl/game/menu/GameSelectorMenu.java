@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.game.menu;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -8,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.server.util.chatcolor.CC;
@@ -65,17 +65,21 @@ public class GameSelectorMenu extends Menu {
         public ItemStack getButtonItem(Player player) {
             PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
             boolean noMaps = Brawl.getInstance().getGameHandler().getMapHandler().getMaps(gameType).isEmpty();
-            List<String> lore = ItemBuilder.wrap(gameType.getDescription(), CC.GRAY, 30);
-            lore.add(0, CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 31));
-            lore.add("");
+            boolean access = playerData.hasGame(gameType);
+
+            List<String> lore = ItemBuilder.wrap(gameType.getDescription(), CC.GRAY, 32);
+            lore.add(0, " ");
+            lore.add(0, ChatColor.DARK_GRAY + (access ? "Unlocked" : "Locked"));
+            lore.add(" ");
+            lore.add(ChatColor.GRAY + "Credits: " + ChatColor.GOLD + Game.HOST_CREDITS + " credits");
             long cooldown = Brawl.getInstance().getGameHandler().getCooldown().getOrDefault(gameType, 0L);
             if (System.currentTimeMillis() < cooldown) {
-                lore.add(ChatColor.RED + "Cooldown: " + ChatColor.YELLOW + TimeUtils.formatIntoMMSS((int) TimeUnit.MILLISECONDS.toSeconds(cooldown - System.currentTimeMillis())));
+                lore.add(ChatColor.GRAY + "Cooldown: " + ChatColor.RED + TimeUtils.formatIntoSimplifiedString((int) TimeUnit.MILLISECONDS.toSeconds(cooldown - System.currentTimeMillis())));
             }
-            lore.add(CC.GRAY + "\u00bb " + CC.GREEN + (playerData.hasGame(gameType) ? "Click to play this game" : CC.RED + (noMaps ? "No maps available" : "Exclusive to " + gameType.getRankType().getDisplayName() + CC.RED + " rank.")) + CC.GRAY + " \u00ab");
-            lore.add(CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 31));
+            lore.add(" ");
+            lore.add(CC.GRAY + "\u00bb " + (noMaps ? ChatColor.RED + "No maps available" : (playerData.hasGame(gameType) ? ChatColor.GREEN + "Click to play this game" : CC.RED + "Exclusive to " + gameType.getRankType().getDisplayName() + CC.RED + " rank")));
             return new ItemBuilder(gameType.getIcon())
-                    .name((playerData.hasGame(gameType) && !noMaps ? CC.GREEN : CC.RED) + gameType.getName())
+                    .name((playerData.hasGame(gameType) && !noMaps ? CC.GREEN : CC.RED) + CC.BOLD + gameType.getName())
                     .lore(lore)
                     .create();
         }
@@ -92,25 +96,7 @@ public class GameSelectorMenu extends Menu {
 
         @Override
         public void clicked(Player player, int slot, ClickType clickType) {
-            PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
-            if (Brawl.getInstance().getGameHandler().getMapHandler().getMaps(gameType).isEmpty()) {
-                player.sendMessage(ChatColor.RED + "There aren't any maps available for this game.");
-                return;
-            }
-
-            long cooldown = Brawl.getInstance().getGameHandler().getCooldown().getOrDefault(gameType, 0L);
-            if (!player.hasPermission("brawl.game.bypass") && System.currentTimeMillis() < cooldown) {
-                player.sendMessage(ChatColor.RED + "This game is under cooldown for another " + TimeUtils.formatIntoDetailedString((int) TimeUnit.MILLISECONDS.toSeconds(cooldown - System.currentTimeMillis())) + ".");
-                return;
-            }
-
-            if(playerData.hasGame(gameType)) {
-
-                //TODO CREATE GAME kit.apply(player, true, true);
-                Brawl.getInstance().getGameHandler().start(player, gameType);
-            } else {
-                player.sendMessage(CC.RED  + "You don't have permission to use this game.");
-            }
+            player.performCommand("game host " + gameType.name().toLowerCase());
         }
     }
 

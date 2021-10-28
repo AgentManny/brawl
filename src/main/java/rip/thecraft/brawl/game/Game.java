@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public abstract class Game {
 
+    public static final int HOST_CREDITS = 300;
+
     public static final String PREFIX = ChatColor.DARK_PURPLE + "[Event] " + ChatColor.WHITE;
     public static final String PREFIX_ERROR = ChatColor.DARK_RED + "[Event] " + ChatColor.WHITE;
 
