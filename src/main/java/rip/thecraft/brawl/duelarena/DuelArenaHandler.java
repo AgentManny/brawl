@@ -124,9 +124,12 @@ public class DuelArenaHandler {
 
         Kit kit = null;
         if (loadout.getArena() == ArenaType.ARCADE) {
-            kit = Brawl.getInstance().getKitHandler().getKits().get(Brawl.RANDOM.nextInt(Brawl.getInstance().getKitHandler().getKits().size()));
+            List<Kit> kits = Brawl.getInstance().getKitHandler().getKits()
+                    .stream()
+                    .filter(k -> !k.getAbilities().isEmpty())
+                    .collect(Collectors.toList());
+            kit = kits.get(Brawl.RANDOM.nextInt(kits.size()));
             arena.setPlayable(false); // Prevents others from joining.
-
         }
 
         refreshQuickqueue();

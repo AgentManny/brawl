@@ -250,9 +250,6 @@ public class Match {
                         spectator.leave();
                     }
                 }
-                //todo finish
-//                Brawl.getInstance().getSpectatorHandler().removeMatch(uuid, true);
-
             }
 
             for (Player other : Bukkit.getOnlinePlayers()) {
@@ -277,7 +274,6 @@ public class Match {
                     member.showPlayer(opponent);
                 }
             }
-
 
             Brawl.getInstance().getMatchHandler().dispose(this);
         }
