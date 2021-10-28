@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
+
 /**
  * Created by Flatfile on 10/21/2021.
  */
@@ -43,7 +45,9 @@ public class Arcade extends Game {
 
     @Override
     public void setup() {
-        this.kits = Brawl.getInstance().getKitHandler().getKits();
+        this.kits = Brawl.getInstance().getKitHandler().getKits().stream()
+                .filter(k -> !k.getAbilities().isEmpty())
+                .collect(Collectors.toList());
 
         this.getAlivePlayers().forEach(gamePlayer -> {
             Player player = gamePlayer.toPlayer();
