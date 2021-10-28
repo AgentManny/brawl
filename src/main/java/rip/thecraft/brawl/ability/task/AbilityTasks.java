@@ -2,6 +2,8 @@ package rip.thecraft.brawl.ability.task;
 
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.block.BlockState;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -14,6 +16,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class AbilityTasks {
 
     private Map<UUID, ConcurrentLinkedQueue<Integer>> repeatingTasks = new ConcurrentHashMap<>(); // These tasks will be removed as soon as player dies
+
+    private Map<Location, BlockState> storedBlocks = new ConcurrentHashMap<>();
 
     public void addTask(UUID uuid, BukkitTask task) {
         addTask(uuid, task.getTaskId());

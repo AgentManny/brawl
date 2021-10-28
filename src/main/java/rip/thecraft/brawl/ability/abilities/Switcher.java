@@ -50,10 +50,6 @@ public class Switcher extends Ability implements InteractItemHandler, Projectile
     @Override // Visuals
     public boolean onProjectileLaunch(Player player, Projectile projectile) {
         if (projectile instanceof Snowball) {
-            // Interact sometimes ignores snowballs - Ensures they don't spawn
-            if (player.hasMetadata(SWITCHER_META) && player.getMetadata(SWITCHER_META, Brawl.getInstance()).asLong() >= System.currentTimeMillis()) {
-                return true;
-            }
             new ProjectileEffect(projectile, ParticleEffect.SPELL_MOB)
                     .color(Color.WHITE)
                     .intervals(1)

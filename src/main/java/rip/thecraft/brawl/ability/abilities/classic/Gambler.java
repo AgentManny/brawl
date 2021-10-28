@@ -7,12 +7,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
+import rip.thecraft.brawl.kit.type.RefillType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.BukkitUtil;
 
@@ -28,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 @AbilityData(
         description = "Gives you random effects that can help you positively or negatively",
         icon = Material.POTION,
+        data = (byte) 8228,
         color = ChatColor.DARK_AQUA
 )
 public class Gambler extends Ability {
@@ -36,15 +39,16 @@ public class Gambler extends Ability {
     public int negativeCooldown = 10;
 
     public void onActivate(Player player) {
-//        if (hasCooldown(player, true)) return;
+        if (hasCooldown(player, true)) return;
 
         ThreadLocalRandom random = ThreadLocalRandom.current();
         GamblerEffect randomEffect = GamblerEffect.values()[random.nextInt(0, GamblerEffect.values().length - 1)];
 
         int cooldown = randomEffect.isNegative() ? negativeCooldown : this.cooldown;
-        //addCooldown(player, TimeUnit.SECONDS.toMillis(cooldown));
+        addCooldown(player, TimeUnit.SECONDS.toMillis(cooldown));
 
-        randomEffect.applyTo(random, player);
+        PotionEffect potionEffect = randomEffect.applyTo(random, player);
+        player.sendMessage(ChatColor.YELLOW + "You've taken a gamble and received " + BukkitUtil.getFriendlyName(potionEffect) + ChatColor.YELLOW + ".");
     }
 
     @NoArgsConstructor
@@ -74,7 +78,7 @@ public class Gambler extends Ability {
         // Negative effects
         SLOW(true),
         SLOW_DIGGING(true),
-        HARM(0, 10, 20, true),
+        HARM(1, 20, 35, true),
         CONFUSION(2, 20, 120, true),
         BLINDNESS(true),
         HUNGER(1, 2, 3, true), // This effect will remove extra soups/potions instead
@@ -119,29 +123,46 @@ public class Gambler extends Ability {
          */
         public PotionEffect applyTo(ThreadLocalRandom random, Player player) {
             int duration = random.nextInt(minDuration, maxDuration);
-            int amplifier = random.nextInt(0, maxAmplifier);
+            int amplifier = maxAmplifier == 0 ? maxAmplifier : random.nextInt(0, maxAmplifier);
 
             PotionEffect potionEffect = new PotionEffect(getPotion(), duration, amplifier);
 
             if (this == SATURATION || this == HUNGER) {
                 PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
-                ItemStack item = playerData.getRefillType().getItem();
-                int soups = random.nextInt(1, 5);
-                for (int i = 1; i <= soups; i++) {
-                    if (negative) {
-                        player.getInventory().remove(item);
-                    } else {
-                        player.getInventory().addItem(item);
+                RefillType refillType = playerData.getRefillType();
+                ItemStack item = refillType.getItem();
+
+                PlayerInventory inventory = player.getInventory();
+                if (!inventory.contains(item)) {
+                    potionEffect = new PotionEffect(PotionEffectType.POISON, 60, amplifier);
+                    return potionEffect;
+                }
+                int soups = random.nextInt(4, 8);
+
+                if (negative) {
+                    int removedSoups = 0;
+                    for (int i = 0; i < inventory.getContents().length; i++) {
+                        if (removedSoups < soups) {
+                            ItemStack foundItem = inventory.getItem(i);
+                            if (foundItem != null && foundItem.equals(item)) {
+                                inventory.setItem(i, null);
+                                removedSoups++;
+                            }
+                        }
+                    }
+                    soups = removedSoups;
+                } else {
+                    for (int i = 0; i < soups; i++) {
+                        inventory.addItem(item);
                     }
                 }
-                player.sendMessage(ChatColor.YELLOW + "You've taken a gambler and " + (negative ? ChatColor.RED + "lost" : ChatColor.GREEN + "gained") + ChatColor.YELLOW + " " + ChatColor.WHITE + soups + "x soups" + ChatColor.YELLOW + " because of your " + BukkitUtil.getFriendlyName(potionEffect) + ChatColor.YELLOW + ".");
+                player.sendMessage((negative ? ChatColor.RED + " - " : ChatColor.GREEN + " + ") + ChatColor.BOLD + soups + (negative ? ChatColor.RED : ChatColor.GREEN) + " " + refillType.getName() + "s" + ChatColor.GRAY + " (Gambler)");
             } else {
                 player.addPotionEffect(potionEffect);
                 if (this == HEALTH_BOOST) {
                     double healthDiff = player.getMaxHealth() - player.getHealth();
                     player.setHealth(Math.max(player.getMaxHealth(), player.getHealth() + healthDiff));
                 }
-                player.sendMessage(ChatColor.YELLOW + "You've taken a gamble and received " + BukkitUtil.getFriendlyName(potionEffect) + ChatColor.YELLOW + ".");
             }
             return potionEffect;
         }

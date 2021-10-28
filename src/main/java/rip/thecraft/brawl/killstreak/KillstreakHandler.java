@@ -1,7 +1,9 @@
 package rip.thecraft.brawl.killstreak;
 
 import lombok.Getter;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.killstreak.type.*;
 import rip.thecraft.server.CraftServer;
@@ -54,6 +56,20 @@ public class KillstreakHandler {
                 CraftServer.getInstance().addPacketHandler((PacketHandler) killstreak);
             }
         }
+    }
+
+    public boolean hasKillstreakItem(Player player) {
+        for (Killstreak killstreak : killstreaks.values()) {
+            ItemStack icon = killstreak.getIcon();
+            if (icon != null) {
+                for (ItemStack itemStack : player.getInventory()) {
+                    if (itemStack != null && itemStack.isSimilar(icon)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public Killstreak getKillstreakByName(String name) {

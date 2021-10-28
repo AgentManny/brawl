@@ -17,6 +17,7 @@ import rip.thecraft.brawl.ability.handlers.GroundHandler;
 import rip.thecraft.brawl.ability.handlers.SneakHandler;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
+import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.BlockUtil;
 import rip.thecraft.brawl.util.ParticleEffect;
 import rip.thecraft.brawl.util.PlayerUtil;
@@ -78,7 +79,7 @@ public class Stomper extends Ability implements Listener, GroundHandler, SneakHa
 
                 y++;
             }
-            player.sendMessage("Stomper Debug: " + String.format("maxY=%s ", maxY));
+//            player.sendMessage("Stomper Debug: " + String.format("maxY=%s ", maxY));
 
             player.setFireTicks(0); // Prevent fire from interfering with velocity
             player.setVelocity(vector);
@@ -124,6 +125,9 @@ public class Stomper extends Ability implements Listener, GroundHandler, SneakHa
             double baseDamage = Math.min(50, player.getFallDistance()) / damageReduction;
             List<Player> nearbyPlayers = PlayerUtil.getNearbyPlayers(player, impactDistance);
             for (Player nearbyPlayer : nearbyPlayers) {
+                PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(nearbyPlayer);
+                if (playerData != null && playerData.isSpawnProtection()) continue;
+
                 nearbyPlayer.damage(0, player);
                 nearbyPlayer.damage(baseDamage / (nearbyPlayer.isSneaking() ? 2 : 1));
             }

@@ -1,6 +1,7 @@
 package rip.thecraft.brawl.ability.abilities;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -50,7 +51,7 @@ public class Shurikens extends Ability implements KillHandler, InteractItemHandl
             }
 
             new ItemProjectile("shurikens", player, new ItemBuilder(Material.NETHER_STAR).build(), 1f);
-            player.getWorld().playSound(player.getLocation(), Sound.PISTON_EXTEND, 1f, 1f);
+            player.getWorld().playSound(player.getLocation(), Sound.WITHER_SHOOT, 1f, 1.4f);
             return true;
         }
 
@@ -70,7 +71,7 @@ public class Shurikens extends Ability implements KillHandler, InteractItemHandl
             if(!hit.isDead()){
                 hit.damage(damageValue, shooter);
                 hit.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 1, true, false));
-                hit.playSound(hit.getLocation(), Sound.BLAZE_HIT, 2f, 2f);
+                hit.playEffect(hit.getLocation(), Effect.ZOMBIE_CHEW_IRON_DOOR, 1);
             }
         }
         return false;

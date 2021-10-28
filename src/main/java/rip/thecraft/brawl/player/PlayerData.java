@@ -269,10 +269,17 @@ public class PlayerData {
             if (!player.hasMetadata("staffmode")) {
                 Brawl.getInstance().getItemHandler().apply(player, InventoryType.SPAWN);
             }
-            NametagHandler.reloadPlayer(player);
-            NametagHandler.reloadOthersFor(player);
         } else {
-            player.sendMessage(ChatColor.GREEN + "Clear your kit by using " + ChatColor.WHITE + "/clearkit" + ChatColor.GREEN + ".");
+            if (!Brawl.getInstance().getKillstreakHandler().hasKillstreakItem(player)) {
+                if (!player.hasMetadata("staffmode")) {
+                    selectedKit = null;
+                    Brawl.getInstance().getItemHandler().apply(player, InventoryType.SPAWN);
+                    NametagHandler.reloadPlayer(player);
+                    NametagHandler.reloadOthersFor(player);
+                }
+            } else {
+                player.sendMessage(ChatColor.GREEN + "Clear your kit by using " + ChatColor.WHITE + "/clearkit" + ChatColor.GREEN + ".");
+            }
         }
     }
 
@@ -411,7 +418,7 @@ public class PlayerData {
             this.gameRentals.remove(gameType.name());
         }
 
-        return this.getPlayer().isOp() ||this.getPlayer().hasPermission("rank." + gameType.getRankType().getName().toLowerCase()) || this.getPlayer().hasPermission("rank." + gameType.getRankType().name()) || this.getPlayer().hasPermission("game." + gameType.getName().toLowerCase()) ||  (gameRentals.containsKey(gameType.name()) && gameRentals.get(gameType.name()) > System.currentTimeMillis());
+        return this.getPlayer().isOp() ||this.getPlayer().hasPermission("rank." + gameType.getRankType().getName().toLowerCase()) || this.getPlayer().hasPermission("rank." + gameType.getRankType().name()) || this.getPlayer().hasPermission("game." + gameType.name().toLowerCase()) ||  (gameRentals.containsKey(gameType.name()) && gameRentals.get(gameType.name()) > System.currentTimeMillis());
     }
 
     public void addUnlockedKit(Kit kit) {
