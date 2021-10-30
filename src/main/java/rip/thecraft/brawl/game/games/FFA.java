@@ -14,6 +14,6 @@ public class FFA extends Game {
 
     @Override
     public void addItems(Player player) {
-        Brawl.getInstance().getKitHandler().getDefaultKit().apply(player, false, false);
+        Brawl.getInstance().getKitHandler().getDefaultKit().apply(player, false, true);
     }
 }

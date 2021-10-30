@@ -16,11 +16,17 @@ import rip.thecraft.spartan.menu.Button;
 import rip.thecraft.spartan.menu.Menu;
 import rip.thecraft.spartan.util.ItemBuilder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
 public class DuelMenu extends Menu {
+    {
+        setPlaceholder(true);
+        setAutoUpdate(true);
+    }
 
     private Player target;
 
@@ -32,9 +38,15 @@ public class DuelMenu extends Menu {
     @Override
     public Map<Integer, Button> getButtons(Player player) {
         Map<Integer, Button> buttons = new HashMap<>();
-        int i = 0;
+        int x = 1;
+        int y = 1;
         for (MatchLoadout loadout : Brawl.getInstance().getMatchHandler().getLoadouts()) {
-            buttons.put(i++, new LoadoutButton(loadout));
+            buttons.put(getSlot(x, y), new LoadoutButton(loadout));
+            if (x++ >= 7) {
+                x = 1;
+
+                y++;
+            }
         }
         return buttons;
     }
@@ -61,15 +73,13 @@ public class DuelMenu extends Menu {
 
         @Override
         public ItemStack getButtonItem(Player player) {
-            PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
-//            List<String> lore = ItemBuilder.wrap(CC.AQUA + "Middle Click" + CC.YELLOW + " to customize match values.", CC.YELLOW, 25);
-//            lore.add(0, CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 25));
-//            lore.add(CC.GRAY + CC.STRIKETHROUGH + Strings.repeat("-", 25));
-
+            List<String> lore = new ArrayList<>();
+            lore.add(" ");
+            lore.add(ChatColor.DARK_GRAY + "\u00bb" + ChatColor.GREEN + " Click to select " + loadout.getColor() + loadout.getName());
             return new ItemBuilder(loadout.getIcon())
                     .data(loadout.getIconData())
                     .name(loadout.getColor() + CC.BOLD + loadout.getName())
-           //         .lore(lore)
+                    .lore(lore)
                     .create();
 
         }

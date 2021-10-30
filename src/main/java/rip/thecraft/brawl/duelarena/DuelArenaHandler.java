@@ -124,11 +124,7 @@ public class DuelArenaHandler {
 
         Kit kit = null;
         if (loadout.getArena() == ArenaType.ARCADE) {
-            List<Kit> kits = Brawl.getInstance().getKitHandler().getKits()
-                    .stream()
-                    .filter(k -> !k.getAbilities().isEmpty())
-                    .collect(Collectors.toList());
-            kit = kits.get(Brawl.RANDOM.nextInt(kits.size()));
+            kit = Brawl.getInstance().getKitHandler().getRandomAbilityKit();
             arena.setPlayable(false); // Prevents others from joining.
         }
 
@@ -174,6 +170,8 @@ public class DuelArenaHandler {
     }
 
     public void sendDuel(Player player, Player target, MatchLoadout loadout) {
+        if (player == null || target == null) return;
+
         if (isInMatch(target) || isInMatch(player) || isInQueue(player) || isInQueue(target)) return;
 
         if (hasPlayerInvite(player.getUniqueId(), target.getUniqueId(), loadout)) {
@@ -188,15 +186,16 @@ public class DuelArenaHandler {
     }
 
     public void registerInvitation(PlayerMatchInvite newInvite) {
-
         playerMatchInvites.removeIf(invite -> invite.getSender().equals(newInvite.getSender()) && invite.getTarget().equals(newInvite.getTarget()) && invite.getKitType().equals(newInvite.getKitType()));
 
         Player sender = Bukkit.getPlayer(newInvite.getSender());
         Player target = Bukkit.getPlayer(newInvite.getTarget());
+        if (sender == null || target == null) {
+            playerMatchInvites.remove(newInvite);
+            return;
+        }
 
-        PlayerData senderData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(sender);
         PlayerData targetData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(target);
-
         if (!targetData.isDuelArena()) {
             sender.sendMessage(target.getDisplayName() + ChatColor.RED + " is not in the duel arena.");
             return;

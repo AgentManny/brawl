@@ -103,6 +103,10 @@ public abstract class Game {
     }
 
     public void end() {
+        end(false);
+    }
+
+    public void end(boolean force) {
         if (this.state == GameState.FINISHED) return;
 
         this.endedAt = System.currentTimeMillis();
@@ -126,6 +130,31 @@ public abstract class Game {
             Bukkit.broadcastMessage(PREFIX + ChatColor.WHITE + winners + ChatColor.YELLOW + (this.winners.size() <= 1 ? " has" : " have") + " won the " + ChatColor.DARK_PURPLE + getType().getShortName() + ChatColor.YELLOW + " event and received " + ChatColor.LIGHT_PURPLE + "250 credits" + ChatColor.YELLOW + ".");
         }
 
+        Runnable endTask = () -> {
+            this.options.values().forEach(option -> option.onEnd(this));
+            this.getAlivePlayers().forEach(GamePlayer::spawn);
+
+            Brawl.getInstance().getSpectatorManager().removeSpectators(SpectatorMode.SpectatorType.GAME, this);
+
+            clear();
+            Brawl.getInstance().getGameHandler().destroy();
+        };
+        if (force) {
+            endTask.run();
+        } else {
+            Tasks.schedule(() -> {
+
+                this.options.values().forEach(option -> option.onEnd(this));
+                this.getAlivePlayers().forEach(GamePlayer::spawn);
+
+                Brawl.getInstance().getSpectatorManager().removeSpectators(SpectatorMode.SpectatorType.GAME, this);
+
+                clear();
+                Brawl.getInstance().getGameHandler().destroy();
+
+            }, 60);
+        }
+
         Tasks.schedule(() -> {
 
             this.options.values().forEach(option -> option.onEnd(this));
@@ -136,7 +165,7 @@ public abstract class Game {
             clear();
             Brawl.getInstance().getGameHandler().destroy();
 
-        }, 60);
+        }, force ? 0 : 60);
     }
 
     public void clear() {
@@ -204,7 +233,7 @@ public abstract class Game {
                 GamePlayer winner = this.getAlivePlayers().get(0);
                 this.winners.add(winner);
 
-                this.end();
+                this.end(false);
             }
         }
     }
@@ -411,6 +440,18 @@ public abstract class Game {
         }
         return false;
     }
+
+    public boolean isAlive(Player player) {
+        if (player != null) {
+            for (GamePlayer gamePlayer : this.players) {
+                if (gamePlayer.getUniqueId().equals(player.getUniqueId())) {
+                    return gamePlayer.isAlive();
+                }
+            }
+        }
+        return false;
+    }
+
 
     public GamePlayer getGamePlayer(Player player) {
         if (player == null) return null;

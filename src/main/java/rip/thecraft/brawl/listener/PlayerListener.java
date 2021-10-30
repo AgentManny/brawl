@@ -68,63 +68,68 @@ public class PlayerListener implements Listener {
                 playerData.addCooldown("ENDERPEARL", TimeUnit.SECONDS.toMillis(16));
             }
 
-            if(item != null && item.getType() == Material.POTION){
-                Potion potion = Potion.fromItemStack(item);
-
-                if(potion.isSplash()){
-                    if(RegionType.SAFEZONE.appliesTo(player.getLocation())){
-                        event.setCancelled(true);
-                        player.updateInventory();
+            boolean spawnProtection = RegionType.SAFEZONE.appliesTo(player.getLocation());
+            boolean cancelInteraction = false;
+            if (item != null && spawnProtection) {
+                if (item.getType() == Material.POTION) {
+                    Potion potion = Potion.fromItemStack(item);
+                    if (potion.isSplash()) {
+                        cancelInteraction = true;
+                        player.sendMessage(ChatColor.RED + "You cannot throw potions in spawn.");
                     }
+                } else if (item.getType() == Material.EGG || item.getType() == Material.SNOW_BALL) {
+                    cancelInteraction = true;
+                    player.sendMessage(ChatColor.RED + "You cannot throw projectiles in spawn.");
                 }
             }
 
             Match match = plugin.getMatchHandler().getMatch(player);
             Kit kit = match != null && match.getKit() != null ? match.getKit() : playerData.getSelectedKit();
-
-            if (kit != null) {
+            if (kit != null && !cancelInteraction) {
                 for (Ability ability : kit.getAbilities()) {
                     if (BrawlUtil.match(ability.getIcon(), event.getItem())) {
-                        if (RegionType.SAFEZONE.appliesTo(player.getLocation())) {
+                        if (spawnProtection) {
                             player.sendMessage(ChatColor.RED + "You cannot use abilities in spawn.");
-                            return;
+                            cancelInteraction = true;
                         }
 
                         if (!ability.bypassAbilityPreventZone() && RegionType.NO_ABILITY_ZONE.appliesTo(player.getLocation())) {
                             player.sendMessage(ChatColor.RED + "You cannot use abilities in area.");
-                            return;
+                            cancelInteraction = true;
                         }
 
-                        ability.onActivate(player);
-                        event.setUseItemInHand(Event.Result.DENY);
-                        event.setUseInteractedBlock(Event.Result.DENY);
-                        event.setCancelled(true);
-                        player.updateInventory();
+                        if (!cancelInteraction) {
+                            ability.onActivate(player);
+                        }
                         break;
                     }
                 }
+
 
                 for (Killstreak ks : plugin.getKillstreakHandler().getKillstreaks().values()) {
                     if (ks != null && ks.isInteractable() && BrawlUtil.match(ks.getIcon(), event.getItem())) {
-                        if (RegionType.SAFEZONE.appliesTo(player.getLocation())) {
-                            player.sendMessage(ChatColor.RED + "You cannot use killstreak abilities in spawn.");
-                            return;
+                        if (spawnProtection) {
+                            player.sendMessage(ChatColor.RED + "You cannot use killstreaks in spawn.");
+                            cancelInteraction = true;
                         }
-                        ks.onActivate(player, playerData);
-                        if (event.getPlayer().getItemInHand().getAmount() > 1) {
-                            event.getPlayer().getItemInHand().setAmount(event.getPlayer().getItemInHand().getAmount() - 1);
-                        } else {
-                            event.getPlayer().getInventory().remove(event.getPlayer().getItemInHand());
-
+                        if (!cancelInteraction) {
+                            ks.onActivate(player, playerData);
+                            if (event.getPlayer().getItemInHand().getAmount() > 1) {
+                                event.getPlayer().getItemInHand().setAmount(event.getPlayer().getItemInHand().getAmount() - 1);
+                            } else {
+                                event.getPlayer().getInventory().remove(event.getPlayer().getItemInHand());
+                            }
                         }
-                        event.setUseItemInHand(Event.Result.DENY);
-                        event.setUseInteractedBlock(Event.Result.DENY);
-                        event.setCancelled(true);
-
                         break;
                     }
                 }
+            }
 
+            if (cancelInteraction) {
+                event.setUseItemInHand(Event.Result.DENY);
+                event.setUseInteractedBlock(Event.Result.DENY);
+                event.setCancelled(true);
+                player.updateInventory();
             }
         }
     }
@@ -132,7 +137,6 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-
         player.setMaxHealth(20.0D);
         player.setHealth(20.0D);
         player.teleport(plugin.getLocationByName("SPAWN"));

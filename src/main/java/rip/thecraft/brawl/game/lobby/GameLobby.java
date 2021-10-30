@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameType;
@@ -48,6 +49,8 @@ public class GameLobby {
     private Set<GamePlayerInvite> invites = new HashSet<>();
 
     private Map<String, List<UUID>> voteMap = new HashMap<>();
+
+    private BukkitTask task;
 
     public GameLobby(Brawl brawl, GameType gameType) {
         this.brawl = brawl;
@@ -220,11 +223,15 @@ public class GameLobby {
     public void stop() {
         brawl.getSpectatorManager().removeSpectators(SpectatorMode.SpectatorType.GAME_LOBBY, this);
         this.players.forEach(this::leave);
+        if (task != null) {
+            task.cancel();
+            task = null;
+        }
         brawl.getGameHandler().setLobby(null);
     }
 
     public void startTask() {
-        new BukkitRunnable() {
+        task = new BukkitRunnable() {
             public void run() {
                 if (startTime == 0) {
                     start();

@@ -5,6 +5,8 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.handlers.AbilityEvent;
+import rip.thecraft.brawl.ability.handlers.AbilityPlayer;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 
@@ -28,4 +30,8 @@ public class ExampleAbility extends Ability {
 
     }
 
+    @AbilityEvent
+    public void onGround(@AbilityPlayer(spawnProtection = true) Player player, boolean onGround) {
+        player.sendMessage("Player is on ground: " + onGround);
+    }
 }

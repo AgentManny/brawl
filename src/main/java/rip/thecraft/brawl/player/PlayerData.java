@@ -30,7 +30,6 @@ import rip.thecraft.brawl.team.Team;
 import rip.thecraft.brawl.upgrade.perk.Perk;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.server.util.chatcolor.CC;
-import rip.thecraft.spartan.nametag.NametagHandler;
 import rip.thecraft.spartan.util.Cooldown;
 import rip.thecraft.spartan.util.TimeUtils;
 
@@ -271,15 +270,43 @@ public class PlayerData {
             }
         } else {
             if (!Brawl.getInstance().getKillstreakHandler().hasKillstreakItem(player)) {
-                if (!player.hasMetadata("staffmode")) {
-                    selectedKit = null;
-                    Brawl.getInstance().getItemHandler().apply(player, InventoryType.SPAWN);
-                    NametagHandler.reloadPlayer(player);
-                    NametagHandler.reloadOthersFor(player);
-                }
+                clearKit(false);
             } else {
                 player.sendMessage(ChatColor.GREEN + "Clear your kit by using " + ChatColor.WHITE + "/clearkit" + ChatColor.GREEN + ".");
             }
+        }
+    }
+
+    public void clearKit(boolean sendMessage) {
+        Player player = getPlayer();
+        if (player == null) return;
+
+        if (selectedKit == null) {
+            if (sendMessage) {
+                player.sendMessage(ChatColor.RED + "You don't have a kit equipped.");
+            }
+            return;
+        }
+
+        if (!spawnProtection) {
+            if (sendMessage) {
+                player.sendMessage(ChatColor.RED + "You must have spawn protection to clear your kit.");
+            }
+            return;
+        }
+
+        selectedKit.getAbilities().forEach(ability -> removeCooldown(ability.getCooldownId()));
+
+        previousKit = selectedKit;
+        selectedKit = null;
+
+        player.setMaxHealth(20.0D);
+        player.setHealth(20.0D);
+
+        spawnProtection = true;
+
+        if (!player.hasMetadata("staffmode")) {
+            Brawl.getInstance().getItemHandler().apply(player, InventoryType.SPAWN);
         }
     }
 
@@ -477,6 +504,10 @@ public class PlayerData {
             Brawl.getInstance().getServer().getPluginManager().callEvent(new KitActivateEvent(player, selectedKit));
         }
         this.selectedKit = selectedKit;
+    }
+
+    public void removeCooldown(String id) {
+        cooldownMap.remove(id.toUpperCase());
     }
 
     public Cooldown addCooldown(String cooldownName, long time) {

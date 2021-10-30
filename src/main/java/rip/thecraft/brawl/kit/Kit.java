@@ -101,7 +101,6 @@ public class Kit implements Listener, Comparable<Kit> {
         kit.addProperty("name", name);
 
         kit.add("icon", Spartan.GSON.toJsonTree(icon));
-
         kit.addProperty("description", description);
         kit.addProperty("weight", weight);
         kit.addProperty("price", price);
@@ -175,6 +174,10 @@ public class Kit implements Listener, Comparable<Kit> {
 
         player.updateInventory();
         player.closeInventory();
+    }
+
+    public ItemStack getIcon() {
+        return icon;
     }
 
     @Override

@@ -153,10 +153,9 @@ public class Brawl extends JavaPlugin {
 
         getServer().getScheduler().getPendingTasks().forEach(BukkitTask::cancel);
 
-
         Game game = gameHandler.getActiveGame();
         if (game != null) {
-            game.end();
+            game.end(true);
         }
 
         abilityHandler.close();
@@ -206,7 +205,7 @@ public class Brawl extends JavaPlugin {
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.event.command");
 
         // Team commands
-        MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command");
+        // MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command");
         /*
         MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command.info");
         MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command.leader");

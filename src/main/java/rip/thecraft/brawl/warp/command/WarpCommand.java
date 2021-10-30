@@ -1,11 +1,13 @@
 package rip.thecraft.brawl.warp.command;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
+import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.brawl.warp.Warp;
 import rip.thecraft.brawl.warp.WarpManager;
@@ -28,15 +30,17 @@ public class WarpCommand {
                 return;
             }
 
-            playerData.warp(warp.getName(), warp.getLocation(), 5, () -> {
-                playerData.setSpawnProtection(false);
+            Location location = warp.getLocation();
+            boolean spawnProt = RegionType.SAFEZONE.appliesTo(location);
+            playerData.warp(warp.getName(), location, 5, () -> {
+                playerData.setSpawnProtection(spawnProt);
                 playerData.setDuelArena(false);
                 Kit kit = Brawl.getInstance().getKitHandler().getKit(warp.getKit());
                 if (kit != null) {
                     kit.apply(sender, true, true);
                 }
 
-                sender.teleport(warp.getLocation());
+                sender.teleport(location);
                 sender.setFallDistance(0);
             });
         } else {

@@ -33,6 +33,21 @@ public class GameStartCommand {
         sender.sendMessage(ChatColor.GREEN + "Starting " + lobby.getGameType().getName() + ".");
     }
 
+    @Command(names = "game forcestop", permission = "op")
+    public static void stop(Player sender) {
+        Game game = Brawl.getInstance().getGameHandler().getActiveGame();
+        GameLobby lobby = Brawl.getInstance().getGameHandler().getLobby();
+        if (lobby != null) {
+            lobby.stop();
+            sender.sendMessage(ChatColor.GREEN + "Forcefully stopped " + ChatColor.WHITE + lobby.getGameType().getShortName() + ChatColor.GREEN + " game lobby.");
+        } else if (game != null) {
+            game.end(true);
+            sender.sendMessage(ChatColor.GREEN + "Forcefully stopped " + ChatColor.WHITE + game.getType().getShortName() + ChatColor.GREEN + " game.");
+        } else {
+            sender.sendMessage(ChatColor.RED + "No game or lobby found.");
+        }
+    }
+
     @Command(names = "game manny", permission = "op")
     public static void test(Player sender) {
         Game game = Brawl.getInstance().getGameHandler().getActiveGame();
