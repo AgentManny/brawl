@@ -4,11 +4,13 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -47,7 +49,7 @@ public class ProtectListener implements Listener {
             put(Material.WOOD_HOE, Material.GRASS).
             build();
 
-    // List of materials a player can not right click in enemy territory.
+    // List of materials a player can not right click in protected territory
     private static final ImmutableSet<Material> BLOCK_RIGHT_CLICK_DENY = Sets.immutableEnumSet(
             Material.BED,
             Material.BED_BLOCK,
@@ -100,9 +102,10 @@ public class ProtectListener implements Listener {
 
     @EventHandler
     public void onArrowStrike(ProjectileHitEvent event) {
-//        if (event.getEntity() instanceof Arrow) {
-//            event.getEntity().remove();
-//        }
+        Projectile entity = event.getEntity();
+        if (entity instanceof Arrow) {
+            plugin.getServer().getScheduler().runTaskLater(Brawl.getInstance(), entity::remove, 20L * 5);
+        }
     }
 
     @EventHandler
@@ -156,7 +159,6 @@ public class ProtectListener implements Listener {
                 } else if (itemType != null && ITEM_ON_BLOCK_RIGHT_CLICK_DENY.get(itemType).contains(block.getType())) {
                     // Finally, check if this block is not blacklisted with the item the player right clicked it with.
                     canRightClick = false;
-
                 }
             }
 
@@ -300,6 +302,30 @@ public class ProtectListener implements Listener {
         if (!player.hasMetadata("build")) {
             event.setCancelled(true);
             event.setExpToDrop(0);
+        }
+    }
+
+    @EventHandler
+    public void onProjectileLaunch(ProjectileLaunchEvent event) {
+        if (event.getEntity().getShooter()instanceof Player) {
+            Player player = ((Player) event.getEntity().getShooter());
+            PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
+            if (playerData.isSpawnProtection()) {
+                player.sendMessage(ChatColor.RED + "You cannot throw projectiles in spawn.");
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEntityShootBow(EntityShootBowEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
+            if (playerData.isSpawnProtection()) {
+                player.sendMessage(ChatColor.RED + "You cannot use that here.");
+                event.setCancelled(true);
+            }
         }
     }
 

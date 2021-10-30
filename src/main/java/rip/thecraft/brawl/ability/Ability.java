@@ -244,14 +244,17 @@ public abstract class Ability {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
         if (playerData == null) return false;
 
-        String key = "ABILITY_" + this.getName();
-        Cooldown cooldown = playerData.getCooldown(key);
-        boolean active = playerData.hasCooldown(key);
+        Cooldown cooldown = playerData.getCooldown(getCooldownId());
+        boolean active = playerData.hasCooldown(getCooldownId());
 
         if (active && notify) {
             player.sendMessage(ChatColor.RED + "You must wait " + ChatColor.BOLD + cooldown.getTimeLeft() + ChatColor.RED + " before using this again.");
         }
         return active;
+    }
+
+    public String getCooldownId() {
+        return "ABILITY_" + getName();
     }
 
     public void addCooldown(Player player) {

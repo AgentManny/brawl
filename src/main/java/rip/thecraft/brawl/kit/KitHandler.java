@@ -24,6 +24,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class KitHandler {
 
@@ -117,6 +118,14 @@ public class KitHandler {
             createDefaultKit();
         }
         return this.getKit("PVP");
+    }
+
+    public Kit getRandomAbilityKit() {
+        List<Kit> kits = Brawl.getInstance().getKitHandler().getKits()
+                .stream()
+                .filter(k -> !k.getAbilities().isEmpty())
+                .collect(Collectors.toList());
+        return kits.get(Brawl.RANDOM.nextInt(kits.size()));
     }
 
     private void createDefaultKit() {

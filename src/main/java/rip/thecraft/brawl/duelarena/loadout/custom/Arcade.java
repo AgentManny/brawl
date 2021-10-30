@@ -1,13 +1,14 @@
 package rip.thecraft.brawl.duelarena.loadout.custom;
 
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.duelarena.arena.ArenaType;
 import rip.thecraft.brawl.duelarena.loadout.MatchLoadout;
 import rip.thecraft.brawl.item.item.Armor;
 import rip.thecraft.brawl.item.item.Items;
+import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.type.RefillType;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
 
 public class Arcade extends MatchLoadout {
 
@@ -18,7 +19,8 @@ public class Arcade extends MatchLoadout {
 
     @Override
     public Material getIcon() {
-        return Brawl.getInstance().getKitHandler().getKits().get(Brawl.RANDOM.nextInt(Brawl.getInstance().getKitHandler().getKits().size())).getIcon().getType();
+        Kit kit = Brawl.getInstance().getKitHandler().getRandomAbilityKit();
+        return kit.getIcon().getType();
     }
 
     @Override
