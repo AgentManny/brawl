@@ -50,7 +50,7 @@ public class Spleef extends Game implements Listener {
                 if (block != null && block.getType() == Material.SNOW_BLOCK) {
                     if (containsOption(StoreBlockOption.class)) {
                         StoreBlockOption option = (StoreBlockOption) this.getOptions().get(StoreBlockOption.class);
-                        option.getData().put(entity.getLocation(), block.getState());
+                        option.getData().put(block.getLocation(), block.getState());
                         block.breakNaturally();
                     }
                 }
