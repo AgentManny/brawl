@@ -1,6 +1,7 @@
 package rip.thecraft.brawl.game.games;
 
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -13,6 +14,7 @@ import org.bukkit.potion.PotionEffectType;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameFlag;
+import rip.thecraft.brawl.game.GameState;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.game.option.impl.StoreBlockOption;
 import rip.thecraft.spartan.util.ItemBuilder;
@@ -77,11 +79,11 @@ public class Wool extends Game implements Listener {
         Projectile entity = event.getEntity();
         if (entity.getShooter() instanceof Player) {
             Player player = (Player) entity.getShooter();
-            if (Brawl.getInstance().getGameHandler().getActiveGame() instanceof Wool) {
-                if (containsPlayer(player)) {
-                    if (entity.getLocation().getBlock() != null && event.getEntity().getLocation().getBlock().getType() == Material.WOOL) {
-                        event.getEntity().getLocation().getBlock().breakNaturally();
-                    }
+            Game game = Brawl.getInstance().getGameHandler().getActiveGame();
+            if (game instanceof Spleef && isAlive(player) && game.getState() == GameState.STARTED) {
+                Block block = event.getHitBlock();
+                if (block != null && block.getType() == Material.WOOL) {
+                    block.breakNaturally();
                 }
             }
         }

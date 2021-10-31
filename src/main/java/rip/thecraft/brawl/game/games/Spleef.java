@@ -2,7 +2,6 @@ package rip.thecraft.brawl.game.games;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -46,15 +45,10 @@ public class Spleef extends Game implements Listener {
         if (entity.getShooter() instanceof Player) {
             Player player = (Player) entity.getShooter();
             Game game = Brawl.getInstance().getGameHandler().getActiveGame();
-            if (game instanceof Spleef && containsPlayer(player) && game.getState() == GameState.STARTED) {
-                Block block = entity.getLocation().getBlock();
-                for (BlockFace blockFace : BlockFace.values()) {
-                    if (block.getType() == Material.AIR) {
-                        block = block.getRelative(blockFace);
-                    }
-                }
+            if (game instanceof Spleef && isAlive(player) && game.getState() == GameState.STARTED) {
+                Block block = event.getHitBlock();
                 if (block != null && block.getType() == Material.SNOW_BLOCK) {
-                    if (this.containsOption(StoreBlockOption.class)) {
+                    if (containsOption(StoreBlockOption.class)) {
                         StoreBlockOption option = (StoreBlockOption) this.getOptions().get(StoreBlockOption.class);
                         option.getData().put(entity.getLocation(), block.getState());
                         block.breakNaturally();
