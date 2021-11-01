@@ -81,6 +81,7 @@ public class BrawlNametagAdapter extends NametagProvider {
 
         Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(toRefresh);
 
-        return createNametag(levelPrefix + color, team == null ? "" : team.getDisplayTagline());
+//        return createNametag(levelPrefix + color, team == null ? "" : team.getDisplayTagline());
+        return createNametag(color, team == null ? "" : team.getDisplayTagline());
     }
 }

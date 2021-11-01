@@ -31,7 +31,10 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameFlag;
 import rip.thecraft.brawl.game.GameHandler;
+import rip.thecraft.brawl.game.GameState;
+import rip.thecraft.brawl.game.games.Feast;
 import rip.thecraft.brawl.game.option.impl.StoreBlockOption;
+import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.player.PlayerData;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -120,15 +123,14 @@ public class ProtectListener implements Listener {
     public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
-        if (event.getClickedBlock() != null && !player.hasMetadata("build")) {
-
-            if (event.getItem() != null && (event.getItem().getType() == Material.CHEST || event.getItem().getType() == Material.TRAPPED_CHEST)) {
-                event.setUseInteractedBlock(Event.Result.DENY);
-                event.setUseItemInHand(Event.Result.DENY);
-                event.setCancelled(true);
-                player.updateInventory();
-            }
-        }
+//        if (event.getClickedBlock() != null && !player.hasMetadata("build")) {
+//            if (event.getItem() != null && (event.getItem().getType() == Material.CHEST || event.getItem().getType() == Material.TRAPPED_CHEST)) {
+//                event.setUseInteractedBlock(Event.Result.DENY);
+//                event.setUseItemInHand(Event.Result.DENY);
+//                event.setCancelled(true);
+//                player.updateInventory();
+//            }
+//        }
 
         if (!event.hasBlock()) return;
 
@@ -142,6 +144,22 @@ public class ProtectListener implements Listener {
             boolean canRightClick;
             MaterialData blockData;
             Material blockType = block.getType();
+
+            if(block.getType() == Material.CHEST || block.getType() == Material.TRAPPED_CHEST){
+                Game game = Brawl.getInstance().getGameHandler().getActiveGame();
+                if (game != null && game.containsPlayer(player)) {
+                    GamePlayer gamePlayer = game.getGamePlayer(player);
+                    if(game instanceof Feast && game.getState() == GameState.STARTED){
+                        if (gamePlayer.isAlive()) {
+                            event.setUseInteractedBlock(Event.Result.ALLOW);
+                            event.setUseItemInHand(Event.Result.ALLOW);
+                            event.setCancelled(false);
+                            player.updateInventory();
+                            return;
+                        }
+                    }
+                }
+            }
 
             // Firstly, check if this block is not on the explicit blacklist.
             canRightClick = !BLOCK_RIGHT_CLICK_DENY.contains(blockType);

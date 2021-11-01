@@ -122,6 +122,17 @@ public enum GameType {
 			Arrays.asList("Lobby"),
 			250,
 			15
+	),
+
+	FEAST("Feast",
+			new ItemBuilder(Material.ENCHANTMENT_TABLE).build(),
+			RankType.CHAMPION,
+			"Feast",
+			2,
+			50,
+			Arrays.asList("Lobby"),
+			250,
+			15
 	);
 
 	private final String name;

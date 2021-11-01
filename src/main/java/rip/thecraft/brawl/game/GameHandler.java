@@ -47,7 +47,8 @@ public class GameHandler {
                 new Brackets(),
                 new Thimble(),
                 new Arcade(),
-                new Wool()
+                new Wool(),
+                new Feast()
         ).forEach(this::register);
     }
 
