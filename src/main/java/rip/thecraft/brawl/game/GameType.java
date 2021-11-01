@@ -21,7 +21,7 @@ public enum GameType {
 			"Kill each other until one player is declared the champion.",
 			2,
 			50,
-			new ArrayList<>()
+			new ArrayList<>(), 250, 10
 	),
 
 	SPLEEF(
@@ -29,7 +29,8 @@ public enum GameType {
 			RankType.SILVER,
 			"Destroy blocks below other players, allowing them to fall off the playing field.",
 			2,
-			40
+			40,
+			250, 10
 	),
 
 	BRACKETS(
@@ -38,7 +39,9 @@ public enum GameType {
 			"A series of 1v1 matches against players, whoever has the best skills wins.",
 			2,
 			50,
-			Arrays.asList("SpectatorLobby", "Lobby", "ArenaLocation1", "ArenaLocation2")
+			Arrays.asList("SpectatorLobby", "Lobby", "ArenaLocation1", "ArenaLocation2"),
+			250,
+			10
 	),
 
 	SUMO(
@@ -47,7 +50,9 @@ public enum GameType {
 			"Punch opponents off a platform, being the last player standing to be declared victorious.",
 			2,
 			50,
-			Arrays.asList("SpectatorLobby", "Lobby", "ArenaLocation1", "ArenaLocation2")
+			Arrays.asList("SpectatorLobby", "Lobby", "ArenaLocation1", "ArenaLocation2"),
+			250,
+			10
 	),
 
 	OITC(
@@ -57,7 +62,9 @@ public enum GameType {
 			"Sniper. One shot, one kill! Last man standing wins!",
 			2,
 			50,
-			new ArrayList<>()
+			new ArrayList<>(),
+			250,
+			15
 	),
 
 	WOOL_SHUFFLE(
@@ -67,7 +74,9 @@ public enum GameType {
 			"Run to the right color before the floor drops! Last man standing wins.",
 			2,
 			50,
-			Arrays.asList("Lobby", "Pos1", "Pos2")
+			Arrays.asList("Lobby", "Pos1", "Pos2"),
+			250,
+			15
 	),
 
 	THIMBLE(
@@ -77,7 +86,9 @@ public enum GameType {
 			"Jump in the water and avoid obstacles. Last man standing wins.",
 			2,
 			50,
-			Arrays.asList("Lobby", "Jump", "Platform1", "Platform2", "JumpPlatform1", "JumpPlatform2")
+			Arrays.asList("Lobby", "Jump", "Platform1", "Platform2", "JumpPlatform1", "JumpPlatform2"),
+			250,
+			15
 	),
 
 	TNT_TAG("TNT Tag", "Tag",
@@ -86,7 +97,9 @@ public enum GameType {
 			"Tag with a twist, don't blow up! Last man standing wins!",
 			2,
 			25,
-			Arrays.asList("Lobby")
+			Arrays.asList("Lobby"),
+			250,
+			15
 	),
 
 	ARCADE("Arcade",
@@ -95,7 +108,9 @@ public enum GameType {
 			"Free for All with a twist. Players spawn with random kits.",
 			2,
 			50,
-			Arrays.asList("Lobby")
+			Arrays.asList("Lobby"),
+			250,
+			15
 	),
 
 	WOOL("Wool FFA",
@@ -104,7 +119,9 @@ public enum GameType {
 			"Free for All with a twist. Players spawn with the ability to place blocks.",
 			2,
 			50,
-			Arrays.asList("Lobby")
+			Arrays.asList("Lobby"),
+			250,
+			15
 	);
 
 	private final String name;
@@ -115,6 +132,8 @@ public enum GameType {
 	private final int minPlayers;
 	private final int maxPlayers;
 
+	private final int creditsReward, expReward;
+
 	private boolean randomLocations = false;
 
 	private final ItemStack icon;
@@ -123,19 +142,21 @@ public enum GameType {
 
 	private final RankType rankType;
 
-	GameType(ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers) {
+	GameType(ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, int creditsReward, int expReward) {
 		this.name = WordUtils.capitalizeFully(this.name()).replace("_", " ");
 		this.shortName = this.name;
 		this.icon = icon;
 		this.description = description;
 		this.minPlayers = minPlayers;
 		this.maxPlayers = maxPlayers;
+		this.creditsReward = creditsReward;
+		this.expReward = expReward;
 		this.randomLocations = true;
 		this.rankType = rankType;
 		this.requiredLocations = new ArrayList<>(); //Random
 	}
 
-	GameType(ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, List<String> requiredLocations) {
+	GameType(ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, List<String> requiredLocations, int creditsReward, int expReward) {
 		this.name = WordUtils.capitalizeFully(this.name()).replace("_", " ");
 		this.shortName = this.name;
 		this.description = description;
@@ -143,18 +164,22 @@ public enum GameType {
 		this.rankType = rankType;
 		this.minPlayers = minPlayers;
 		this.maxPlayers = maxPlayers;
+		this.creditsReward = creditsReward;
+		this.expReward = expReward;
 		this.requiredLocations = requiredLocations;
 		if (this.requiredLocations.isEmpty()) {
 			this.randomLocations = true;
 		}
 	}
 
-	GameType(String name, ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, List<String> requiredLocations) {
+	GameType(String name, ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, List<String> requiredLocations, int creditsReward, int expReward) {
 		this.name = name;
 		this.shortName = name;
 		this.description = description;
 		this.minPlayers = minPlayers;
 		this.maxPlayers = maxPlayers;
+		this.creditsReward = creditsReward;
+		this.expReward = expReward;
 		this.icon = icon;
 		this.rankType = rankType;
 		this.requiredLocations = requiredLocations;
@@ -163,10 +188,12 @@ public enum GameType {
 		}
 	}
 
-	GameType(String name, String shortName, ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, List<String> requiredLocations) {
+	GameType(String name, String shortName, ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, List<String> requiredLocations, int creditsReward, int expReward) {
 		this.name = name;
 		this.minPlayers = minPlayers;
 		this.maxPlayers = maxPlayers;
+		this.creditsReward = creditsReward;
+		this.expReward = expReward;
 		this.shortName = shortName;
 		this.description = description;
 		this.icon = icon;
@@ -177,5 +204,5 @@ public enum GameType {
 		}
 	}
 
-	
+
 }

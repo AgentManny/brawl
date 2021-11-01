@@ -92,7 +92,8 @@ public class AbilityHandler {
                 new Phantom(),
                 new Dragon(),
                 new Clown(),
-                new Melon()
+                new Melon(),
+                new DoubleJump()
         ).forEach(this::registerAbility);
         load();
         plugin.getLogger().info("[Ability Manager] Loaded " + abilities.size() + " abilities.");

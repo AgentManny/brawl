@@ -15,6 +15,7 @@ import org.bukkit.material.Wool;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.abilities.DoubleJump;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameFlag;
 import rip.thecraft.brawl.game.GameState;
@@ -52,7 +53,7 @@ public class WoolShuffle extends Game implements Listener {
     private BukkitTask task;
 
     public WoolShuffle() {
-        super(GameType.WOOL_SHUFFLE, GameFlag.WATER_ELIMINATE, GameFlag.NO_FALL, GameFlag.NO_PVP);
+        super(GameType.WOOL_SHUFFLE, GameFlag.WATER_ELIMINATE, GameFlag.DOUBLE_JUMP, GameFlag.NO_FALL, GameFlag.NO_PVP);
     }
 
     @Override
@@ -67,7 +68,6 @@ public class WoolShuffle extends Game implements Listener {
         this.getAlivePlayers().forEach(gamePlayer -> {
             Player player = gamePlayer.toPlayer();
             player.teleport(getLocationByName("Lobby"));
-
         });
 
         Bukkit.getScheduler().runTaskLater(Brawl.getInstance(), this::startRound, 15L);

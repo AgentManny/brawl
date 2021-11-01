@@ -30,6 +30,9 @@ public enum GameFlag {
     NO_FALL,
 
     /** Should PVP be disabled */
-    NO_PVP
+    NO_PVP,
+
+    /** Will add DoulbeJump Ability to the game*/
+    DOUBLE_JUMP
 
 }

@@ -22,10 +22,7 @@ import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.TimeUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -51,7 +48,7 @@ public class Arcade extends Game {
 
         this.getAlivePlayers().forEach(gamePlayer -> {
             Player player = gamePlayer.toPlayer();
-            player.teleport(getLocationByName("Lobby"));
+            player.teleport(getRandomLocation());
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 20 * 5, 2));
         });
 
@@ -114,12 +111,12 @@ public class Arcade extends Game {
             PlayerData data = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
             data.setPreviousKit(data.getSelectedKit());
             data.setSelectedKit(null);
-            PlayerUtil.resetInventory(player);
         });
     }
 
     public void applyRandomKit(Player player){
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+        int soup = PlayerUtil.getAmountInInventory(player.getInventory(), Material.MUSHROOM_SOUP);
         int kitCount = kits.size();
         int rand = random.nextInt(kitCount);
         Kit chosenKit = kits.get(rand);
@@ -132,10 +129,13 @@ public class Arcade extends Game {
         chosenKit.getAbilities().forEach(ability -> ability.onApply(player));
         chosenKit.getPotionEffects().forEach(potionEffect -> player.addPotionEffect(potionEffect, true));
 
-        ItemStack item = playerData.getRefillType().getItem();
-        if (item.getType() != Material.AIR) {
-            while (player.getInventory().firstEmpty() != -1) {
-                player.getInventory().addItem(item);
+        if(soup == 0){
+            for(int i = 2; i < player.getInventory().getSize(); i++){
+                PlayerUtil.giveItemSafely(player, new ItemStack(Material.MUSHROOM_SOUP, 1));
+            }
+        }else{
+            for(int i = 0; i < soup; i++){
+                PlayerUtil.giveItemSafely(player, new ItemStack(Material.MUSHROOM_SOUP, 1));
             }
         }
 
@@ -145,6 +145,7 @@ public class Arcade extends Game {
     }
 
     public void randomizeKits(){
+        Collections.shuffle(kits);
         getAlivePlayers().forEach(player -> applyRandomKit(player.toPlayer()));
         startShuffleTask();
     }
@@ -153,12 +154,11 @@ public class Arcade extends Game {
     public List<String> getSidebar(Player player) {
         PlayerData data = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
         List<String> toReturn = new ArrayList<>();
-        toReturn.add(" ");
-        toReturn.add(CC.LIGHT_PURPLE + "Event: " + CC.YELLOW + getType().getShortName());
-        toReturn.add(CC.LIGHT_PURPLE + "Players: " + CC.YELLOW + getAlivePlayers().size() + "/" + getPlayers().size());
+        toReturn.add(CC.WHITE + "Event: " + CC.LIGHT_PURPLE + getType().getShortName());
+        toReturn.add(CC.WHITE + "Players: " + CC.LIGHT_PURPLE + getAlivePlayers().size() + "/" + getPlayers().size());
         if(this.state == GameState.STARTED){
-            if(data.getSelectedKit() != null) toReturn.add(CC.LIGHT_PURPLE + "Kit: " + ChatColor.YELLOW + data.getSelectedKit().getName());
-            toReturn.add(CC.LIGHT_PURPLE + "Shuffling in: " + ChatColor.YELLOW + shuffleTimer + "s");
+            if(data.getSelectedKit() != null) toReturn.add(CC.WHITE + "Kit: " + ChatColor.LIGHT_PURPLE + data.getSelectedKit().getName());
+            toReturn.add(CC.WHITE + "Shuffling in: " + ChatColor.LIGHT_PURPLE + shuffleTimer + "s");
         }
         return toReturn;
     }

@@ -15,13 +15,18 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerOnGroundEvent;
+import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 import org.github.paperspigot.event.entity.ProjectileCollideEvent;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.ability.abilities.DoubleJump;
 import rip.thecraft.brawl.ability.handlers.*;
+import rip.thecraft.brawl.game.Game;
+import rip.thecraft.brawl.game.GameFlag;
+import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.KitHandler;
 import rip.thecraft.brawl.util.moreprojectiles.event.BlockProjectileHitEvent;
@@ -36,6 +41,18 @@ public class AbilityListener implements Listener {
     public void onPlayerGround(PlayerOnGroundEvent event) {
         Player player = event.getPlayer();
         Kit selectedKit = KitHandler.getEquipped(player);
+
+        Game game = Brawl.getInstance().getGameHandler().getActiveGame();
+        if (game != null && game.containsPlayer(player)) {
+            GamePlayer gamePlayer = game.getGamePlayer(player);
+            if (gamePlayer.isAlive()) {
+                if(game.getFlags().contains(GameFlag.DOUBLE_JUMP)){
+                    Brawl.getInstance().getAbilityHandler().getAbilityByClass(DoubleJump.class)
+                            .onGround(gamePlayer.toPlayer(), event.getOnGround());
+                }
+            }
+        }
+
         if (selectedKit != null) {
             selectedKit.getAbilities().forEach(ability -> {
                 if (ability instanceof GroundHandler) {
@@ -53,6 +70,31 @@ public class AbilityListener implements Listener {
             selectedKit.getAbilities().forEach(ability -> {
                 if (ability instanceof SneakHandler) {
                     ((SneakHandler) ability).onSneak(player, event.isSneaking());
+                }
+            });
+        }
+    }
+
+    @EventHandler
+    public void onToggleFlight(PlayerToggleFlightEvent event){
+        Player player = event.getPlayer();
+        Kit selectedKit = KitHandler.getEquipped(player);
+
+        Game game = Brawl.getInstance().getGameHandler().getActiveGame();
+        if (game != null && game.containsPlayer(player)) {
+            GamePlayer gamePlayer = game.getGamePlayer(player);
+            if (gamePlayer.isAlive()) {
+                if(game.getFlags().contains(GameFlag.DOUBLE_JUMP)){
+                    Brawl.getInstance().getAbilityHandler().getAbilityByClass(DoubleJump.class)
+                            .onFlight(gamePlayer.toPlayer(), event.isFlying());
+                }
+            }
+        }
+
+        if(selectedKit != null){
+            selectedKit.getAbilities().forEach(ability -> {
+                if(ability instanceof ToggleFlightHandler){
+                    ((ToggleFlightHandler) ability).onFlight(player, event.isFlying());
                 }
             });
         }

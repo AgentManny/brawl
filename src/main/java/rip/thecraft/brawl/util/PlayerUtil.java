@@ -7,10 +7,13 @@ import net.minecraft.server.v1_8_R3.PacketPlayOutNamedEntitySpawn;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.region.RegionType;
@@ -76,6 +79,7 @@ public class PlayerUtil {
     public static void resetInventory(Player player, GameMode gameMode) {
         player.closeInventory(); // fixes kit mixing bug
         player.getInventory().clear();
+        player.setMaxHealth(20.0D);
         player.setHealth(player.getMaxHealth());
         player.setFallDistance(0.0f);
         player.setFoodLevel(20);
@@ -97,6 +101,55 @@ public class PlayerUtil {
 
         if (gameMode != null && player.getGameMode() != gameMode) {
             player.setGameMode(gameMode);
+        }
+    }
+
+    /**
+     * Get amount in players inventory of Material
+     *
+     * @param inv      - Inventory to check
+     * @param material - Material to check the amount
+     * @return
+     */
+    public static int getAmountInInventory(Inventory inv, Material material) {
+        int amount = 0;
+        ItemStack[] contents = inv.getContents();
+
+        for (ItemStack item : contents) {
+            if (item != null && item.getType() == material) {
+                amount = amount + item.getAmount();
+            }
+        }
+
+        return amount;
+    }
+
+    /**
+     * Get amount in players inventory of Material
+     *
+     * @param inv      - Inventory to check
+     * @param material - Material to check the amount
+     * @return
+     */
+    public static int getAmountInInventory(Inventory inv, Material material, short data) {
+        int amount = 0;
+        ItemStack[] contents = inv.getContents();
+
+        for (ItemStack item : contents) {
+            if (item != null && item.getType() == material && item.getDurability() == data) {
+                amount = amount + item.getAmount();
+            }
+        }
+
+        return amount;
+    }
+
+    public static void giveItemSafely(Player player, ItemStack item) {
+        if(player.getInventory().firstEmpty() == -1) {
+            player.getWorld().dropItemNaturally(player.getLocation(), item);
+        }
+        else {
+            player.getInventory().addItem(item);
         }
     }
 

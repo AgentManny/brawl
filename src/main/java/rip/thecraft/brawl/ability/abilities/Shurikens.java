@@ -33,6 +33,9 @@ public class Shurikens extends Ability implements KillHandler, InteractItemHandl
     @AbilityProperty(id = "damage-value", description = "Amount of damage to deal to player")
     public double damageValue = 8.0D;
 
+    @AbilityProperty(id = "throw-power", description = "Power of throwing the shuriken")
+    public double throwPower = 1.2D;
+
     @Override
     public boolean bypassAbilityPreventZone() {
         return true;
@@ -50,7 +53,7 @@ public class Shurikens extends Ability implements KillHandler, InteractItemHandl
                 player.getInventory().remove(player.getItemInHand());
             }
 
-            new ItemProjectile("shurikens", player, new ItemBuilder(Material.NETHER_STAR).build(), 1f);
+            new ItemProjectile("shurikens", player, new ItemBuilder(Material.NETHER_STAR).build(), (float) throwPower);
             player.getWorld().playSound(player.getLocation(), Sound.WITHER_SHOOT, 1f, 1.4f);
             return true;
         }

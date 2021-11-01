@@ -17,6 +17,8 @@ import rip.thecraft.brawl.game.GameFlag;
 import rip.thecraft.brawl.game.GameState;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.game.option.impl.StoreBlockOption;
+import rip.thecraft.brawl.item.item.Armor;
+import rip.thecraft.brawl.item.item.Items;
 import rip.thecraft.spartan.util.ItemBuilder;
 
 import java.util.Arrays;
@@ -50,21 +52,17 @@ public class Wool extends Game implements Listener {
     }
 
     @Override
-    public void addItems(Player player) {//todo clean this up
-        ItemStack sword = new ItemBuilder(Material.DIAMOND_SWORD).enchant(Enchantment.DAMAGE_ALL, 1).build();
-        ItemStack bow = new ItemBuilder(Material.BOW).enchant(Enchantment.ARROW_INFINITE, 1).enchant(Enchantment.ARROW_DAMAGE, 1).build();
-        ItemStack wool = new ItemBuilder(Material.WOOL).data((byte) 14).amount(64).build();
-        ItemStack sponge = new ItemBuilder(Material.SPONGE).amount(32).build();
+    public void addItems(Player player) {
+        Items items = new Items(
+                new ItemBuilder(Material.DIAMOND_SWORD).enchant(Enchantment.DAMAGE_ALL, 1).build(),
+                new ItemBuilder(Material.BOW).enchant(Enchantment.ARROW_INFINITE, 1).enchant(Enchantment.ARROW_DAMAGE, 1).build(),
+                new ItemBuilder(Material.WOOL).data((byte) 14).amount(64).build(),
+                new ItemBuilder(Material.SPONGE).amount(32).build()
+        );
+        player.getInventory().setContents(items.getItems());
 
-        player.getInventory().setArmorContents(new ItemStack[]{new ItemStack(Material.IRON_BOOTS),
-                new ItemStack(Material.IRON_LEGGINGS),
-                new ItemStack(Material.IRON_CHESTPLATE),
-                new ItemStack(Material.IRON_HELMET)});
-
-        player.getInventory().setItem(0, sword);
-        player.getInventory().setItem(1, bow);
-        player.getInventory().setItem(2, wool);
-        player.getInventory().setItem(3, sponge);
+        Armor armor = new Armor(Material.IRON_HELMET, Material.IRON_CHESTPLATE, Material.IRON_LEGGINGS, Material.IRON_BOOTS);
+        armor.apply(player);
         player.getInventory().setItem(9, new ItemStack(Material.ARROW));
 
 
@@ -80,10 +78,10 @@ public class Wool extends Game implements Listener {
         if (entity.getShooter() instanceof Player) {
             Player player = (Player) entity.getShooter();
             Game game = Brawl.getInstance().getGameHandler().getActiveGame();
-            if (game instanceof Spleef && isAlive(player) && game.getState() == GameState.STARTED) {
+            if (game instanceof Wool && isAlive(player) && game.getState() == GameState.STARTED) {
                 Block block = event.getHitBlock();
                 if (block != null && block.getType() == Material.WOOL) {
-                    block.breakNaturally();
+                    block.setType(Material.AIR);
                 }
             }
         }

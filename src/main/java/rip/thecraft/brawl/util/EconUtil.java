@@ -13,8 +13,7 @@ public class EconUtil {
     }
 
     public static void deposit(PlayerData data, double amount){
-        double credits = data.getStatistic().get(StatisticType.CREDITS);
-        data.getStatistic().set(StatisticType.CREDITS, credits + amount);
+        data.getStatistic().add(StatisticType.CREDITS, amount);
     }
 
     public static void withdraw(PlayerData data, double amount){

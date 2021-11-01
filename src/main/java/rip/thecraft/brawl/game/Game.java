@@ -19,6 +19,7 @@ import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.spectator.SpectatorMode;
+import rip.thecraft.brawl.util.EconUtil;
 import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.brawl.util.Tasks;
 import rip.thecraft.server.util.chatcolor.CC;
@@ -117,7 +118,8 @@ public abstract class Game {
             for (GamePlayer winner : this.winners) {
                 PlayerData playerData = winner.toPlayerData();
                 if (playerData != null) {
-                    playerData.getStatistic().add(StatisticType.CREDITS, 250);
+                    EconUtil.deposit(playerData, this.getType().getCreditsReward());
+                    playerData.getLevel().addExp(playerData.getPlayer(), this.getType().getExpReward(), "Won " + this.getType().getName() + " Event");
 
                     for (PlayerChallenge challenge : playerData.getChallengeTracker().getChallenges().values()) {
                         if (challenge.isActive() && challenge.getChallenge().getType() == ChallengeType.GAME_WINS) {
@@ -127,7 +129,10 @@ public abstract class Game {
 
                 }
             }
-            Bukkit.broadcastMessage(PREFIX + ChatColor.WHITE + winners + ChatColor.YELLOW + (this.winners.size() <= 1 ? " has" : " have") + " won the " + ChatColor.DARK_PURPLE + getType().getShortName() + ChatColor.YELLOW + " event and received " + ChatColor.LIGHT_PURPLE + "250 credits" + ChatColor.YELLOW + ".");
+
+            Bukkit.broadcastMessage(PREFIX + ChatColor.WHITE + winners + ChatColor.YELLOW + (this.winners.size() <= 1 ? " has" : " have") + " won the "
+                    + ChatColor.DARK_PURPLE + getType().getShortName() + ChatColor.YELLOW + " event and received " + ChatColor.LIGHT_PURPLE +
+                    this.getType().getCreditsReward()  + " credits" + ChatColor.YELLOW + ".");
         }
 
         Runnable endTask = () -> {

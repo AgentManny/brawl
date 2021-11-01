@@ -73,7 +73,7 @@ public class GameHandler {
             return;
         }
         this.lobby = new GameLobby(brawl, type);
-        FancyMessage messageParts = new FancyMessage(Game.PREFIX + ChatColor.WHITE + (hoster == null ? "Someone" : hoster.getDisplayName()) + ChatColor.YELLOW + " is hosting the " + ChatColor.DARK_PURPLE + type.getShortName() + ChatColor.YELLOW + " event for a prize of " + ChatColor.LIGHT_PURPLE + "250 credits" + ChatColor.YELLOW + "." + ChatColor.GRAY + " (Click to join)")
+        FancyMessage messageParts = new FancyMessage(Game.PREFIX + ChatColor.WHITE + (hoster == null ? "Someone" : hoster.getDisplayName()) + ChatColor.YELLOW + " is hosting the " + ChatColor.DARK_PURPLE + type.getShortName() + ChatColor.YELLOW + " event for a prize of " + ChatColor.LIGHT_PURPLE + type.getCreditsReward() + " credits" + ChatColor.YELLOW + "." + ChatColor.GRAY + " (Click to join)")
                 .tooltip(Collections.singletonList(ChatColor.YELLOW + "Click to join " + ChatColor.DARK_PURPLE + type.getName() + ChatColor.YELLOW + ".")).command("/join");
         brawl.getServer().getOnlinePlayers().forEach(messageParts::send);
     }

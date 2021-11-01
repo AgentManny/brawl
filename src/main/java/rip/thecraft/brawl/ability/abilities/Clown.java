@@ -29,6 +29,9 @@ public class Clown extends Ability implements BlockProjectileHitHandler {
     @AbilityProperty(id = "damage-value", description = "Amount of damage to deal to player")
     public double damageValue = 4.0D;
 
+    @AbilityProperty(id = "throw-power", description = "Power of throwing the cake")
+    public double throwPower = 1.2D;
+
     private boolean canAttack(Player player){
         return !RegionType.SAFEZONE.appliesTo(player.getLocation());
     }
@@ -38,7 +41,7 @@ public class Clown extends Ability implements BlockProjectileHitHandler {
         if (hasCooldown(player, true)) return;
         addCooldown(player);
 
-        new BlockProjectile("clownCake", player, Material.CAKE_BLOCK.getId(), 0, 1f);
+        new BlockProjectile("clownCake", player, Material.CAKE_BLOCK.getId(), 0, (float) throwPower);
         player.playSound(player.getLocation(), Sound.BURP, 1f, 1f);
     }
 

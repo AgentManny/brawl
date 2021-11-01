@@ -51,7 +51,7 @@ public class Spleef extends Game implements Listener {
                     if (containsOption(StoreBlockOption.class)) {
                         StoreBlockOption option = (StoreBlockOption) this.getOptions().get(StoreBlockOption.class);
                         option.getData().put(block.getLocation(), block.getState());
-                        block.breakNaturally();
+                        block.setType(Material.AIR);
                     }
                 }
             }
