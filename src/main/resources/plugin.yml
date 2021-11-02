@@ -1,5 +1,5 @@
 name: KitPvP
 main: rip.thecraft.brawl.Brawl
 version: ${git.commit.id.abbrev}
-depend: [Spartan, Falcon, ProtocolLib]
+depend: [Spartan, Falcon, HologramAPI, ProtocolLib]
 authors: [Manny, sores, drawlin]

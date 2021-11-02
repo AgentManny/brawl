@@ -2,6 +2,7 @@ package rip.thecraft.brawl.visual.tasks;
 
 import com.google.common.base.Strings;
 import gg.manny.hologram.Hologram;
+import gg.manny.hologram.HologramAPI;
 import gg.manny.hologram.HologramBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -22,7 +23,6 @@ public class LeaderboardUpdateTask extends BukkitRunnable {
     private final VisualManager visualManager;
 
     private Hologram hologram;
-    private Hologram updateHologram;
 
     public LeaderboardUpdateTask(VisualManager visualManager) {
         this.visualManager = visualManager;
@@ -30,23 +30,19 @@ public class LeaderboardUpdateTask extends BukkitRunnable {
         Location loc = Brawl.getInstance().getLocationByName(HOLO_LB).clone();
 
         this.hologram = new HologramBuilder()
+                .id("LEADERBOARDS")
                 .location(loc)
                 .addLines(ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Leaderboards", "Loading...", " ")
                 .build();
-        this.hologram.send();
+        hologram.send();
 
-        this.updateHologram = new HologramBuilder()
-                .location(loc.clone().subtract(0, .5, 0))
-                .addLines("Refreshing in")
-                .build();
-        this.updateHologram.send();
-
+        HologramAPI.register(hologram);
     }
-
     private StatisticType statType = StatisticType.KILLS;
 
     private static final int REFRESH_TIMER = 10;
     private int refreshTimer = 0;
+    private boolean refreshed = false;
 
     private DecimalFormat statFormat = new DecimalFormat("#.#");
 
@@ -77,6 +73,11 @@ public class LeaderboardUpdateTask extends BukkitRunnable {
             }
             hologram.setLine(entries + 2, (prefix + entries + ". " + ChatColor.WHITE + entry.getKey() + ChatColor.GRAY + " ● " + ChatColor.WHITE + statFormat.format(entry.getValue())));
         }
+        if (!refreshed) {
+            hologram.addLines(" ");
+            hologram.addLines(getProgressBar(refreshTimer, '\u25A0'));
+            refreshed = true;
+        }
     };
 
     @Override
@@ -89,7 +90,10 @@ public class LeaderboardUpdateTask extends BukkitRunnable {
             }
             update.accept(statType, hologram); // We only update this every refresh timer
         }
-        updateHologram.setLine(updateHologram.getLines().size() - 1, getProgressBar(refreshTimer, '\u25A0'));
+
+        if (refreshed) {
+            hologram.setLine(hologram.getLines().size() - 1, getProgressBar(refreshTimer, '\u25A0'));
+        }
     }
 
     private String getProgressBar(int current, char symbol) {

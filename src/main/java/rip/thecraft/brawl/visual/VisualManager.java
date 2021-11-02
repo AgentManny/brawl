@@ -23,6 +23,8 @@ public class VisualManager implements Listener {
     private final Brawl plugin;
     private final Leaderboard leaderboard;
 
+    protected LeaderboardUpdateTask updateTask;
+
     public Map<UUID, Hologram> playerStats = new HashMap<>();
 
     public VisualManager(Brawl plugin) {
@@ -34,7 +36,8 @@ public class VisualManager implements Listener {
         new HologramUpdateTask(this).runTaskTimer(plugin, 20L, 200L);
 
         if (plugin.getLocationByName(HOLO_LB) != null) {
-            new LeaderboardUpdateTask(this).runTaskTimer(plugin, 20L, 20L);
+            updateTask = new LeaderboardUpdateTask(this);
+            updateTask.runTaskTimer(plugin, 20L, 20L);
         } else {
             plugin.getLogger().warning("[Visual] Leaderboard hologram could not be enabled because location is not set.");
         }
