@@ -1,5 +1,6 @@
 package rip.thecraft.brawl.visual;
 
+import gg.manny.hologram.Hologram;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -10,7 +11,6 @@ import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.visual.tasks.HologramUpdateTask;
 import rip.thecraft.brawl.visual.tasks.LeaderboardUpdateTask;
-import rip.thecraft.falcon.hologram.hologram.Hologram;
 
 import java.util.*;
 

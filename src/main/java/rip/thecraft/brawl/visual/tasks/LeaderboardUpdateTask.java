@@ -1,6 +1,8 @@
 package rip.thecraft.brawl.visual.tasks;
 
 import com.google.common.base.Strings;
+import gg.manny.hologram.Hologram;
+import gg.manny.hologram.HologramBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -8,8 +10,6 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.leaderboard.Leaderboard;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.visual.VisualManager;
-import rip.thecraft.falcon.hologram.hologram.Hologram;
-import rip.thecraft.falcon.hologram.hologram.Holograms;
 
 import java.text.DecimalFormat;
 import java.util.Map;
@@ -29,14 +29,14 @@ public class LeaderboardUpdateTask extends BukkitRunnable {
 
         Location loc = Brawl.getInstance().getLocationByName(HOLO_LB).clone();
 
-        this.hologram = Holograms.newHologram()
-                .at(loc)
+        this.hologram = new HologramBuilder()
+                .location(loc)
                 .addLines(ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Leaderboards", "Loading...", " ")
                 .build();
         this.hologram.send();
 
-        this.updateHologram = Holograms.newHologram()
-                .at(loc.clone().subtract(0, .5, 0))
+        this.updateHologram = new HologramBuilder()
+                .location(loc.clone().subtract(0, .5, 0))
                 .addLines("Refreshing in")
                 .build();
         this.updateHologram.send();

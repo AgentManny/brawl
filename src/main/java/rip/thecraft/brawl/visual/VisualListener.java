@@ -1,5 +1,7 @@
 package rip.thecraft.brawl.visual;
 
+import gg.manny.hologram.Hologram;
+import gg.manny.hologram.HologramBuilder;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -9,10 +11,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.falcon.hologram.hologram.Hologram;
-import rip.thecraft.falcon.hologram.hologram.Holograms;
-
-import java.util.Arrays;
 
 import static rip.thecraft.brawl.visual.VisualManager.HOLO_STATS;
 
@@ -26,11 +24,10 @@ public class VisualListener implements Listener {
         Player player = event.getPlayer();
         Brawl.getInstance().getServer().getScheduler().runTaskLater(Brawl.getInstance(), () -> {
             if (getHoloStats() == null) return; // Prevent loading
-            Hologram hologram = Holograms.forPlayers(Arrays.asList(player))
-                    .at(getHoloStats())
+            Hologram hologram = new HologramBuilder(player.getUniqueId())
+                    .location(getHoloStats())
                     .addLines(visualManager.getHoloStats(player))
                     .build();
-            hologram.send();
             visualManager.playerStats.put(player.getUniqueId(), hologram);
         }, 40L);
     }
