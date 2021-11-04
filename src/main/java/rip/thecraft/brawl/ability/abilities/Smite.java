@@ -74,7 +74,6 @@ public class Smite extends Ability implements Listener {
             location.getWorld().strikeLightningEffect(location);
             for (Player nearbyPlayer : PlayerUtil.getNearbyPlayers(location, damageRadius)) {
                 if (nearbyPlayer == player) continue; // Don't apply to player
-                world.strikeLightningEffect(nearbyPlayer.getLocation());
                 nearbyPlayer.damage(Protection.isAlly(nearbyPlayer, player) ? damage / 2. : damage, player);
             }
         }

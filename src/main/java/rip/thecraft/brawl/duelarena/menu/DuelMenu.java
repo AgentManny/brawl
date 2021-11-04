@@ -51,6 +51,11 @@ public class DuelMenu extends Menu {
         return buttons;
     }
 
+    @Override
+    public int size(Map<Integer, Button> buttons) {
+        return 27;
+    }
+
     @RequiredArgsConstructor
     private class LoadoutButton extends Button {
 

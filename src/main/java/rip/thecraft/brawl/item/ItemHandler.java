@@ -15,16 +15,9 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.duelarena.DuelArena;
-import rip.thecraft.brawl.duelarena.match.queue.QueueType;
-import rip.thecraft.brawl.duelarena.menu.LoadoutMenu;
 import rip.thecraft.brawl.game.lobby.GameLobby;
-import rip.thecraft.brawl.game.menu.GameSelectorMenu;
 import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.item.type.MetadataType;
-import rip.thecraft.brawl.kit.Kit;
-import rip.thecraft.brawl.leaderboard.menu.LeaderboardEloMenu;
-import rip.thecraft.brawl.leaderboard.menu.LeaderboardMenu;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.HiddenStringUtils;
 import rip.thecraft.brawl.util.PlayerUtil;
@@ -163,6 +156,8 @@ public class ItemHandler implements Listener {
                         metadataType.getActivate().accept(player, playerData);
                         return;
                     }
+
+                    if (metadataType == MetadataType.DUEL_ARENA_DUEL) return; // This uses PlayerInteractEntityEvent
 
                     switch (metadataType) {
                         case EVENT_VOTE: {

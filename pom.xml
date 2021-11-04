@@ -27,6 +27,13 @@
         </dependency>
 
         <dependency>
+            <groupId>gg.manny</groupId>
+            <artifactId>HologramAPI</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>net.luckperms</groupId>
             <artifactId>api</artifactId>
             <version>5.1</version>

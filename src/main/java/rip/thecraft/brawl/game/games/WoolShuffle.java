@@ -15,7 +15,6 @@ import org.bukkit.material.Wool;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.ability.abilities.DoubleJump;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameFlag;
 import rip.thecraft.brawl.game.GameState;
@@ -35,8 +34,8 @@ import java.util.concurrent.TimeUnit;
 
 public class WoolShuffle extends Game implements Listener {
 
-    private static final long MINIMUM_TIME = 1750;
-    private static final long DEFAULT_TIME = TimeUnit.SECONDS.toMillis(15);
+    private static final long MINIMUM_TIME = 2500L;
+    private static final long DEFAULT_TIME = TimeUnit.SECONDS.toMillis(10);
     private long currentTime;
 
     private World world;
@@ -180,6 +179,7 @@ public class WoolShuffle extends Game implements Listener {
             }
             player.updateInventory();
         });
+
         while (!blockData.containsKey(chosenColor)) {
             setArea(null);
         }

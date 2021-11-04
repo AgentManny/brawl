@@ -66,6 +66,9 @@ public class DuelArena {
 
     public static void respawn(Player player, boolean teleport) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+        if (playerData.isSpawnProtection()) { // Hot fix LMFAO
+            return;
+        }
 
         playerData.setSpawnProtection(false);
         playerData.setDuelArena(true);

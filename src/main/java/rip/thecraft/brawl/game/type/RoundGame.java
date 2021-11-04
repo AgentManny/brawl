@@ -164,7 +164,7 @@ public abstract class RoundGame extends Game {
     }
 
     public boolean isRoundOver() {
-        return played.size() == getAlivePlayers().size();
+        return played.size() >= getAlivePlayers().size();
     }
 
     public abstract void onRoundSetup();
@@ -176,6 +176,7 @@ public abstract class RoundGame extends Game {
     @Override
     public void handleElimination(Player player, Location location, GameElimination elimination) {
         super.handleElimination(player, location, elimination);
+        played.remove(player.getUniqueId());
         if (state != GameState.FINISHED) {
             if (isRoundOver()) {
                 nextRound();

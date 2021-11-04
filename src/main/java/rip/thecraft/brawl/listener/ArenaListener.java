@@ -15,14 +15,22 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.duelarena.DuelArenaHandler;
 import rip.thecraft.brawl.duelarena.arena.ArenaType;
 import rip.thecraft.brawl.duelarena.match.Match;
 import rip.thecraft.brawl.duelarena.match.MatchState;
+import rip.thecraft.brawl.duelarena.match.data.MatchData;
+import rip.thecraft.brawl.item.type.MetadataType;
 import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.util.HiddenStringUtils;
+import rip.thecraft.falcon.rank.Rank;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 public class ArenaListener implements Listener {
@@ -33,27 +41,27 @@ public class ArenaListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         for (Match match : plugin.getMatchHandler().getMatches()) {
             for (Player member : match.getPlayers()) {
-                member.hidePlayer(event.getPlayer());
+                if (match.getQuited() == member.getUniqueId()) continue;
+                plugin.getEntityHider().hideEntity(member, event.getPlayer());
                 if (match.getArena().getArenaType() != ArenaType.NORMAL) {
-                    event.getPlayer().hidePlayer(member);
+                    plugin.getEntityHider().hideEntity(event.getPlayer(), event.getPlayer());
                 }
             }
         }
-}
+    }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
 
         DuelArenaHandler mh = plugin.getMatchHandler();
         Match match = mh.getMatch(player);
-
         if (match != null) {
             match.quit(event.getPlayer());
         }
         mh.cleanup(player.getUniqueId());
-
+        mh.refreshQuickqueue();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -61,25 +69,51 @@ public class ArenaListener implements Listener {
         Player player = event.getPlayer();
         String command = event.getMessage().split(" ")[0];
 
-        if (!player.hasPermission("pivot.staff") && plugin.getMatchHandler().isInMatch(player) && !plugin.getConfig().getStringList("ALLOWED_COMMANDS").contains("/" + command)) {
+        if (!player.hasPermission(Rank.STAFF_NODE) && plugin.getMatchHandler().isInMatch(player) && !plugin.getConfig().getStringList("ALLOWED_COMMANDS").contains("/" + command)) {
             player.sendMessage(ChatColor.RED + "You cannot execute commands while in a match.");
             event.setCancelled(true);
         }
     }
-
 
     @EventHandler
     public void onPlayerAttack(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player) {
             Player player = (Player) event.getDamager();
             if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
-                if (plugin.getMatchHandler().isInMatch(player)) {
-
-                    plugin.getMatchHandler().getMatch(player).getMatchData().addHits(player);
+                Match match = plugin.getMatchHandler().getMatch(player);
+                if (match != null) {
+                    MatchData matchData = match.getMatchData();
+                    matchData.addHits(player);
+                    matchData.setLastHit(player.getUniqueId());
                 }
             }
         }
-}
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEntityEvent event) {
+        Player player = event.getPlayer();
+        if (event.getRightClicked() instanceof Player) {
+            Player target = (Player) event.getRightClicked();
+            ItemStack item = player.getItemInHand();
+            if (item != null && item.hasItemMeta()) {
+                List<String> lore = item.getLore();
+                if (lore != null && lore.size() > 0 && HiddenStringUtils.hasHiddenString(lore.get(0))) {
+                    String metaData = HiddenStringUtils.extractHiddenString(lore.get(0));
+                    if (MetadataType.isMetadata(metaData)) {
+                        MetadataType metadataType = MetadataType.fromMetadata(metaData);
+                        if (metadataType.isCancellable()) {
+                            event.setCancelled(true);
+                        }
+
+                        if (metadataType == MetadataType.DUEL_ARENA_DUEL) {
+                            player.chat("/duel " + target.getName());
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     @EventHandler
     public void onThrow(ProjectileLaunchEvent event) {

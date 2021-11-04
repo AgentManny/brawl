@@ -50,6 +50,11 @@ public class DuelCommand {
 
         PlayerData targetData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(target);
         if (targetData.getPlayerState() == PlayerState.ARENA) {
+            PlayerMatchInvite pmi = Brawl.getInstance().getMatchHandler().getPlayerInvite(target.getUniqueId(), sender.getUniqueId());
+            if (pmi != null) {
+                Brawl.getInstance().getMatchHandler().acceptInvitation(pmi);
+                return;
+            }
             new DuelMenu(target).openMenu(sender);
         } else {
             sender.sendMessage(target.getDisplayName() + ChatColor.RED + " is not in the duel arena.");

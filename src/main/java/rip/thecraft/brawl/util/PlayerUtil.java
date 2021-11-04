@@ -1,9 +1,6 @@
 package rip.thecraft.brawl.util;
 
-import net.minecraft.server.v1_8_R3.MinecraftServer;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityStatus;
-import net.minecraft.server.v1_8_R3.PacketPlayOutNamedEntitySpawn;
+import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -224,6 +221,7 @@ public class PlayerUtil {
     private static Field STATUS_PACKET_ID_FIELD;
     private static Field STATUS_PACKET_STATUS_FIELD;
     private static Field SPAWN_PACKET_ID_FIELD;
+    private static Field VELOCITY_PACKET_ID_FIELD;
 
     static {
         try {
@@ -233,6 +231,9 @@ public class PlayerUtil {
             STATUS_PACKET_STATUS_FIELD.setAccessible(true);
             SPAWN_PACKET_ID_FIELD = PacketPlayOutNamedEntitySpawn.class.getDeclaredField("a");
             SPAWN_PACKET_ID_FIELD.setAccessible(true);
+
+            VELOCITY_PACKET_ID_FIELD = PacketPlayOutEntityVelocity.class.getDeclaredField("a");
+            VELOCITY_PACKET_ID_FIELD.setAccessible(true);
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
@@ -269,12 +270,15 @@ public class PlayerUtil {
     public static void animateDeath(Player player, Player watcher) {
         int entityId = EntityUtils.getFakeEntityId();
         PacketPlayOutNamedEntitySpawn spawnPacket = new PacketPlayOutNamedEntitySpawn(((CraftPlayer) player).getHandle());
+        PacketPlayOutEntityVelocity velocityPacket = new PacketPlayOutEntityVelocity(((CraftPlayer) player).getHandle());
         PacketPlayOutEntityStatus statusPacket = new PacketPlayOutEntityStatus();
         try {
             SPAWN_PACKET_ID_FIELD.set(spawnPacket, entityId);
+            VELOCITY_PACKET_ID_FIELD.set(velocityPacket, entityId);
             STATUS_PACKET_ID_FIELD.set(statusPacket, entityId);
             STATUS_PACKET_STATUS_FIELD.set(statusPacket, (byte) 3);
             ((CraftPlayer) watcher).getHandle().playerConnection.sendPacket(spawnPacket);
+            ((CraftPlayer) watcher).getHandle().playerConnection.sendPacket(velocityPacket);
             ((CraftPlayer) watcher).getHandle().playerConnection.sendPacket(statusPacket);
             Bukkit.getScheduler().runTaskLater(Brawl.getInstance(), () -> ((CraftPlayer) watcher).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityDestroy(entityId)), 40L);
         } catch (Exception e) {

@@ -77,7 +77,9 @@ public class ProtectListener implements Listener {
             Material.WORKBENCH,
             Material.ANVIL,
             Material.LEVER,
-            Material.FIRE
+            Material.FIRE,
+            Material.NOTE_BLOCK,
+            Material.JUKEBOX
     );
 
     @EventHandler
@@ -179,8 +181,8 @@ public class ProtectListener implements Listener {
                     canRightClick = false;
                 }
             }
-
-            if (!canRightClick && !player.hasMetadata("build")) {
+            if (!canRightClick) {
+                if (player.hasMetadata("build")) return;
                 event.setCancelled(true);
             }
         }

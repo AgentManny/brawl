@@ -8,12 +8,13 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.handlers.GroundHandler;
 import rip.thecraft.brawl.ability.handlers.SneakHandler;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
@@ -30,7 +31,7 @@ import java.util.List;
         icon = Material.ANVIL,
         color = ChatColor.YELLOW
 )
-public class Stomper extends Ability implements Listener, GroundHandler, SneakHandler {
+public class Stomper extends Ability implements Listener, SneakHandler {
 
     private static final String STOMPER_METADATA = "Stomper";
     private static final String CHARGE_METADATA = "StomperCharge";
@@ -63,9 +64,7 @@ public class Stomper extends Ability implements Listener, GroundHandler, SneakHa
         }
 
         if (!player.hasMetadata(STOMPER_METADATA)) {
-            Vector vector = boostDirection ? player.getLocation().getDirection().clone()
-                    .multiply(multiplier)
-                    .setY(boost) : new Vector(0, boost, 0);
+            Vector vector = getVelocity(player);
 
             int y = player.getLocation().getBlockY();
             final int maxY = y + 20;
@@ -83,9 +82,8 @@ public class Stomper extends Ability implements Listener, GroundHandler, SneakHa
 
             player.setFireTicks(0); // Prevent fire from interfering with velocity
             player.setVelocity(vector);
-            player.setMetadata(STOMPER_METADATA, new FixedMetadataValue(Brawl.getInstance(), null));
+            player.setMetadata(STOMPER_METADATA, new FixedMetadataValue(Brawl.getInstance(), System.currentTimeMillis()));
             player.setMetadata(CHARGE_METADATA, new FixedMetadataValue(Brawl.getInstance(), System.currentTimeMillis()));
-
             player.getWorld().playSound(player.getLocation(), Sound.FIREWORK_BLAST, 3f, 3f);
         }
     }
@@ -106,6 +104,12 @@ public class Stomper extends Ability implements Listener, GroundHandler, SneakHa
         }
     }
 
+    private Vector getVelocity(Player player) {
+        return boostDirection ? player.getLocation().getDirection().clone()
+                .multiply(multiplier)
+                .setY(boost) : new Vector(0, boost, 0);
+    }
+
     @EventHandler
     public void onPlayerVelocity(PlayerVelocityEvent event) {
         Player player = event.getPlayer();
@@ -117,32 +121,45 @@ public class Stomper extends Ability implements Listener, GroundHandler, SneakHa
         }
     }
 
-    @Override
-    public void onGround(Player player, boolean onGround) {
-        if (onGround && player.hasMetadata(STOMPER_METADATA)) {
-            onDeactivate(player); // Removes player metadata
+    @EventHandler
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        Player player = event.getPlayer();
+        if (hasEquipped(player)) {
+            onDeactivate(player); // Remove meta data
+        }
+    }
 
-            double baseDamage = Math.min(50, player.getFallDistance()) / damageReduction;
-            List<Player> nearbyPlayers = PlayerUtil.getNearbyPlayers(player, impactDistance);
-            for (Player nearbyPlayer : nearbyPlayers) {
-                PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(nearbyPlayer);
-                if (playerData != null && playerData.isSpawnProtection()) continue;
+    @EventHandler
+    public void onFallDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+            Player player = (Player) event.getEntity();
+            if (hasEquipped(player)) {
+                if (player.hasMetadata(STOMPER_METADATA)) {
+                    onDeactivate(player); // Removes player metadata
 
-                nearbyPlayer.damage(0, player);
-                nearbyPlayer.damage(baseDamage / (nearbyPlayer.isSneaking() ? 2 : 1));
+                    double baseDamage = Math.min(50, player.getFallDistance()) / damageReduction;
+                    List<Player> nearbyPlayers = PlayerUtil.getNearbyPlayers(player, impactDistance);
+                    for (Player nearbyPlayer : nearbyPlayers) {
+                        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(nearbyPlayer);
+                        if (playerData != null && playerData.isSpawnProtection()) continue;
+
+                        nearbyPlayer.damage(0, player);
+                        nearbyPlayer.damage(baseDamage / (nearbyPlayer.isSneaking() ? 2 : 1));
+                    }
+
+                    player.removeMetadata(STOMPER_METADATA, Brawl.getInstance());
+                    event.setDamage((player.getFallDistance() / fallDamageReduction));
+
+                    Location location = player.getLocation();
+                    ParticleEffect.EXPLOSION_HUGE.display(0, 0, 0, 5, 1, location, EFFECT_DISTANCE);
+                    BlockUtil.getNearbyBlocks(location.getBlock().getRelative(BlockFace.DOWN).getLocation(), impactDistance - 1, true).forEach(block -> {
+                        ParticleEffect.BLOCK_DUST.display(new ParticleEffect.BlockData(block.getType(), block.getData()), 0, 0, 0, .75f, 12, block.getLocation(), EFFECT_DISTANCE);
+                    });
+                    player.playSound(location, Sound.ANVIL_LAND, 1.0F, 0.0F);
+
+                    addCooldown(player); // Reset the cooldown
+                }
             }
-
-            player.removeMetadata(STOMPER_METADATA, Brawl.getInstance());
-            player.setFallDistance((float) (player.getFallDistance() / fallDamageReduction)); // Fall damage should still apply to stompers but be reduced
-
-            Location location = player.getLocation();
-            ParticleEffect.EXPLOSION_HUGE.display(0, 0, 0, 5, 1, location, EFFECT_DISTANCE);
-            BlockUtil.getNearbyBlocks(location.getBlock().getRelative(BlockFace.DOWN).getLocation(), impactDistance - 1, true).forEach(block -> {
-                ParticleEffect.BLOCK_DUST.display(new ParticleEffect.BlockData(block.getType(), block.getData()), 0, 0, 0, .75f, 12, block.getLocation(), EFFECT_DISTANCE);
-            });
-            player.playSound(location, Sound.ANVIL_LAND, 1.0F, 0.0F);
-
-            addCooldown(player); // Reset the cooldown
         }
     }
 

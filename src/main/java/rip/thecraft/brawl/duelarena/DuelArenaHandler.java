@@ -219,14 +219,25 @@ public class DuelArenaHandler {
     }
 
     public void acceptInvitation(PlayerMatchInvite acceptedInvite) {
-        playerMatchInvites.removeIf(invite -> invite.getSender().equals(acceptedInvite.getSender()) && invite.getTarget().equals(acceptedInvite.getTarget()) && invite.getKitType().equals(acceptedInvite.getKitType()));
         Player senderPlayer = Bukkit.getPlayer(acceptedInvite.getSender());
         Player targetPlayer = Bukkit.getPlayer(acceptedInvite.getTarget());
         if (senderPlayer != null && targetPlayer != null) {
 
+            PlayerData senderData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(senderPlayer);
+            if (senderData.getPlayerState() != PlayerState.ARENA) {
+                targetPlayer.sendMessage(senderPlayer.getDisplayName() + ChatColor.RED + " is no longer in the duel arena.");
+                return;
+            }
+
+            PlayerData targetData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(targetPlayer);
+            if (targetData.getPlayerState() != PlayerState.ARENA) {
+                targetPlayer.sendMessage(ChatColor.RED + "You must be in the Duel Arena to accept duel requests.");
+                return;
+            }
+
+            playerMatchInvites.removeIf(invite -> invite.getSender().equals(acceptedInvite.getSender()) && invite.getTarget().equals(acceptedInvite.getTarget()) && invite.getKitType().equals(acceptedInvite.getKitType()));
             senderPlayer.sendMessage(ChatColor.LIGHT_PURPLE + targetPlayer.getName() + ChatColor.YELLOW + " has accepted your " + ChatColor.LIGHT_PURPLE + acceptedInvite.getKitType().getName() + ChatColor.YELLOW + (acceptedInvite.isRematch() ? " rematch " : " duel ") + "request.");
             targetPlayer.sendMessage(ChatColor.YELLOW + "You have accepted " + ChatColor.LIGHT_PURPLE + senderPlayer.getName() + ChatColor.YELLOW + " with kit " + ChatColor.LIGHT_PURPLE + acceptedInvite.getKitType().getName() + ChatColor.YELLOW + ".");
-
             createMatch(senderPlayer, targetPlayer, acceptedInvite.getKitType(), QueueType.DUEL);
         }
     }
@@ -419,13 +430,15 @@ public class DuelArenaHandler {
         }
 
         PlayerData pd = Brawl.getInstance().getPlayerDataHandler().getPlayerData(uuid);
-        QueueSearchTask task = pd.getQueueData().getTask();
-        if (task != null) {
-            pd.getQueueData().getTask().cancel();
-            pd.getQueueData().setTask(null);
-        }
+        if (pd != null) {
+            QueueSearchTask task = pd.getQueueData().getTask();
+            if (task != null) {
+                pd.getQueueData().getTask().cancel();
+                pd.getQueueData().setTask(null);
+            }
 
-        pd.getQueueData().setQueueTime(-1L);
+            pd.getQueueData().setQueueTime(-1L);
+        }
     }
 
     public boolean isInMatch(Player player) {

@@ -66,6 +66,8 @@ public enum MetadataType {
         Brawl.getInstance().getMatchHandler().joinQuickQueue(player);
     }),
 
+    DUEL_ARENA_DUEL,
+
     QUEUE_LEAVE((player, playerData) -> {
         Brawl.getInstance().getMatchHandler().leaveQueue(player);
     }),

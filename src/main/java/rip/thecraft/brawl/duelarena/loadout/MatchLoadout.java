@@ -71,6 +71,7 @@ public abstract class MatchLoadout implements Comparable<MatchLoadout> {
             }
         }
 
+        player.setFireTicks(0);
         player.getInventory().setHeldItemSlot(0);
         player.updateInventory();
         player.closeInventory();
