@@ -18,7 +18,6 @@ import rip.thecraft.brawl.game.GameState;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.TimeUtils;
 
@@ -81,6 +80,18 @@ public class Arcade extends Game {
             public void run() {
                 if(shuffleTimer <= 0){
                     randomizeKits();
+
+//                    int newRoundSoups = 10;
+//                    for (GamePlayer alivePlayer : getAlivePlayers()) {
+//                        Player player = alivePlayer.toPlayer();
+//                        if (player != null) {
+//                            player.sendMessage(ChatColor.GREEN + "+ " + ChatColor.BOLD + newRoundSoups + ChatColor.GREEN + " Soups" + ChatColor.GRAY + " (New Round)");
+//                            for (int i = 0; i < newRoundSoups; i++) {
+//                                player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP, 1));
+//                            }
+//                        }
+//                    }
+
                     this.cancel();
                     return;
                 }
@@ -116,30 +127,51 @@ public class Arcade extends Game {
 
     public void applyRandomKit(Player player){
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
-        int soup = PlayerUtil.getAmountInInventory(player.getInventory(), Material.MUSHROOM_SOUP);
         int kitCount = kits.size();
         int rand = random.nextInt(kitCount);
+
+        Kit selectedKit = playerData.getSelectedKit();
         Kit chosenKit = kits.get(rand);
 
-        PlayerUtil.resetInventory(player);
+        ItemStack[] contents = player.getInventory().getContents();
+        ItemStack[] items = new ItemStack[36];
+        ItemStack[] kitContents = chosenKit.getItems().getItems();
 
-        playerData.setSelectedKit(chosenKit);
+        for (int i = 0; i < contents.length; i++) {
+            ItemStack item = contents[i];
+            if (item != null && (item.getType() == Material.BOWL || item.getType() == Material.MUSHROOM_SOUP)) {
+                items[i] = item;
+            }
+        }
+
+        for (int i = 0; i < kitContents.length; i++) {
+            ItemStack kitContent = kitContents[i];
+            if (kitContent != null && kitContent.getType() != Material.AIR) {
+                items[i] = kitContents[i];
+            }
+        }
+
+        for (PotionEffect potionEffect : player.getActivePotionEffects()) {
+            player.removePotionEffect(potionEffect.getType());
+        }
+
         chosenKit.getArmor().apply(player);
-        player.getInventory().setContents(chosenKit.getItems().getItems());
+        player.getInventory().setContents(items);
 
         chosenKit.getAbilities().stream().map(Ability::getIcon).filter(Objects::nonNull).forEach(player.getInventory()::addItem);
         chosenKit.getAbilities().forEach(ability -> ability.onApply(player));
         chosenKit.getPotionEffects().forEach(potionEffect -> player.addPotionEffect(potionEffect, true));
 
-        if(soup == 0){
-            for(int i = 2; i < player.getInventory().getSize(); i++){
-                PlayerUtil.giveItemSafely(player, new ItemStack(Material.MUSHROOM_SOUP, 1));
-            }
-        }else{
-            for(int i = 0; i < soup; i++){
-                PlayerUtil.giveItemSafely(player, new ItemStack(Material.MUSHROOM_SOUP, 1));
+        if (selectedKit == null) {
+            ItemStack item = new ItemStack(Material.MUSHROOM_SOUP, 1);
+            if (item.getType() != Material.AIR) {
+                while (player.getInventory().firstEmpty() != -1) {
+                    player.getInventory().addItem(item);
+                }
             }
         }
+
+        playerData.setSelectedKit(chosenKit);
 
         player.updateInventory();
         player.closeInventory();

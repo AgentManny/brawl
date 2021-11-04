@@ -219,6 +219,7 @@ public abstract class Ability {
      */
     public boolean hasEquipped(Player player) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+        if (playerData == null) return false;
         Match match = Brawl.getInstance().getMatchHandler().getMatch(player);
         Kit selectedKit = match != null && match.getKit() != null ? match.getKit() : playerData.getSelectedKit();
         return !RegionType.SAFEZONE.appliesTo(player.getLocation()) && selectedKit != null && selectedKit.getAbilities().contains(this) ;
