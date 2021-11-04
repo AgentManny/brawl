@@ -121,6 +121,8 @@ public class Arcade extends Game {
         int rand = random.nextInt(kitCount);
         Kit chosenKit = kits.get(rand);
 
+        PlayerUtil.resetInventory(player);
+
         playerData.setSelectedKit(chosenKit);
         chosenKit.getArmor().apply(player);
         player.getInventory().setContents(chosenKit.getItems().getItems());

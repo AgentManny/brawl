@@ -24,13 +24,14 @@ public class Phantom extends Ability {
 
         player.setAllowFlight(true);
         player.setFlying(true);
+        player.sendMessage(ChatColor.GRAY + "Your Phantom Ability has granted you 5 seconds of flight.");
         new BukkitRunnable() {
             @Override
             public void run() {
                 player.setFlying(false);
                 player.setAllowFlight(false);
             }
-        }.runTaskLater(Brawl.getInstance(), MathUtil.convertSecondstoTicks(MathUtil.getRandomInt(5, 10)));
+        }.runTaskLater(Brawl.getInstance(), MathUtil.convertSecondstoTicks(5));
     }
 
     @Override

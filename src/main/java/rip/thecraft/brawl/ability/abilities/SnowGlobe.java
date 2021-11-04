@@ -37,13 +37,13 @@ public class SnowGlobe extends Ability {
         addCooldown(player);
 
         generateSphere(player.getLocation(), 5);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 5, 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 5, 0));
     }
 
     @Override
     public void cleanup() {
         storedLocations.forEach(state -> {
-            if (state.getType() == Material.WEB) {
+            if (state.getType() == Material.ICE) {
                 state.getBlock().setType(Material.AIR);
             }
         });

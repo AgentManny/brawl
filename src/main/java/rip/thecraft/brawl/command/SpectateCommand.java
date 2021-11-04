@@ -12,7 +12,7 @@ import rip.thecraft.spartan.command.Param;
 
 public class SpectateCommand {
 
-    @Command(names = { "spec", "spectate" })
+    @Command(names = { "spec", "spectate" }, permission = "brawl.spectate")
     public static void spectate(Player player, @Param(defaultValue = "self") Player target) {
 //        if (!player.isOp()) {
 //            player.sendMessage(ChatColor.RED + "Spectating is currently disabled. Please try again later.");

@@ -241,6 +241,11 @@ public class Tag extends Game implements Listener {
                         event.setDamage(0);
 
                         if (taggers.contains(gameDamager)) {
+                            if(taggers.contains(gamePlayer)){
+                                event.setCancelled(true);
+                                gameDamager.toPlayer().sendMessage(ChatColor.RED + "You cannot tag your teammate.");
+                                return;
+                            }
 
                             taggers.remove(gameDamager);
                             taggers.add(gamePlayer);

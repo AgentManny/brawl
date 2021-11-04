@@ -65,6 +65,8 @@ public class WoolShuffle extends Game implements Listener {
         posTwo = getLocationByName("Pos2");
         this.cuboid = new Cuboid(posOne, posTwo);
 
+        setArea(DyeColor.WHITE);
+
         this.getAlivePlayers().forEach(gamePlayer -> {
             Player player = gamePlayer.toPlayer();
             player.teleport(getLocationByName("Lobby"));

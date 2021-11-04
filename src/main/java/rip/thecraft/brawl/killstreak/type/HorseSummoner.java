@@ -43,7 +43,7 @@ public class HorseSummoner extends Killstreak {
         Horse horse = (Horse) player.getWorld().spawnEntity(player.getLocation().add(0, 1, 0), EntityType.HORSE);
         horse.setAdult();
 
-        horse.setCustomName(player.getDisplayName() + ChatColor.WHITE + player.getName() + "'s Horse");
+        horse.setCustomName(ChatColor.WHITE + player.getName() + "'s Horse");
         horse.setCustomNameVisible(true);
 
         horse.setMaxHealth(40);

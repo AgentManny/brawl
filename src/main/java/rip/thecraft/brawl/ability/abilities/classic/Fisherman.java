@@ -2,13 +2,16 @@ package rip.thecraft.brawl.ability.abilities.classic;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.entity.FishHook;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.property.AbilityData;
+import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.util.SchedulerUtil;
 
 @AbilityData(color = ChatColor.BLUE)
@@ -24,6 +27,11 @@ public class Fisherman extends Ability implements Listener {
 
                 Player caught = (Player) event.getCaught();
 
+                if(!canAttack(caught)){
+                    event.setCancelled(true);
+                    return;
+                }
+
                 float yaw = caught.getLocation().getYaw();
                 float pitch = caught.getLocation().getPitch();
 
@@ -38,4 +46,22 @@ public class Fisherman extends Ability implements Listener {
             }
         }
     }
+
+    @EventHandler
+    public void onFishLaunch(ProjectileLaunchEvent event){
+        if(event.getEntity() instanceof FishHook){
+            if(event.getEntity().getShooter() != null && event.getEntity().getShooter() instanceof Player){
+                Player player = (Player) event.getEntity().getShooter();
+
+                if(hasCooldown(player, true)){
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    private boolean canAttack(Player player){
+        return !RegionType.SAFEZONE.appliesTo(player.getLocation());
+    }
+
 }

@@ -90,10 +90,10 @@ public class AbilityHandler {
                 new Gambler(),
                 new Assassin(),
                 new Phantom(),
-                new Dragon(),
                 new Clown(),
                 new Melon(),
-                new DoubleJump()
+                new DoubleJump(),
+                new FireBreathe()
         ).forEach(this::registerAbility);
         load();
         plugin.getLogger().info("[Ability Manager] Loaded " + abilities.size() + " abilities.");

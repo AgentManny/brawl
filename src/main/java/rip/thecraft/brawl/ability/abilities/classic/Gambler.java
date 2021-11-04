@@ -6,10 +6,17 @@ import lombok.NoArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.property.AbilityData;
@@ -33,7 +40,7 @@ import java.util.concurrent.TimeUnit;
         data = (byte) 8228,
         color = ChatColor.DARK_AQUA
 )
-public class Gambler extends Ability {
+public class Gambler extends Ability implements Listener {
 
     @AbilityProperty(id = "negative-cooldown", description = "Cooldown applied to negative effects applied to actor.")
     public int negativeCooldown = 10;
@@ -49,6 +56,20 @@ public class Gambler extends Ability {
 
         PotionEffect potionEffect = randomEffect.applyTo(random, player);
         player.sendMessage(ChatColor.YELLOW + "You've taken a gamble and received " + BukkitUtil.getFriendlyName(potionEffect) + ChatColor.YELLOW + ".");
+    }
+
+    @EventHandler
+    public void onPotionInteract(PlayerInteractEvent event){
+        Player player = event.getPlayer();
+        if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK){
+            if(player.getItemInHand() != null && player.getItemInHand().getType() == Material.POTION){
+                ItemStack itemStack = player.getItemInHand();
+
+                if(itemStack.isSimilar(this.getIcon())){
+                    event.setCancelled(true);
+                }
+            }
+        }
     }
 
     @NoArgsConstructor
