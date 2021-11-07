@@ -238,11 +238,16 @@ public class SoupListener implements Listener {
 
         Material type = item.getType();
         switch(type) {
-            case MUSHROOM_SOUP:
             case BOWL:
-            case GLASS_BOTTLE:
+            case GLASS_BOTTLE:{
                 SchedulerUtil.runTaskLater(() -> event.getItemDrop().remove(), 5L, false);
                 break;
+            }
+
+            case MUSHROOM_SOUP:{
+                SchedulerUtil.runTaskLater(() -> event.getItemDrop().remove(), 100L, false);
+                break;
+            }
             default: {
                 if (item.hasItemMeta() && item.getItemMeta().hasLore()) {
                     PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(event.getPlayer());

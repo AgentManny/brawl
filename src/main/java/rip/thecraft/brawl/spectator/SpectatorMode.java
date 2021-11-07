@@ -291,6 +291,9 @@ public class SpectatorMode {
                 player.teleport(LocationType.SPAWN.getLocation());
             }
             VisibilityUtils.updateVisibility(player);
+
+            NametagHandler.reloadPlayer(player);
+            NametagHandler.reloadOthersFor(player);
         }
     }
 

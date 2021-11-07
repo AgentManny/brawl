@@ -41,7 +41,6 @@ public class AbilityListener implements Listener {
     public void onPlayerGround(PlayerOnGroundEvent event) {
         Player player = event.getPlayer();
         Kit selectedKit = KitHandler.getEquipped(player);
-        if (selectedKit == null) return;
 
         Game game = Brawl.getInstance().getGameHandler().getActiveGame();
         if (game != null && game.containsPlayer(player)) {
@@ -54,11 +53,13 @@ public class AbilityListener implements Listener {
             }
         }
 
-        selectedKit.getAbilities().forEach(ability -> {
-            if (ability instanceof GroundHandler) {
-                ((GroundHandler) ability).onGround(player, event.getOnGround());
-            }
-        });
+        if(selectedKit != null){
+            selectedKit.getAbilities().forEach(ability -> {
+                if (ability instanceof GroundHandler) {
+                    ((GroundHandler) ability).onGround(player, event.getOnGround());
+                }
+            });
+        }
     }
 
     @EventHandler
