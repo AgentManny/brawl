@@ -13,8 +13,9 @@ public class ChatListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+        if (event.isCancelled()) return;
 
+        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
         event.setFormat(playerData.getLevel().getPrefix() + event.getFormat());
     }
 

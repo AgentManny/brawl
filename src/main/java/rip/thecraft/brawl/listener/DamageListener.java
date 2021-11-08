@@ -24,6 +24,7 @@ import rip.thecraft.brawl.game.GameFlag;
 import rip.thecraft.brawl.game.GameState;
 import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.kit.Kit;
+import rip.thecraft.brawl.levels.ExperienceType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.player.event.PlayerKillEvent;
@@ -134,12 +135,12 @@ public class DamageListener implements Listener {
 
                     killerData.getSpawnData().killed(player);
 
-                    int killExp = 5; // You always get 5 exp per kill
+                    int killExp = ExperienceType.KILL.getExperience(); // You always get 5 exp per kill
                     if (killerData.getStatistic().get(StatisticType.KILLSTREAK) > 5) {
                         killExp += (int) Math.min(50, (killerData.getStatistic().get(StatisticType.KILLSTREAK) * 0.75)); // Killstreak multiplier only takes effect after 5 kills
                     }
 
-                    killerData.getLevel().addExp(killer, killExp, "Killed " + player.getDisplayName());
+                    killerData.getLevel().addExp(killer, killExp, ExperienceType.KILL, player.getDisplayName());
                     playerData.getSpawnData().applyAssists(killer, playerData.getSpawnData().getWorth());
 
                     killerData.setPreviousKill(player.getUniqueId());

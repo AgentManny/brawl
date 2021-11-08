@@ -16,8 +16,8 @@ import rip.thecraft.brawl.game.map.GameMap;
 import rip.thecraft.brawl.game.option.GameOption;
 import rip.thecraft.brawl.game.scoreboard.GameScoreboard;
 import rip.thecraft.brawl.game.team.GamePlayer;
+import rip.thecraft.brawl.levels.ExperienceType;
 import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.brawl.util.EconUtil;
 import rip.thecraft.brawl.util.PlayerUtil;
@@ -118,8 +118,8 @@ public abstract class Game {
             for (GamePlayer winner : this.winners) {
                 PlayerData playerData = winner.toPlayerData();
                 if (playerData != null) {
-                    EconUtil.deposit(playerData, this.getType().getCreditsReward());
-                    playerData.getLevel().addExp(playerData.getPlayer(), this.getType().getExpReward(), "Won " + this.getType().getName() + " Event");
+                    EconUtil.deposit(playerData, type.getCreditsReward());
+                    playerData.getLevel().addExp(playerData.getPlayer(), ExperienceType.EVENT_WIN.getExperience() * players.size(), ExperienceType.EVENT_WIN, type.getName());
 
                     for (PlayerChallenge challenge : playerData.getChallengeTracker().getChallenges().values()) {
                         if (challenge.isActive() && challenge.getChallenge().getType() == ChallengeType.GAME_WINS) {
@@ -132,7 +132,7 @@ public abstract class Game {
 
             Bukkit.broadcastMessage(PREFIX + ChatColor.WHITE + winners + ChatColor.YELLOW + (this.winners.size() <= 1 ? " has" : " have") + " won the "
                     + ChatColor.DARK_PURPLE + getType().getShortName() + ChatColor.YELLOW + " event and received " + ChatColor.LIGHT_PURPLE +
-                    this.getType().getCreditsReward()  + " credits" + ChatColor.YELLOW + ".");
+                    type.getCreditsReward()  + " credits" + ChatColor.YELLOW + ".");
         }
 
         Runnable endTask = () -> {

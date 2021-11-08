@@ -18,24 +18,87 @@ import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.util.MathUtil;
 
 @Getter
+@Setter
 @RequiredArgsConstructor
 public class Level {
 
-    public static final int BASE_EXPERIENCE = 15;
+    private static final double[] PRESTIGE_XP_MULTIPLIERS = {
+            1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.75, 2, 2.5, 3, 4, 5, 6, 7, 8, 9, 10,
+            12, 14, 16, 18, 20, 24, 28, 32, 36, 48, 10
+    };
+
     public static final int MAX_LEVEL = 100;
 
     private final PlayerData playerData;
 
-    @Setter private int currentExp = 0;
+    private int prestige = 1;
+    private int currentExp = 0;
+
+    public double getPrestigeXpMultiplier() {
+        return PRESTIGE_XP_MULTIPLIERS[prestige - 1];
+    }
+
+    public boolean isPrestige() {
+        return prestige > 1;
+    }
 
     public int getMaxExperience() {
-        return getCurrentLevel() * BASE_EXPERIENCE;
+        return Levels.getByLevel(getCurrentLevel()).getExperience();
     }
 
     public double getPercentageExp() {
         return MathUtil.getPercent(currentExp, getMaxExperience());
     }
 
+    public void addExp(Player player, int exp, ExperienceType type, Object... args) {
+        playerData.getStatistic().add(StatisticType.TOTAL_EXPERIENCE, exp);
+        currentExp += exp;
+
+        if (player != null) {
+            player.setExp((float) (getPercentageExp() * 0.01F));
+            String message = ChatColor.GREEN + "+" + exp + " exp";
+            if (type != null) {
+                message += ChatColor.GRAY + " (" + String.format(type.getName(), args) + ChatColor.GRAY + ")";
+            }
+            player.sendMessage(message);
+        }
+
+        for (PlayerChallenge challenge : playerData.getChallengeTracker().getChallenges().values()) {
+            if (challenge.isActive() && challenge.getChallenge().getType() == ChallengeType.EXPERIENCE) {
+                challenge.increment(player, exp);
+            }
+        }
+
+        Kit unlockingKit = playerData.getUnlockingKit();
+        if (unlockingKit != null) {
+            KitStatistic kitStatistic = playerData.getStatistic().get(unlockingKit);
+            int newExp = kitStatistic.getExp() + exp;
+            if (newExp >= Kit.MAX_EXP_UNLOCK) {
+                kitStatistic.setExp(0);
+                playerData.setUnlockingKit(null);
+                playerData.addUnlockedKit(unlockingKit);
+            } else {
+                kitStatistic.setExp(newExp);
+            }
+        }
+
+        if (getCurrentLevel() >= MAX_LEVEL) {
+            if (player != null) {
+                player.sendMessage(ChatColor.RED + "You have reached the highest level! Type /prestige to advance.");
+            }
+            return;
+        }
+
+        while (currentExp >= getMaxExperience()) {
+            addLevel(player);
+        }
+    }
+
+    public void addExp(Player player, ExperienceType type, Object... args) {
+        addExp(player, type.getExperience(), type, args);
+    }
+
+    @Deprecated
     public void addExp(Player player, int exp, String action) {
         playerData.getStatistic().add(StatisticType.TOTAL_EXPERIENCE, exp);
         currentExp += exp;
@@ -82,17 +145,21 @@ public class Level {
 
     public void addLevel(Player player) {
         currentExp -= getMaxExperience();
-        playerData.getStatistic().add(StatisticType.LEVEL);
+        int level = (int) playerData.getStatistic().add(StatisticType.LEVEL);
+        Levels levelData = Levels.getByLevel(level);
         if (player != null) {
             player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
-            player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "LEVEL UNLOCKED! " + ChatColor.GRAY + "You've ranked up to level " + ChatColor.GREEN + getCurrentLevel() + ChatColor.GRAY + "!");
+            player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "LEVEL UNLOCKED! " + ChatColor.GRAY + "You've ranked up to level " + levelData.getColor() + level + ChatColor.GRAY + "!");
+            for (LevelFeature feature : levelData.getFeatures()) {
+                player.sendMessage(ChatColor.GRAY + " - " + ChatColor.WHITE + feature.getName());
+            }
             new LevelFlashTask(player, this).runTaskTimer(Brawl.getInstance(), 0, 7); // Run cool animation :D
         }
         playerData.markForSave();
     }
 
     public int getCurrentLevel() {
-        return (int) Math.max(1, playerData.getStatistic().get(StatisticType.LEVEL));
+        return (int) playerData.getStatistic().get(StatisticType.LEVEL);
     }
 
     public void updateExp(Player player) {
@@ -108,45 +175,22 @@ public class Level {
     }
 
     public Document toDocument() {
-        return new Document("exp", currentExp);
+        return new Document("exp", currentExp)
+                .append("prestige", prestige);
     }
-
-    public static String getColor(int level) {
-        ChatColor color;
-        if (level < 10) {
-            color = ChatColor.GRAY;
-        } else if (level < 20) {
-            color = ChatColor.WHITE;
-        } else if (level < 30) {
-            color = ChatColor.YELLOW;
-        } else if (level < 40) {
-            color = ChatColor.GOLD;
-        } else if (level < 50) {
-            color = ChatColor.AQUA;
-        } else if (level < 60) {
-            color = ChatColor.DARK_AQUA;
-        } else if (level < 75) {
-            color = ChatColor.LIGHT_PURPLE;
-        } else if (level >= 100) {
-            color = ChatColor.DARK_PURPLE;
-        } else {
-            color = ChatColor.WHITE;
-        }
-        //✫
-
-        return color.toString();
-    }
-
     public String getPrefix() {
-        return getColor(getCurrentLevel()) + "[" + getCurrentLevel() + "✫] ";
+        Levels level = Levels.getByLevel(getCurrentLevel());
+        return ChatColor.GRAY + "[" + level.getColor() + getCurrentLevel() + ChatColor.GRAY + "] ";
     }
 
     public String getDisplayName() {
-        return getColor(getCurrentLevel()) + getCurrentLevel() + "✫";
+        Levels level = Levels.getByLevel(getCurrentLevel());
+        return level.getColor() + getCurrentLevel();
     }
 
     public String getSimplePrefix() {
-        return getColor(getCurrentLevel()) + "[" + getCurrentLevel() + "] ";
+        Levels level = Levels.getByLevel(getCurrentLevel());
+        return ChatColor.GRAY + "[" + level.getColor() + getCurrentLevel() + ChatColor.GRAY + "] ";
     }
 
 

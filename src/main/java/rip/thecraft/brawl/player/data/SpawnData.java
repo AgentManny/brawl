@@ -11,6 +11,7 @@ import rip.thecraft.brawl.killstreak.Killstreak;
 import rip.thecraft.brawl.killstreak.KillstreakHandler;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.statistic.KitStatistic;
+import rip.thecraft.brawl.levels.ExperienceType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.player.statistic.StatisticType;
@@ -36,14 +37,16 @@ public class SpawnData {
             Player damager = Bukkit.getPlayer(uuid);
 
             if (damager != null && damager != killer) {
+                PlayerData damagerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(damager);
                 double pct = getPctDamaged(damager);
                 if (pct >= MIN_PERCENT_FOR_ASSIST) {
                     double tokens = pct * finalCredits;
-                    for (PlayerChallenge challenge : playerData.getChallengeTracker().getChallenges().values()) {
+                    for (PlayerChallenge challenge : damagerData.getChallengeTracker().getChallenges().values()) {
                         if (challenge.isActive() && challenge.getChallenge().getType() == ChallengeType.CREDITS) {
                             challenge.increment(damager, Math.round((float) tokens));
                         }
                     }
+                    damagerData.getLevel().addExp(damager, ExperienceType.KILL_ASSISTS, killer.getName());
                     damager.sendMessage(CC.DARK_PURPLE + "You've earned " + CC.LIGHT_PURPLE + Math.round(tokens) + " credits" + CC.DARK_PURPLE + " for dealing " + CC.LIGHT_PURPLE + (Math.round(tokens * 10) / 10.0) + "%" + CC.DARK_PURPLE + " damage to " + CC.WHITE + killer.getDisplayName() + CC.DARK_PURPLE + ".");
                     assisters.add(damager.getName());
                 }

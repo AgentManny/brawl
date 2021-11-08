@@ -41,6 +41,10 @@ public enum StatisticType {
 
     private boolean hidden = false;
 
+    public double getDefaultValue() {
+        return this == LEVEL ? 1 : 0;
+    }
+
     public StatisticType next() {
         StatisticType statistic = StatisticType.KILLS; // Fallback
         try {

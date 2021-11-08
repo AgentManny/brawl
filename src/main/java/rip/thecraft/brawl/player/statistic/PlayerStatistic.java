@@ -30,7 +30,7 @@ public class PlayerStatistic {
     public void load(Document document) {
         if (document == null) {
             for (StatisticType statisticType : StatisticType.values()) {
-                this.spawnStatistics.put(statisticType, 0.0);
+                this.spawnStatistics.put(statisticType, statisticType.getDefaultValue());
             }
 
             for (MatchLoadout loadout : Brawl.getInstance().getMatchHandler().getLoadouts()) {
@@ -136,19 +136,19 @@ public class PlayerStatistic {
             return this.get(StatisticType.KILLS) / Math.max(this.get(StatisticType.DEATHS), 1);
         }
 
-        this.spawnStatistics.putIfAbsent(statisticType, 0.0D);
-        return this.spawnStatistics.getOrDefault(statisticType, 0.0D);
+        this.spawnStatistics.putIfAbsent(statisticType, statisticType.getDefaultValue());
+        return this.spawnStatistics.getOrDefault(statisticType, statisticType.getDefaultValue());
     }
 
     public double set(StatisticType statisticType, double newValue) {
-        this.spawnStatistics.putIfAbsent(statisticType, 0.0D);
+        this.spawnStatistics.putIfAbsent(statisticType, statisticType.getDefaultValue());
         this.spawnStatistics.put(statisticType, newValue);
         this.playerData.markForSave();
         return newValue;
     }
 
     public double add(StatisticType statisticType, double value) {
-        this.spawnStatistics.putIfAbsent(statisticType, 0.0D);
+        this.spawnStatistics.putIfAbsent(statisticType, statisticType.getDefaultValue());
 
         double newValue = this.get(statisticType) + value;
         this.spawnStatistics.put(statisticType, newValue);

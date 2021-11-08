@@ -37,7 +37,7 @@ public enum RewardType {
             statistic.add(StatisticType.CREDITS, value);
             player.sendMessage(ChatColor.LIGHT_PURPLE + "+" + value + " credits");
         } else if (this == EXPERIENCE) {
-            playerData.getLevel().addExp(player, value, null);
+            playerData.getLevel().addExp(player, value, (String) null);
         }
     }
 

@@ -77,7 +77,7 @@ public class BrawlNametagAdapter extends NametagProvider {
         }
 
         Level level = playerData.getLevel();
-        String levelPrefix = (showLevel ? Level.getColor(level.getCurrentLevel()) + level.getSimplePrefix() : "") + ChatColor.translateAlternateColorCodes('&', profile.getColor());
+//        String levelPrefix = (showLevel ? Level.getColor(level.getCurrentLevel()) + level.getSimplePrefix() : "") + ChatColor.translateAlternateColorCodes('&', profile.getColor());
 
         Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(toRefresh);
 
