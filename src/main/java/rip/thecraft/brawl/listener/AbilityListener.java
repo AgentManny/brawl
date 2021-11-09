@@ -13,10 +13,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerOnGroundEvent;
-import org.bukkit.event.player.PlayerToggleFlightEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 import org.github.paperspigot.event.entity.ProjectileCollideEvent;
@@ -32,10 +29,19 @@ import rip.thecraft.brawl.kit.KitHandler;
 import rip.thecraft.brawl.util.moreprojectiles.event.BlockProjectileHitEvent;
 import rip.thecraft.brawl.util.moreprojectiles.event.ItemProjectileHitEvent;
 
+import java.util.Map;
+
 @RequiredArgsConstructor
 public class AbilityListener implements Listener {
 
     private final Brawl plugin;
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        for (Map.Entry<String, Ability> entry : plugin.getAbilityHandler().getAbilities().entrySet()) {
+            entry.getValue().getTasks().clear(event.getPlayer().getUniqueId());
+        }
+    }
 
     @EventHandler
     public void onPlayerGround(PlayerOnGroundEvent event) {
