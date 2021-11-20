@@ -108,7 +108,7 @@ public class KitHandler {
     public static Kit getEquipped(Player player) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
         Match match = Brawl.getInstance().getMatchHandler().getMatch(player);
-        Kit selectedKit = match != null && match.getKit() != null ? match.getKit() : playerData.getSelectedKit();
+        Kit selectedKit = match != null && match.getKit() != null ? match.getKit() : playerData != null ? playerData.getSelectedKit() : null;
         return !RegionType.SAFEZONE.appliesTo(player.getLocation()) ? selectedKit : null;
     }
 

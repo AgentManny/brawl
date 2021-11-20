@@ -255,7 +255,7 @@ public class SoupListener implements Listener {
                     PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(event.getPlayer());
                     if (playerData.getSelectedKit() != null) {
                         List<String> lore = item.getItemMeta().getLore();
-                        boolean canDrop = lore.contains(ChatColor.GRAY + "PvP Loot") || lore.contains(ChatColor.DARK_GRAY + playerData.getSelectedKit().getName());
+                        boolean canDrop = lore.contains(ChatColor.DARK_GRAY + playerData.getSelectedKit().getName());
                         if (canDrop) {
                             SchedulerUtil.runTaskLater(() -> event.getItemDrop().remove(), 5L, false);
                             return;

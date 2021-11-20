@@ -270,7 +270,7 @@ public class AbilityListener implements Listener {
                     shooter = (Player) event.getProjectile().getShooter();
                 }
 
-                if(shooter != null){
+                if(shooter != null) {
                     Kit selectedKit = KitHandler.getEquipped(shooter);
 
                     if(selectedKit != null){

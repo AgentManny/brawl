@@ -71,14 +71,13 @@ public class DamageListener implements Listener {
                 if (!RegionType.SAFEZONE.appliesTo(event.getEntity().getLocation()) && playerData.getSelectedKit() != null) {
                     for (ItemStack it : event.getDrops()) {
                         if (this.shouldFilter(it)) {
+                            boolean changedItem = false;
                             List<String> lore = it.getItemMeta().hasLore() ? it.getItemMeta().getLore() : new ArrayList<>();
-                            if (!(it.getType() == Material.MUSHROOM_SOUP || it.getType() == Material.BOWL)) {
-                                lore.add(ChatColor.GRAY + "PvP Loot");
+                            if (!(it.getType() == Material.BOWL || RefillType.isRefill(it))) {
                                 lore.add(CC.DARK_GRAY + playerData.getSelectedKit().getName());
                             }
-
                             ItemStack toDrop = new ItemBuilder(it).lore(lore).create();
-                            Item item = player.getWorld().dropItem(player.getLocation().add(Brawl.RANDOM.nextInt(2) - 1, 0, Brawl.RANDOM.nextInt(2) - 1), toDrop);
+                            Item item = player.getWorld().dropItem(player.getLocation().add(Brawl.RANDOM.nextInt(2) - 1, 0, Brawl.RANDOM.nextInt(2) - 1), changedItem ? toDrop : it);
                             plugin.getServer().getScheduler().runTaskLater(plugin, item::remove, 15L + (4 * i++));
                         }
                     }

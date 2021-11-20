@@ -1,5 +1,6 @@
 package rip.thecraft.brawl.ability.abilities;
 
+import gg.manny.hologram.HologramPlugin;
 import net.minecraft.server.v1_8_R3.PacketPlayOutScoreboardTeam;
 import net.minecraft.server.v1_8_R3.Scoreboard;
 import net.minecraft.server.v1_8_R3.ScoreboardTeam;
@@ -20,6 +21,7 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
+import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.spartan.nametag.NametagHandler;
 
 import java.util.Arrays;
@@ -69,14 +71,15 @@ public class StealthMode extends Ability implements Listener {
             team = new ScoreboardTeam(((CraftScoreboard) Bukkit.getScoreboardManager().getMainScoreboard()).getHandle(), STEALTH_METADATA);
         }
         team.setNameTagVisibility(ScoreboardTeamBase.EnumNameTagVisibility.NEVER);
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            if (onlinePlayer == player) continue;
-
-            Arrays.asList(
-                    new PacketPlayOutScoreboardTeam(team, 1),
-                    new PacketPlayOutScoreboardTeam(team, 0),
-                    new PacketPlayOutScoreboardTeam(team, Collections.singletonList(player.getName()), 3)
-            ).forEach(packet -> ((CraftPlayer) onlinePlayer).getHandle().playerConnection.sendPacket(packet));
+        for (Player nearbyPlayer : PlayerUtil.getNearbyPlayers(player, Ability.EFFECT_DISTANCE)) {
+            if (nearbyPlayer == player) continue;
+            if (!HologramPlugin.getInstance().onLegacyVersion(nearbyPlayer)) {
+                Arrays.asList(
+                        new PacketPlayOutScoreboardTeam(team, 1),
+                        new PacketPlayOutScoreboardTeam(team, 0),
+                        new PacketPlayOutScoreboardTeam(team, Collections.singletonList(player.getName()), 3)
+                ).forEach(packet -> ((CraftPlayer) nearbyPlayer).getHandle().playerConnection.sendPacket(packet));
+            }
         }
 
         int taskId = new BukkitRunnable() {

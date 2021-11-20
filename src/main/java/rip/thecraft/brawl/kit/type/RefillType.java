@@ -14,6 +14,7 @@ public enum RefillType {
     POTION(true, new ItemStack(Material.POTION, 1, (short)16421)),
     NONE(false, new ItemStack(Material.AIR));
 
+
     private final boolean hunger;
     private final ItemStack item;
 
