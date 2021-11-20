@@ -49,6 +49,7 @@ public class PlayerData {
     private boolean duelArena = false;
     private boolean event = false;
     private boolean spectator = false;
+    private boolean warp = false;
 
     private boolean spawnProtection = true;
     private boolean noFallDamage = false;
@@ -263,6 +264,7 @@ public class PlayerData {
         this.spawnProtection = true;
         this.duelArena = false;
         this.event = false;
+        this.warp = false;
 
         if (this.selectedKit == null) {
             if (!player.hasMetadata("staffmode")) {

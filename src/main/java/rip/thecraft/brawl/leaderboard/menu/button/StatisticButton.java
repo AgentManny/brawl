@@ -7,13 +7,12 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.player.statistic.StatisticType;
-import rip.thecraft.falcon.Falcon;
+import rip.thecraft.brawl.visual.tasks.LeaderboardUpdateTask;
 import rip.thecraft.spartan.menu.Button;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 public class StatisticButton extends Button {
@@ -52,9 +51,7 @@ public class StatisticButton extends Button {
                     break;
                 }
             }
-            double value = entry.getValue();
-            double roundedValue = type == StatisticType.KDR ? Math.round(value * 10.) / 10. : Math.round(value);
-            lines.add(prefix + ChatColor.WHITE + entry.getKey() + ChatColor.GRAY + " \u2758 " + ChatColor.WHITE + roundedValue);
+            lines.add(prefix + entries + ". " + ChatColor.WHITE + entry.getKey() + ChatColor.GRAY + " \u2758 " + ChatColor.WHITE + (type == StatisticType.KDR ? Math.round(entry.getValue() * 10.) / 10. : LeaderboardUpdateTask.STAT_FORMAT.format(entry.getValue())));
         }
 
         lines.add(0, ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat("-", 30));

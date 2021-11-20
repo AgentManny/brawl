@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 
 @AllArgsConstructor
 @Getter
-public enum  RefillType {
+public enum RefillType {
 
     SOUP(false, new ItemStack(Material.MUSHROOM_SOUP)),
     POTION(true, new ItemStack(Material.POTION, 1, (short)16421)),
@@ -21,4 +21,16 @@ public enum  RefillType {
         return WordUtils.capitalizeFully(name().toLowerCase());
     }
 
+    public static boolean isRefill(ItemStack item) {
+        return getType(item) != null;
+    }
+
+    public static RefillType getType(ItemStack item) {
+        if (item.isSimilar(SOUP.getItem())) {
+            return SOUP;
+        } else if (item.isSimilar(POTION.getItem())) {
+            return POTION;
+        }
+        return null;
+    }
 }

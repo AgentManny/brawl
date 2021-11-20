@@ -34,7 +34,7 @@ public class RegionHandler implements Closeable {
 
                 PacketContainer packet = event.getPacket();
                 String sound = packet.getStrings().read(0);
-                if (sound.contains("step")) {
+                if (sound.contains("step") || sound.equals("random.bow")) {
                     Region region = get(player.getLocation());
                     if (region != null && region.getType() == RegionType.SAFEZONE) {
                         event.setCancelled(true);

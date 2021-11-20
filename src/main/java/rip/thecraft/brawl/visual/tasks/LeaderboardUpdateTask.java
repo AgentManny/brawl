@@ -20,6 +20,8 @@ import static rip.thecraft.brawl.visual.VisualManager.HOLO_LB;
 
 public class LeaderboardUpdateTask extends BukkitRunnable {
 
+    public static final DecimalFormat STAT_FORMAT = new DecimalFormat("#.#");
+
     private final VisualManager visualManager;
 
     private Hologram hologram;
@@ -43,8 +45,6 @@ public class LeaderboardUpdateTask extends BukkitRunnable {
     private static final int REFRESH_TIMER = 10;
     private int refreshTimer = 0;
     private boolean refreshed = false;
-
-    private DecimalFormat statFormat = new DecimalFormat("#.#");
 
     private BiConsumer<StatisticType, Hologram> update = (stat, hologram) -> {
         Leaderboard leaderboard = Brawl.getInstance().getLeaderboard();
@@ -71,7 +71,7 @@ public class LeaderboardUpdateTask extends BukkitRunnable {
                     break;
                 }
             }
-            hologram.setLine(entries + 2, (prefix + entries + ". " + ChatColor.WHITE + entry.getKey() + ChatColor.GRAY + " ● " + ChatColor.WHITE + statFormat.format(entry.getValue())));
+            hologram.setLine(entries + 2, (prefix + entries + ". " + ChatColor.WHITE + entry.getKey() + ChatColor.GRAY + " ● " + ChatColor.WHITE + STAT_FORMAT.format(entry.getValue())));
         }
         if (!refreshed) {
             hologram.addLines(" ");

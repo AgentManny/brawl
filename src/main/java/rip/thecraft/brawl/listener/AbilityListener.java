@@ -122,7 +122,6 @@ public class AbilityListener implements Listener {
         Player player = event.getPlayer();
         Kit selectedKit = KitHandler.getEquipped(player);
         if (event.hasItem() && event.getItem() != null && selectedKit != null && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
-
             boolean cancelled = false;
             for (Ability ability : selectedKit.getAbilities()) {
                 if (!cancelled && (ability instanceof InteractItemHandler && ((InteractItemHandler) ability).onInteractItem(player, event.getAction(), event.getItem()))) {

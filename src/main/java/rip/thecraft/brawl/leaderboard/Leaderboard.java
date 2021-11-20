@@ -4,6 +4,9 @@ import com.google.gson.internal.LinkedTreeMap;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Sorts;
 import lombok.Getter;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.model.user.UserManager;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,6 +21,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 @Getter
@@ -54,7 +58,6 @@ public class Leaderboard {
             Document statDocument = (Document) ((Document) doc.get("statistic")).get("spawn");
             if (statDocument != null) {
                 UUID uuid = UUID.fromString(doc.getString("uuid"));
-
                 String displayName = doc.getString("username");
                 String color = ChatColor.WHITE.toString();
                 Player player = Bukkit.getPlayer(uuid);

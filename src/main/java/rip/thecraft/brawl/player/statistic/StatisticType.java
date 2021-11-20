@@ -18,21 +18,21 @@ public enum StatisticType {
     KILLS("Kills", ChatColor.GREEN, Material.DIAMOND_SWORD),
     DEATHS("Deaths", ChatColor.RED, Material.SKULL_ITEM),
 
-    KILLSTREAK("Killstreak", ChatColor.AQUA, Material.GOLD_CHESTPLATE),
+    KDR("KDR", ChatColor.DARK_RED, Material.SULPHUR),
+
+    KILLSTREAK("Killstreak", ChatColor.AQUA, Material.GOLD_CHESTPLATE, true),
     HIGHEST_KILLSTREAK("Highest Killstreak", ChatColor.BLUE, Material.DIAMOND_CHESTPLATE),
 
-    TOTAL_EXPERIENCE("Total EXP", ChatColor.DARK_AQUA, Material.LAPIS_ORE, true),
-    LEVEL("Level", ChatColor.LIGHT_PURPLE, Material.EXP_BOTTLE),
+    TOTAL_EXPERIENCE("Total EXP", ChatColor.DARK_AQUA, Material.EXP_BOTTLE),
+    LEVEL("Level", ChatColor.LIGHT_PURPLE, Material.DIAMOND),
 
     CREDITS("Credits", ChatColor.GOLD, Material.GOLD_INGOT),
 
-    KDR("KDR", ChatColor.DARK_RED, Material.REDSTONE_BLOCK),
+    EVENT_WINS("Event Wins", ChatColor.GREEN, Material.DOUBLE_PLANT),
 
-    EVENT_WINS("Event Wins", ChatColor.GREEN, Material.GOLD_BLOCK),
-
-    DUEL_WINS("Duel Wins", ChatColor.AQUA, Material.DIAMOND_BLOCK, true),
-    DUEL_LOSSES("Duel Losses", ChatColor.RED, Material.REDSTONE_BLOCK, true),
-    DUEL_WIN_STREAK("Duel Win Streak", ChatColor.GREEN, Material.EMERALD_BLOCK, true);
+    DUEL_WINS("Duel Wins", ChatColor.AQUA, Material.IRON_CHESTPLATE),
+    DUEL_LOSSES("Duel Losses", ChatColor.RED, Material.REDSTONE, true),
+    DUEL_WIN_STREAK("Duel Winstreak", ChatColor.GREEN, Material.EMERALD);
 
     private final String name;
 

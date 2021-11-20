@@ -13,7 +13,7 @@ public class LeaderboardMenu extends Menu {
 
     @Override
     public String getTitle(Player player) {
-        return "Leaderboards ";
+        return "Leaderboards";
     }
 
     @Override
@@ -22,6 +22,7 @@ public class LeaderboardMenu extends Menu {
 
         int x = 1, y = 0;
         for(StatisticType stat : StatisticType.values()) {
+            if (stat.isHidden()) continue;
             buttons.put(getSlot(x, y), new StatisticButton(stat));
             if (x++ >= 7) {
                 x = 1;

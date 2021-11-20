@@ -24,6 +24,7 @@ import rip.thecraft.brawl.game.GameFlag;
 import rip.thecraft.brawl.game.GameState;
 import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.kit.Kit;
+import rip.thecraft.brawl.kit.type.RefillType;
 import rip.thecraft.brawl.levels.ExperienceType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
@@ -84,7 +85,6 @@ public class DamageListener implements Listener {
                 }
                 PlayerStatistic statistic = playerData.getStatistic();
 
-
                 statistic.add(StatisticType.DEATHS);
                 statistic.set(StatisticType.KILLSTREAK, 0.0D);
 
@@ -102,6 +102,7 @@ public class DamageListener implements Listener {
                 }
 
                 player.teleport(plugin.getLocationByName("SPAWN"));
+                playerData.setWarp(false);
                 break;
             }
         }
@@ -200,8 +201,11 @@ public class DamageListener implements Listener {
     }
 
 
+    private static final double ARMOR_PROBABILITY = 0.30;
+    private static final double OTHER_PROBABILITY = 0.75;
 
     private boolean shouldFilter(ItemStack itemStack) {
+        double random = Math.random();
         switch(itemStack.getType()) {
             case DIAMOND_HELMET:
             case DIAMOND_BOOTS:
@@ -212,20 +216,21 @@ public class DamageListener implements Listener {
             case GOLD_HELMET:
             case GOLD_BOOTS:
             case LEATHER_HELMET:
-            case LEATHER_BOOTS:
-            case MUSHROOM_SOUP:
-                return Math.random() * 100 < 70;
+            case LEATHER_BOOTS: {
+                return random <= ARMOR_PROBABILITY;
+            }
             default: {
+                if (RefillType.isRefill(itemStack)) {
+                    return random <= OTHER_PROBABILITY;
+                }
                 return false;
             }
         }
     }
 
-
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (event.isCancelled()) return;
-
 
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();

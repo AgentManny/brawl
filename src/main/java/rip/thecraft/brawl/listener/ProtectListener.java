@@ -36,6 +36,7 @@ import rip.thecraft.brawl.game.games.Feast;
 import rip.thecraft.brawl.game.option.impl.StoreBlockOption;
 import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.region.RegionType;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -138,6 +139,18 @@ public class ProtectListener implements Listener {
 
         Block block = event.getClickedBlock();
         Action action = event.getAction();
+        if (RegionType.SAFEZONE.appliesTo(player.getLocation())) {
+            if (event.hasItem() && action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) { // Prevent interacting with certain items in spawn
+                Material type = event.getItem().getType();
+                if (type == Material.FISHING_ROD) {
+                    event.setCancelled(true);
+                    event.setUseInteractedBlock(Event.Result.DENY);
+                    event.setUseItemInHand(Event.Result.DENY);
+                    return;
+                }
+            }
+        }
+
         if (action == Action.PHYSICAL) { // Prevent players from trampling on crops or any other pressure plates besides stone, etc.
             if (!player.hasMetadata("build") && (event.hasBlock() && event.getClickedBlock().getType() != Material.STONE_PLATE)) {
                 event.setCancelled(true);
@@ -167,7 +180,6 @@ public class ProtectListener implements Listener {
             canRightClick = !BLOCK_RIGHT_CLICK_DENY.contains(blockType);
             if (canRightClick) {
                 Material itemType = event.hasItem() ? event.getItem().getType() : null;
-
                 if (Material.EYE_OF_ENDER == itemType && Material.ENDER_PORTAL_FRAME == blockType && block.getData() != 4) {
                     // If the player is right clicking an Ender Portal Frame with an Ender Portal Eye and it is empty.
                     canRightClick = false;

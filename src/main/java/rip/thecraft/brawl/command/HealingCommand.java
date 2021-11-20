@@ -10,9 +10,9 @@ import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.spartan.command.Command;
 import rip.thecraft.spartan.command.Param;
 
-public class SetRefillCommand {
+public class HealingCommand {
 
-    @Command(names = { "setrefill"} )
+    @Command(names = { "healing", "sethealing" } )
     public static void execute(Player player, @Param(defaultValue = "_", name = "soup|potion") String source) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
         RefillType refillType;

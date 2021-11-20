@@ -35,6 +35,7 @@ public class WarpCommand {
             playerData.warp(warp.getName(), location, 5, () -> {
                 playerData.setSpawnProtection(spawnProt);
                 playerData.setDuelArena(false);
+                playerData.setWarp(true);
                 Kit kit = Brawl.getInstance().getKitHandler().getKit(warp.getKit());
                 if (kit != null) {
                     kit.apply(sender, true, true);

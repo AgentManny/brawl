@@ -36,6 +36,9 @@ public class Shurikens extends Ability implements KillHandler, InteractItemHandl
     @AbilityProperty(id = "throw-power", description = "Power of throwing the shuriken")
     public double throwPower = 1.2D;
 
+    @AbilityProperty(id = "miss-cooldown")
+    public int missCooldown = 10;
+
     @Override
     public boolean bypassAbilityPreventZone() {
         return true;
@@ -45,7 +48,7 @@ public class Shurikens extends Ability implements KillHandler, InteractItemHandl
     public boolean onInteractItem(Player player, Action action, ItemStack itemStack) {
         if (itemStack.getType() == Material.NETHER_STAR) {
             if (this.hasCooldown(player, true)) return true;
-            this.addCooldown(player, TimeUnit.SECONDS.toMillis(10));
+            this.addCooldown(player, TimeUnit.SECONDS.toMillis(missCooldown));
 
             if (player.getItemInHand().getAmount() > 1) {
                 player.getItemInHand().setAmount(player.getItemInHand().getAmount() - 1);
@@ -67,14 +70,15 @@ public class Shurikens extends Ability implements KillHandler, InteractItemHandl
 
     @Override
     public boolean onItemProjectileHit(Player shooter, Player hit, ItemProjectileHitEvent event) {
-        if(event.getHitType() == CustomProjectileHitEvent.HitType.ENTITY && event.getProjectile().getProjectileName().equals("shurikens")){
-            if(!canAttack(hit)) return true;
-            if(hit == shooter) return true;
+        if(event.getHitType() == CustomProjectileHitEvent.HitType.ENTITY && event.getProjectile().getProjectileName().equals("shurikens")) {
+            if (!canAttack(hit)) return true;
+            if (hit == shooter) return true;
 
-            if(!hit.isDead()){
+            if (!hit.isDead()) {
                 hit.damage(damageValue, shooter);
                 hit.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 1, true, false));
                 hit.playEffect(hit.getLocation(), Effect.ZOMBIE_CHEW_IRON_DOOR, 1);
+                addCooldown(shooter);
             }
         }
         return false;

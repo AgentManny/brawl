@@ -88,7 +88,7 @@ public class AbilityHandler {
                 new Shurikens(),
                 new Blaze(),
                 new Gambler(),
-                new Assassin(),
+                new StealthMode(),
                 new Phantom(),
                 new Clown(),
                 new Melon(),

@@ -19,6 +19,10 @@ public class KitCommand {
         }
 
         if (playerData.hasKit(kit)) {
+            if (playerData.isWarp()) {
+                player.sendMessage(ChatColor.RED + "You can't change kits when in this area.");
+                return;
+            }
             kit.apply(player, true, true);
         } else {
             player.sendMessage(CC.RED + "You don't have permission to use this kit.");

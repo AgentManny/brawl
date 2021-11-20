@@ -140,7 +140,16 @@ public class PlayerStatistic {
         return this.spawnStatistics.getOrDefault(statisticType, statisticType.getDefaultValue());
     }
 
+    private void updateKDR() {
+        spawnStatistics.put(StatisticType.KDR, get(StatisticType.KDR));
+        playerData.markForSave();
+
+    }
+
     public double set(StatisticType statisticType, double newValue) {
+        if (statisticType == StatisticType.KILLS || statisticType == StatisticType.DEATHS) {
+            updateKDR();
+        }
         this.spawnStatistics.putIfAbsent(statisticType, statisticType.getDefaultValue());
         this.spawnStatistics.put(statisticType, newValue);
         this.playerData.markForSave();
@@ -148,6 +157,10 @@ public class PlayerStatistic {
     }
 
     public double add(StatisticType statisticType, double value) {
+        if (statisticType == StatisticType.KILLS || statisticType == StatisticType.DEATHS) {
+            updateKDR();
+        }
+
         this.spawnStatistics.putIfAbsent(statisticType, statisticType.getDefaultValue());
 
         double newValue = this.get(statisticType) + value;

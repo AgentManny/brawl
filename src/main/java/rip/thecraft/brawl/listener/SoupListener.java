@@ -19,6 +19,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.inventory.Inventory;
@@ -31,6 +32,7 @@ import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameFlag;
 import rip.thecraft.brawl.kit.type.RefillType;
 import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.upgrade.perk.Perk;
 import rip.thecraft.brawl.util.SchedulerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
@@ -243,12 +245,12 @@ public class SoupListener implements Listener {
                 SchedulerUtil.runTaskLater(() -> event.getItemDrop().remove(), 5L, false);
                 break;
             }
-
-            case MUSHROOM_SOUP:{
-                SchedulerUtil.runTaskLater(() -> event.getItemDrop().remove(), 100L, false);
-                break;
-            }
             default: {
+                if (RefillType.isRefill(item)) {
+                    SchedulerUtil.runTaskLater(() -> event.getItemDrop().remove(), RegionType.SAFEZONE.appliesTo(event.getPlayer().getLocation()) ? 5L : 100L, false);
+                    return;
+                }
+
                 if (item.hasItemMeta() && item.getItemMeta().hasLore()) {
                     PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(event.getPlayer());
                     if (playerData.getSelectedKit() != null) {
@@ -265,6 +267,29 @@ public class SoupListener implements Listener {
             }
         }
     }
-    //PlayerPickupItemEvent
 
+    @EventHandler
+    public void onPlayerPickupItemEvent(PlayerPickupItemEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = event.getItem().getItemStack();
+        if (item == null) return;
+
+        PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
+        RefillType refillType = RefillType.getType(item);
+        RefillType playerRefill = playerData.getRefillType();
+
+        if (item.hasItemMeta() && item.getItemMeta().hasLore()) {
+            List<String> lore = item.getItemMeta().getLore();
+            boolean canPickup = refillType != null || lore.contains(ChatColor.DARK_GRAY + playerData.getSelectedKit().getName());
+            if (!canPickup) {
+                event.setCancelled(true);
+                return;
+            }
+        } else if (refillType != playerRefill) { // Change healing to player's refill type
+            if (playerRefill.getItem() != null) {
+                event.getItem().setItemStack(playerRefill.getItem());
+                event.setCancelled(true);
+            }
+        }
+    }
 }

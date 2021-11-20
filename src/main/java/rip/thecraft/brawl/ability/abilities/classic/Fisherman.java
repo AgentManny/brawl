@@ -53,7 +53,7 @@ public class Fisherman extends Ability implements Listener {
             if(event.getEntity().getShooter() != null && event.getEntity().getShooter() instanceof Player){
                 Player player = (Player) event.getEntity().getShooter();
 
-                if(hasCooldown(player, true)){
+                if(hasCooldown(player, true)) {
                     event.setCancelled(true);
                 }
             }

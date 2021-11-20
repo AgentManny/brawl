@@ -1,10 +1,11 @@
 package rip.thecraft.brawl.ability.abilities;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import net.minecraft.server.v1_8_R3.EntityLightning;
+import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityWeather;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import rip.thecraft.brawl.ability.Ability;
@@ -12,6 +13,7 @@ import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.ability.task.AbilityTask;
 import rip.thecraft.brawl.player.protection.Protection;
+import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.util.PlayerUtil;
 
 import java.util.HashSet;
@@ -61,6 +63,7 @@ public class Smite extends Ability implements Listener {
 
         private World world;
         private Location location;
+        private long lastSound = -1L;
 
         public SmiteTask(Ability ability, Player player, Location location) {
             super(ability, player, 2250L, 15L);
@@ -71,10 +74,26 @@ public class Smite extends Ability implements Listener {
 
         @Override
         public void onTick() {
-            location.getWorld().strikeLightningEffect(location);
+            EntityLightning lightning = new EntityLightning(((CraftWorld) player.getWorld()).getHandle(), location.getX(), location.getY(), location.getZ(), false, true);
+
+            PacketPlayOutSpawnEntityWeather lightningPacket = new PacketPlayOutSpawnEntityWeather(lightning);
+
+            // Send packet to nearby players (without sound)
+            for (Player nearbyPlayer : PlayerUtil.getNearbyPlayers(location, Ability.EFFECT_DISTANCE)) {
+                ((CraftPlayer) nearbyPlayer).getHandle().playerConnection.sendPacket(lightningPacket);
+                if (!RegionType.SAFEZONE.appliesTo(nearbyPlayer.getLocation())) {
+                    if (lastSound < System.currentTimeMillis()) {
+                        nearbyPlayer.playSound(location, Sound.AMBIENCE_THUNDER, 10000.0F, 1f);
+                    }
+                }
+            }
+            lastSound = System.currentTimeMillis() + 250L;
+
             for (Player nearbyPlayer : PlayerUtil.getNearbyPlayers(location, damageRadius)) {
                 if (nearbyPlayer == player) continue; // Don't apply to player
-                nearbyPlayer.damage(Protection.isAlly(nearbyPlayer, player) ? damage / 2. : damage, player);
+                if (!RegionType.SAFEZONE.appliesTo(nearbyPlayer.getLocation())) {
+                    nearbyPlayer.damage(Protection.isAlly(nearbyPlayer, player) ? damage / 2. : damage, player);
+                }
             }
         }
 
