@@ -140,7 +140,7 @@ public class ProtectListener implements Listener {
         Block block = event.getClickedBlock();
         Action action = event.getAction();
         if (RegionType.SAFEZONE.appliesTo(player.getLocation())) {
-            if (event.hasItem() && action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) { // Prevent interacting with certain items in spawn
+            if (event.getItem() != null && event.hasItem() && action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) { // Prevent interacting with certain items in spawn
                 Material type = event.getItem().getType();
                 if (type == Material.FISHING_ROD) {
                     event.setCancelled(true);

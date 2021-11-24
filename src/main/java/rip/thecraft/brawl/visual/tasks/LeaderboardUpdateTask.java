@@ -85,7 +85,7 @@ public class LeaderboardUpdateTask extends BukkitRunnable {
         if (refreshTimer++ >= REFRESH_TIMER) {
             refreshTimer = 0;
             statType = statType.next();
-            while (statType == StatisticType.DUEL_LOSSES || statType == StatisticType.DUEL_WINS || statType == StatisticType.DUEL_WIN_STREAK || statType == StatisticType.KDR) {
+            while (statType == StatisticType.DUEL_LOSSES || statType == StatisticType.DUEL_WINS || statType == StatisticType.DUEL_WIN_STREAK || statType == StatisticType.KDR || statType == StatisticType.KILLSTREAK) {
                 statType = statType.next(); // We can't display KDR on leaderboards unfortunately
             }
             update.accept(statType, hologram); // We only update this every refresh timer

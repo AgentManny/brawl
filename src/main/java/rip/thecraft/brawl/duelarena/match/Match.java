@@ -71,9 +71,9 @@ public class Match {
         for (Player other : Bukkit.getOnlinePlayers()) {
             for (Player member : getPlayers()) {
                 if (!contains(other)) {
-                    Brawl.getInstance().getEntityHider().hideEntity(member, other);
+                    member.hidePlayer(other);
                     if (arena.getArenaType() != ArenaType.NORMAL) {
-                        Brawl.getInstance().getEntityHider().hideEntity(other, member);
+                        other.hidePlayer(member);
                     }
                 }
             }
@@ -92,7 +92,7 @@ public class Match {
                 loadout.apply(member);
             }
             NametagHandler.reloadPlayer(member, getOpposite(member));
-            Brawl.getInstance().getEntityHider().showEntity(member, getOpposite(member));
+            member.showPlayer(getOpposite(member));
         }
 
         if (task != null) {
@@ -144,7 +144,6 @@ public class Match {
             broadcast(ChatColor.WHITE + name + ChatColor.YELLOW + " has " + ChatColor.GREEN + "won" + ChatColor.YELLOW + " the match.");
         }
 
-
         boolean newMatch = again.get();
 
         if (!newMatch) {
@@ -158,7 +157,7 @@ public class Match {
         if (winner != null) {
             Player loser = Bukkit.getPlayer(getOpposite(winner.getUniqueId()));
             if (!quitEnded) {
-                Brawl.getInstance().getEntityHider().hideEntity(winner, loser);
+                winner.hidePlayer(loser);
             }
 
             PlayerData wd = Brawl.getInstance().getPlayerDataHandler().getPlayerData(winner);
@@ -252,9 +251,9 @@ public class Match {
                 if (match == null) {
                     for (Player member : getPlayers()) {
                         if (member != null) {
-                            Brawl.getInstance().getEntityHider().showEntity(other, member);
-                            if (!other.hasMetadata("hidden")) {
-                                Brawl.getInstance().getEntityHider().showEntity(member, other);
+                            other.showPlayer(member);
+                            if (!(other.hasMetadata("hidden") || Brawl.getInstance().getSpectatorManager().isSpectating(other))) {
+                                member.showPlayer(other);
                             }
                         }
                     }
@@ -266,7 +265,7 @@ public class Match {
 
                 Player opponent = Bukkit.getPlayer(this.getOpposite(member.getUniqueId()));
                 if (opponent != null) {
-                    Brawl.getInstance().getEntityHider().showEntity(member, opponent);
+                    member.showPlayer(opponent);
                 }
             }
 

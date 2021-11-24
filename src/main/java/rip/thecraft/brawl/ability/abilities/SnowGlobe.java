@@ -29,11 +29,6 @@ public class SnowGlobe extends Ability {
     public void onActivate(Player player) {
         if (hasCooldown(player, true)) return;
 
-        if (!player.isOnGround()) {
-            player.sendMessage(ChatColor.RED + "You must be on the ground to activate this ability.");
-            return;
-        }
-
         addCooldown(player);
 
         generateSphere(player.getLocation(), 5);

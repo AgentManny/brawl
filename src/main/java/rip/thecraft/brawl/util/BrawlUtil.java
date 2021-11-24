@@ -12,6 +12,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.server.CraftServer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -28,6 +29,10 @@ public class BrawlUtil {
 
     public final static Pattern ALPHA_NUMERIC_PATTERN = Pattern.compile("[^a-zA-Z0-9]");
     private static final Pattern UUID_PATTERN = Pattern.compile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}");
+
+    public static boolean isHidePlayersFromTab() {
+        return CraftServer.getInstance().getConfig().isHidePlayersFromTab();
+    }
 
     public static String getProgressBar(int current, int maxValue, char symbol, int bars) {
         float percent = (float) current / maxValue;
