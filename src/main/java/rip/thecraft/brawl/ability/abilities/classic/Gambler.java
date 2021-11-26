@@ -176,7 +176,7 @@ public class Gambler extends Ability implements Listener {
                 }
                 player.sendMessage((negative ? ChatColor.RED + " - " : ChatColor.GREEN + " + ") + ChatColor.BOLD + soups + (negative ? ChatColor.RED : ChatColor.GREEN) + " " + refillType.getName() + "s" + ChatColor.GRAY + " (Gambler)");
             } else {
-                player.addPotionEffect(potionEffect);
+                Brawl.getInstance().getEffectRestorer().setRestoreEffect(player, potionEffect);
                 if (this == HEALTH_BOOST) {
                     double healthDiff = player.getMaxHealth() - player.getHealth();
                     player.setHealth(Math.max(player.getMaxHealth(), player.getHealth() + healthDiff));
