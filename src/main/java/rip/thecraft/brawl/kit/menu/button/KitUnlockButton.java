@@ -7,7 +7,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.kit.Kit;
-import rip.thecraft.brawl.kit.unlock.UnlockMenu;
+import rip.thecraft.brawl.kit.menu.KitUnlockMenu;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
@@ -48,6 +48,6 @@ public class KitUnlockButton extends Button {
 
     @Override
     public void clicked(Player player, int slot, ClickType clickType) {
-        new UnlockMenu(player).open(player);
+        new KitUnlockMenu(player).open(player);
     }
 }

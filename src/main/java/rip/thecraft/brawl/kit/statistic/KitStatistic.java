@@ -18,7 +18,7 @@ public class KitStatistic {
     private int deaths = 0;
 
     /** Returns the amount of times a player can redeem a kit for free */
-    private int trialPass = 1;
+    private int trialPass = 0;
 
     /** Returns the experience gained for this kit */
     private int exp = 0;
@@ -32,7 +32,7 @@ public class KitStatistic {
         this.deaths = document.getInteger("deaths", 0);
 
         if (document.containsKey("trial-pass")) {
-            this.trialPass = document.getInteger("trial-pass", 1);
+            this.trialPass = document.getInteger("trial-pass", 0);
         }
 
         if (document.containsKey("exp")) {

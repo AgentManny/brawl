@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.kit.unlock;
+package rip.thecraft.brawl.kit.menu;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,11 +22,11 @@ import rip.thecraft.spartan.util.ItemBuilder;
 import java.util.List;
 import java.util.Map;
 
-public class UnlockMenu extends Menu {
+public class KitUnlockMenu extends Menu {
 
     private final Player player;
 
-    public UnlockMenu(Player player) {
+    public KitUnlockMenu(Player player) {
         super("Unlock Kits", MenuRows.FIVE);
         this.player = player;
         addButtons(getButtons());

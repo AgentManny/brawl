@@ -7,6 +7,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scheduler.BukkitWorker;
+import org.github.paperspigot.PaperSpigotConfig;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.AbilityHandler;
@@ -19,6 +20,18 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ServerCommand {
+
+    @Command(names = "setmodifers strength", permission = "op")
+    public static void setStrength(CommandSender sender, double newValue) {
+        sender.sendMessage(ChatColor.GOLD + "Set strength modifier to: " + ChatColor.WHITE + newValue + ChatColor.GOLD + " from " + ChatColor.RED + PaperSpigotConfig.strengthEffectModifier + ChatColor.GOLD + "." + ChatColor.GRAY + " (Default: " + 1.3D + ")");
+        PaperSpigotConfig.strengthEffectModifier = newValue;
+    }
+
+    @Command(names = "setmodifers weakness", permission = "op")
+    public static void setWeakness(CommandSender sender, double newValue) {
+        sender.sendMessage(ChatColor.GOLD + "Set strength modifier to: " + ChatColor.WHITE + newValue + ChatColor.GOLD + " from " + ChatColor.RED + PaperSpigotConfig.strengthEffectModifier + ChatColor.GOLD + "." + ChatColor.GRAY + " (Default: " + 1.3D + ")");
+        PaperSpigotConfig.strengthEffectModifier = newValue;
+    }
 
     @Command(names = "tasks", permission = "op")
     public static void ongoingTasks(CommandSender sender) {

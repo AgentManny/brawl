@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.menu.button.KitButton;
+import rip.thecraft.brawl.kit.menu.button.KitPassButton;
 import rip.thecraft.brawl.kit.menu.button.KitRandomButton;
 import rip.thecraft.brawl.kit.menu.button.KitUnlockButton;
 import rip.thecraft.spartan.menu.Button;
@@ -33,14 +34,14 @@ public class KitSelectorMenu extends Menu {
             buttonMap.put(getSlot(x, y), new KitButton(kit));
             if (x++ >= 7) {
                 x = 1;
-
                 y++;
             }
         }
 
         int size = size(buttonMap) + 9;
-        buttonMap.put(size - 6, new KitRandomButton(Brawl.getInstance().getKitHandler().getKits().get(Brawl.RANDOM.nextInt(Brawl.getInstance().getKitHandler().getKits().size()))));
-        buttonMap.put(size - 4, new KitUnlockButton());
+        buttonMap.put(size - 7, new KitPassButton());
+        buttonMap.put(size - 5, new KitRandomButton(Brawl.getInstance().getKitHandler().getKits().get(Brawl.RANDOM.nextInt(Brawl.getInstance().getKitHandler().getKits().size()))));
+        buttonMap.put(size - 3, new KitUnlockButton());
         return buttonMap;
     }
 

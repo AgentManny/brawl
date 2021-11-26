@@ -13,6 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.property.AbilityData;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,12 @@ import java.util.List;
 )
 public class SnowGlobe extends Ability {
 
+    @AbilityProperty(id = "strength-duration", description = "Strength Duration in ticks")
+    public int strengthDuration = 20 * 5;
+
+    @AbilityProperty(id = "strength-amplifier", description = "Strength potion amplifier")
+    public int strengthAmplifier = 0;
+
     @Override
     public void onActivate(Player player) {
         if (hasCooldown(player, true)) return;
@@ -32,7 +39,7 @@ public class SnowGlobe extends Ability {
         addCooldown(player);
 
         generateSphere(player.getLocation(), 5);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 5, 0));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, strengthDuration, strengthAmplifier));
     }
 
     @Override
