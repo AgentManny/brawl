@@ -36,9 +36,27 @@ public class SnowGlobe extends Ability {
     public void onActivate(Player player) {
         if (hasCooldown(player, true)) return;
 
-        addCooldown(player);
+        Location playerLoc = player.getLocation();
+        Location globeLoc = playerLoc.clone();
+        boolean groundCheck = player.isOnGround();
+        if (!groundCheck) {
+            for (int i = 0; i < 2; i++) {
+                globeLoc.setY(globeLoc.getY() - 1);
+                Block block = globeLoc.getBlock();
+                if (block.getType() != Material.AIR) {
+                    groundCheck = true;
+                    break;
+                }
+            }
+        }
 
-        generateSphere(player.getLocation(), 5);
+        if (!groundCheck) {
+            player.sendMessage(ChatColor.RED + "You must be on the ground to use this ability.");
+            return;
+        }
+
+        addCooldown(player);
+        generateSphere(globeLoc, 5);
         player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, strengthDuration, strengthAmplifier));
     }
 
