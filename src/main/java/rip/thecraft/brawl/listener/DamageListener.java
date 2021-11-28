@@ -32,6 +32,9 @@ import rip.thecraft.brawl.player.event.PlayerKillEvent;
 import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.region.RegionType;
+import rip.thecraft.falcon.Falcon;
+import rip.thecraft.falcon.profile.Profile;
+import rip.thecraft.falcon.rank.Rank;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.ItemBuilder;
 import rip.thecraft.spartan.util.PlayerUtils;
@@ -116,10 +119,16 @@ public class DamageListener implements Listener {
                     if (killerData.getPreviousKill() != null) {
                         if (player.getUniqueId() == killerData.getPreviousKill()) {
                             killerData.setKillTracker(killerData.getKillTracker() + 1);
-                            if (killerData.getKillTracker() >= 3) {
-                                killer.sendMessage(CC.RED + CC.BOLD + "Boosting! " + CC.YELLOW + "Your statistics aren't being updated.");
-                                break;
+                            if (killerData.getKillTracker() % 5 == 0) {
+                                for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
+                                    if (onlinePlayer.hasPermission(Rank.STAFF_NODE)) {
+                                        Profile profile = Falcon.getInstance().getProfileHandler().getByPlayer(onlinePlayer);
+                                        if (profile.getProfileData().isDoNotDisturb()) continue;
+                                        onlinePlayer.sendMessage(ChatColor.DARK_PURPLE + "[Staff] " + ChatColor.WHITE + killer.getDisplayName() + ChatColor.GRAY + " might be boosting. " + ChatColor.RED + " (" + killerData.getKillTracker() + " kills)");
+                                    }
+                                }
                             }
+                            if (killerData.getKillTracker() >= 3) break; // Don't update statistics
                         } else {
                             killerData.setKillTracker(0);
                         }
