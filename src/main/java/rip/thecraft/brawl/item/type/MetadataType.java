@@ -16,6 +16,7 @@ import rip.thecraft.brawl.leaderboard.menu.LeaderboardMenu;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.brawl.spectator.menu.SpectatorPlayerMenu;
+import rip.thecraft.server.util.chatcolor.CC;
 
 import java.util.function.BiConsumer;
 
@@ -101,7 +102,11 @@ public enum MetadataType {
     }),
 
     SPECTATOR_JOIN((player, playerData) -> {
-        Brawl.getInstance().getSpectatorManager().addSpectator(player);
+        if (player.hasPermission("brawl.spectate")) {
+            Brawl.getInstance().getSpectatorManager().addSpectator(player);
+        } else {
+            player.sendMessage(CC.RED + "You must have a donator rank to spectate.");
+        }
     }),
 
 

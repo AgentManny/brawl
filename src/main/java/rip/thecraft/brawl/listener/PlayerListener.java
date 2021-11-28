@@ -1,8 +1,12 @@
 package rip.thecraft.brawl.listener;
 
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -31,13 +35,17 @@ import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.falcon.util.ErrorType;
+import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.nametag.NametagHandler;
 import rip.thecraft.spartan.util.PlayerUtils;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 public class PlayerListener implements Listener {
+
+    private static final OkHttpClient HTTP_CLIENT = new OkHttpClient();
 
     private final Brawl plugin;
 
@@ -149,6 +157,32 @@ public class PlayerListener implements Listener {
 
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             playerData.fromDocument(plugin.getPlayerDataHandler().getDocument(player.getUniqueId()));
+
+            if (player.hasPlayedBefore()) {
+                if (playerData.getLastVoteRewards() < System.currentTimeMillis()) {
+                    if (hasVoted(player)) {
+                        if (playerData.getLastVoteRewards() == -1L) { // first time voting
+                            player.sendMessage(ChatColor.LIGHT_PURPLE + "Thank you for voting for the server on " + CC.YELLOW + "NameMC" + CC.LIGHT_PURPLE + "!");
+                            player.sendMessage(ChatColor.WHITE + "You have been given " + ChatColor.AQUA + "1x Free Kit Pass" + ChatColor.WHITE + " for supporting the server.");
+                        } else { // reward every 2 days after voting
+                            player.sendMessage(ChatColor.LIGHT_PURPLE + "+1x Kit Pass " + ChatColor.GRAY + "(Voting on NameMC)");
+                        }
+
+                        player.playSound(player.getLocation(), Sound.LEVEL_UP, 10, 2);
+                        playerData.setKitPasses(playerData.getKitPasses() + 1);
+                        playerData.setLastVoteRewards(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(2));
+                    } else { // hasn't voted
+                        player.playSound(player.getLocation(), Sound.NOTE_PLING, 10, 2);
+                        player.sendMessage(ChatColor.LIGHT_PURPLE + "It looks like you haven't voted the server on " + CC.YELLOW + "NameMC" + CC.LIGHT_PURPLE + "!");
+                        player.sendMessage(ChatColor.YELLOW + "To receive a " + CC.YELLOW + "Free Kit Pass" + CC.YELLOW + " every two days, vote for the server using the link below.");
+                        player.sendMessage(ChatColor.GRAY + "https://namemc.com/server/kaze.gg");
+                    }
+                }
+            } else { // first time joining
+                playerData.setKitPasses(playerData.getKitPasses() + 1);
+                player.sendMessage(ChatColor.LIGHT_PURPLE + "We have given you " + ChatColor.YELLOW + "1x Free Kit Pass" + CC.LIGHT_PURPLE + " as this is your first time joining.");
+            }
+
             plugin.getPlayerDataHandler().create(playerData, false);
             NametagHandler.reloadPlayer(player);
         });
@@ -198,4 +232,20 @@ public class PlayerListener implements Listener {
             }
         }
     }
+
+    private boolean hasVoted(Player player) {
+        try {
+            Request request = new Request.Builder()
+                    .url("https://api.namemc.com/server/kaze.gg/votes?profile=" + player.getUniqueId().toString())
+                    .build();
+            Response response = HTTP_CLIENT.newCall(request).execute();
+            if (response.isSuccessful() && response.code() == 200) {
+                return Boolean.parseBoolean(response.body().string());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }

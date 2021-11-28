@@ -3,6 +3,9 @@ package rip.thecraft.brawl.player;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import net.luckperms.api.cacheddata.CachedMetaData;
+import net.luckperms.api.model.group.Group;
+import net.luckperms.api.model.user.User;
 import org.bson.Document;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
@@ -29,6 +32,7 @@ import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.team.Team;
 import rip.thecraft.brawl.upgrade.perk.Perk;
 import rip.thecraft.brawl.util.BrawlUtil;
+import rip.thecraft.falcon.Falcon;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.Cooldown;
 import rip.thecraft.spartan.util.TimeUtils;
@@ -104,6 +108,8 @@ public class PlayerData {
     private Location lastLocation = null;
     private boolean duelsEnabled = true;
 
+    private long lastVoteRewards = -1L;
+
     private boolean needsSaving;
     private boolean loaded;
 
@@ -151,7 +157,8 @@ public class PlayerData {
                 .append("previous-death", previousDeath == null ? null : previousDeath.toString())
                 .append("previous-kill", previousKill == null ? null : previousKill.toString())
                 .append("unlocked-perks", unlockedPerks)
-                .append("active-perks", activePerks);
+                .append("active-perks", activePerks)
+                .append("last-vote-rewards", lastVoteRewards);
     }
 
     public void fromDocument(Document document) {
@@ -214,6 +221,10 @@ public class PlayerData {
                     this.activePerks[Integer.parseInt(id)] = Perk.getPerk(perk);
                 }
             });
+        }
+
+        if (document.containsKey("last-vote-rewards")) {
+            this.lastVoteRewards = document.getLong("last-vote-rewards");
         }
 
         this.loaded = true;
@@ -548,6 +559,27 @@ public class PlayerData {
         }
 
         return cooldown;
+    }
+
+    public Group getPrimaryGroup() {
+        User user = Falcon.getInstance().getLuckPerms().getUserManager().getUser(uuid);
+        String primaryGroup = user.getPrimaryGroup();
+        return primaryGroup == null ? null : Falcon.getInstance().getLuckPerms().getGroupManager().getGroup(primaryGroup);
+    }
+
+    public String getDisplayName() {
+        Group primaryGroup = getPrimaryGroup();
+
+        CachedMetaData metaData = primaryGroup.getCachedData().getMetaData();
+        String playerListPrefix = metaData.getMetaValue("tab_prefix");
+        if (playerListPrefix == null) {
+            playerListPrefix = metaData.getMetaValue("color");
+            if (playerListPrefix == null) {
+                playerListPrefix = ChatColor.WHITE.toString();
+            }
+        }
+
+        return ChatColor.translateAlternateColorCodes('&', playerListPrefix) + this.name;
     }
 
     public void setPreviousKit(Kit previousKit) {

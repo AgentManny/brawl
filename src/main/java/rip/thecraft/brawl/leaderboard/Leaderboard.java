@@ -5,6 +5,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Sorts;
 import lombok.Getter;
 import net.luckperms.api.LuckPerms;
+import net.luckperms.api.cacheddata.CachedMetaData;
+import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
 import org.bson.Document;
@@ -57,14 +59,15 @@ public class Leaderboard {
             Document doc = iterator.next();
             Document statDocument = (Document) ((Document) doc.get("statistic")).get("spawn");
             if (statDocument != null) {
-                UUID uuid = UUID.fromString(doc.getString("uuid"));
-                String displayName = doc.getString("username");
-                String color = ChatColor.WHITE.toString();
-                Player player = Bukkit.getPlayer(uuid);
-                if (player != null) {
-                    displayName = player.getDisplayName();
-                }
-                statistics.put(color + displayName, statDocument.getDouble(statisticType.name()));
+//                UUID uuid = UUID.fromString(doc.getString("uuid"));
+//                String displayName = doc.getString("username");
+//                String color = ChatColor.WHITE.toString();
+//                Player player = Bukkit.getPlayer(uuid);
+//                if (player != null) {
+//                    displayName = player.getDisplayName();
+//                }
+//                statistics.put(color + displayName, statDocument.getDouble(statisticType.name()));
+                statistics.put(getDisplayColor(UUID.fromString(doc.getString("uuid"))) + doc.getString("username"), statDocument.getDouble(statisticType.name()));
             }
         }
         return statistics;
@@ -82,11 +85,32 @@ public class Leaderboard {
                 elo = statDoc.getInteger(matchLoadout.getName().toLowerCase(), 1000);
             }
 
-            Profile profile = Falcon.getInstance().getProfileHandler().loadProfile(UUID.fromString(doc.getString("uuid")));
-            statistics.put(profile.getColor() + profile.getUsername(), elo);
+//            Profile profile = Falcon.getInstance().getProfileHandler().loadProfile(UUID.fromString(doc.getString("uuid")));
+//            statistics.put(profile.getColor() + profile.getUsername(), elo);
+            statistics.put(getDisplayColor(UUID.fromString(doc.getString("uuid"))) + doc.getString("username"), elo);
 
         }
         return statistics;
+    }
+
+
+    public String getDisplayColor(UUID uuid) {
+        User user = Falcon.getInstance().getLuckPerms().getUserManager().getUser(uuid);
+        if (user == null) return ChatColor.WHITE.toString();
+
+        Group primaryGroup = Falcon.getInstance().getLuckPerms().getGroupManager().getGroup(user.getPrimaryGroup());
+        if (primaryGroup == null) return ChatColor.WHITE.toString();
+
+        CachedMetaData metaData = primaryGroup.getCachedData().getMetaData();
+        String playerListPrefix = metaData.getMetaValue("tab_prefix");
+        if (playerListPrefix == null) {
+            playerListPrefix = metaData.getMetaValue("color");
+            if (playerListPrefix == null) {
+                playerListPrefix = ChatColor.WHITE.toString();
+            }
+        }
+
+        return ChatColor.translateAlternateColorCodes('&', playerListPrefix);
     }
 
 }
