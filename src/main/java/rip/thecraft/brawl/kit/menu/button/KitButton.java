@@ -94,7 +94,7 @@ public class KitButton extends Button {
             KitStatistic statistic = playerData.getStatistic().get(kit);
             if (!playerData.hasKit(kit) && statistic != null && statistic.getTrialPass() >= 1) {
                 statistic.setTrialPass(statistic.getTrialPass() - 1);
-                playerData.addRentalKit(kit, 5, TimeUnit.MINUTES);
+                playerData.addRentalKit(kit, 15, TimeUnit.MINUTES);
                 clicked(player, slot, clickType);
             } else {
                 player.sendMessage(CC.RED + "You don't have permission to use this kit.");

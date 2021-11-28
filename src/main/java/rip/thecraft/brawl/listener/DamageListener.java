@@ -12,8 +12,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.Brawl;
@@ -124,7 +122,7 @@ public class DamageListener implements Listener {
                                     if (onlinePlayer.hasPermission(Rank.STAFF_NODE)) {
                                         Profile profile = Falcon.getInstance().getProfileHandler().getByPlayer(onlinePlayer);
                                         if (profile.getProfileData().isDoNotDisturb()) continue;
-                                        onlinePlayer.sendMessage(ChatColor.DARK_PURPLE + "[Staff] " + ChatColor.WHITE + killer.getDisplayName() + ChatColor.GRAY + " might be boosting. " + ChatColor.RED + " (" + killerData.getKillTracker() + " kills)");
+                                        onlinePlayer.sendMessage(ChatColor.DARK_PURPLE + "[Staff] " + ChatColor.WHITE + killer.getDisplayName() + ChatColor.GRAY + " might be boosting." + ChatColor.RED + " (" + killerData.getKillTracker() + " kills)");
                                     }
                                 }
                             }
@@ -332,22 +330,6 @@ public class DamageListener implements Listener {
             }
             if (!e.isCancelled() && e.getCause() != EntityDamageEvent.DamageCause.FALL) {
                 playerData.getSpawnData().damagedBy(damager, e.getDamage());
-            }
-        }
-    }
-
-    // Strength fix
-    @EventHandler
-    public void onPlayerDamage(EntityDamageByEntityEvent event) {
-        if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-            if (event.getDamager() != null && event.getDamager() instanceof Player) {
-                Player player = (Player) event.getDamager();
-                for (PotionEffect effect : player.getActivePotionEffects()) {
-                    if (effect.getType() == PotionEffectType.INCREASE_DAMAGE) {
-                        int level = effect.getAmplifier() + 1;
-                        event.setDamage(10.0D * event.getDamage() / (10.0D + 13.0D * level) + 13.0D * event.getDamage() * level * 30 / 200.0D / (10.0D + 13.0D * level));
-                    }
-                }
             }
         }
     }
