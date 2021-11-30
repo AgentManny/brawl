@@ -125,6 +125,13 @@ public class KitManageCommand {
         player.sendMessage(ChatColor.GREEN + kit.getName() + " weight set to " + weight);
     }
 
+    @Command(names = {"editkit toggle", "ek toggle"}, permission = "op")
+    public static void toggleKit(Player player, Kit kit){
+        kit.setEnabled(!kit.isEnabled());
+        player.sendMessage(ChatColor.YELLOW + "You have " + (kit.isEnabled() ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled")
+                + ChatColor.YELLOW + " kit " + ChatColor.GOLD + kit.getName() + ChatColor.YELLOW + ".");
+    }
+
 
     @Command(names = {"editkit setprice", "ek setprice"}, permission = "op")
     public static void setPrice(Player player, Kit kit, int price) {

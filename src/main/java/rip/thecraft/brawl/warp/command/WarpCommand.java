@@ -21,6 +21,11 @@ public class WarpCommand {
     @Command(names = {"warp", "warps", "go", "goto"})
     public static void execute(Player sender, @Param(defaultValue = "list", name = "warp") Warp warp) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(sender);
+        if(!warp.isEnabled()){
+            sender.sendMessage(ChatColor.RED + "Warp " + warp.getName() + " is currently disabled.");
+            return;
+        }
+
         if (playerData.isSpectating()) {
             SpectatorMode spectator = Brawl.getInstance().getSpectatorManager().getSpectator(sender);
             spectator.spectate(warp);
@@ -56,6 +61,7 @@ public class WarpCommand {
         sender.sendMessage(ChatColor.LIGHT_PURPLE + "  /warp <warpName>" + ChatColor.GRAY + " (Teleport to a warp)");
         sender.sendMessage(ChatColor.LIGHT_PURPLE + "  /warp create <warpName>" + ChatColor.GRAY + " (Create a warp)");
         sender.sendMessage(ChatColor.LIGHT_PURPLE + "  /warp remove <warpName>" + ChatColor.GRAY + " (Remove a warp)");
+        sender.sendMessage(ChatColor.LIGHT_PURPLE + "  /warp toggle <warpName>" + ChatColor.GRAY + " (Toggle a warp)");
         sender.sendMessage(ChatColor.LIGHT_PURPLE + "  /warp setlocation <warpName>" + ChatColor.GRAY + " (Update location of a warp)");
         sender.sendMessage(ChatColor.LIGHT_PURPLE + "  /warp kit [kit]" + ChatColor.GRAY + " (Restrict a warp to a kit)");
         sender.sendMessage(ChatColor.LIGHT_PURPLE + "  /warp save" + ChatColor.GRAY + " (Save warps)");
@@ -69,7 +75,7 @@ public class WarpCommand {
             return;
         }
 
-        wm.createWarp(name, sender.getLocation(), null);
+        wm.createWarp(name, sender.getLocation(), null, true);
         sender.sendMessage(ChatColor.YELLOW + "Created warp " + ChatColor.LIGHT_PURPLE + name + ChatColor.YELLOW + ".");
     }
 
@@ -77,6 +83,13 @@ public class WarpCommand {
     public static void remove(Player sender, @Param(name = "warpName") Warp warp) {
         sender.sendMessage(ChatColor.YELLOW + "Removed the warp " + ChatColor.LIGHT_PURPLE + warp.getName() + ChatColor.YELLOW + ".");
         wm.removeWarp(warp.getName());
+    }
+
+    @Command(names = {"warp toggle"}, permission = "op")
+    public static void toggle(Player sender, @Param(name = "warpName") Warp warp){
+        warp.setEnabled(!warp.isEnabled());
+        sender.sendMessage(ChatColor.YELLOW + "You have " + (warp.isEnabled() ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled") +
+                ChatColor.YELLOW + " warp " + ChatColor.GOLD + warp.getName() + ChatColor.YELLOW + ".");
     }
 
     @Command(names = {"warp setlocation", "warps setlocation"}, permission = "op")

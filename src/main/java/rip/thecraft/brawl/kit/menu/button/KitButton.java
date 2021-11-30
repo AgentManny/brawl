@@ -88,6 +88,11 @@ public class KitButton extends Button {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
         // TODO ADD A FREE KIT IMPLEMENTATION
 
+        if(!kit.isEnabled()){
+            player.sendMessage(ChatColor.RED + "This kit is currently disabled.");
+            return;
+        }
+
         if (playerData.hasKit(kit)) {
             kit.apply(player, true, true);
         } else {

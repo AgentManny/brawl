@@ -14,4 +14,6 @@ public final class Warp {
 
     @Setter private String kit;
 
+    @Getter @Setter private boolean enabled;
+
 }
