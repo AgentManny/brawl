@@ -1,7 +1,10 @@
 package rip.thecraft.brawl.command.manage;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.kit.statistic.KitStatistic;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.spartan.command.Command;
@@ -22,6 +25,16 @@ public class PassesModifyCommand {
         playerData.setKitPasses(passes);
         sender.sendMessage(ChatColor.GREEN + "Set " + sender.getName() + " global kit pass to " + passes + ".");
     }
+
+    @Command(names = "pass giveall", permission = "op")
+    public static void giveAllPass(CommandSender sender) {
+        for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
+            PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(onlinePlayer);
+            playerData.setKitPasses(playerData.getKitPasses() + 1);
+            onlinePlayer.sendMessage(ChatColor.GREEN + "You were given a " + ChatColor.BOLD + "Kit Pass" + ChatColor.GREEN + " from " + sender.getName() + ChatColor.GREEN + ".");
+        }
+    }
+
 
     @Command(names = "pass info", permission = "op")
     public static void getPasses(CommandSender sender, @Param(defaultValue = "self") PlayerData playerData) {

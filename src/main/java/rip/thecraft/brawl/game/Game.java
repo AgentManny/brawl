@@ -21,6 +21,7 @@ import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.brawl.util.EconUtil;
 import rip.thecraft.brawl.util.PlayerUtil;
+import rip.thecraft.brawl.util.SchedulerUtil;
 import rip.thecraft.brawl.util.Tasks;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.nametag.NametagHandler;
@@ -215,12 +216,13 @@ public abstract class Game {
             eliminated.spawn();
         } else if (elimination != GameElimination.QUIT) { // Add to spectator
             PlayerUtils.animateDeath(player);
-
-            SpectatorMode spectatorMode = Brawl.getInstance().getSpectatorManager().addSpectator(player, location);
-            spectatorMode.spectate(SpectatorMode.SpectatorType.GAME, false);
-            for (int i = 0; i < 8; i++) { // Only add the LEAVE SPECTATOR item (in the 9th slot)
-                player.getInventory().setItem(i, null);
-            }
+            SchedulerUtil.runTaskLater(() -> {
+                SpectatorMode spectatorMode = Brawl.getInstance().getSpectatorManager().addSpectator(player, location);
+                spectatorMode.spectate(SpectatorMode.SpectatorType.GAME, false);
+                for (int i = 0; i < 8; i++) { // Only add the LEAVE SPECTATOR item (in the 9th slot)
+                    player.getInventory().setItem(i, null);
+                }
+            }, elimination == GameElimination.PLAYER ? 15L : 5L, false);
         }
 
         broadcast(getEliminateMessage(player, elimination));

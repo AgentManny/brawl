@@ -1,9 +1,6 @@
 package rip.thecraft.brawl.game.games;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -12,10 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.game.Game;
-import rip.thecraft.brawl.game.GameFlag;
-import rip.thecraft.brawl.game.GameState;
-import rip.thecraft.brawl.game.GameType;
+import rip.thecraft.brawl.game.*;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.server.util.chatcolor.CC;
@@ -61,9 +55,25 @@ public class Arcade extends Game {
             task.cancel();
             task = null;
         }
-
-        clean();
         super.end();
+    }
+
+    @Override
+    public void clear() {
+        getAlivePlayers().forEach(gamePlayer -> {
+            Player player = gamePlayer.toPlayer();
+            PlayerData data = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+            data.setPreviousKit(data.getSelectedKit());
+            data.setSelectedKit(null);
+        });
+    }
+
+    @Override
+    public boolean eliminate(Player player, Location location, GameElimination elimination) {
+        PlayerData data = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+        data.setPreviousKit(data.getSelectedKit());
+        data.setSelectedKit(null);
+        return super.eliminate(player, location, elimination);
     }
 
     public void startShuffleTask(){
@@ -114,15 +124,6 @@ public class Arcade extends Game {
                 shuffleTimer--;
             }
         }.runTaskTimer(Brawl.getInstance(), 20L, 20L);
-    }
-
-    public void clean(){
-        getPlayers().forEach(gamePlayer -> {
-            Player player = gamePlayer.toPlayer();
-            PlayerData data = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
-            data.setPreviousKit(data.getSelectedKit());
-            data.setSelectedKit(null);
-        });
     }
 
     public void applyRandomKit(Player player){
