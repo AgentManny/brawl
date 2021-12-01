@@ -149,7 +149,7 @@ public class PlayerListener implements Listener {
         player.setHealth(20.0D);
         player.teleport(plugin.getLocationByName("SPAWN"));
 
-     //   player.setPlayerListName(player.getDisplayName());
+        //   player.setPlayerListName(player.getDisplayName());
         plugin.getItemHandler().apply(player, InventoryType.SPAWN);
 
         PlayerData playerData = new PlayerData(player.getUniqueId(), player.getName());
@@ -158,30 +158,31 @@ public class PlayerListener implements Listener {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             playerData.fromDocument(plugin.getPlayerDataHandler().getDocument(player.getUniqueId()));
 
-            if (player.hasPlayedBefore()) {
-                if (playerData.getLastVoteRewards() < System.currentTimeMillis()) {
-                    if (hasVoted(player)) {
-                        if (playerData.getLastVoteRewards() == -1L) { // first time voting
-                            player.sendMessage(ChatColor.LIGHT_PURPLE + "Thank you for voting for the server on " + CC.YELLOW + "NameMC" + CC.LIGHT_PURPLE + "!");
-                            player.sendMessage(ChatColor.WHITE + "You have been given " + ChatColor.AQUA + "1x Free Kit Pass" + ChatColor.WHITE + " for supporting the server.");
-                        } else { // reward every 2 days after voting
-                            player.sendMessage(ChatColor.LIGHT_PURPLE + "+1x Kit Pass " + ChatColor.GRAY + "(Voting on NameMC)");
-                        }
-
-                        player.playSound(player.getLocation(), Sound.LEVEL_UP, 10, 2);
-                        playerData.setKitPasses(playerData.getKitPasses() + 1);
-                        playerData.setLastVoteRewards(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(2));
-                    } else { // hasn't voted
-                        player.playSound(player.getLocation(), Sound.NOTE_PLING, 10, 2);
-                        player.sendMessage(ChatColor.LIGHT_PURPLE + "It looks like you haven't voted the server on " + CC.YELLOW + "NameMC" + CC.LIGHT_PURPLE + "!");
-                        player.sendMessage(ChatColor.YELLOW + "To receive a " + CC.YELLOW + "Free Kit Pass" + CC.YELLOW + " every two days, vote for the server using the link below.");
-                        player.sendMessage(ChatColor.GRAY + "https://namemc.com/server/kaze.gg");
-                    }
-                }
-            } else { // first time joining
-                playerData.setKitPasses(playerData.getKitPasses() + 1);
+            if (!player.hasPlayedBefore()) {
+                playerData.setKitPasses(1);
                 player.sendMessage(ChatColor.LIGHT_PURPLE + "We have given you " + ChatColor.YELLOW + "1x Free Kit Pass" + CC.LIGHT_PURPLE + " as this is your first time joining.");
             }
+
+            if (playerData.getLastVoteRewards() < System.currentTimeMillis()) {
+                if (hasVoted(player)) {
+                    if (playerData.getLastVoteRewards() == -1L) { // first time voting
+                        player.sendMessage(ChatColor.GREEN + "You have been given " + ChatColor.YELLOW + "1x Free Kit Pass" + ChatColor.GREEN + " for voting on NameMC.");
+                    } else { // reward every 2 days after voting
+                        player.sendMessage(ChatColor.YELLOW + " + " + ChatColor.BOLD + 1 + ChatColor.YELLOW + " Kit Pass" + ChatColor.GRAY + " (Voting on NameMC)");
+                    }
+
+                    player.playSound(player.getLocation(), Sound.LEVEL_UP, 10, 2);
+                    playerData.setKitPasses(playerData.getKitPasses() + 1);
+                    playerData.setLastVoteRewards(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(2));
+                } else { // hasn't voted
+                    player.playSound(player.getLocation(), Sound.NOTE_PLING, 10, 2);
+                    player.sendMessage(" ");
+                    player.sendMessage(ChatColor.GREEN + "Want a " + ChatColor.BOLD + "Free Kit Pass" + ChatColor.GREEN + " every 2 days?");
+                    player.sendMessage(ChatColor.GRAY + "Vote for us on " + ChatColor.WHITE + "https://namemc.com/server/kaze.gg" + ChatColor.GRAY + " for rewards.");
+                    player.sendMessage(" ");
+                }
+            }
+
 
             plugin.getPlayerDataHandler().create(playerData, false);
             NametagHandler.reloadPlayer(player);

@@ -8,7 +8,7 @@ public class ShopCommand {
 
     @Command(names = { "shop" })
     public static void execute(Player sender) {
-        sender.sendMessage(ChatColor.GREEN + "We're still working on this!");
+        sender.sendMessage(ChatColor.RED + "There is currently nothing available in the shop. Please check back later.");
     }
 
 }

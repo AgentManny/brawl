@@ -34,6 +34,11 @@ public class HostCommand {
                 return;
             }
 
+            if (game.isDisabled()) {
+                player.sendMessage(ChatColor.RED + "This game is currently disabled.");
+                return;
+            }
+
             boolean bypassRestrictions = player.hasPermission("brawl.game.bypass");
             long cooldown = Brawl.getInstance().getGameHandler().getCooldown().getOrDefault(game, 0L);
             if (!player.hasPermission("brawl.game.bypass") && System.currentTimeMillis() < cooldown) {

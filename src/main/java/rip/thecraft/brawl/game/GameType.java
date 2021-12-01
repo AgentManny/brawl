@@ -1,6 +1,7 @@
 package rip.thecraft.brawl.game;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -152,6 +153,8 @@ public enum GameType {
 	private final List<String> requiredLocations;
 
 	private final RankType rankType;
+
+	@Setter private boolean disabled = false;
 
 	GameType(ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, int creditsReward, int expReward) {
 		this.name = WordUtils.capitalizeFully(this.name()).replace("_", " ");

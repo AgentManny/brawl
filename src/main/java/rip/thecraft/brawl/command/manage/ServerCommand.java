@@ -3,6 +3,7 @@ package rip.thecraft.brawl.command.manage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
@@ -11,6 +12,8 @@ import org.github.paperspigot.PaperSpigotConfig;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.AbilityHandler;
+import rip.thecraft.brawl.duelarena.DuelArena;
+import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.spartan.command.Command;
 
 import java.util.Collection;
@@ -20,6 +23,20 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ServerCommand {
+
+    @Command(names = "duelarena toggle", permission = "op")
+    public static void arenaToggle(Player sender) {
+        boolean newValue = !DuelArena.DISABLED;
+        sender.sendMessage(ChatColor.GOLD + "You have " + (newValue ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled") + ChatColor.GOLD + " duel arena");
+        DuelArena.DISABLED = newValue;
+    }
+
+    @Command(names = "game toggle", permission = "op")
+    public static void gameToggle(Player sender, GameType type) {
+        boolean newValue = !type.isDisabled();
+        sender.sendMessage(ChatColor.GOLD + "You have " + (newValue ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled") + ChatColor.GOLD + " game " + ChatColor.WHITE + type.getShortName() + ChatColor.GOLD + ".");
+        type.setDisabled(newValue);
+    }
 
     @Command(names = "setmodifers strength", permission = "op")
     public static void setStrength(CommandSender sender, double newValue) {

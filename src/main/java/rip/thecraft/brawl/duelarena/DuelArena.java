@@ -13,12 +13,12 @@ import rip.thecraft.spartan.nametag.NametagHandler;
 
 public class DuelArena {
 
-    public static final boolean DISABLED = false; // Todo make disabling core features configurable in game in case there is a bug
+    public static boolean DISABLED = false; // Todo make disabling core features configurable in game in case there is a bug
 
     public static void join(Player player) {
         if (DISABLED) {
             player.sendMessage(ChatColor.RED + "Duel arena is currently disabled. Please try again later.");
-            player.sendMessage(ChatColor.GRAY + "Note: We are working hard to ensure core gameplay is perfected before we re-enable Duel Arenas.");
+//            player.sendMessage(ChatColor.GRAY + "Note: We are working hard to ensure core gameplay is perfected before we re-enable Duel Arenas.");
             return;
         }
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);

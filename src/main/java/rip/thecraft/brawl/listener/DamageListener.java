@@ -144,7 +144,7 @@ public class DamageListener implements Listener {
 
                     int killExp = ExperienceType.KILL.getExperience(); // You always get 5 exp per kill
                     if (killerData.getStatistic().get(StatisticType.KILLSTREAK) > 5) {
-                        killExp += (int) Math.min(50, (killerData.getStatistic().get(StatisticType.KILLSTREAK) * 0.75)); // Killstreak multiplier only takes effect after 5 kills
+                        killExp += (int) Math.min(15, (killerData.getStatistic().get(StatisticType.KILLSTREAK) * 0.45)); // Killstreak multiplier only takes effect after 5 kills
                     }
 
                     killerData.getLevel().addExp(killer, killExp, ExperienceType.KILL, player.getDisplayName());

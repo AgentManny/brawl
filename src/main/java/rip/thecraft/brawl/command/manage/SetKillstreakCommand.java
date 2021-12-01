@@ -22,7 +22,10 @@ public class SetKillstreakCommand {
             Killstreak killstreak = handler.getStreaks().get(newStreak);
             killstreak.onKill(player, playerData);
             for (Player online : Bukkit.getOnlinePlayers()) {
-                online.sendMessage(ChatColor.WHITE + player.getDisplayName() + ChatColor.YELLOW + " has gotten a killstreak of " + ChatColor.LIGHT_PURPLE + newStreak + ChatColor.YELLOW + " and received " + killstreak.getColor() + killstreak.getName() + ChatColor.YELLOW + ".");
+                PlayerData onlineData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(online);
+                if (onlineData.isKillstreakMessages()) {
+                    online.sendMessage(ChatColor.WHITE + player.getDisplayName() + ChatColor.YELLOW + " has gotten a killstreak of " + ChatColor.LIGHT_PURPLE + newStreak + ChatColor.YELLOW + " and received " + killstreak.getColor() + killstreak.getName() + ChatColor.YELLOW + ".");
+                }
             }
         }
     }

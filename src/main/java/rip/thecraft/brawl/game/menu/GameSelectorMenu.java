@@ -1,5 +1,6 @@
 package rip.thecraft.brawl.game.menu;
 
+import gg.manny.hologram.HologramPlugin;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -64,6 +65,7 @@ public class GameSelectorMenu extends Menu {
         @Override
         public ItemStack getButtonItem(Player player) {
             PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+            boolean disabled = gameType.isDisabled();
             boolean noMaps = Brawl.getInstance().getGameHandler().getMapHandler().getMaps(gameType).isEmpty();
             boolean access = playerData.hasGame(gameType);
 
@@ -77,11 +79,16 @@ public class GameSelectorMenu extends Menu {
                 lore.add(ChatColor.GRAY + "Cooldown: " + ChatColor.RED + TimeUtils.formatIntoSimplifiedString((int) TimeUnit.MILLISECONDS.toSeconds(cooldown - System.currentTimeMillis())));
             }
             lore.add(" ");
-            lore.add(CC.GRAY + "\u00bb " + (noMaps ? ChatColor.RED + "No maps available" : (playerData.hasGame(gameType) ? ChatColor.GREEN + "Click to play this game" : CC.RED + "Exclusive to " + gameType.getRankType().getDisplayName() + CC.RED + " rank")));
-            return new ItemBuilder(gameType.getIcon())
+            lore.add(CC.GRAY + "\u00bb " + (disabled ? ChatColor.RED + "Game is currently disabled :("  : noMaps ? ChatColor.RED + "No maps available" : (playerData.hasGame(gameType) ? ChatColor.GREEN + "Click to play this game" : CC.RED + "Exclusive to " + gameType.getRankType().getDisplayName() + CC.RED + " rank")));
+            ItemBuilder item = new ItemBuilder(gameType.getIcon())
                     .name((playerData.hasGame(gameType) && !noMaps ? CC.GREEN : CC.RED) + CC.BOLD + gameType.getName())
-                    .lore(lore)
-                    .create();
+                    .lore(lore);
+            if (disabled) {
+                boolean legacyVersion = HologramPlugin.getInstance().onLegacyVersion(player);
+                item.material(legacyVersion ? Material.STAINED_GLASS_PANE : Material.BARRIER);
+                item.data(legacyVersion ? (byte) 14 : 0);
+            }
+            return item.create();
         }
 
         @Override

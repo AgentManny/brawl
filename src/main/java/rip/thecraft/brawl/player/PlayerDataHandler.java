@@ -7,12 +7,15 @@ import lombok.Getter;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.falcon.command.player.SettingsCommand;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.uuid.MUUIDCache;
 
 import java.io.Closeable;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,6 +33,10 @@ public class PlayerDataHandler implements Closeable {
         this.plugin = plugin;
 
         this.mongoCollection = plugin.getMongoDatabase().getCollection("playerData");
+        SettingsCommand.SETTINGS.addAll(Arrays.asList(
+                SettingsCommand.Settings.create("killstreak messages", "Toggle receiving killstreak messages in chat.", ChatColor.RED, Material.IRON_SWORD, "togglekillstreaks", (player -> Brawl.getInstance().getPlayerDataHandler().getPlayerData(player).isKillstreakMessages())),
+                SettingsCommand.Settings.create("game messages", "Toggle receiving game messages in chat", ChatColor.GREEN, Material.WATCH, "togglegame", (player -> Brawl.getInstance().getPlayerDataHandler().getPlayerData(player).isGameMessages()))
+        ));
     }
 
     public int save(boolean forceAll) {

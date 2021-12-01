@@ -47,6 +47,7 @@ public class KitButton extends Button {
         Map<String, Long> kitRentals = playerData.getKitRentals();
         boolean rental = kitRentals.containsKey(kit.getName()) && kitRentals.get(kit.getName()) > System.currentTimeMillis();
         boolean canTrial = statistic != null && statistic.getTrialPass() >= 1;
+        boolean canKitPass = playerData.getKitPasses() >= 1;
         boolean unlocked = playerData.hasKit(kit);
 
         lore.add(0, " ");
@@ -75,8 +76,15 @@ public class KitButton extends Button {
         } else {
             value = CC.YELLOW + "Click to unlock this kit";
         }
-
-        lore.add(CC.GRAY + "\u00bb " + value);
+//        if (canKitPass) {
+//            lore.add(ChatColor.LIGHT_PURPLE + "\u00bb " + ChatColor.GRAY + "Kit passes: " + ChatColor.LIGHT_PURPLE + playerData.getKitPasses());
+//        }
+        if (!playerData.hasKit(kit) && canKitPass) {
+            lore.add(value);
+            lore.add(ChatColor.GRAY + "\u00bb " + CC.YELLOW + "Right Click to use a kit pass " + ChatColor.GRAY + "(" + playerData.getKitPasses() + "x)");
+        } else {
+            lore.add(CC.GRAY + "\u00bb " + value);
+        }
         return new ItemBuilder(kit.getIcon())
                 .name((unlocked ? rental ? CC.YELLOW : CC.GREEN : canTrial ? CC.LIGHT_PURPLE : CC.RED) + CC.BOLD + kit.getName())
                 .amount(1).lore(lore)
@@ -90,6 +98,15 @@ public class KitButton extends Button {
 
         if (playerData.hasKit(kit)) {
             kit.apply(player, true, true);
+        } else if (clickType == ClickType.RIGHT) {
+            if (playerData.getKitPasses() == 0) {
+                player.sendMessage(ChatColor.RED + "You don't have any kit passes.");
+                return;
+            }
+
+            playerData.setKitPasses(playerData.getKitPasses() - 1);
+            playerData.addRentalKit(kit, 30, TimeUnit.MINUTES);
+            clicked(player, slot, clickType);
         } else {
             KitStatistic statistic = playerData.getStatistic().get(kit);
             if (!playerData.hasKit(kit) && statistic != null && statistic.getTrialPass() >= 1) {

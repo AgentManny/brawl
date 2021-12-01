@@ -29,6 +29,7 @@ public class SpawnData {
 
     private final PlayerData playerData;
 
+
     private Map<UUID, Double> damageReceived = new HashMap<>();
 
     public List<String> applyAssists(Player killer, double finalCredits) {
@@ -82,10 +83,9 @@ public class SpawnData {
     }
 
     public double getWorth() {
-        double base = 25;
+        double base = 15;
 
         Kit selectedKit = playerData.getSelectedKit();
-
         base += selectedKit != null && !selectedKit.isFree() ? 5 : 0;
         base += playerData.getStatistic().get(StatisticType.KILLSTREAK);
 
@@ -102,7 +102,6 @@ public class SpawnData {
 
         PlayerData deadPlayer = Brawl.getInstance().getPlayerDataHandler().getPlayerData(dead.getUniqueId());
         double worth = deadPlayer.getSpawnData().getWorth();
-
         Player player = playerData.getPlayer();
 
         if (playerData.usingPerk(Perk.REVENGE)) {
@@ -115,7 +114,10 @@ public class SpawnData {
 
         if (deadPlayer.getStatistic().get(StatisticType.KILLSTREAK) >= 10) {
             for (Player online : Bukkit.getOnlinePlayers()) {
-                online.sendMessage(CC.WHITE + player.getDisplayName() + CC.YELLOW + " has ended " + CC.WHITE + dead.getDisplayName() + CC.YELLOW + " killstreak of " + CC.LIGHT_PURPLE + deadPlayer.getStatistic().get(StatisticType.KILLSTREAK) + CC.YELLOW + "!");
+                PlayerData onlineData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(online);
+                if (onlineData.isKillstreakMessages()) {
+                    online.sendMessage(CC.WHITE + player.getDisplayName() + CC.YELLOW + " has ended " + CC.WHITE + dead.getDisplayName() + CC.YELLOW + " killstreak of " + CC.LIGHT_PURPLE + deadPlayer.getStatistic().get(StatisticType.KILLSTREAK) + CC.YELLOW + "!");
+                }
             }
 
             ksEnded = true;
@@ -138,9 +140,11 @@ public class SpawnData {
             Killstreak killstreak = handler.getStreaks().get(streak);
             killstreak.onKill(player, playerData);
             for (Player online : Bukkit.getOnlinePlayers()) {
-                online.sendMessage(CC.WHITE + player.getDisplayName() + CC.YELLOW + " has gotten a killstreak of " + CC.LIGHT_PURPLE + (int)stats.get(StatisticType.KILLSTREAK) + CC.YELLOW + " and received " + killstreak.getColor() + killstreak.getName() + CC.YELLOW + ".");
+                PlayerData onlineData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(online);
+                if (onlineData.isKillstreakMessages()) {
+                    online.sendMessage(CC.WHITE + player.getDisplayName() + CC.YELLOW + " has gotten a killstreak of " + CC.LIGHT_PURPLE + (int) stats.get(StatisticType.KILLSTREAK) + CC.YELLOW + " and received " + killstreak.getColor() + killstreak.getName() + CC.YELLOW + ".");
+                }
             }
-
         }
 
         for (PlayerChallenge challenge : playerData.getChallengeTracker().getChallenges().values()) {

@@ -99,6 +99,11 @@ public class PlayerData {
     private QueueData queueData = new QueueData();
     private long teleportDuration = 0;
 
+    // Configurability
+    private boolean gameMessages = true;
+    private boolean killstreakMessages = true;
+//    private boolean bountyMessages = true;
+
     private Map<String, Cooldown> cooldownMap = new HashMap<>();
 
     private BukkitTask enderpearlTask;
@@ -140,6 +145,9 @@ public class PlayerData {
             activePerks.put(String.valueOf(i), perk == null ? null : perk.name());
         }
 
+        Document messageData = new Document("game", gameMessages)
+                .append("killstreak", killstreakMessages);
+
         return new Document("uuid", this.uuid.toString())
                 .append("username", this.name)
                 .append("previous-kit", this.previousKit == null ? null : this.previousKit.getName())
@@ -158,7 +166,8 @@ public class PlayerData {
                 .append("previous-kill", previousKill == null ? null : previousKill.toString())
                 .append("unlocked-perks", unlockedPerks)
                 .append("active-perks", activePerks)
-                .append("last-vote-rewards", lastVoteRewards);
+                .append("last-vote-rewards", lastVoteRewards)
+                .append("message-data", messageData);
     }
 
     public void fromDocument(Document document) {
@@ -178,6 +187,12 @@ public class PlayerData {
 
         if (document.containsKey("unlocked-kits")) {
             this.unlockedKits = (List<String>) document.get("unlocked-kits");
+        }
+
+        if (document.containsKey("message-data")) {
+            Document messageData = (Document) document.get("message-data");
+            this.killstreakMessages = messageData.get("killstreak", true);
+            this.gameMessages = messageData.get("game", true);
         }
 
         this.kitPasses = document.getInteger("kit-passes", 0);

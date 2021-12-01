@@ -36,7 +36,7 @@ import static rip.thecraft.brawl.kit.KitHandler.KIT_DIRECTORY;
 @Data
 public class Kit implements Listener, Comparable<Kit> {
 
-    public static final int MAX_EXP_UNLOCK = 500;
+    public static final int MAX_EXP_UNLOCK = 1000;
 
     private final String name;
 

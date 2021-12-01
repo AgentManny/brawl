@@ -10,6 +10,7 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.games.*;
 import rip.thecraft.brawl.game.lobby.GameLobby;
 import rip.thecraft.brawl.game.map.GameMapHandler;
+import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.server.CraftServer;
 import rip.thecraft.server.handler.MovementHandler;
 
@@ -76,7 +77,12 @@ public class GameHandler {
         this.lobby = new GameLobby(brawl, type);
         FancyMessage messageParts = new FancyMessage(Game.PREFIX + ChatColor.WHITE + (hoster == null ? "Someone" : hoster.getDisplayName()) + ChatColor.YELLOW + " is hosting the " + ChatColor.DARK_PURPLE + type.getShortName() + ChatColor.YELLOW + " event for a prize of " + ChatColor.LIGHT_PURPLE + type.getCreditsReward() + " credits" + ChatColor.YELLOW + "." + ChatColor.GRAY + " (Click to join)")
                 .tooltip(Collections.singletonList(ChatColor.YELLOW + "Click to join " + ChatColor.DARK_PURPLE + type.getName() + ChatColor.YELLOW + ".")).command("/join");
-        brawl.getServer().getOnlinePlayers().forEach(messageParts::send);
+        brawl.getServer().getOnlinePlayers().forEach(player -> {
+            PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+            if (playerData.isGameMessages()) {
+                messageParts.send(player);
+            }
+        });
     }
 
     public void destroy() {

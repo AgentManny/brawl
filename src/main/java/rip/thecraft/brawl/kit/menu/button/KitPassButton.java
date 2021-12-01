@@ -6,13 +6,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.kit.menu.KitPassMenu;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
 import rip.thecraft.spartan.util.ItemBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -30,13 +28,8 @@ public class KitPassButton extends Button {
 
     @Override
     public ItemStack getButtonItem(Player player) {
-        List<String> lore = new ArrayList<>();
-
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
-        lore.add(ChatColor.GRAY + "Kit Passes: " + ChatColor.WHITE + playerData.getKitPasses());
-        lore.add(" ");
-
-        lore.add(CC.GRAY + "\u00bb " + CC.GREEN + "Click to use a kit pass");
+        List<String> lore = ItemBuilder.wrap("You have " + ChatColor.WHITE + playerData.getKitPasses() + ChatColor.GRAY + " kit pass. Right click a kit to activate a kit pass for " + ChatColor.GREEN + "30 minutes" + ChatColor.GRAY + ".", ChatColor.GRAY.toString(), 30);
         return new ItemBuilder(Material.PAPER)
                 .name(CC.GREEN + ChatColor.BOLD + "Kit Passes")
                 .lore(lore)
@@ -45,6 +38,5 @@ public class KitPassButton extends Button {
 
     @Override
     public void clicked(Player player, int slot, ClickType clickType) {
-        new KitPassMenu(player).open(player);
     }
 }
