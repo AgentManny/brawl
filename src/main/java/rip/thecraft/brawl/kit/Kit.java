@@ -54,6 +54,7 @@ public class Kit implements Listener, Comparable<Kit> {
     private List<PotionEffect> potionEffects = new ArrayList<>();
 
     private int weight = -1;
+    private boolean enabled = true;
 
     public Kit(String name) {
         this.name = name;
@@ -72,6 +73,7 @@ public class Kit implements Listener, Comparable<Kit> {
         this.description = jsonObject.get("description").getAsString();
         this.weight = jsonObject.get("weight").getAsInt();
         this.price = jsonObject.get("price").getAsDouble();
+        this.enabled = jsonObject.has("enabled") ? jsonObject.get("enabled").getAsBoolean() : true;
 
         this.rankType = jsonObject.has("rankType") ? RankType.valueOf(jsonObject.get("rankType").getAsString()) : RankType.NONE;
         jsonObject.get("potionEffects").getAsJsonArray().forEach(element -> this.potionEffects.add(PotionEffectAdapter.fromJson(element)));
@@ -105,6 +107,7 @@ public class Kit implements Listener, Comparable<Kit> {
         kit.addProperty("weight", weight);
         kit.addProperty("price", price);
         kit.addProperty("rankType", rankType.name());
+        kit.addProperty("enabled", enabled);
 
         JsonArray potionEffectsArray = new JsonArray();
         for (PotionEffect potionEffect : potionEffects) {

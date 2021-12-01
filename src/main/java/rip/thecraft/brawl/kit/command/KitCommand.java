@@ -18,6 +18,11 @@ public class KitCommand {
             return;
         }
 
+        if(!kit.isEnabled()){
+            player.sendMessage(ChatColor.RED + "This kit is currently disabled.");
+            return;
+        }
+
         if (playerData.hasKit(kit)) {
             if (playerData.isWarp()) {
                 player.sendMessage(ChatColor.RED + "You can't change kits when in this area.");

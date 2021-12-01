@@ -42,6 +42,7 @@ public class GameSelectorMenu extends Menu {
         int y = 1;
 
         for (GameType type : GameType.values()) {
+            if(type.isHidden()) continue;
             buttonMap.put(getSlot(x, y), new GameButton(type));
             if (x++ >= 7) {
                 x = 1;

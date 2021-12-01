@@ -133,7 +133,8 @@ public enum GameType {
 			50,
 			Arrays.asList("Lobby"),
 			250,
-			15
+			15,
+			true
 	);
 
 	private final String name;
@@ -146,7 +147,7 @@ public enum GameType {
 
 	private final int creditsReward, expReward;
 
-	private boolean randomLocations = false;
+	private boolean randomLocations = false, hidden = false;
 
 	private final ItemStack icon;
 
@@ -201,6 +202,23 @@ public enum GameType {
 			this.randomLocations = true;
 		}
 	}
+
+	GameType(String name, ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, List<String> requiredLocations, int creditsReward, int expReward, boolean hidden) {
+		this.name = name;
+		this.shortName = name;
+		this.description = description;
+		this.minPlayers = minPlayers;
+		this.maxPlayers = maxPlayers;
+		this.creditsReward = creditsReward;
+		this.expReward = expReward;
+		this.icon = icon;
+		this.rankType = rankType;
+		this.requiredLocations = requiredLocations;
+		if (this.requiredLocations.isEmpty()) {
+			this.randomLocations = true;
+		}
+		this.hidden = hidden;
+	}//temporary
 
 	GameType(String name, String shortName, ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, List<String> requiredLocations, int creditsReward, int expReward) {
 		this.name = name;

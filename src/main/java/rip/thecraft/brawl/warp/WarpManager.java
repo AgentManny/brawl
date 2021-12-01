@@ -44,8 +44,8 @@ public final class WarpManager {
         return this.warps.get(warpName.toLowerCase());
     }
 
-    public Warp createWarp(String warpName, Location location, Kit kit) {
-        Warp warp = new Warp(warpName, location, kit == null ? null : kit.getName());
+    public Warp createWarp(String warpName, Location location, Kit kit, boolean enabled) {
+        Warp warp = new Warp(warpName, location, kit == null ? null : kit.getName(), enabled);
         this.warps.put(warpName.toLowerCase(), warp);
         return warp;
     }
@@ -57,7 +57,7 @@ public final class WarpManager {
     public void save() {
         List<Warp> toSerialize = new ArrayList<>();
         for (Map.Entry<String, Warp> entry : this.warps.entrySet()) {
-            toSerialize.add(new Warp(entry.getKey(), entry.getValue().getLocation(), entry.getValue().getKit()));
+            toSerialize.add(new Warp(entry.getKey(), entry.getValue().getLocation(), entry.getValue().getKit(), entry.getValue().isEnabled()));
         }
 
         File file = new File(Brawl.getInstance().getDataFolder(), "warps.json");
