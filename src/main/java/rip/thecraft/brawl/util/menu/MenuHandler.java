@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MenuHandler implements Listener {
@@ -30,11 +29,11 @@ public class MenuHandler implements Listener {
     public static void setMenu(Player player, Menu menu) {
         if (menu == null) {
             openedMenus.remove(player.getUniqueId());
-            LOGGER.log(Level.INFO, "Removed menu from " + player.getName() + ".");
+            // LOGGER.log(Level.INFO, "Removed menu from " + player.getName() + ".");
             return;
         }
         openedMenus.put(player.getUniqueId(), menu);
-        LOGGER.log(Level.INFO, "Set menu for " + player.getName() + " to: " + menu.getId().toString() + " (" + menu.getName() + ")");
+        // LOGGER.log(Level.INFO, "Set menu for " + player.getName() + " to: " + menu.getId().toString() + " (" + menu.getName() + ")");
     }
 
     public static Optional<Menu> getMenu(Player player) {
