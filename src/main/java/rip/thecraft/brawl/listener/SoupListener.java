@@ -1,6 +1,7 @@
 package rip.thecraft.brawl.listener;
 
 import lombok.RequiredArgsConstructor;
+import net.minecraft.server.v1_8_R3.EntityPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -9,6 +10,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -144,6 +146,11 @@ public class SoupListener implements Listener {
             Location location = (Location) player.getMetadata(PLAYER_REFILLING_METADATA, plugin).value();
 
             location.getBlock().removeMetadata(PLAYER_REFILLING_METADATA, plugin);
+
+            EntityPlayer entityPlayer = ((CraftPlayer)player).getHandle().playerConnection.player;
+            if (entityPlayer.isBlocking()) {
+                entityPlayer.bw();
+            }
             player.removeMetadata(PLAYER_REFILLING_METADATA, plugin);
 
             //player.getInventory().firstEmpty() != -1
@@ -186,11 +193,11 @@ public class SoupListener implements Listener {
             return;
         }
 
-        ItemStack item = player.getItemInHand();
-        if (item != null && item.getType() != null && item.getType().name().contains("_SWORD")) {
-            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "REFILL STATION! " + ChatColor.GRAY + "You can't open a station with a sword.");
-            return;
-        }
+//        ItemStack item = player.getItemInHand();
+//        if (item != null && item.getType() != null && item.getType().name().contains("_SWORD")) {
+//            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "REFILL STATION! " + ChatColor.GRAY + "You can't open a station with a sword.");
+//            return;
+//        }
 
         if (attachedBlock.hasMetadata(PLAYER_REFILLING_METADATA)) {
             Player usingPlayer = Bukkit.getPlayer(UUID.fromString(attachedBlock.getMetadata(PLAYER_REFILLING_METADATA, plugin).asString()));
