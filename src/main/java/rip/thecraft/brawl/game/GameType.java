@@ -22,7 +22,7 @@ public enum GameType {
 			"Kill each other until one player is declared the champion.",
 			2,
 			50,
-			new ArrayList<>(), 250, 10
+			new ArrayList<>(), 150, 10
 	),
 
 	SPLEEF(
@@ -31,7 +31,7 @@ public enum GameType {
 			"Destroy blocks below other players, allowing them to fall off the playing field.",
 			2,
 			40,
-			250, 10
+			150, 10
 	),
 
 	BRACKETS(
@@ -41,7 +41,7 @@ public enum GameType {
 			2,
 			50,
 			Arrays.asList("SpectatorLobby", "Lobby", "ArenaLocation1", "ArenaLocation2"),
-			250,
+			150,
 			10
 	),
 
@@ -52,7 +52,7 @@ public enum GameType {
 			2,
 			50,
 			Arrays.asList("SpectatorLobby", "Lobby", "ArenaLocation1", "ArenaLocation2"),
-			250,
+			200,
 			10
 	),
 
@@ -64,7 +64,7 @@ public enum GameType {
 			2,
 			50,
 			new ArrayList<>(),
-			250,
+			150,
 			15
 	),
 
@@ -76,7 +76,7 @@ public enum GameType {
 			2,
 			50,
 			Arrays.asList("Lobby", "Pos1", "Pos2"),
-			250,
+			150,
 			15
 	),
 
@@ -88,7 +88,7 @@ public enum GameType {
 			2,
 			50,
 			Arrays.asList("Lobby", "Jump", "Platform1", "Platform2", "JumpPlatform1", "JumpPlatform2"),
-			250,
+			150,
 			15
 	),
 
@@ -99,7 +99,7 @@ public enum GameType {
 			2,
 			25,
 			Arrays.asList("Lobby"),
-			250,
+			150,
 			15
 	),
 
@@ -110,7 +110,7 @@ public enum GameType {
 			2,
 			50,
 			Arrays.asList("Lobby"),
-			250,
+			150,
 			15
 	),
 
@@ -121,7 +121,7 @@ public enum GameType {
 			2,
 			50,
 			Arrays.asList("Lobby"),
-			250,
+			150,
 			15
 	),
 
@@ -132,7 +132,7 @@ public enum GameType {
 			2,
 			50,
 			Arrays.asList("Lobby"),
-			250,
+			150,
 			15,
 			true
 	);

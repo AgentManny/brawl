@@ -24,7 +24,7 @@ public class HelpCommand {
         sender.sendMessage("");
         sender.sendMessage(ChatColor.DARK_PURPLE.toString() + "*** Shop Commands ***");
         sender.sendMessage(ChatColor.GRAY + "/shop" + ChatColor.GRAY + " - Opens the shop selector.");
-        sender.sendMessage(ChatColor.GRAY + "/refill" + ChatColor.GRAY + " - Refills your soups " + ChatColor.WHITE + "[50 credits]");
+        sender.sendMessage(ChatColor.GRAY + "/refill" + ChatColor.GRAY + " - Refills your soups " + ChatColor.WHITE + "[200 credits]");
         sender.sendMessage(ChatColor.GRAY + "/repair" + ChatColor.GRAY + " - Repair your armor and weapons " + ChatColor.WHITE + "[100 credits]");
         sender.sendMessage("");
     }
