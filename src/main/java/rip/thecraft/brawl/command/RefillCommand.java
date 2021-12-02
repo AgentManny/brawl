@@ -35,13 +35,6 @@ public class RefillCommand {
             }
         }
 
-        Cooldown refill = data.getCooldown("REFILL");
-        if (refill != null && !refill.hasExpired()) {
-            player.sendMessage(ChatColor.RED + "You must wait " + ChatColor.BOLD + refill.getTimeLeft() + ChatColor.RED + " before using /refill again.");
-            return;
-        }
-        data.addCooldown("REFILL", TimeUnit.SECONDS.toMillis(60));
-
         if(data.getSelectedKit() == null){
             player.sendMessage(ChatColor.RED + "You need to have a kit equipped to use this command.");
             return;
@@ -52,6 +45,14 @@ public class RefillCommand {
                 player.sendMessage(ChatColor.RED + "Your inventory is full.");
                 return;
             }
+
+            Cooldown refill = data.getCooldown("REFILL");
+            if (refill != null && !refill.hasExpired()) {
+                player.sendMessage(ChatColor.RED + "You must wait " + ChatColor.BOLD + refill.getTimeLeft() + ChatColor.RED + " before using /refill again.");
+                return;
+            }
+            data.addCooldown("REFILL", TimeUnit.SECONDS.toMillis(60));
+
 
             ItemStack item = data.getRefillType().getItem();
             if (item.getType() != Material.AIR) {
