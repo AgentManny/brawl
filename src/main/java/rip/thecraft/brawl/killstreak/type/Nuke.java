@@ -1,10 +1,5 @@
 package rip.thecraft.brawl.killstreak.type;
 
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.killstreak.Killstreak;
-import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.region.RegionType;
-import rip.thecraft.brawl.util.BrawlUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
@@ -13,6 +8,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.metadata.FixedMetadataValue;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.killstreak.Killstreak;
+import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.region.RegionType;
+import rip.thecraft.brawl.util.BrawlUtil;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,7 +42,7 @@ public class Nuke extends Killstreak implements Listener {
     @Override
     public void onActivate(Player player, PlayerData playerData) {
 
-        List<Player> affectedPlayers =  BrawlUtil.getNearbyPlayers(player, 100)
+        List<Player> affectedPlayers =  BrawlUtil.getNearbyPlayers(player, 10)
                 .stream().filter(rip -> !RegionType.SAFEZONE.appliesTo(rip.getLocation()))
                 .collect(Collectors.toList());
 
@@ -78,7 +78,7 @@ public class Nuke extends Killstreak implements Listener {
                         if (detonator == event.getEntity()) {
                             event.setCancelled(true);
                         } else {
-                            event.setDamage(event.getDamage() * 2);
+                            event.setDamage(event.getDamage() * 5);
                             victim.damage(0, detonator);
                         }
                     }

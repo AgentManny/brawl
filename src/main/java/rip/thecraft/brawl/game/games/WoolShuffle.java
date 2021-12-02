@@ -35,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class WoolShuffle extends Game implements Listener {
 
     private static final long MINIMUM_TIME = 2500L;
+    private static final long REDUCE_TIME = 1250L;
     private static final long DEFAULT_TIME = TimeUnit.SECONDS.toMillis(10);
     private long currentTime;
 
@@ -159,7 +160,7 @@ public class WoolShuffle extends Game implements Listener {
     }
 
     public long getMaxTime() {
-        return Math.max(MINIMUM_TIME, DEFAULT_TIME / Math.max(round, 1));
+        return Math.max(MINIMUM_TIME, DEFAULT_TIME - (round <= 1 ? 0 : REDUCE_TIME * round));
     }
 
     private Multimap<DyeColor, Location> blockData = ArrayListMultimap.create(); // Allows to remove specific colours
