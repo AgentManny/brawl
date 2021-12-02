@@ -186,6 +186,12 @@ public class SoupListener implements Listener {
             return;
         }
 
+        ItemStack item = player.getItemInHand();
+        if (item != null && item.getType() != null && item.getType().name().contains("_SWORD")) {
+            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "REFILL STATION! " + ChatColor.GRAY + "You can't open a station with a sword.");
+            return;
+        }
+
         if (attachedBlock.hasMetadata(PLAYER_REFILLING_METADATA)) {
             Player usingPlayer = Bukkit.getPlayer(UUID.fromString(attachedBlock.getMetadata(PLAYER_REFILLING_METADATA, plugin).asString()));
             if (usingPlayer == null) {
