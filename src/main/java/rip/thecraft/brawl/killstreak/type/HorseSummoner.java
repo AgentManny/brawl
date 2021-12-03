@@ -5,12 +5,16 @@ import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.killstreak.Killstreak;
 import rip.thecraft.brawl.player.PlayerData;
 
-public class HorseSummoner extends Killstreak {
+public class HorseSummoner extends Killstreak implements Listener {
 
     @Override
     public int[] getKills() {
@@ -35,7 +39,6 @@ public class HorseSummoner extends Killstreak {
     @Override
     public int getAmount() {
         return 1;
-
     }
 
     @Override
@@ -43,7 +46,7 @@ public class HorseSummoner extends Killstreak {
         Horse horse = (Horse) player.getWorld().spawnEntity(player.getLocation().add(0, 1, 0), EntityType.HORSE);
         horse.setAdult();
         String name = ChatColor.WHITE + player.getName() + "'s Horse";
-        horse.setCustomName(name.substring(0, 24));
+        horse.setCustomName(name.substring(0, Math.min(name.length(), 24)));
         horse.setCustomNameVisible(true);
 
         horse.setMaxHealth(40);
@@ -55,5 +58,13 @@ public class HorseSummoner extends Killstreak {
         horse.getInventory().setArmor(new ItemStack(Brawl.RANDOM.nextBoolean() ? Material.GOLD_BARDING : Material.DIAMOND_BARDING));
 
         horse.setPassenger(player);
+    }
+
+    @EventHandler
+    public void onVehicleEXIT(VehicleExitEvent event) {
+        Vehicle vehicle = event.getVehicle();
+        if (vehicle instanceof Horse) {
+            vehicle.remove();
+        }
     }
 }

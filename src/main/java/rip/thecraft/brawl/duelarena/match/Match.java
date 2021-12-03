@@ -134,6 +134,7 @@ public class Match {
 
         if (arena.getArenaType() == ArenaType.ARCADE && kit != null) {
             for (Player player : getPlayers()) {
+                if (player == null) continue;
                 kit.getAbilities().forEach(ability -> ability.getTasks().clear(player.getUniqueId()));
             }
         }
@@ -144,7 +145,7 @@ public class Match {
             broadcast(ChatColor.WHITE + name + ChatColor.YELLOW + " has " + ChatColor.GREEN + "won" + ChatColor.YELLOW + " the match.");
         }
 
-        boolean newMatch = again.get();
+        boolean newMatch = again.get() && !quitEnded;
 
         if (!newMatch) {
             endMatch(winner);

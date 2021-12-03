@@ -12,7 +12,7 @@ import rip.thecraft.spartan.command.Param;
 
 public class SpectateCommand {
 
-    @Command(names = { "spec", "spectate" }, permission = "brawl.spectate")
+    @Command(names = { "spec", "spectate" })
     public static void spectate(Player player, @Param(defaultValue = "self") Player target) {
 //        if (!player.isOp()) {
 //            player.sendMessage(ChatColor.RED + "Spectating is currently disabled. Please try again later.");
@@ -24,6 +24,10 @@ public class SpectateCommand {
         SpectatorManager sm = Brawl.getInstance().getSpectatorManager();
         SpectatorMode spectator = sm.getSpectator(player);
         if (spectator == null) {
+            if (!player.hasPermission("brawl.spectate")) {
+                player.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
+                return;
+            }
             if (!(playerData.isSpawnProtection() || playerData.isDuelArena())) {
                 player.sendMessage(ChatColor.RED + "You can't use spectator mode here!");
                 return;

@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.duelarena.match;
 
-import rip.thecraft.brawl.Brawl;
 import lombok.AllArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,9 +27,8 @@ public class MatchStartTask extends BukkitRunnable  {
                 if (spec != null) {
                     for (Player player : match.getPlayers()) {
                         if (player == null) continue;
-                        Brawl.getInstance().getEntityHider().showEntity(spec, player);
+                        spec.showPlayer(player);
                     }
-
                 }
             }
 
@@ -39,6 +37,7 @@ public class MatchStartTask extends BukkitRunnable  {
                     match.finished(null);
                     return;
                 }
+                player.setFireTicks(0);
             }
 
             match.playSound(true);

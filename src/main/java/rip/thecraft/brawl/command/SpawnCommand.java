@@ -12,7 +12,6 @@ import rip.thecraft.brawl.game.GameHandler;
 import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.spectator.SpectatorManager;
-import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.brawl.util.location.LocationType;
 import rip.thecraft.spartan.command.Command;
@@ -58,7 +57,8 @@ public class SpawnCommand {
 
         SpectatorManager sm =  Brawl.getInstance().getSpectatorManager();
         if (sm.isSpectating(sender)) {
-            sm.getSpectator(sender).spectate(SpectatorMode.SpectatorType.SPAWN);
+//            sm.getSpectator(sender).spectate(SpectatorMode.SpectatorType.SPAWN);
+            sm.getSpectator(sender).leave(); // Remove them instead
             return;
         }
 
