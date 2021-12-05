@@ -89,6 +89,7 @@ public class SpawnData {
         base += selectedKit != null && !selectedKit.isFree() ? 5 : 0;
         base += playerData.getStatistic().get(StatisticType.KILLSTREAK);
 
+        base = Math.min(30, base);
         return base;
     }
 

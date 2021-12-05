@@ -20,7 +20,7 @@ public enum GameType {
 			new ItemBuilder(Material.DIAMOND_SWORD).build(),
 			RankType.SILVER,
 			"Kill each other until one player is declared the champion.",
-			2,
+			5,
 			50,
 			new ArrayList<>(), 150, 10
 	),
@@ -38,10 +38,10 @@ public enum GameType {
 			new ItemBuilder(Material.MUSHROOM_SOUP).build(),
 			RankType.GOLD,
 			"A series of 1v1 matches against players, whoever has the best skills wins.",
-			2,
+			5,
 			50,
 			Arrays.asList("SpectatorLobby", "Lobby", "ArenaLocation1", "ArenaLocation2"),
-			150,
+			100,
 			10
 	),
 
@@ -49,10 +49,10 @@ public enum GameType {
 			new ItemBuilder(Material.LEASH).build(),
 			RankType.PLATINUM,
 			"Punch opponents off a platform, being the last player standing to be declared victorious.",
-			2,
+			5,
 			50,
 			Arrays.asList("SpectatorLobby", "Lobby", "ArenaLocation1", "ArenaLocation2"),
-			200,
+			100,
 			10
 	),
 
@@ -61,7 +61,7 @@ public enum GameType {
 			new ItemBuilder(Material.BOW).build(),
 			RankType.PLATINUM,
 			"Sniper. One shot, one kill! Last man standing wins!",
-			2,
+			5,
 			50,
 			new ArrayList<>(),
 			150,
@@ -76,7 +76,7 @@ public enum GameType {
 			2,
 			50,
 			Arrays.asList("Lobby", "Pos1", "Pos2"),
-			150,
+			100,
 			15
 	),
 
@@ -88,7 +88,7 @@ public enum GameType {
 			2,
 			50,
 			Arrays.asList("Lobby", "Jump", "Platform1", "Platform2", "JumpPlatform1", "JumpPlatform2"),
-			150,
+			100,
 			15
 	),
 
@@ -96,10 +96,10 @@ public enum GameType {
 			new ItemBuilder(Material.TNT).build(),
 			RankType.CHAMPION,
 			"Tag with a twist, don't blow up! Last man standing wins!",
-			2,
+			5,
 			25,
 			Arrays.asList("Lobby"),
-			150,
+			100,
 			15
 	),
 
@@ -107,10 +107,10 @@ public enum GameType {
 			new ItemBuilder(Material.IRON_CHESTPLATE).build(),
 			RankType.CHAMPION,
 			"Free for All with a twist. Players spawn with random kits.",
-			2,
+			5,
 			50,
 			Arrays.asList("Lobby"),
-			150,
+			100,
 			15
 	),
 
@@ -118,10 +118,10 @@ public enum GameType {
 			new ItemBuilder(Material.WOOL).build(),
 			RankType.CHAMPION,
 			"Free for All with a twist. Players spawn with the ability to place blocks.",
-			2,
+			5,
 			50,
 			Arrays.asList("Lobby"),
-			150,
+			100,
 			15
 	),
 
@@ -129,10 +129,10 @@ public enum GameType {
 			new ItemBuilder(Material.ENCHANTMENT_TABLE).build(),
 			RankType.CHAMPION,
 			"Feast",
-			2,
+			5,
 			50,
 			Arrays.asList("Lobby"),
-			150,
+			100,
 			15,
 			true
 	);

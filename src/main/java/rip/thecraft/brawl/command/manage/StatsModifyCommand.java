@@ -3,6 +3,7 @@ package rip.thecraft.brawl.command.manage;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import rip.thecraft.brawl.kit.statistic.KitStatistic;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.player.statistic.StatisticType;
@@ -49,6 +50,9 @@ public class StatsModifyCommand {
         PlayerStatistic playerStatistic = player.getStatistic();
         for (StatisticType statistic : StatisticType.values()) {
             playerStatistic.set(statistic, statistic.getDefaultValue());
+        }
+        for (KitStatistic value : player.getStatistic().getKitStatistics().values()) {
+            value.reset();
         }
         player.getLevel().setCurrentExp(0);
         player.save();

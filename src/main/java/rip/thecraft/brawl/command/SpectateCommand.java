@@ -56,6 +56,12 @@ public class SpectateCommand {
         player.sendMessage(" ");
     }
 
+    @Command(names = "visibility update", permission = "op")
+    public static void visibilityUpdate(Player player, Player observer) {
+        VisibilityUtils.updateVisibility(observer);
+        player.sendMessage("Updated visibility of " + observer.getName());
+    }
+
     @Command(names = "spec debug", permission = "op")
     public static void debug(Player player, Player observer) {
         SpectatorManager sm = Brawl.getInstance().getSpectatorManager();

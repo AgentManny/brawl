@@ -136,9 +136,6 @@ public class PlayerData {
         List<String> unlockedPerks = new ArrayList<>();
         this.unlockedPerks.forEach(perk -> unlockedPerks.add(perk.name()));
 
-        List<String> unlockedKits = new ArrayList<>();
-        this.unlockedKits.forEach(perk -> unlockedKits.add(unlockingKit.getName()));
-
         Map<String, String> activePerks = new HashMap<>();
         for (int i = 0; i < this.activePerks.length; i++) {
             Perk perk = this.activePerks[i];

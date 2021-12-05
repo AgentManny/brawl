@@ -135,7 +135,6 @@ public class MovementListener implements MovementHandler, Listener {
                 }
 
             } else {
-
                 if (!RegionType.SAFEZONE.appliesTo(from) && RegionType.SAFEZONE.appliesTo(to)) {
                     player.teleport(from);
                     player.eject();

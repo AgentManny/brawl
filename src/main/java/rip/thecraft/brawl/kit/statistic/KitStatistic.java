@@ -35,8 +35,8 @@ public class KitStatistic {
             this.trialPass = document.getInteger("trial-pass", 0);
         }
 
-        if (document.containsKey("exp")) {
-            this.exp = document.getInteger("exp");
+        if (document.containsKey("experience")) {
+            this.exp = document.getInteger("experience");
         }
 
         for (Map.Entry<String, Object> entry : ((Document) document.get("properties")).entrySet()) {
@@ -53,6 +53,14 @@ public class KitStatistic {
                 .append("properties", new Document(properties));
     }
 
+    public void reset() {
+        this.uses = 0;
+        this.kills = 0;
+        this.deaths = 0;
+        this.trialPass = 0;
+        this.exp = 0;
+        this.properties.clear();
+    }
 
     public double addKills(double value) {
         return this.kills += value;

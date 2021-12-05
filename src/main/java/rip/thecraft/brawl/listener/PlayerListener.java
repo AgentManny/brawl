@@ -173,11 +173,11 @@ public class PlayerListener implements Listener {
 
                     player.playSound(player.getLocation(), Sound.LEVEL_UP, 10, 2);
                     playerData.setKitPasses(playerData.getKitPasses() + 1);
-                    playerData.setLastVoteRewards(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(2));
+                    playerData.setLastVoteRewards(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(12));
                 } else { // hasn't voted
                     player.playSound(player.getLocation(), Sound.NOTE_PLING, 10, 2);
                     player.sendMessage(" ");
-                    player.sendMessage(ChatColor.GREEN + "Want a " + ChatColor.BOLD + "Free Kit Pass" + ChatColor.GREEN + " every 2 days?");
+                    player.sendMessage(ChatColor.GREEN + "Want a " + ChatColor.BOLD + "Free Kit Pass" + ChatColor.GREEN + " every 12 hours?");
                     player.sendMessage(ChatColor.GRAY + "Vote for us on " + ChatColor.WHITE + "https://namemc.com/server/kaze.gg" + ChatColor.GRAY + " for rewards.");
                     player.sendMessage(" ");
                 }

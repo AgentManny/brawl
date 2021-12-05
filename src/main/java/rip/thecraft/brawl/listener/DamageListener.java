@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.abilities.TimeLock;
 import rip.thecraft.brawl.ability.handlers.KillHandler;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameElimination;
@@ -49,6 +50,9 @@ public class DamageListener implements Listener {
     public void onPlayerDeath(EntityDeathEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
         Player player = (Player) event.getEntity();
+        if (player.hasMetadata(TimeLock.TIMELOCK_METADATA)) {
+            player.removeMetadata(TimeLock.TIMELOCK_METADATA, plugin);
+        }
         PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
 
         event.setDroppedExp(0);
@@ -143,9 +147,11 @@ public class DamageListener implements Listener {
                     killerData.getSpawnData().killed(player);
 
                     int killExp = ExperienceType.KILL.getExperience(); // You always get 5 exp per kill
-                    if (killerData.getStatistic().get(StatisticType.KILLSTREAK) > 5) {
-                        killExp += (int) Math.min(15, (killerData.getStatistic().get(StatisticType.KILLSTREAK) * 0.45)); // Killstreak multiplier only takes effect after 5 kills
+                    if (killerData.getStatistic().get(StatisticType.KILLSTREAK) >= 15) {
+                        int killstreakExpMultiplier = (int) ((int) (killerData.getStatistic().get(StatisticType.KILLSTREAK) / 15));
+                        killExp += killstreakExpMultiplier;
                     }
+                    killExp = Math.min(15, killExp);
 
                     killerData.getLevel().addExp(killer, killExp, ExperienceType.KILL, player.getDisplayName());
                     playerData.getSpawnData().applyAssists(killer, playerData.getSpawnData().getWorth());

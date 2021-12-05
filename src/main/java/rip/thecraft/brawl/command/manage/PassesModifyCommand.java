@@ -23,7 +23,7 @@ public class PassesModifyCommand {
     @Command(names = "pass set", permission = "op")
     public static void setPass(CommandSender sender, @Param(defaultValue = "self") PlayerData playerData, @Param(name = "passes") int passes) {
         playerData.setKitPasses(passes);
-        sender.sendMessage(ChatColor.GREEN + "Set " + sender.getName() + " global kit pass to " + passes + ".");
+        sender.sendMessage(ChatColor.GREEN + "Set " + playerData.getName() + " global kit pass to " + passes + ".");
     }
 
     @Command(names = "pass giveall", permission = "op")

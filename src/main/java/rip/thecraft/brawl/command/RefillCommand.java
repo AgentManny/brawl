@@ -62,7 +62,7 @@ public class RefillCommand {
             }
 
             player.updateInventory();
-            player.sendMessage(ChatColor.YELLOW + "You have purchased a refill for " + ChatColor.LIGHT_PURPLE + "50 credits" + ChatColor.YELLOW + ".");
+            player.sendMessage(ChatColor.YELLOW + "You have purchased a refill for " + ChatColor.LIGHT_PURPLE + "200 credits" + ChatColor.YELLOW + ".");
             EconUtil.withdraw(data, 200);
         }else{
             player.sendMessage(ChatColor.RED + "You don't have enough credits to purchase a refill.");
