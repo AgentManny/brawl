@@ -10,19 +10,8 @@ import rip.thecraft.brawl.player.statistic.StatisticType;
 public class StatsResetButton extends MarketItem {
 
     public StatsResetButton() {
-        super("Stats Reset", Material.SIGN, 5000);
-
+        super("Statistics Reset", Material.PAPER, 2500);
         setConfirm(true);
-    }
-
-    @Override
-    public String getName(Player player) {
-        return null;
-    }
-
-    @Override
-    public Material getMaterial(Player player) {
-        return null;
     }
 
     @Override
@@ -36,25 +25,26 @@ public class StatsResetButton extends MarketItem {
     }
 
     @Override
+    public boolean getRequiresSpawn() {
+        return false;
+    }
+
+    @Override
     public void purchase(Player player, PlayerData playerData) {
         PlayerStatistic stats = playerData.getStatistic();
-        stats.getSpawnStatistics().forEach((stat, value) -> {
-            if (stat != StatisticType.CREDITS) {
-                stats.set(stat, 0);
-            }
-        });
-        stats.getKitStatistics().forEach((name, kit) -> {
-            kit.setDeaths(0);
-            kit.setUses(0);
-            kit.setKills(0);
-            kit.getProperties().clear();
-        });
+        for (StatisticType statistic : StatisticType.values()) {
+            stats.set(statistic, statistic.getDefaultValue());
+        }
+
+        stats.getKitStatistics().forEach((name, kit) -> kit.reset());
         stats.getGameStatistics().forEach((game, stat) -> {
             stat.setPlayed(0);
             stat.setLosses(0);
             stat.setWins(0);
             stat.getProperties().clear();
         });
+        playerData.getLevel().setCurrentExp(0);
+        playerData.save();
         player.sendMessage(ChatColor.GREEN + "Your statistics have been wiped.");
     }
 }

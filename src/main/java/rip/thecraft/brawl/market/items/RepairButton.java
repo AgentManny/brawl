@@ -9,27 +9,17 @@ import rip.thecraft.brawl.player.PlayerData;
 public class RepairButton extends MarketItem {
 
     public RepairButton() {
-        super("Repair", Material.MUSHROOM_SOUP, 150);
-    }
-
-    @Override
-    public String getName(Player player) {
-        return null;
-    }
-
-    @Override
-    public Material getMaterial(Player player) {
-        return null;
+        super("Repair", Material.ANVIL, 200);
     }
 
     @Override
     public int getWeight() {
-        return 0;
+        return 1;
     }
 
     @Override
     public String getDescription() {
-        return "Fills your inventory with either soups or potions";
+        return "Repairs your inventory and sword";
     }
 
     @Override

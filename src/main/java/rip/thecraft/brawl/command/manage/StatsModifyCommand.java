@@ -45,7 +45,16 @@ public class StatsModifyCommand {
         player.save();
     }
 
-    @Command(names = { "statistics reset", "stats reset" }, description = "Reset a player's statistics", async = true, permission = "op")
+    @Command(names = { "statistics addresettoken" }, description = "Asdd a reset token to a player's statistics", async = true, permission = "op")
+    public static void addResetToken(CommandSender sender, PlayerData player) {
+        PlayerStatistic playerStatistic = player.getStatistic();
+        playerStatistic.setResetTokens(playerStatistic.getResetTokens() + 1);
+        player.save();
+        player.fetchPlayer().ifPresent(data -> data.sendMessage(ChatColor.LIGHT_PURPLE + " + " + ChatColor.BOLD + "1 " + ChatColor.LIGHT_PURPLE + "Reset Statistic Token"));
+        sender.sendMessage(ChatColor.GREEN + "Added statistic reset token to " + ChatColor.WHITE + player.getName() + ChatColor.GREEN + ".");
+    }
+
+    @Command(names = { "statistics wipe", "stats wipe" }, description = "Reset a player's statistics", async = true, permission = "op")
     public static void resetStats(CommandSender sender, PlayerData player) {
         PlayerStatistic playerStatistic = player.getStatistic();
         for (StatisticType statistic : StatisticType.values()) {
@@ -54,8 +63,16 @@ public class StatsModifyCommand {
         for (KitStatistic value : player.getStatistic().getKitStatistics().values()) {
             value.reset();
         }
+        playerStatistic.getGameStatistics().forEach((game, stat) -> {
+            stat.setPlayed(0);
+            stat.setLosses(0);
+            stat.setWins(0);
+            stat.getProperties().clear();
+        });
         player.getLevel().setCurrentExp(0);
         player.save();
-        sender.sendMessage(ChatColor.GREEN + "Reset player statistics of " + ChatColor.WHITE + player.getName() + ChatColor.GREEN + ".");
+        if (sender != null) { // I use this for reset tokens.
+            sender.sendMessage(ChatColor.GREEN + "Reset player statistics of " + ChatColor.WHITE + player.getName() + ChatColor.GREEN + ".");
+        }
     }
 }

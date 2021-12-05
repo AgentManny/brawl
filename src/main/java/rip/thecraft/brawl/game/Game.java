@@ -18,6 +18,7 @@ import rip.thecraft.brawl.game.scoreboard.GameScoreboard;
 import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.levels.ExperienceType;
 import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.brawl.util.EconUtil;
 import rip.thecraft.brawl.util.PlayerUtil;
@@ -127,7 +128,7 @@ public abstract class Game {
                             challenge.increment(winner.toPlayer(), 1);
                         }
                     }
-
+                    playerData.getStatistic().add(StatisticType.EVENT_WINS);
                 }
             }
 

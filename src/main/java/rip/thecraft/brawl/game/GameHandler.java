@@ -67,12 +67,12 @@ public class GameHandler {
         this.mapHandler.save();
     }
 
-    public void start(Player hoster, GameType type) {
+    public boolean start(Player hoster, GameType type) {
         if (lobby != null || activeGame != null) {
             if (hoster != null) {
                 hoster.sendMessage(ChatColor.RED + "There is already an ongoing game active.");
             }
-            return;
+            return false;
         }
         this.lobby = new GameLobby(brawl, type);
         FancyMessage messageParts = new FancyMessage(Game.PREFIX + ChatColor.WHITE + (hoster == null ? "Someone" : hoster.getDisplayName()) + ChatColor.YELLOW + " is hosting the " + ChatColor.DARK_PURPLE + type.getShortName() + ChatColor.YELLOW + " event for a prize of " + ChatColor.LIGHT_PURPLE + type.getCreditsReward() + " credits" + ChatColor.YELLOW + "." + ChatColor.GRAY + " (Click to join)")
@@ -83,6 +83,7 @@ public class GameHandler {
                 messageParts.send(player);
             }
         });
+        return true;
     }
 
     public void destroy() {

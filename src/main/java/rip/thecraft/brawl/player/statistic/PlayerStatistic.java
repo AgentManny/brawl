@@ -2,6 +2,7 @@ package rip.thecraft.brawl.player.statistic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.bson.Document;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.duelarena.loadout.MatchLoadout;
@@ -27,6 +28,8 @@ public class PlayerStatistic {
     private int globalElo = 1000;
     private Map<MatchLoadout, Integer> arenaStatistics = new HashMap<>();
 
+    @Setter private int resetTokens = 0;
+
     public void load(Document document) {
         if (document == null) {
             for (StatisticType statisticType : StatisticType.values()) {
@@ -41,8 +44,9 @@ public class PlayerStatistic {
 
         Document spawnDocument = (Document) document.get("spawn");
         for (StatisticType statisticType : StatisticType.values()) {
-            this.spawnStatistics.put(statisticType, spawnDocument.get(statisticType.name(), statisticType == StatisticType.LEVEL ? 1 : 0.0));
+            this.spawnStatistics.put(statisticType, spawnDocument.get(statisticType.name(), statisticType.getDefaultValue()));
         }
+        this.resetTokens = spawnDocument.getInteger("reset-tokens", 0);
 
         if (document.containsKey("arena")) {
             Document arenaDocument = (Document) document.get("arena");
@@ -96,6 +100,7 @@ public class PlayerStatistic {
     public Document getSpawnData() {
         Document spawnDocument = new Document();
         this.spawnStatistics.forEach(((statisticType, amount) -> spawnDocument.put(statisticType.name(), amount)));
+        spawnDocument.put("reset-tokens", resetTokens);
         return spawnDocument;
     }
 

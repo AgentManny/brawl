@@ -621,7 +621,11 @@ public class PlayerData {
     public Player getPlayer() {
         return Bukkit.getPlayer(this.uuid);
     }
-    
+
+    public Optional<Player> fetchPlayer() {
+        return Optional.of(getPlayer());
+    }
+
     @Override
     public String toString() {
         return "uuid=" + uuid.toString() + ";name=" + name;

@@ -28,7 +28,7 @@ public enum StatisticType {
 
     CREDITS("Credits", ChatColor.GOLD, Material.GOLD_INGOT),
 
-    EVENT_WINS("Event Wins", ChatColor.GREEN, Material.DOUBLE_PLANT),
+    EVENT_WINS("Events Won", ChatColor.GREEN, Material.DOUBLE_PLANT),
 
     DUEL_WINS("Duel Wins", ChatColor.AQUA, Material.IRON_CHESTPLATE),
     DUEL_LOSSES("Duel Losses", ChatColor.RED, Material.REDSTONE, true),

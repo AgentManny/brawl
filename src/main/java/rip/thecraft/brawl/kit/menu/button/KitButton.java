@@ -1,5 +1,6 @@
 package rip.thecraft.brawl.kit.menu.button;
 
+import gg.manny.hologram.HologramPlugin;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
@@ -49,6 +50,7 @@ public class KitButton extends Button {
         boolean canTrial = statistic != null && statistic.getTrialPass() >= 1;
         boolean canKitPass = playerData.getKitPasses() >= 1 && kit.getRankType() != RankType.CHAMPION;
         boolean unlocked = playerData.hasKit(kit);
+        boolean disabled = !kit.isEnabled();
 
         lore.add(0, " ");
         lore.add(0, ChatColor.DARK_GRAY + (kit.isFree() ? "Free" : unlocked ? "Unlocked" : "Locked"));
@@ -65,7 +67,9 @@ public class KitButton extends Button {
         lore.add("");
 
         String value;
-        if (rental) {
+        if (disabled) {
+            value = CC.RED + "Kit is currently disabled :(";
+        } else if (rental) {
             value = CC.YELLOW + "Time remaining: " + CC.WHITE + TimeUtils.formatIntoSimplifiedString((int) TimeUnit.MILLISECONDS.toSeconds(kitRentals.get(kit.getName()) - System.currentTimeMillis()));
         } else if (unlocked) {
             value = CC.GREEN + "Click to use this kit";
@@ -85,10 +89,15 @@ public class KitButton extends Button {
         } else {
             lore.add(CC.GRAY + "\u00bb " + value);
         }
-        return new ItemBuilder(kit.getIcon())
+         ItemBuilder item = new ItemBuilder(kit.getIcon())
                 .name((unlocked ? rental ? CC.YELLOW : CC.GREEN : canTrial ? CC.LIGHT_PURPLE : CC.RED) + CC.BOLD + kit.getName())
-                .amount(1).lore(lore)
-                .create();
+                .amount(1).lore(lore);
+        if (disabled) {
+            boolean legacyVersion = HologramPlugin.getInstance().onLegacyVersion(player);
+            item.material(legacyVersion ? Material.STAINED_GLASS_PANE : Material.BARRIER);
+            item.data(legacyVersion ? (byte) 14 : 0);
+        }
+        return item.create();
     }
 
     @Override

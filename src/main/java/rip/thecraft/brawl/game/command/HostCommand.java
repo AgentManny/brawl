@@ -48,11 +48,11 @@ public class HostCommand {
 
             if(playerData.hasGame(game)) {
                 if(bypassRestrictions || EconUtil.canAfford(playerData, Game.HOST_CREDITS)) {
-                    if (!bypassRestrictions) {
+                    boolean start = Brawl.getInstance().getGameHandler().start(player, game);
+                    if (!bypassRestrictions && start) {
                         EconUtil.withdraw(playerData, Game.HOST_CREDITS);
                         player.sendMessage(ChatColor.RED + " - " + ChatColor.BOLD + Game.HOST_CREDITS + ChatColor.RED + " Credits");
                     }
-                    Brawl.getInstance().getGameHandler().start(player, game);
                 } else {
                     player.sendMessage(ChatColor.RED + "You need " + ChatColor.YELLOW + Game.HOST_CREDITS + " credits" + ChatColor.RED + " to host this game.");
                 }

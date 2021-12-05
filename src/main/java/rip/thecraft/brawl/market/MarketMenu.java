@@ -1,19 +1,15 @@
 package rip.thecraft.brawl.market;
 
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.kit.Kit;
-import rip.thecraft.brawl.market.items.InventoryFillButton;
-import rip.thecraft.brawl.market.items.KitButton;
-import rip.thecraft.brawl.market.items.MarketItem;
-import rip.thecraft.brawl.market.items.StatsResetButton;
+import org.bukkit.entity.Player;
+import rip.thecraft.brawl.market.items.*;
 import rip.thecraft.spartan.menu.Button;
 import rip.thecraft.spartan.menu.Menu;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class MarketMenu extends Menu {
     {
@@ -21,17 +17,22 @@ public class MarketMenu extends Menu {
         setUpdateAfterClick(true);
     }
 
+    private static final long ROTATION_TIME = TimeUnit.HOURS.toMillis(24);
+
     private List<MarketItem> items = new ArrayList<>();
 
+    private long lastRotation = -1L;
+
     public MarketMenu() {
+        items.add(new GoldenAppleButton());
         items.add(new InventoryFillButton());
+        items.add(new RepairButton());
+        items.add(new KitPassButton());
         items.add(new StatsResetButton());
-
-        for (Kit kit : Brawl.getInstance().getMarketHandler().getSellingKits()) {
-            KitButton button = new KitButton(kit, Brawl.getInstance().getMarketHandler().getMultiplier());
-            items.add(button);
-        }
-
+//        for (Kit kit : Brawl.getInstance().getMarketHandler().getSellingKits()) {
+//            KitButton button = new KitButton(kit, Brawl.getInstance().getMarketHandler().getMultiplier());
+//            items.add(button);
+//        }
     }
 
     @Override
