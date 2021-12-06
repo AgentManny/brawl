@@ -54,5 +54,6 @@ public class InventoryFillButton extends MarketItem {
         }
 
         player.updateInventory();
+        data.addCooldown(getCooldown(), getCooldownTime());
     }
 }

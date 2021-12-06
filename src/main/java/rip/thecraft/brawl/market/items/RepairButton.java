@@ -6,6 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.player.PlayerData;
 
+import java.util.concurrent.TimeUnit;
+
 public class RepairButton extends MarketItem {
 
     public RepairButton() {
@@ -23,6 +25,16 @@ public class RepairButton extends MarketItem {
     }
 
     @Override
+    public String getCooldown() {
+        return "REPAIR";
+    }
+
+    @Override
+    public long getCooldownTime() {
+        return TimeUnit.SECONDS.toMillis(60);
+    }
+
+    @Override
     public void purchase(Player player, PlayerData playerData) {
         for (ItemStack content : player.getInventory().getContents()) {
             if (content != null && content.getType().getMaxDurability() > 0) {
@@ -36,5 +48,6 @@ public class RepairButton extends MarketItem {
             }
         }
 
+        playerData.addCooldown(getCooldown(), getCooldownTime());
     }
 }

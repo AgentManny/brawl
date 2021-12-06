@@ -5,6 +5,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.player.PlayerData;
 
+import java.util.concurrent.TimeUnit;
+
 public class GoldenAppleButton extends MarketItem {
 
     public GoldenAppleButton() {
@@ -27,8 +29,20 @@ public class GoldenAppleButton extends MarketItem {
     }
 
     @Override
+    public String getCooldown() {
+        return "GOLDEN_APPLE";
+    }
+
+    @Override
+    public long getCooldownTime() {
+        return TimeUnit.SECONDS.toMillis(60);
+    }
+
+    @Override
     public void purchase(Player player, PlayerData data) {
         player.updateInventory();
         player.getInventory().addItem(new ItemStack(Material.GOLDEN_APPLE));
+
+        data.addCooldown(getCooldown(), getCooldownTime());
     }
 }
