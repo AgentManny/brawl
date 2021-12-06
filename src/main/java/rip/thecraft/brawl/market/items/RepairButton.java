@@ -1,6 +1,6 @@
 package rip.thecraft.brawl.market.items;
 
-import org.bukkit.ChatColor;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -36,6 +36,5 @@ public class RepairButton extends MarketItem {
             }
         }
 
-        player.sendMessage(ChatColor.GREEN + "You have repaired all items in your inventory.");
     }
 }

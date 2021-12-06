@@ -27,7 +27,16 @@ public enum MetadataType {
     }),
     PREVIOUS_KIT((player, playerData) -> {
         Kit kit = playerData.getPreviousKit() == null ? Brawl.getInstance().getKitHandler().getDefaultKit() : playerData.getPreviousKit();
-        kit.apply(player, true, true);
+        if(!kit.isEnabled()){
+            player.sendMessage(ChatColor.RED + "This kit is currently disabled.");
+            return;
+        }
+
+        if(playerData.hasKit(kit)){
+            kit.apply(player, true, true);
+        }else{
+            Brawl.getInstance().getKitHandler().getDefaultKit().apply(player, true, true);
+        }
     }),
 
     EVENT_SELECTOR((player, playerData) -> {

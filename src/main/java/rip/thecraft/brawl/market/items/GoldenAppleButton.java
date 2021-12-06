@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.market.items;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -23,9 +22,13 @@ public class GoldenAppleButton extends MarketItem {
     }
 
     @Override
+    public boolean requiresInventorySpace() {
+        return true;
+    }
+
+    @Override
     public void purchase(Player player, PlayerData data) {
         player.updateInventory();
-        player.sendMessage(ChatColor.YELLOW + "You have purchased a " + ChatColor.GOLD + "Golden Apple" + ChatColor.YELLOW + " for " + ChatColor.LIGHT_PURPLE + credits + " credits" + ChatColor.YELLOW + ".");
         player.getInventory().addItem(new ItemStack(Material.GOLDEN_APPLE));
     }
 }

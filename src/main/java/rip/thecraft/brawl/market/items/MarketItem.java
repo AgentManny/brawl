@@ -81,6 +81,10 @@ public abstract class MarketItem extends Button {
         return true;
     }
 
+    public boolean requiresInventorySpace(){
+        return false;
+    }
+
     @Override
     public void clicked(Player player, int slot, ClickType clickType) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
@@ -103,7 +107,7 @@ public abstract class MarketItem extends Button {
                 return;
             }
 
-            if (player.getInventory().firstEmpty() == -1) {
+            if (requiresInventorySpace() && player.getInventory().firstEmpty() == -1) {
                 player.sendMessage(ChatColor.RED + "Your inventory is full.");
                 return;
             }
@@ -136,7 +140,7 @@ public abstract class MarketItem extends Button {
         } else {
             purchase(player, playerData);
             statistic.set(StatisticType.CREDITS, statistic.get(StatisticType.CREDITS) - credits);
-            player.sendMessage(ChatColor.YELLOW + "You've purchased a " + ChatColor.LIGHT_PURPLE + name + ChatColor.YELLOW + " for " + ChatColor.WHITE + credits + " credits" + ChatColor.YELLOW + ".");
+            player.sendMessage(ChatColor.YELLOW + "You've purchased a " + ChatColor.LIGHT_PURPLE + name + ChatColor.YELLOW + " for " + ChatColor.LIGHT_PURPLE + credits + " credits" + ChatColor.YELLOW + ".");
             player.closeInventory();
         }
     }

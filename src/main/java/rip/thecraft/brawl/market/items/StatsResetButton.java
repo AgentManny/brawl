@@ -10,7 +10,7 @@ import rip.thecraft.brawl.player.statistic.StatisticType;
 public class StatsResetButton extends MarketItem {
 
     public StatsResetButton() {
-        super("Statistics Reset", Material.PAPER, 2500);
+        super("Statistics Reset", Material.TNT, 2500);
         setConfirm(true);
     }
 
