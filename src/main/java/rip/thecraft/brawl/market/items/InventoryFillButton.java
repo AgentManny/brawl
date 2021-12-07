@@ -35,6 +35,11 @@ public class InventoryFillButton extends MarketItem {
     }
 
     @Override
+    public boolean requiresInventorySpace() {
+        return true;
+    }
+
+    @Override
     public void purchase(Player player, PlayerData data) {
         if(player.getInventory().firstEmpty() == -1){
             player.sendMessage(ChatColor.RED + "Your inventory is full.");
@@ -49,6 +54,6 @@ public class InventoryFillButton extends MarketItem {
         }
 
         player.updateInventory();
-        player.sendMessage(ChatColor.YELLOW + "You have purchased a refill for " + ChatColor.LIGHT_PURPLE + credits + " credits" + ChatColor.YELLOW + ".");
+        data.addCooldown(getCooldown(), getCooldownTime());
     }
 }

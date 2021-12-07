@@ -143,8 +143,7 @@ public class Stomper extends Ability implements Listener, SneakHandler {
                         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(nearbyPlayer);
                         if (playerData != null && playerData.isSpawnProtection()) continue;
 
-                        nearbyPlayer.damage(0, player);
-                        nearbyPlayer.damage(baseDamage / (nearbyPlayer.isSneaking() ? 2 : 1));
+                        nearbyPlayer.damage(baseDamage / (nearbyPlayer.isSneaking() ? 2 : 1), player);
                     }
 
                     player.removeMetadata(STOMPER_METADATA, Brawl.getInstance());

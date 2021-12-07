@@ -34,6 +34,7 @@ import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameFlag;
 import rip.thecraft.brawl.kit.type.RefillType;
 import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.upgrade.perk.Perk;
 import rip.thecraft.brawl.util.SchedulerUtil;
@@ -260,6 +261,12 @@ public class SoupListener implements Listener {
             }
             default: {
                 if (RefillType.isRefill(item)) {
+                    PlayerData data = plugin.getPlayerDataHandler().getPlayerData(event.getPlayer());
+                    if(data.getPlayerState() == PlayerState.MATCH || data.isDuelArena()){
+                        event.getItemDrop().remove();
+                        return;
+                    }
+
                     SchedulerUtil.runTaskLater(() -> event.getItemDrop().remove(), RegionType.SAFEZONE.appliesTo(event.getPlayer().getLocation()) ? 5L : 100L, false);
                     return;
                 }

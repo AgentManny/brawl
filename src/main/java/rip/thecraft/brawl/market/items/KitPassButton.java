@@ -7,7 +7,7 @@ import rip.thecraft.brawl.player.PlayerData;
 public class KitPassButton extends MarketItem {
 
     public KitPassButton() {
-        super("Kit Pass", Material.DIAMOND, 500);
+        super("Kit Pass", Material.PAPER, 500);
         setConfirm(false);
     }
 

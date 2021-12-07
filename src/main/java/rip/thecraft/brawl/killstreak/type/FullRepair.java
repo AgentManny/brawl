@@ -49,5 +49,6 @@ public class FullRepair extends Killstreak {
         }
 
         player.sendMessage(ChatColor.GREEN + "You have repaired all items in your inventory.");
+        player.updateInventory();
     }
 }

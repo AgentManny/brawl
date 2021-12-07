@@ -1,10 +1,11 @@
 package rip.thecraft.brawl.market.items;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.player.PlayerData;
+
+import java.util.concurrent.TimeUnit;
 
 public class GoldenAppleButton extends MarketItem {
 
@@ -23,9 +24,25 @@ public class GoldenAppleButton extends MarketItem {
     }
 
     @Override
+    public boolean requiresInventorySpace() {
+        return true;
+    }
+
+    @Override
+    public String getCooldown() {
+        return "GOLDEN_APPLE";
+    }
+
+    @Override
+    public long getCooldownTime() {
+        return TimeUnit.SECONDS.toMillis(60);
+    }
+
+    @Override
     public void purchase(Player player, PlayerData data) {
         player.updateInventory();
-        player.sendMessage(ChatColor.YELLOW + "You have purchased a " + ChatColor.GOLD + "Golden Apple" + ChatColor.YELLOW + " for " + ChatColor.LIGHT_PURPLE + credits + " credits" + ChatColor.YELLOW + ".");
         player.getInventory().addItem(new ItemStack(Material.GOLDEN_APPLE));
+
+        data.addCooldown(getCooldown(), getCooldownTime());
     }
 }
