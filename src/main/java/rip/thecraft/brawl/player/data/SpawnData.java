@@ -29,7 +29,6 @@ public class SpawnData {
 
     private final PlayerData playerData;
 
-
     private Map<UUID, Double> damageReceived = new HashMap<>();
 
     public List<String> applyAssists(Player killer, double finalCredits) {
@@ -47,8 +46,8 @@ public class SpawnData {
                             challenge.increment(damager, Math.round((float) tokens));
                         }
                     }
-                    damagerData.getLevel().addExp(damager, ExperienceType.KILL_ASSISTS, killer.getName());
-                    damager.sendMessage(CC.DARK_PURPLE + "You've earned " + CC.LIGHT_PURPLE + Math.round(tokens) + " credits" + CC.DARK_PURPLE + " for dealing " + CC.LIGHT_PURPLE + (Math.round(tokens * 10) / 10.0) + "%" + CC.DARK_PURPLE + " damage to " + CC.WHITE + killer.getDisplayName() + CC.DARK_PURPLE + ".");
+                    playerData.getLevel().addExp(damager, ExperienceType.KILL_ASSISTS, killer.getName());
+                    playerData.fetchPlayer().ifPresent(player -> player.sendMessage(CC.DARK_PURPLE + "You've earned " + CC.LIGHT_PURPLE + Math.round(tokens) + " credits" + CC.DARK_PURPLE + " for dealing " + CC.LIGHT_PURPLE + (Math.round(tokens * 10) / 10.0) + "%" + CC.DARK_PURPLE + " damage to " + CC.WHITE + killer.getDisplayName() + CC.DARK_PURPLE + "."));
                     assisters.add(damager.getName());
                 }
             }

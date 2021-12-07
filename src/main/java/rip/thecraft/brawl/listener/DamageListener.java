@@ -316,6 +316,9 @@ public class DamageListener implements Listener {
             }
 
             Player damager = null;
+            if (e.getCause() == EntityDamageEvent.DamageCause.MAGIC) {
+                e.setDamage(e.getDamage() < 2.5 ? 2.5 : e.getDamage() / 1.25);
+            }
 
             if (e instanceof EntityDamageByEntityEvent) {
                 EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
@@ -332,10 +335,11 @@ public class DamageListener implements Listener {
                 if (damager == player) {
                     return;
                 }
-
             }
-            if (!e.isCancelled() && e.getCause() != EntityDamageEvent.DamageCause.FALL) {
-                playerData.getSpawnData().damagedBy(damager, e.getDamage());
+            if (!e.isCancelled()) {
+                if (e.getCause() != EntityDamageEvent.DamageCause.FALL) {
+                    playerData.getSpawnData().damagedBy(damager, e.getDamage());
+                }
             }
         }
     }
@@ -346,7 +350,6 @@ public class DamageListener implements Listener {
         if (projectileSource instanceof Player) {
             Player player = (Player) projectileSource;
             PlayerData shooterData = plugin.getPlayerDataHandler().getPlayerData(player);
-
             for (LivingEntity entity : event.getAffectedEntities()) {
                 if (entity instanceof Player) {
                     Player playerEntity = (Player) entity;

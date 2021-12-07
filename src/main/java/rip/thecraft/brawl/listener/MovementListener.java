@@ -4,10 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.server.v1_8_R3.PacketPlayInFlying;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.CommandBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -140,30 +140,44 @@ public class MovementListener implements MovementHandler, Listener {
                     player.eject();
                     player.setVelocity(from.toVector().subtract(to.toVector()).normalize().multiply(1.25).add(new Vector(0, 0.5, 0)).setY(.1));
                 }
-
             }
-        }
 
-        Location baseLocation = to.clone().subtract(0, .01D, 0);
+            Location baseLocation = to.clone().subtract(0, .01D, 0);
 
-        if(baseLocation.getBlock().getType() == Material.SPONGE) {
-            Vector send = new Vector(0, 0, 0);
+            if (baseLocation.getBlock().getType() == Material.SPONGE) {
+                Vector send = new Vector(0, 0, 0);
 
-            if(baseLocation.subtract(0, 1, 0).getBlock().getType() == Material.SPONGE) {
-                for (SpongeFaces face : SpongeFaces.values()) {
-                    Location curLocation = baseLocation.clone().add(face.getXOffset(), 0, face.getZOffset());
-                    int tri = 0;
+                if (baseLocation.subtract(0, 1, 0).getBlock().getType() == Material.SPONGE) {
+                    for (SpongeFaces face : SpongeFaces.values()) {
+                        Location curLocation = baseLocation.clone().add(face.getXOffset(), 0, face.getZOffset());
+                        int tri = 0;
 
-                    while (tri < 10 && curLocation.getBlock().getType() == Material.SPONGE) {
-                        curLocation.add(face.getXOffset(), face.getYOffset(), face.getZOffset());
-                        face.addToVector(send, .75);
-                        tri++;
+                        while (tri < 10 && curLocation.getBlock().getType() == Material.SPONGE) {
+                            curLocation.add(face.getXOffset(), face.getYOffset(), face.getZOffset());
+                            face.addToVector(send, .75);
+                            tri++;
+                        }
+                    }
+                    player.setVelocity(send);
+                }
+            } else if (baseLocation.getBlock().getType() == Material.GOLD_BLOCK) {
+                Block relative = baseLocation.getBlock().getRelative(BlockFace.DOWN);
+                if (relative.getType() == Material.COMMAND) {
+                    CommandBlock commandBlock = (CommandBlock) relative.getState();
+                    String command = commandBlock.getCommand();
+                    if (!command.startsWith("/") && command.contains(";")) {
+                        String[] locations = command.split(";");
+                        String location = locations[Brawl.RANDOM.nextInt(locations.length)];
+                        if (playerData.getLastAction() < System.currentTimeMillis()) {
+                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "minecraft:tp " + player.getName() + " " + location);
+                            playerData.setLastAction(System.currentTimeMillis() + 500L);
+                            player.getWorld().playSound(player.getLocation(), Sound.ENDERMAN_TELEPORT, 1, 1.2F);
+                            player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 1);
+                        }
                     }
                 }
-                player.setVelocity(send);
             }
         }
-
     }
 
     @EventHandler
