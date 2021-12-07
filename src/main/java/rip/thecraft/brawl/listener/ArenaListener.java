@@ -69,7 +69,7 @@ public class ArenaListener implements Listener {
         Player player = event.getPlayer();
         String command = event.getMessage().split(" ")[0];
 
-        if (!player.hasPermission(Rank.STAFF_NODE) && plugin.getMatchHandler().isInMatch(player) && !plugin.getConfig().getStringList("ALLOWED_COMMANDS").contains("/" + command)) {
+        if (!player.hasPermission(Rank.STAFF_NODE) && plugin.getMatchHandler().isInMatch(player) && !plugin.getConfig().getStringList("ALLOWED_COMMANDS").contains(command)) {
             player.sendMessage(ChatColor.RED + "You cannot execute commands while in a match.");
             event.setCancelled(true);
         }

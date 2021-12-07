@@ -90,6 +90,7 @@ public class DuelArena {
         if (teleport) {
             player.teleport(Brawl.getInstance().getLocationByName("DUEL_ARENA"));
         }
+        NametagHandler.reloadPlayer(player);
     }
 
     public static void leave(Player player) {

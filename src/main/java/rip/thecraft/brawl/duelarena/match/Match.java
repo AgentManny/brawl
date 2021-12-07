@@ -208,7 +208,6 @@ public class Match {
                 broadcast(ChatColor.YELLOW + "Spectators (" + matchData.getSpectators().size() + "): " + ChatColor.LIGHT_PURPLE + spectators);
             }
 
-
             MatchSnapshot snapshot = new MatchSnapshot(id);
             snapshot.getInventories().putAll(matchData.getInventories());
             Brawl.getInstance().getMatchHandler().addSnapshot(snapshot);
