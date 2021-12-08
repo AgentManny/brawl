@@ -34,6 +34,7 @@ import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.util.BrawlUtil;
+import rip.thecraft.brawl.util.VisibilityUtils;
 import rip.thecraft.falcon.util.ErrorType;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.nametag.NametagHandler;
@@ -186,6 +187,7 @@ public class PlayerListener implements Listener {
 
             plugin.getPlayerDataHandler().create(playerData, false);
             NametagHandler.reloadPlayer(player);
+            VisibilityUtils.updateVisibility(player);
         });
     }
 

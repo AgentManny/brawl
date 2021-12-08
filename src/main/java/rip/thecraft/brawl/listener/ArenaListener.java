@@ -67,10 +67,10 @@ public class ArenaListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerPreprocess(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
-        String command = event.getMessage().split(" ")[0];
+        String command = event.getMessage().toLowerCase().split(" ")[0].replace("/", "");
 
         if (!player.hasPermission(Rank.STAFF_NODE) && plugin.getMatchHandler().isInMatch(player) && !plugin.getConfig().getStringList("ALLOWED_COMMANDS").contains(command)) {
-            player.sendMessage(ChatColor.RED + "You cannot execute commands while in a match.");
+            player.sendMessage(ChatColor.RED + "You cannot execute this command while in a match.");
             event.setCancelled(true);
         }
     }
