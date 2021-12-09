@@ -20,10 +20,7 @@ import rip.thecraft.brawl.levels.ExperienceType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.spectator.SpectatorMode;
-import rip.thecraft.brawl.util.EconUtil;
-import rip.thecraft.brawl.util.PlayerUtil;
-import rip.thecraft.brawl.util.SchedulerUtil;
-import rip.thecraft.brawl.util.Tasks;
+import rip.thecraft.brawl.util.*;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.nametag.NametagHandler;
 import rip.thecraft.spartan.util.PlayerUtils;
@@ -78,6 +75,7 @@ public abstract class Game {
                 PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
                 NametagHandler.reloadPlayer(player);
                 NametagHandler.reloadOthersFor(player);
+                VisibilityUtils.updateVisibility(player);
             }
         });
         defaultLocation = getLocationByName("Lobby");

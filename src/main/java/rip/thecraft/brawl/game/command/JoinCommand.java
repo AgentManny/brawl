@@ -6,6 +6,7 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.lobby.GameLobby;
 import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.falcon.staff.StaffMode;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.command.Command;
 
@@ -22,6 +23,11 @@ public class JoinCommand {
         GameLobby lobby = Brawl.getInstance().getGameHandler().getLobby();
         if (lobby == null) {
             sender.sendMessage(ChatColor.RED + "There isn't any games joinable right now.");
+            return;
+        }
+
+        if(StaffMode.hasStaffMode(sender)){
+            sender.sendMessage(ChatColor.RED + "You cannot join events while in staff mode.");
             return;
         }
 

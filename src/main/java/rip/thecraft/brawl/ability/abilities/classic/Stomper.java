@@ -84,7 +84,7 @@ public class Stomper extends Ability implements Listener, SneakHandler {
             player.setVelocity(vector);
             player.setMetadata(STOMPER_METADATA, new FixedMetadataValue(Brawl.getInstance(), System.currentTimeMillis()));
             player.setMetadata(CHARGE_METADATA, new FixedMetadataValue(Brawl.getInstance(), System.currentTimeMillis()));
-            player.getWorld().playSound(player.getLocation(), Sound.FIREWORK_BLAST, 3f, 3f);
+            player.getWorld().playSound(player.getLocation(), Sound.FIREWORK_BLAST, 5f, 3f);
         }
     }
 
@@ -144,6 +144,7 @@ public class Stomper extends Ability implements Listener, SneakHandler {
                         if (playerData != null && playerData.isSpawnProtection()) continue;
 
                         nearbyPlayer.damage(baseDamage / (nearbyPlayer.isSneaking() ? 2 : 1), player);
+                        nearbyPlayer.sendMessage(ChatColor.RED + "You were stomped by " + player.getName() + ".");
                     }
 
                     player.removeMetadata(STOMPER_METADATA, Brawl.getInstance());

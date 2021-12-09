@@ -11,6 +11,7 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.cps.ClickTracker;
+import rip.thecraft.brawl.util.VisibilityUtils;
 import rip.thecraft.spartan.nametag.NametagHandler;
 
 import java.util.UUID;
@@ -74,6 +75,7 @@ public class GamePlayer {
 
         NametagHandler.reloadPlayer(player);
         NametagHandler.reloadOthersFor(player);
+        VisibilityUtils.updateVisibility(player);
     }
 
     public String getDisplayName() {

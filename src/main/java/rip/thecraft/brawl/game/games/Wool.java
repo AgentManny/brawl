@@ -80,8 +80,10 @@ public class Wool extends Game implements Listener {
             Game game = Brawl.getInstance().getGameHandler().getActiveGame();
             if (game instanceof Wool && isAlive(player) && game.getState() == GameState.STARTED) {
                 Block block = event.getHitBlock();
-                if (block != null && block.getType() == Material.WOOL) {
-                    block.setType(Material.AIR);
+                if (block != null) {
+                    if(block.getType() == Material.WOOL || block.getType() == Material.SPONGE){
+                        block.setType(Material.AIR);
+                    }
                 }
             }
         }

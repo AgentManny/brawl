@@ -12,8 +12,11 @@ import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.event.Event;
 import rip.thecraft.brawl.event.EventType;
+import rip.thecraft.brawl.levels.ExperienceType;
+import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.team.Team;
+import rip.thecraft.brawl.util.EconUtil;
 import rip.thecraft.brawl.util.cuboid.Cuboid;
 import rip.thecraft.brawl.util.imagemessage.ImageMessage;
 import rip.thecraft.falcon.staff.StaffMode;
@@ -83,16 +86,19 @@ public class KOTH extends Event {
     @Override
     public void finish(Player winner) {
         if (winner != null) {
+            PlayerData data = Brawl.getInstance().getPlayerDataHandler().getPlayerData(winner);
 
             for (int i = 0; i < 4; i++) {
                 Bukkit.broadcastMessage(" ");
             }
-            int credits = Math.round(ThreadLocalRandom.current().nextInt(100, 500));
+            int credits = Math.round(ThreadLocalRandom.current().nextInt(100, 200));
             Team team = Brawl.getInstance().getTeamHandler().getPlayerTeam(winner);
             String name = (team == null ? "" : ChatColor.GRAY + "[" + team.getDisplayName(winner) + ChatColor.GRAY + "]") + ChatColor.WHITE + winner.getDisplayName();
             Bukkit.broadcastMessage(PREFIX + ChatColor.LIGHT_PURPLE + this.name + ChatColor.YELLOW + " has been controlled by " + name + ChatColor.YELLOW + "!");
-            //Bukkit.broadcastMessage(PREFIX + CC.YELLOW + "Awarded " + ChatColor.YELLOW + credits + " credits" + ChatColor.YELLOW + " to " + name + ChatColor.YELLOW + ".");
-            //Brawl.getInstance().getPlayerDataHandler().getPlayerData(winner).getStatistic().add(StatisticType.CREDITS, credits);
+            data.getLevel().addExp(winner, ExperienceType.KOTH_CAPTURE.getExperience(), ExperienceType.KOTH_CAPTURE, this.name);
+            EconUtil.deposit(data, credits);
+
+            winner.sendMessage(ChatColor.YELLOW + "You were awarded " + ChatColor.LIGHT_PURPLE + credits + " credits" + ChatColor.YELLOW + " for capturing " + ChatColor.LIGHT_PURPLE + this.name + ChatColor.YELLOW + ".");
         }
 
         if (task != null) {

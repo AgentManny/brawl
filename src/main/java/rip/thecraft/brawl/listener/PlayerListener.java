@@ -103,7 +103,7 @@ public class PlayerListener implements Listener {
                         }
 
                         if (!ability.bypassAbilityPreventZone() && RegionType.NO_ABILITY_ZONE.appliesTo(player.getLocation())) {
-                            player.sendMessage(ChatColor.RED + "You cannot use abilities in area.");
+                            player.sendMessage(ChatColor.RED + "You cannot use abilities in this area.");
                             cancelInteraction = true;
                         }
 
