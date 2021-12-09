@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 @AllArgsConstructor
 public enum PlayerState {
 
+    STAFF("Staff", ChatColor.GOLD),
     SPAWN("Spawn", ChatColor.GREEN),
     GAME_LOBBY("Game Lobby", ChatColor.LIGHT_PURPLE),
     GAME("Game", ChatColor.DARK_PURPLE),

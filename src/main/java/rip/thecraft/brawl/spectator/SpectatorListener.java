@@ -31,7 +31,9 @@ public class SpectatorListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        spectatorManager.spectators.values().forEach(spectator -> entityHider.hideEntity(event.getPlayer(), spectator.getPlayer()));
+        if (!spectatorManager.spectators.isEmpty()) {
+            spectatorManager.spectators.values().forEach(spectator -> entityHider.hideEntity(event.getPlayer(), spectator.getPlayer()));
+        }
     }
 
     @EventHandler
@@ -45,7 +47,6 @@ public class SpectatorListener implements Listener {
             Player player = (Player) event.getEntity();
             if (spectatorManager.isSpectating(player)) {
                 event.setCancelled(true);
-
                 player.setFireTicks(0); // Prevent spectators from being on fire
             }
         }

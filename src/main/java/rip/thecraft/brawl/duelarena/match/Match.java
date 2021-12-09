@@ -252,7 +252,7 @@ public class Match {
                     for (Player member : getPlayers()) {
                         if (member != null) {
                             other.showPlayer(member);
-                            if (!(other.hasMetadata("hidden") || Brawl.getInstance().getSpectatorManager().isSpectating(other))) {
+                            if (!other.hasMetadata("hidden")) {
                                 member.showPlayer(other);
                             }
                         }
@@ -283,7 +283,17 @@ public class Match {
         quited = player.getUniqueId();
 
         finished(Bukkit.getPlayer(getOpposite(player.getUniqueId())));
-
+        for (Player other : Bukkit.getOnlinePlayers()) {
+            Match match = Brawl.getInstance().getMatchHandler().getMatch(other);
+            if (match == null) {
+                for (Player member : getPlayers()) {
+                    if (member != null) {
+                        other.showPlayer(member);
+                        member.showPlayer(other);
+                    }
+                }
+            }
+        }
         PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
 
 //        player.teleport(Brawl.getInstance().getLocationByName("DUEL_ARENA"));

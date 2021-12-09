@@ -7,6 +7,7 @@ import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.scoreboard.type.*;
+import rip.thecraft.falcon.staff.StaffMode;
 import rip.thecraft.spartan.scoreboard.ScoreboardAdapter;
 import rip.thecraft.spartan.util.LinkedList;
 
@@ -29,10 +30,14 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
         providers.put(PlayerState.ARENA, new DuelLobbyScoreboardProvider());
         providers.put(PlayerState.MATCH, new MatchScoreboardProvider());
         providers.put(PlayerState.SPECTATING, new SpectatorScoreboardProvider());
+        providers.put(PlayerState.STAFF, new StaffModeScoreboardProvider());
     }
 
     @Override
     public String getTitle(Player player) {
+        if (StaffMode.hasStaffMode(player)) {
+            return ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Staff Mode";
+        }
         return SPACERS + ChatColor.DARK_PURPLE + ChatColor.BOLD + "KITPVP" + SPACERS;
     }
 
@@ -41,8 +46,12 @@ public class BrawlScoreboardAdapter implements ScoreboardAdapter {
         PlayerData playerData = plugin.getPlayerDataHandler().getPlayerData(player);
         if (playerData == null) return;
 
-        lines.add("      ");
+        if (StaffMode.hasStaffMode(player)) {
+            providers.get(PlayerState.STAFF).getLines(player, playerData, lines);
+            return;
+        }
 
+        lines.add("      ");
         switch (playerData.getPlayerState()) {
             case SPECTATING: {
                 providers.get(PlayerState.SPECTATING).getLines(player, playerData, lines);

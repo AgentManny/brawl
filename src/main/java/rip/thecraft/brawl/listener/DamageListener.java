@@ -2,6 +2,7 @@ package rip.thecraft.brawl.listener;
 
 import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -191,7 +192,8 @@ public class DamageListener implements Listener {
             case GAME: {
                 Game activeGame = Brawl.getInstance().getGameHandler().getActiveGame();
                 if (activeGame.getFlags().contains(GameFlag.PLAYER_ELIMINATE)) {
-                    event.setRespawnLocation(playerData.getLastLocation());
+                    Location location = activeGame.getLocationByName("Lobby");
+                    event.setRespawnLocation(location != null ? location : playerData.getLastLocation());
                 }
                 break;
             }

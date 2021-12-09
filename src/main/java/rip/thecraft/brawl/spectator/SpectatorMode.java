@@ -298,10 +298,16 @@ public class SpectatorMode {
     }
 
     private void cleanup() {
+        if (match != null) {
+            match.getMatchData().getSpectators().remove(spectator);
+            match = null;
+        }
+        if (game != null) {
+            game.getSpectators().remove(spectator);
+            game = null;
+        }
         this.warp = null;
-        this.match = null;
         this.lobby = null;
-        this.game = null;
         this.follow = null;
         this.spectatedPlayer = null;
     }

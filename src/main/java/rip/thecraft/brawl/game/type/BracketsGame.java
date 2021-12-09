@@ -12,6 +12,7 @@ import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.type.RefillType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.PlayerUtil;
+import rip.thecraft.brawl.util.VisibilityUtils;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.nametag.NametagHandler;
 import rip.thecraft.spartan.util.TimeUtils;
@@ -61,6 +62,7 @@ public class BracketsGame extends Game {
         this.getAlivePlayers().forEach(gamePlayer -> {
             Player player = gamePlayer.toPlayer();
             player.teleport(this.getLocationByName("Lobby"));
+            VisibilityUtils.updateVisibility(player);
         });
 
         Bukkit.getScheduler().runTaskLater(Brawl.getInstance(), this::startRound, 60L);
@@ -76,10 +78,13 @@ public class BracketsGame extends Game {
         }
 
         // Teleports existing players back to lobby
-        for (GamePlayer player : this.getMatch()) {
-            if (player != null && player.toPlayer() != null && player.isAlive()) {
-                player.toPlayer().teleport(this.getLocationByName("Lobby"));
-                NametagHandler.reloadPlayer(player.toPlayer());
+        for (GamePlayer gamePlayer : this.getMatch()) {
+            if (gamePlayer == null) continue;
+            Player player = gamePlayer.toPlayer();
+            if (player != null && gamePlayer.isAlive()) {
+                player.teleport(getLocationByName("Lobby"));
+                PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
+                NametagHandler.reloadPlayer(player);
             }
         }
 
@@ -87,7 +92,6 @@ public class BracketsGame extends Game {
         GamePlayer[] players = createMatch();
         for (GamePlayer gamePlayer : players) {
             Player player = gamePlayer.toPlayer();
-
             player.sendMessage(Game.PREFIX + ChatColor.YELLOW + "Your opponent is " + ChatColor.LIGHT_PURPLE + getOpposite(gamePlayer).getName() + ChatColor.YELLOW + ".");
             player.playSound(player.getLocation(), Sound.FIREWORK_TWINKLE, 1.0F, 1.0F);
             PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
@@ -152,6 +156,26 @@ public class BracketsGame extends Game {
                 player.setFallDistance(0);
             }
         }
+    }
+
+    @Override
+    public String getEliminateMessage(Player player, GameElimination elimination) {
+        GamePlayer gamePlayer = getGamePlayer(player);
+        Kit kit = getKit();
+        if (contains(gamePlayer) && elimination == GameElimination.PLAYER && kit != null) {
+            GamePlayer winner = getOpposite(gamePlayer);
+            if (winner != null) {
+                Player winnerPlayer = winner.toPlayer();
+                int soups = 0;
+                for (ItemStack itemStack : winnerPlayer.getInventory()) {
+                    if (itemStack != null && itemStack.getType() == Material.MUSHROOM_SOUP) {
+                        soups++;
+                    }
+                }
+                return ChatColor.DARK_RED + player.getName() + ChatColor.RED + " was killed by " + ChatColor.GOLD + getOpposite(gamePlayer).getName() + CC.RED + " [" + (Math.round((winnerPlayer.getHealth() * 10) / 2) / 10) + "\u2764] [" + soups + " Soups]";
+            }
+        }
+        return super.getEliminateMessage(player, elimination);
     }
 
     @Override
@@ -261,7 +285,7 @@ public class BracketsGame extends Game {
             }
 
             toReturn.add(CC.LIGHT_PURPLE + playerOne.getName() + CC.WHITE + " vs. " + CC.LIGHT_PURPLE + playerTwo.getName());
-                toReturn.add(CC.WHITE + "(" + CC.LIGHT_PURPLE + playerOne.getCPS() + "CPS" + CC.WHITE + ") vs. (" + CC.LIGHT_PURPLE + playerTwo.getCPS() + "CPS" + CC.WHITE + ")");
+            toReturn.add(CC.WHITE + "(" + CC.LIGHT_PURPLE + playerOne.getCPS() + "CPS" + CC.WHITE + ") vs. (" + CC.LIGHT_PURPLE + playerTwo.getCPS() + "CPS" + CC.WHITE + ")");
             toReturn.add(CC.WHITE + "(" + CC.LIGHT_PURPLE + playerOne.getPing() + "ms" + CC.WHITE + ") vs. (" + CC.LIGHT_PURPLE + playerTwo.getPing() + "ms" + CC.WHITE + ")");
 
         } else if (this.state == GameState.FINISHED) {

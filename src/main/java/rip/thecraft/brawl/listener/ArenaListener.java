@@ -41,7 +41,7 @@ public class ArenaListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         for (Match match : plugin.getMatchHandler().getMatches()) {
             for (Player member : match.getPlayers()) {
-                if (member == null || match.getQuited() == member.getUniqueId()) continue;
+                if (member == null || match.getQuited() == member.getUniqueId() || match.isQuitEnded() || match.getState() == MatchState.FINISHED) continue;
                 member.hidePlayer(event.getPlayer());
                 if (match.getArena().getArenaType() != ArenaType.NORMAL) {
                     event.getPlayer().hidePlayer(member);
