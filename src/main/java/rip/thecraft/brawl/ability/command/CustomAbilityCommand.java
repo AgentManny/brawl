@@ -17,6 +17,12 @@ public class CustomAbilityCommand {
         new AbilityMenu().openMenu(player);
     }
 
+    @Command(names = "ability setweight", description = "Sets a weight for a custom ability", permission = "brawl.ability.manage")
+    public static void setweight(CommandSender sender, CustomAbility ability, int weight) {
+        ability.setWeight(weight);
+        sender.sendMessage(ChatColor.GREEN + ability.getName() + " (child of " + ability.getParent().getName() + ") weight set to " + weight + ".");
+    }
+
     @Command(names = "ability create", description = "Creates a custom ability", permission = "brawl.ability.manage")
     public static void createAbility(CommandSender sender, String name, Ability ability) {
         AbilityHandler abilityHandler = Brawl.getInstance().getAbilityHandler();
@@ -31,8 +37,7 @@ public class CustomAbilityCommand {
         }
 
         CustomAbility customAbility = new CustomAbility(name, ability);
-        abilityHandler.getCustomAbilities().put(name, customAbility);
-        abilityHandler.save();
+        abilityHandler.registerCustomAbility(name, customAbility);
     }
 
 }

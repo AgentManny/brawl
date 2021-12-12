@@ -3,6 +3,7 @@ package rip.thecraft.brawl.ability;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.bson.Document;
 
 @Getter
@@ -15,6 +16,8 @@ public class CustomAbility {
     /** Returns the parent ability instance */
     @NonNull private Ability parent;
 
+    @Setter private int weight = 0;
+
     public CustomAbility(String name, Document document) {
         this.name = name;
         try {
@@ -26,12 +29,14 @@ public class CustomAbility {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        this.weight = document.getInteger("weight", 0);
     }
 
     public Document serialize() {
         Document document = new Document("name", name);
         document.put("parent", parent.getClass().getSimpleName());
         document.put("properties", parent.getProperties());
+        document.put("weight", weight);
         return document;
     }
 

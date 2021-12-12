@@ -27,7 +27,9 @@ import rip.thecraft.spartan.util.Cooldown;
 import rip.thecraft.spartan.util.ItemBuilder;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -60,6 +62,8 @@ public abstract class Ability {
     public int cooldown = 15;
 
     public boolean displayIcon = false;
+
+    private transient List<CustomAbility> variants = new ArrayList<>();
 
     /**
      * Loads ability data from AbilityData

@@ -17,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.AbilityHandler;
+import rip.thecraft.brawl.ability.CustomAbility;
 import rip.thecraft.brawl.challenges.Challenge;
 import rip.thecraft.brawl.challenges.command.adapter.ChallengeCommandAdapter;
 import rip.thecraft.brawl.command.adapters.*;
@@ -175,6 +176,7 @@ public class Brawl extends JavaPlugin {
 
     private void registerCommands() {
         MCommandHandler.registerParameterType(Ability.class, new AbilityCommandAdapter());
+        MCommandHandler.registerParameterType(CustomAbility.class, new CustomAbilityCommandAdapter());
         MCommandHandler.registerParameterType(Arena.class, new ArenaCommandAdapter());
         MCommandHandler.registerParameterType(Kit.class, new KitCommandAdapter());
         MCommandHandler.registerParameterType(PlayerData.class, new PlayerDataTypeAdapter(this));

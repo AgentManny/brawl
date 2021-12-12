@@ -145,6 +145,15 @@ public class AbilityHandler {
         abilities.put(ability.getName(), ability);
     }
 
+    public void registerCustomAbility(String name, CustomAbility ability) {
+        // Access @AbilityData to fetch information of ability
+        Ability parent = ability.getParent();
+        if (!parent.getVariants().contains(ability)) {
+            parent.getVariants().add(ability);
+        }
+        customAbilities.put(name, ability);
+    }
+
     /**
      * Serializes all abilities properties into
      * a document.
@@ -189,7 +198,7 @@ public class AbilityHandler {
                         String name = entry.getKey();
                         Document data = (Document) entry.getValue();
                         CustomAbility customAbility = new CustomAbility(name, data);
-                        this.customAbilities.put(name, customAbility);
+                        registerCustomAbility(name, customAbility);
                     }
                 }
             } else {
