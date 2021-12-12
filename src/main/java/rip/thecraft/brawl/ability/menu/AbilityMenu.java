@@ -28,6 +28,10 @@ public class AbilityMenu extends PaginatedMenu {
         return "Abilities";
     }
 
+    public int getMaxItemsPerPage(Player player) {
+        return 14;
+    }
+
     @Override
     public Map<Integer, Button> getAllPagesButtons(Player player) {
         AbilityHandler abilityHandler = Brawl.getInstance().getAbilityHandler();
@@ -77,8 +81,10 @@ public class AbilityMenu extends PaginatedMenu {
                     .map(CustomAbility::getName)
                     .collect(Collectors.joining(", "));
 
-            lore.add(ChatColor.GRAY + "Kits: " + ChatColor.WHITE + kits);
-            lore.add(ChatColor.GRAY + "Custom abilities: " + ChatColor.YELLOW + abilities);
+            lore.add(ChatColor.GRAY + "Kits: " + ChatColor.WHITE + kits + (kits.isEmpty() ? ChatColor.RED + "None" : kits));
+            lore.add(ChatColor.GRAY + "Variants: " + ChatColor.YELLOW + (abilities.isEmpty() ? ChatColor.RED + "None" : abilities));
+            lore.add(" ");
+            lore.add(ChatColor.YELLOW + "Click to modify");
             return lore;
         }
     }
