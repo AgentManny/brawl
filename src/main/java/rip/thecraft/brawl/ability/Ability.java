@@ -59,6 +59,8 @@ public abstract class Ability {
     @AbilityProperty(id = "cooldown", description = "Timer before ability can be used again")
     public int cooldown = 15;
 
+    public boolean displayIcon = false;
+
     /**
      * Loads ability data from AbilityData
      * @param data Ability data to load
@@ -77,13 +79,18 @@ public abstract class Ability {
         if (data.icon() != Material.AIR) {
             this.icon = data.icon();
             this.data = data.data();
+            this.displayIcon = data.displayIcon();
         }
     }
 
     public Document serialize() {
         Document document = new Document();
         document.put("name", name);
+        document.put("properties", serializeProperties());
+        return document;
+    }
 
+    protected Document serializeProperties() {
         Document properties = new Document();
         for (Field field : getClass().getFields()) {
             try {
@@ -98,8 +105,7 @@ public abstract class Ability {
                 e.printStackTrace();
             }
         }
-        document.put("properties", properties);
-        return document;
+        return properties;
     }
 
     public void deserialize(Document document) {
@@ -292,7 +298,7 @@ public abstract class Ability {
         return playerData.getCooldown("ABILITY_" + this.getName());
     }
 
-    public ItemStack getIcon() {
+    public ItemStack getItem() {
         if (icon == null || icon == Material.AIR) return null;
         ItemBuilder item = new ItemBuilder(icon)
                 .name(CC.GRAY + "\u00bb " + getColor() + CC.BOLD + getName() + CC.GRAY + " \u00ab")

@@ -40,12 +40,16 @@ public class AbilityHandler {
     @Getter
     private Map<String, Ability> abilities = new HashMap<>();
 
-    /** Returns all ongoing ability tasks */
+    @Getter
+    private Map<String, CustomAbility> customAbilities = new HashMap<>();
+
+    /**
+     * Returns all ongoing ability tasks
+     */
     private Map<UUID, AbilityTask> activeTasks = new ConcurrentHashMap<>();
 
     public AbilityHandler(Brawl plugin) {
         this.plugin = plugin;
-
         plugin.getLogger().info("[Ability Manager] Loading abilities...");
         Arrays.asList(
                 new Chemist(),
@@ -97,6 +101,9 @@ public class AbilityHandler {
         ).forEach(this::registerAbility);
         load();
         plugin.getLogger().info("[Ability Manager] Loaded " + abilities.size() + " abilities.");
+
+        plugin.getLogger().info("[Ability Manager] Loading custom abilities...");
+
     }
 
     /**
@@ -105,10 +112,12 @@ public class AbilityHandler {
      */
     public void close() {
         abilities.values().forEach(Ability::cleanup);
+        customAbilities.values().forEach(customAbility -> customAbility.getParent().cleanup());
     }
 
     /**
      * Adds an ability to the registry
+     *
      * @param ability Ability to add
      */
     private void registerAbility(Ability ability) {
@@ -139,15 +148,23 @@ public class AbilityHandler {
     /**
      * Serializes all abilities properties into
      * a document.
+     *
      * @return Serialized abilities
      */
     public Document serialize() {
+        Document abilityData = new Document();
         Document abilities = new Document();
         for (Ability ability : this.abilities.values()) {
             Document serialize = ability.serialize();
             abilities.put(ability.getName(), serialize);
         }
-        return abilities;
+        abilityData.put("abilities", abilities);
+        for (CustomAbility customAbility : this.customAbilities.values()) {
+            Document serialize = customAbility.serialize();
+            abilities.put(customAbility.getName(), serialize);
+        }
+        abilityData.put("custom_abilities", customAbilities);
+        return abilityData;
     }
 
     /**
@@ -160,9 +177,21 @@ public class AbilityHandler {
             if (element != null && element.isJsonObject()) {
                 String json = element.toString();
                 Document document = Document.parse(json);
-                document.forEach((key, value) -> getAbility(key).ifPresent(ability -> {
-                    ability.deserialize((Document) value);
-                }));
+                boolean legacy = !document.containsKey("abilities");
+                if (legacy) {
+                    plugin.getLogger().warning("[Ability] Importing legacy abilities.");
+                }
+                (legacy ? document : (Document) document.get("abilities")).forEach((key, value) ->
+                        getAbility(key).ifPresent(ability -> ability.deserialize((Document) value)));
+                if (!legacy) {
+                    Document customAbilities = (Document) document.get("custom_abilities");
+                    for (Map.Entry<String, Object> entry : customAbilities.entrySet()) {
+                        String name = entry.getKey();
+                        Document data = (Document) entry.getValue();
+                        CustomAbility customAbility = new CustomAbility(name, data);
+                        this.customAbilities.put(name, customAbility);
+                    }
+                }
             } else {
                 plugin.getLogger().severe("[Ability Manager] Could not load " + file.getName() + " as it isn't a json object.");
             }
@@ -177,7 +206,6 @@ public class AbilityHandler {
      */
     public void save() {
         Document abilities = serialize();
-
         File file = getFile();
         try (FileWriter writer = new FileWriter(file)) {
             String json = abilities.toJson(JsonWriterSettings.builder()
@@ -192,6 +220,7 @@ public class AbilityHandler {
 
     /**
      * Gets an ability from the name
+     *
      * @param name Name of ability
      * @return Ability
      */
@@ -203,6 +232,7 @@ public class AbilityHandler {
 
     /**
      * Gets an ability from the name
+     *
      * @param name Name of ability
      * @return Ability
      */
@@ -217,6 +247,7 @@ public class AbilityHandler {
 
     /**
      * Gets an ability by the class
+     *
      * @param clazz Class of ability
      * @return Ability
      */
@@ -224,6 +255,33 @@ public class AbilityHandler {
         for (Map.Entry<String, Ability> entry : this.abilities.entrySet()) {
             if (entry.getValue().getClass().equals(clazz)) {
                 return (T) entry.getValue();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets a custom ability from the name
+     *
+     * @param name Name of ability
+     * @return Ability
+     */
+    public Optional<CustomAbility> getCustomAbility(String name) {
+        return customAbilities.values().stream()
+                .filter(ability -> ability.getName().replace(" ", "").equalsIgnoreCase(name.replace(" ", "")))
+                .findAny();
+    }
+
+    /**
+     * Gets an ability from the name
+     *
+     * @param name Name of ability
+     * @return Ability
+     */
+    public CustomAbility getCustomAbilityByName(String name) {
+        for (Map.Entry<String, CustomAbility> entry : this.customAbilities.entrySet()) {
+            if (entry.getKey().replace(" ", "").equalsIgnoreCase(name.replace(" ", ""))) {
+                return entry.getValue();
             }
         }
         return null;

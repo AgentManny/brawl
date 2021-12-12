@@ -199,7 +199,7 @@ public class Brawl extends JavaPlugin {
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.warp.command");
 
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.challenges.command");
-
+        MCommandHandler.registerPackage(this, "rip.thecraft.brawl.ability.command");
         // Event commands
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.event.koth.command");
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.event.command");
