@@ -69,7 +69,9 @@ public enum Levels {
 
     public static String getPrefix(Level playerLevel) {
         Levels level = getByLevel(playerLevel.getCurrentLevel());
-        return ChatColor.GRAY + "[" + (playerLevel.isPrestige() ? ChatColor.DARK_PURPLE + BukkitUtil.romanNumerals(playerLevel.getPrestige()) + ChatColor.GRAY + "-" : "") + level.color + playerLevel.getCurrentLevel() + ChatColor.GRAY
+        LevelPrestige prestige = LevelPrestige.getByPrestige(playerLevel.getPrestige());
+
+        return prestige.getColor() + "[" + (playerLevel.isPrestige() ? prestige.getColor() + BukkitUtil.romanNumerals(playerLevel.getPrestige()) + prestige.getColor() + "-" : "") + level.color + playerLevel.getCurrentLevel() + prestige.getColor()
                 + "]";
     }
 }

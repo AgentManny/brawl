@@ -16,6 +16,7 @@ import rip.thecraft.brawl.levels.task.LevelFlashTask;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.util.MathUtil;
+import rip.thecraft.server.util.chatcolor.CC;
 
 @Getter
 @Setter
@@ -31,19 +32,30 @@ public class Level {
 
     private final PlayerData playerData;
 
-    private int prestige = 1;
     private int currentExp = 0;
 
+    public boolean canPrestige() {
+        return getLevel() >= MAX_LEVEL && currentExp >= getMaxExperience();
+    }
+
+    public int getPrestige() {
+        return (int) playerData.getStatistic().get(StatisticType.PRESTIGE);
+    }
+
+    public int getLevel() {
+        return (int) playerData.getStatistic().get(StatisticType.LEVEL);
+    }
+
     public double getPrestigeXpMultiplier() {
-        return PRESTIGE_XP_MULTIPLIERS[prestige - 1];
+        return PRESTIGE_XP_MULTIPLIERS[getPrestige()];
     }
 
     public boolean isPrestige() {
-        return prestige > 1;
+        return getPrestige() >= 1;
     }
 
     public int getMaxExperience() {
-        return Levels.getByLevel(getCurrentLevel()).getExperience();
+        return (int) (Levels.getByLevel(getCurrentLevel()).getExperience() * getPrestigeXpMultiplier());
     }
 
     public double getPercentageExp() {
@@ -84,7 +96,9 @@ public class Level {
 
         if (getCurrentLevel() >= MAX_LEVEL) {
             if (player != null) {
-                player.sendMessage(ChatColor.RED + "You have reached the highest level! Type /prestige to advance.");
+                if (currentExp < getMaxExperience()) {
+                    player.sendMessage(ChatColor.RED + "You have reached the highest level! Type /prestige to advance.");
+                }
             }
             return;
         }
@@ -133,7 +147,9 @@ public class Level {
 
         if (getCurrentLevel() >= MAX_LEVEL) {
             if (player != null) {
-                player.sendMessage(ChatColor.RED + "You have reached the highest level! Type /prestige to advance.");
+                if (currentExp < getMaxExperience()) {
+                    player.sendMessage(ChatColor.RED + "You have reached the highest level! Type /prestige to advance.");
+                }
             }
             return;
         }
@@ -175,23 +191,18 @@ public class Level {
     }
 
     public Document toDocument() {
-        return new Document("exp", currentExp)
-                .append("prestige", prestige);
+        return new Document("exp", currentExp);
     }
+
     public String getPrefix() {
-        Levels level = Levels.getByLevel(getCurrentLevel());
-        return ChatColor.GRAY + "[" + level.getColor() + getCurrentLevel() + ChatColor.GRAY + "] ";
+        return Levels.getPrefix(this) + " ";
     }
 
     public String getDisplayName() {
-        Levels level = Levels.getByLevel(getCurrentLevel());
-        return level.getColor() + getCurrentLevel();
+        return Levels.getPrefix(this).replace("[", "").replace("]", "");
     }
 
     public String getSimplePrefix() {
-        Levels level = Levels.getByLevel(getCurrentLevel());
-        return ChatColor.GRAY + "[" + level.getColor() + getCurrentLevel() + ChatColor.GRAY + "] ";
+        return CC.strip(Levels.getPrefix(this));
     }
-
-
 }

@@ -33,7 +33,10 @@ public class StatisticButton extends Button {
     public List<String> getDescription(Player player) {
         List<String> lines = new ArrayList<>();
         Map<String, Double> values = Brawl.getInstance().getLeaderboard().getSpawnLeaderboards().get(type);
-
+        if (values.isEmpty()) {
+            lines.add(ChatColor.RED + "No leaderboard data.");
+            return lines;
+        }
         int entries = 0;
         for (Map.Entry<String, Double> entry : values.entrySet()) {
             String prefix = ChatColor.WHITE.toString();
@@ -51,7 +54,7 @@ public class StatisticButton extends Button {
                     break;
                 }
             }
-            lines.add(prefix + entries + ". " + ChatColor.WHITE + entry.getKey() + ChatColor.GRAY + " \u2758 " + ChatColor.WHITE + (type == StatisticType.KDR ? Math.round(entry.getValue() * 10.) / 10. : LeaderboardUpdateTask.STAT_FORMAT.format(entry.getValue())));
+            lines.add(prefix + entries + ". " + ChatColor.WHITE + entry.getKey() + ChatColor.GRAY + " \u2758 " + ChatColor.WHITE + type.getFormatValue(entry.getValue()));
         }
 
         lines.add(0, ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat("-", 30));

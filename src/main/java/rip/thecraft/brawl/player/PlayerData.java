@@ -133,8 +133,13 @@ public class PlayerData {
         Map<String, Document> cooldownMap = new HashMap<>();
         this.cooldownMap.forEach((name, cooldown) -> cooldownMap.put(name, cooldown.toDocument()));
 
+        // TODO look into why this causes NullPointerException
         List<String> unlockedPerks = new ArrayList<>();
-        this.unlockedPerks.forEach(perk -> unlockedPerks.add(perk.name()));
+        this.unlockedPerks.forEach(perk -> {
+            if (perk != null) {
+                unlockedPerks.add(perk.name());
+            }
+        });
 
         Map<String, String> activePerks = new HashMap<>();
         for (int i = 0; i < this.activePerks.length; i++) {

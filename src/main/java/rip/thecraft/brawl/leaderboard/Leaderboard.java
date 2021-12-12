@@ -4,26 +4,20 @@ import com.google.gson.internal.LinkedTreeMap;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Sorts;
 import lombok.Getter;
-import net.luckperms.api.LuckPerms;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
-import net.luckperms.api.model.user.UserManager;
 import org.bson.Document;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.duelarena.loadout.MatchLoadout;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.falcon.Falcon;
-import rip.thecraft.falcon.profile.Profile;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 @Getter
@@ -33,7 +27,7 @@ public class Leaderboard {
     private final Map<MatchLoadout, Map<String, Integer>> eloLeaderboards = new LinkedHashMap<>();
 
     public Leaderboard(Brawl plugin) {
-        plugin.getServer().getScheduler().runTaskTimer(plugin, this::update, 20L, TimeUnit.MINUTES.toMillis(15));
+        plugin.getServer().getScheduler().runTaskTimer(plugin, this::update, 20L, TimeUnit.MINUTES.toMillis(10));
     }
 
     public void update() {
@@ -67,7 +61,12 @@ public class Leaderboard {
 //                    displayName = player.getDisplayName();
 //                }
 //                statistics.put(color + displayName, statDocument.getDouble(statisticType.name()));
-                statistics.put(getDisplayColor(UUID.fromString(doc.getString("uuid"))) + doc.getString("username"), statDocument.getDouble(statisticType.name()));
+                if (statDocument.containsKey(statisticType.name())) {
+                    double value = statDocument.getDouble(statisticType.name());
+                    if (statisticType.getMinValue() <= value) {
+                        statistics.put(getDisplayColor(UUID.fromString(doc.getString("uuid"))) + doc.getString("username"), value);
+                    }
+                }
             }
         }
         return statistics;

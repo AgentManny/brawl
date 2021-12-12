@@ -8,7 +8,6 @@ import rip.thecraft.brawl.levels.Level;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.player.statistic.StatisticType;
-import rip.thecraft.brawl.visual.tasks.LeaderboardUpdateTask;
 import rip.thecraft.spartan.command.Command;
 import rip.thecraft.spartan.command.Param;
 import rip.thecraft.spartan.menu.menus.ConfirmMenu;
@@ -20,14 +19,12 @@ public class StatsCommand {
         sender.sendMessage(" ");
         sender.sendMessage(ChatColor.DARK_PURPLE + "*** Statistics of " + ChatColor.LIGHT_PURPLE + player.getName() + ChatColor.DARK_PURPLE + " ***");
         for (StatisticType type : StatisticType.values()) {
-            if (type.isHidden()) continue;
+            if (type.isHidden() || type == StatisticType.PRESTIGE) continue;
             double value = player.getStatistic().get(type);
-            String displayValue = LeaderboardUpdateTask.STAT_FORMAT.format(value);
-            if (type == StatisticType.KDR) {
-                displayValue = String.valueOf(Math.round(value * 10.) / 10.);
-            } else if (type == StatisticType.LEVEL) {
+            String displayValue = type.getFormatValue(value);
+            if (type == StatisticType.LEVEL) {
                 Level level = player.getLevel();
-                displayValue += " (" + level.getCurrentExp() + "/" + level.getMaxExperience() + " EXP)";
+                displayValue = level.getSimplePrefix().replace("[", "").replace("]", "") + " (" + level.getCurrentExp() + "/" + level.getMaxExperience() + " EXP)";
             }
             sender.sendMessage(ChatColor.GRAY + type.getName() + ChatColor.GRAY + ": " + ChatColor.WHITE +  displayValue);
         }
