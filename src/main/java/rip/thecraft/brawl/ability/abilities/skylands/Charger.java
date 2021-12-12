@@ -1,6 +1,7 @@
 package rip.thecraft.brawl.ability.abilities.skylands;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,7 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@AbilityData(color = ChatColor.GOLD)
+@AbilityData(
+        color = ChatColor.GOLD,
+        icon = Material.GOLD_BOOTS,
+        displayIcon = false
+)
 public class Charger extends Ability implements Listener, ScoreboardHandler {
 
     private HashMap<UUID, Long> chargeup = new HashMap<>();

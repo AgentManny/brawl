@@ -24,6 +24,8 @@ public @interface AbilityData {
     /** Returns the icon of ability */
     Material icon() default Material.AIR;
 
+    boolean displayIcon() default true;
+
     /** Returns icon data of ability */
     byte data() default 0;
 

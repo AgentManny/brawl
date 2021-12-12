@@ -1,6 +1,7 @@
 package rip.thecraft.brawl.ability.abilities;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffect;
@@ -14,7 +15,9 @@ import rip.thecraft.brawl.ability.property.AbilityProperty;
 @AbilityData(
         name = "Dash",
         description = "Gain a short burst of speed after killing a player",
-        color = ChatColor.DARK_AQUA
+        color = ChatColor.DARK_AQUA,
+        icon = Material.SUGAR,
+        displayIcon = false
 )
 public class Dash extends Ability implements Listener, KillHandler {
 

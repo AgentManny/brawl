@@ -96,7 +96,7 @@ public class PlayerListener implements Listener {
             Kit kit = match != null && match.getKit() != null ? match.getKit() : playerData.getSelectedKit();
             if (kit != null && !cancelInteraction) {
                 for (Ability ability : kit.getAbilities()) {
-                    if (BrawlUtil.match(ability.getIcon(), event.getItem())) {
+                    if (BrawlUtil.match(ability.getItem(), event.getItem())) {
                         if (spawnProtection) {
                             player.sendMessage(ChatColor.RED + "You cannot use abilities in spawn.");
                             cancelInteraction = true;

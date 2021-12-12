@@ -1,6 +1,7 @@
 package rip.thecraft.brawl.ability.abilities;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,7 +11,13 @@ import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.player.protection.Protection;
 
-@AbilityData
+@AbilityData(
+        name = "Medic",
+        color = ChatColor.RED,
+        icon = Material.POTION,
+        data = (byte) 16421,
+        displayIcon = false
+)
 // TODO REWORK MEDIC
 public class Medic extends Ability implements Listener {
 

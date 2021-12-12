@@ -16,7 +16,10 @@ import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.server.util.chatcolor.CC;
 
-@AbilityData
+@AbilityData(
+        icon = Material.BOW,
+        displayIcon = false
+)
 public class Archer extends Ability implements ProjectileHitHandler, KillHandler {
 
     @Override

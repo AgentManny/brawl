@@ -157,7 +157,7 @@ public class Kit implements Listener, Comparable<Kit> {
         this.armor.apply(player);
         player.getInventory().setContents(this.items.getItems());
 
-        this.abilities.stream().map(Ability::getIcon).filter(Objects::nonNull).forEach(player.getInventory()::addItem);
+        this.abilities.stream().map(Ability::getItem).filter(Objects::nonNull).forEach(player.getInventory()::addItem);
         this.abilities.forEach(ability -> {
             if (ability.getDescription() != null && updateProfile) {
                 player.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + ability.getDescription());

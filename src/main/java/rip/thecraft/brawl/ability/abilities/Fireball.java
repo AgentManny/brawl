@@ -9,7 +9,11 @@ import rip.thecraft.brawl.ability.handlers.InteractItemHandler;
 import rip.thecraft.brawl.ability.handlers.KillHandler;
 import rip.thecraft.brawl.ability.property.AbilityData;
 
-@AbilityData
+@AbilityData(
+        name = "Fireball",
+        icon = Material.FIREBALL,
+        displayIcon = false
+)
 public class Fireball extends Ability implements KillHandler, InteractItemHandler {
 
     @Override

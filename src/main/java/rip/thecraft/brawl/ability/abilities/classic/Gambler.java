@@ -62,7 +62,7 @@ public class Gambler extends Ability implements Listener {
             if(player.getItemInHand() != null && player.getItemInHand().getType() == Material.POTION){
                 ItemStack itemStack = player.getItemInHand();
 
-                if(itemStack.isSimilar(this.getIcon())){
+                if(itemStack.isSimilar(this.getItem())){
                     event.setCancelled(true);
                 }
             }

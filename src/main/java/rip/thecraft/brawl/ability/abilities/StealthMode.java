@@ -90,7 +90,7 @@ public class StealthMode extends Ability implements Listener {
             public void run() {
                 if (player != null && hasEquipped(player)) {
                     player.getInventory().setArmorContents(armorCopy);
-                    player.getInventory().setItem(heldItemSlot, getIcon());
+                    player.getInventory().setItem(heldItemSlot, getItem());
                     player.removeMetadata(STEALTH_METADATA, Brawl.getInstance());
                     player.sendMessage(ChatColor.GREEN + "You've returned to your normal state.");
                     player.updateInventory();

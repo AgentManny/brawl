@@ -1,6 +1,7 @@
 package rip.thecraft.brawl.ability.abilities;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,7 +16,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@AbilityData(description = "Right click players with your fist to pick them up.")
+@AbilityData(
+        description = "Right click players with your fist to pick them up.",
+        icon = Material.CACTUS,
+        displayIcon = false
+)
 public class Toss extends Ability implements Listener {
 
     private Map<UUID, Long> times = new HashMap<>();

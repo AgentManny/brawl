@@ -3,7 +3,9 @@ package rip.thecraft.brawl.ability.abilities.legacy;
 import net.minecraft.server.v1_8_R3.EntityFishingHook;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.WorldServer;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.Entity;
@@ -16,7 +18,12 @@ import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 
-@AbilityData
+@AbilityData(
+        name = "Grappler",
+        color = ChatColor.GOLD,
+        icon = Material.LEASH,
+        displayIcon = false
+)
 public class Grappler extends Ability implements Listener {
 
     @AbilityProperty

@@ -1,5 +1,6 @@
 package rip.thecraft.brawl.ability.abilities;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.handlers.GroundHandler;
@@ -9,7 +10,10 @@ import rip.thecraft.brawl.ability.property.AbilityData;
 /**
  * Created by Flatfile on 10/31/2021.
  */
-@AbilityData
+@AbilityData(
+        name = "Double Jump",
+        icon = Material.IRON_BOOTS
+)
 public class DoubleJump extends Ability implements GroundHandler, ToggleFlightHandler {
 
     @Override

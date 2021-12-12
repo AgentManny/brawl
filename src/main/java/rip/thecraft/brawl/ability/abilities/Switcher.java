@@ -22,7 +22,11 @@ import rip.thecraft.brawl.util.ProjectileEffect;
 
 import java.util.concurrent.TimeUnit;
 
-@AbilityData(color = ChatColor.LIGHT_PURPLE)
+@AbilityData(
+        color = ChatColor.LIGHT_PURPLE,
+        icon = Material.SNOW_BALL,
+        displayIcon = false
+)
 public class Switcher extends Ability implements InteractItemHandler, ProjectileHandler, KillHandler {
 
     private static final String SWITCHER_META = "Switcher";

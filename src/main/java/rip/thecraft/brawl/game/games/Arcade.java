@@ -159,7 +159,7 @@ public class Arcade extends Game {
         chosenKit.getArmor().apply(player);
         player.getInventory().setContents(items);
 
-        chosenKit.getAbilities().stream().map(Ability::getIcon).filter(Objects::nonNull).forEach(player.getInventory()::addItem);
+        chosenKit.getAbilities().stream().map(Ability::getItem).filter(Objects::nonNull).forEach(player.getInventory()::addItem);
         chosenKit.getAbilities().forEach(ability -> ability.onApply(player));
         chosenKit.getPotionEffects().forEach(potionEffect -> player.addPotionEffect(potionEffect, true));
 

@@ -1,5 +1,6 @@
 package rip.thecraft.brawl.ability.abilities.skylands.chemist;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -8,7 +9,12 @@ import rip.thecraft.brawl.ability.handlers.KillHandler;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 
-@AbilityData
+@AbilityData(
+        color = ChatColor.DARK_PURPLE,
+        icon = Material.POTION,
+        data = (byte) 16428,
+        displayIcon = false
+)
 public class Chemist extends Ability implements KillHandler {
 
     @AbilityProperty(id = "limit", description = "Duration for maximum charge time")

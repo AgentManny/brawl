@@ -2,6 +2,7 @@ package rip.thecraft.brawl.ability.abilities.classic;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.FishHook;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,7 +15,11 @@ import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.util.SchedulerUtil;
 
-@AbilityData(color = ChatColor.BLUE)
+@AbilityData(
+        color = ChatColor.BLUE,
+        icon = Material.FISHING_ROD,
+        displayIcon = false
+)
 public class Fisherman extends Ability implements Listener {
 
     @EventHandler
