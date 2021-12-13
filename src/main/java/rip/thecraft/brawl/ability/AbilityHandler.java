@@ -68,6 +68,7 @@ public class AbilityHandler {
                 new BatBlaster(),
 
                 new TimeLock(),
+                new TimeWarp(),
 
                 new Stomper(),
                 new SilverfishSwarm(),
