@@ -46,6 +46,12 @@ public class StealthMode extends Ability implements Listener {
     @AbilityProperty(id = "strength-amplifier", description = "Strength potion amplifier")
     public int strengthAmplifier = 0;
 
+    @AbilityProperty(id = "res-duration", description = "Resistance Duration in ticks")
+    public int resDuration = 80;
+
+    @AbilityProperty(id = "res-amplifier", description = "Resistance potion amplifier")
+    public int resAmplifier = 1;
+
     @AbilityProperty(id = "show-effects", description = "Show potion effects")
     public boolean showEffects = false;
 
@@ -56,6 +62,7 @@ public class StealthMode extends Ability implements Listener {
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, duration, 0, showEffects, showEffects));
         player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, strengthDuration, strengthAmplifier, showEffects, showEffects));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, resDuration, resAmplifier, showEffects, showEffects));
 
         int heldItemSlot = player.getInventory().getHeldItemSlot();
         player.getInventory().setItem(heldItemSlot, null);
