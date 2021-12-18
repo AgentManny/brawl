@@ -74,7 +74,7 @@ public class GameHandler {
             }
             return false;
         }
-        this.lobby = new GameLobby(brawl, type);
+        this.lobby = hoster != null ? new GameLobby(brawl, type, hoster) : new GameLobby(brawl, type, null);
         FancyMessage messageParts = new FancyMessage(Game.PREFIX + ChatColor.WHITE + (hoster == null ? "Someone" : hoster.getDisplayName()) + ChatColor.YELLOW + " is hosting the " + ChatColor.DARK_PURPLE + type.getShortName() + ChatColor.YELLOW + " event for a prize of " + ChatColor.LIGHT_PURPLE + type.getCreditsReward() + " credits" + ChatColor.YELLOW + "." + ChatColor.GRAY + " (Click to join)")
                 .tooltip(Collections.singletonList(ChatColor.YELLOW + "Click to join " + ChatColor.DARK_PURPLE + type.getName() + ChatColor.YELLOW + ".")).command("/join");
         brawl.getServer().getOnlinePlayers().forEach(player -> {

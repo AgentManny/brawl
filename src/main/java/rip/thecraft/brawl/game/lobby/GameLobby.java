@@ -22,6 +22,7 @@ import rip.thecraft.brawl.item.type.InventoryType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.spectator.SpectatorMode;
+import rip.thecraft.brawl.util.EconUtil;
 import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.brawl.util.location.LocationType;
 import rip.thecraft.spartan.nametag.NametagHandler;
@@ -43,6 +44,8 @@ public class GameLobby {
 
     @Setter private int startTime = 45;
 
+    private Player host;
+
     private List<UUID> players = new CopyOnWriteArrayList<>();
 
     private List<GameTeam> teams = new CopyOnWriteArrayList<>();
@@ -52,9 +55,10 @@ public class GameLobby {
 
     private BukkitTask task;
 
-    public GameLobby(Brawl brawl, GameType gameType) {
+    public GameLobby(Brawl brawl, GameType gameType, Player host) {
         this.brawl = brawl;
         this.gameType = gameType;
+        this.host = host;
 
         this.voteMap.put("Random", new ArrayList<>());
         for (GameMap map : brawl.getGameHandler().getMapHandler().getMaps(gameType)) {
@@ -216,7 +220,7 @@ public class GameLobby {
         }
 
         game.setup();
-
+        if(gameType.getDescription() != null) game.broadcast(Game.PREFIX + gameType.getDescription());
     }
 
 
@@ -228,6 +232,14 @@ public class GameLobby {
             task = null;
         }
         brawl.getGameHandler().setLobby(null);
+
+        if(host != null){
+            boolean bypassRestrictions = host.hasPermission("brawl.game.bypass");
+            if(!bypassRestrictions){
+                EconUtil.deposit(brawl.getPlayerDataHandler().getPlayerData(host), Game.HOST_CREDITS);
+                host.sendMessage(ChatColor.YELLOW + "Your credits have been refunded because the event did not start.");
+            }
+        }
     }
 
     public void startTask() {

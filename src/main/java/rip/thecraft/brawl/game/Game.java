@@ -225,6 +225,7 @@ public abstract class Game {
         }
 
         broadcast(getEliminateMessage(player, elimination));
+        player.sendMessage(getEliminateMessage(player, elimination));
         return true;
     }
 

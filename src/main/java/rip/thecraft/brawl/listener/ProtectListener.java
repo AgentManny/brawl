@@ -18,6 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -235,6 +236,18 @@ public class ProtectListener implements Listener {
             if (game != null && game.getFlags().contains(GameFlag.CRAFTING) && game.containsPlayer(player) && game.getGamePlayer(player).isAlive()) return;
 
             recipe.getResult().setType(Material.AIR);
+        }
+    }
+
+    @EventHandler
+    public void onCraftFinish(CraftItemEvent event){
+        if(event.getWhoClicked() instanceof Player){
+            Player player = (Player) event.getWhoClicked();
+
+            Game game = plugin.getGameHandler().getActiveGame();
+            if(game != null && game.getFlags().contains(GameFlag.CRAFTING) && game.containsPlayer(player) && game.getGamePlayer(player).isAlive()) return;
+
+            event.setCancelled(true);
         }
     }
 
