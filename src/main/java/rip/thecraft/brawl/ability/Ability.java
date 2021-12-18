@@ -4,7 +4,9 @@ import lombok.Getter;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.Brawl;
@@ -220,6 +222,23 @@ public abstract class Ability {
 
     public void onCooldownExpire(Player player) {
 
+    }
+
+    public boolean isOnGround(Player player, int blocks) {
+        Location playerLoc = player.getLocation();
+        Location globeLoc = playerLoc.clone();
+        boolean groundCheck = player.isOnGround();
+        if (!groundCheck) {
+            for (int i = 0; i < blocks; i++) {
+                globeLoc.setY(globeLoc.getY() - 1);
+                Block block = globeLoc.getBlock();
+                if (block.getType() != Material.AIR) {
+                    groundCheck = true;
+                    break;
+                }
+            }
+        }
+        return groundCheck;
     }
 
     /**

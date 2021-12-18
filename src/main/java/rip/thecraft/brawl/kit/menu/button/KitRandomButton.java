@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.kit.menu.button;
 
-import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -13,14 +12,11 @@ import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
 import rip.thecraft.spartan.util.ItemBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
-@RequiredArgsConstructor
 public class KitRandomButton extends Button {
-
-    private final Kit kit;
 
     @Override
     public String getName(Player player) {
@@ -34,11 +30,15 @@ public class KitRandomButton extends Button {
 
     @Override
     public ItemStack getButtonItem(Player player) {
-        List<String> lore = ItemBuilder.wrap("Not sure what to pick? Click to choose a random kit that you have access to.", CC.GRAY, 30);
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + "Unsure what to play?");
         lore.add("");
-        lore.add(CC.GRAY + "\u00bb " + CC.LIGHT_PURPLE + "Click to use a random kit");
-        return new ItemBuilder(kit.getIcon())
-                .name(CC.LIGHT_PURPLE + ChatColor.BOLD + "Random kit").lore(lore).amount(1).create();
+        lore.add(ChatColor.GRAY + "Click to choose a random kit");
+        lore.add(ChatColor.GRAY + "that you have access to.");
+        lore.add("");
+        lore.add(CC.YELLOW + "Click to use a random kit");
+        return new ItemBuilder(Material.NETHER_STAR)
+                .name(CC.YELLOW + ChatColor.BOLD + "Random Kit").lore(lore).amount(1).create();
     }
 
     @Override

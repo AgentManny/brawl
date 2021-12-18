@@ -4,9 +4,7 @@ import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.menu.button.KitButton;
-import rip.thecraft.brawl.kit.menu.button.KitPassButton;
 import rip.thecraft.brawl.kit.menu.button.KitRandomButton;
-import rip.thecraft.brawl.kit.menu.button.KitUnlockButton;
 import rip.thecraft.spartan.menu.Button;
 import rip.thecraft.spartan.menu.Menu;
 
@@ -14,10 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class KitSelectorMenu extends Menu {
-    {
-        this.setPlaceholder(true);
-        setAutoUpdate(true);
-    }
 
     @Override
     public String getTitle(Player player) {
@@ -39,9 +33,7 @@ public class KitSelectorMenu extends Menu {
         }
 
         int size = size(buttonMap) + 9;
-        buttonMap.put(size - 7, new KitPassButton());
-        buttonMap.put(size - 5, new KitRandomButton(Brawl.getInstance().getKitHandler().getKits().get(Brawl.RANDOM.nextInt(Brawl.getInstance().getKitHandler().getKits().size()))));
-        buttonMap.put(size - 3, new KitUnlockButton());
+        buttonMap.put(size - 5, new KitRandomButton());
         return buttonMap;
     }
 

@@ -1,5 +1,9 @@
 package rip.thecraft.brawl.util.player;
 
+import com.comphenix.protocol.injector.BukkitUnwrapper;
+import com.comphenix.protocol.reflect.accessors.Accessors;
+import com.comphenix.protocol.reflect.accessors.ConstructorAccessor;
+import com.comphenix.protocol.utility.MinecraftReflection;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mongodb.lang.Nullable;
@@ -16,7 +20,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.util.ReflectionUtils;
 import rip.thecraft.brawl.util.player.datawatcher.type.PlayerDataWatcherHelper;
-import rip.thecraft.falcon.util.EntityUtils;
 import rip.thecraft.spartan.nametag.NametagHandler;
 
 import java.util.ArrayList;
@@ -57,10 +60,30 @@ public class FakePlayer {
      */
     protected List<UUID> viewers = new ArrayList<>();
 
+    private static Entity fakeEntity = null;
+    private static ConstructorAccessor eggConstructor = null;
+    private static Entity fakeEntity() {
+        if (fakeEntity != null) {
+            return fakeEntity;
+        }
+
+        // We can create a fake egg without it affecting anything
+        // Mojang added difficulty to lightning strikes, so this'll have to do
+        if (eggConstructor == null) {
+            eggConstructor = Accessors.getConstructorAccessor(
+                    MinecraftReflection.getMinecraftClass("world.entity.projectile.EntityEgg", "EntityEgg"),
+                    MinecraftReflection.getNmsWorldClass(), double.class, double.class, double.class
+            );
+        }
+
+        Object world = BukkitUnwrapper.getInstance().unwrapItem(Bukkit.getWorlds().get(0));
+        return fakeEntity = (Entity) eggConstructor.invoke(world, 0, 0, 0);
+    }
+
     public FakePlayer(Player player) {
         this.name = "Clone";
         this.id = UUID.randomUUID();
-        this.entityId = EntityUtils.getFakeEntityId();
+        this.entityId = fakeEntity().getId();
 
         this.skin = player.getSkin();
 
@@ -140,9 +163,10 @@ public class FakePlayer {
                 }
             }
         }
+        this.wasVisible = visible;
     }
 
-    public boolean wasInvisible = false;
+    public boolean wasVisible = true;
 
     public void tick(Player player) { // Debug
 //        setPlayerStatus(6, player.isSneaking());
@@ -184,10 +208,15 @@ public class FakePlayer {
                     playerInfo.b.add(playerInfo.constructData(profile, 0, WorldSettings.EnumGamemode.SURVIVAL, new ChatComponentText(name)));
                     sendPacket(player, playerInfo);
                 }
+                if (!wasVisible) {
+                    sendStatus(PlayerStatus.INVISIBLE, false);
+                    setVisibility(false);
+                }
                 sendPacket(player, new PacketPlayOutEntityDestroy(entityId));
                 NametagHandler.reloadPlayer(player);
             }
         }
+        viewers.clear();
         FakePlayerHandler.players.remove(this);
     }
 

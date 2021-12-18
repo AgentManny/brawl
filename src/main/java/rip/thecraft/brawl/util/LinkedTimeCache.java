@@ -1,5 +1,7 @@
 package rip.thecraft.brawl.util;
 
+import lombok.Getter;
+
 import java.lang.ref.SoftReference;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -11,6 +13,7 @@ public class LinkedTimeCache<K> {
     private static final long serialVersionUID = -4585400640420886743L;
 
     private final LinkedHashMap<Long, SoftReference<K>> map;
+    @Getter private SoftReference<K> lastValue;
 
     public LinkedTimeCache(final int cacheSize, final long expirationTime) {
         if (cacheSize < 1)
@@ -35,7 +38,11 @@ public class LinkedTimeCache<K> {
             @Override
             protected boolean removeEldestEntry(java.util.Map.Entry<Long, SoftReference<K>> eldest) {
                 validate(); // todo Add here? or Put
-                return size() > cacheSize;
+                boolean remove = size() > cacheSize;
+                if (!remove) {
+                    lastValue = eldest.getValue();
+                }
+                return remove;
             }
         };
     }

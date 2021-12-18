@@ -10,7 +10,7 @@ import rip.thecraft.brawl.duelarena.menu.LoadoutMenu;
 import rip.thecraft.brawl.game.lobby.GameLobby;
 import rip.thecraft.brawl.game.menu.GameSelectorMenu;
 import rip.thecraft.brawl.kit.Kit;
-import rip.thecraft.brawl.kit.menu.KitSelectorMenu;
+import rip.thecraft.brawl.kit.menu.KitMenu;
 import rip.thecraft.brawl.leaderboard.menu.LeaderboardEloMenu;
 import rip.thecraft.brawl.leaderboard.menu.LeaderboardMenu;
 import rip.thecraft.brawl.player.PlayerData;
@@ -23,7 +23,7 @@ import java.util.function.BiConsumer;
 public enum MetadataType {
 
     KIT_SELECTOR((player, data) -> {
-        new KitSelectorMenu().openMenu(player);
+        new KitMenu().open(player);
     }),
     PREVIOUS_KIT((player, playerData) -> {
         Kit kit = playerData.getPreviousKit() == null ? Brawl.getInstance().getKitHandler().getDefaultKit() : playerData.getPreviousKit();

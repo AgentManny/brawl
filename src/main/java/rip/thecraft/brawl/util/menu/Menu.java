@@ -15,7 +15,6 @@ public class Menu {
     private final UUID id = UUID.randomUUID();
 
     private final String name;
-    private final MenuRows size;
     private List<MenuOption> options;
 
     private Inventory inventory;
@@ -26,45 +25,35 @@ public class Menu {
     private long updateTicks = -1L;
     private BukkitTask bukkitTask;
 
-    public Menu(String name, MenuRows size, MenuOption... options) {
+    public Menu(String name, MenuOption... options) {
         this.name = name;
-        this.size = size;
         this.options = Arrays.asList(options);
-        inventory = this.createInventory();
     }
 
-    public void setUpdateTicks(long updateTicks) {
+    @Deprecated
+    public void setUpdateTicks(Player player, long updateTicks) {
         if (bukkitTask != null) {
             bukkitTask.cancel();
             bukkitTask = null;
         }
         if (this.updateTicks != updateTicks && updateTicks >= 1L) {
-            bukkitTask = Brawl.getInstance().getServer().getScheduler().runTaskTimer(Brawl.getInstance(), this::update, updateTicks, updateTicks);
+            bukkitTask = Brawl.getInstance().getServer().getScheduler().runTaskTimer(Brawl.getInstance(), () -> update(player), updateTicks, updateTicks);
             this.updateTicks = updateTicks;
         }
     }
 
-    public void update() {
+    public void update(Player player) {
         for (Map.Entry<Integer, MenuButton> entry : this.buttons.entrySet()) {
             final MenuButton button = entry.getValue();
             if (button.isDisplayingError()) {
                 continue;
             }
-            button.getUpdate().ifPresent(update -> this.inventory.setItem(entry.getKey(), update.update(button.getItem())));
+            button.getUpdate().ifPresent(update -> this.inventory.setItem(entry.getKey(), update.update(button.getItem(player))));
         }
     }
 
-    public void setButtons() {
-        Map<Integer, MenuButton> buttons = this.buttons;
-        for (Map.Entry<Integer, MenuButton> entry : buttons.entrySet()) {
-            MenuButton button = entry.getValue();
-            this.inventory.setItem(entry.getKey(), button.getItem());
-            button.getUpdate().ifPresent(update -> this.inventory.setItem(entry.getKey(), update.update(button.getItem())));
-        }
-    }
+    public void init(Player player, Map<Integer, MenuButton> buttons) {
 
-    public Map<Integer, MenuButton> addButtons(Map<Integer, MenuButton> buttons) {
-        return buttons;
     }
 
     public MenuButton addButton(int slot, MenuButton button) {
@@ -77,20 +66,33 @@ public class Menu {
     }
 
     public void open(Player player) {
-        setButtons();
+        init(player, buttons);
+        int size = size(buttons);
+        if (inventory == null || size != inventory.getSize()) {
+            inventory = Bukkit.createInventory(null, size(buttons), name);
+        }
+        Map<Integer, MenuButton> buttons = this.buttons;
+        for (Map.Entry<Integer, MenuButton> entry : buttons.entrySet()) {
+            MenuButton button = entry.getValue();
+            this.inventory.setItem(entry.getKey(), button.getItem(player));
+            button.getUpdate().ifPresent(update -> this.inventory.setItem(entry.getKey(), update.update(button.getItem(player))));
+        }
         player.openInventory(inventory);
         viewers.add(player.getUniqueId());
         if (updateTicks > -1L && bukkitTask == null) {
-            bukkitTask = Brawl.getInstance().getServer().getScheduler().runTaskTimer(Brawl.getInstance(), this::update, updateTicks, updateTicks);
+            bukkitTask = Brawl.getInstance().getServer().getScheduler().runTaskTimer(Brawl.getInstance(), () -> update(player), updateTicks, updateTicks);
             MenuHandler.LOGGER.info("Reactivated Bukkit task for menu " + this.id.toString() + " (removed due to inactivity)");
         }
         MenuHandler.setMenu(player, this);
     }
 
-    private Inventory createInventory() {
-        Inventory inventory = Bukkit.createInventory(null, size.getValue(), name);
-        setButtons();
-        return inventory;
+    public int size(Map<Integer, MenuButton> buttons) {
+        int highest = 0;
+        for (int buttonValue : buttons.keySet()) {
+            if (buttonValue <= highest) continue;
+            highest = buttonValue;
+        }
+        return (int) (Math.ceil((double) (highest + 1) / 9.0) * 9.0);
     }
 
     public void close(Player player) {

@@ -21,9 +21,7 @@ import rip.thecraft.spartan.util.ItemBuilder;
 
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class KitHandler {
@@ -33,6 +31,9 @@ public class KitHandler {
     protected static final File KIT_DIRECTORY;
 
     private final Brawl plugin;
+
+    @Getter
+    private Set<KitCollection> collections = new HashSet<>();
 
     @Getter
     private List<Kit> kits = new ArrayList<>();

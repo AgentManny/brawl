@@ -12,7 +12,6 @@ import rip.thecraft.brawl.kit.statistic.KitStatistic;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.menu.Menu;
 import rip.thecraft.brawl.util.menu.MenuButton;
-import rip.thecraft.brawl.util.menu.MenuRows;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.ItemBuilder;
 
@@ -21,16 +20,12 @@ import java.util.Map;
 
 public class KitPassMenu extends Menu {
 
-    private final Player player;
-
-    public KitPassMenu(Player player) {
-        super("Kit Passes", MenuRows.FIVE);
-        this.player = player;
-        addButtons(getButtons());
+    public KitPassMenu() {
+        super("Kit Passes");
     }
 
     @Override
-    public Map<Integer, MenuButton> addButtons(Map<Integer, MenuButton> buttons) {
+    public void init(Player player, Map<Integer, MenuButton> buttons) {
         int x = 1;
         int y = 1;
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
@@ -45,12 +40,11 @@ public class KitPassMenu extends Menu {
             }
         }
         addButton(4, 4,new MenuButton(Material.INK_SACK, 8, ChatColor.RED + "Go back", ChatColor.GRAY + "To Kit Selector")
-                .setClick((player, click) -> {
-                    player.closeInventory();
-                    Bukkit.getServer().getScheduler().runTaskLater(Brawl.getInstance(), () -> new KitSelectorMenu().openMenu(player), 4L);
+                .setClick((player2, click) -> {
+                    player2.closeInventory();
+                    Bukkit.getServer().getScheduler().runTaskLater(Brawl.getInstance(), () -> new KitSelectorMenu().openMenu(player2), 4L);
                 }));
 
-        return buttons;
     }
 
 
@@ -82,7 +76,7 @@ public class KitPassMenu extends Menu {
         }
 
         @Override
-        public ItemStack getItem() {
+        public ItemStack getItem(Player player) {
             PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
             List<String> lore = ItemBuilder.wrap(kit.getDescription(), CC.GRAY, 25, false);
             if (!kit.getDescription().isEmpty()) {

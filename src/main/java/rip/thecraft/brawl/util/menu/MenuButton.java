@@ -13,7 +13,6 @@ import rip.thecraft.spartan.util.ItemBuilder;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-@Getter
 @NoArgsConstructor
 @RequiredArgsConstructor
 public class MenuButton {
@@ -23,9 +22,9 @@ public class MenuButton {
     private ButtonClick click;
     @Setter private ButtonUpdate update;
 
-    @Setter private boolean displayingError = false;
+    @Getter @Setter private boolean displayingError = false;
 
-    public ItemStack getItem() {
+    public ItemStack getItem(Player player) {
         return item;
     }
 
@@ -66,7 +65,8 @@ public class MenuButton {
         Inventory inventory = data.getInventory();
         int slot = data.getSlot();
         ItemStack clone = inventory.getItem(slot).clone();
-        ItemStack errorItem = new ItemBuilder(Material.BARRIER).name(ChatColor.DARK_RED + ((title == null) ? "Error" : title)).description(message, ChatColor.GRAY.toString()).create();
+        ItemStack errorItem = new ItemBuilder(Material.BARRIER)
+                .name((title == null ? clone.getItemMeta().getDisplayName() : ChatColor.RED.toString() + ChatColor.BOLD + title)).description(message, ChatColor.GRAY.toString()).create();
         inventory.setItem(slot, errorItem);
         Brawl.getInstance().getServer().getScheduler().runTaskLater(Brawl.getInstance(), () -> {
             inventory.setItem(slot, clone);
@@ -86,13 +86,13 @@ public class MenuButton {
         @Setter private long delayTicks = 30L;
         @Setter private ItemStack item;
 
-        public void apply() {
+        public void apply(Player player) {
             this.button.setDisplayingError(true);
-            this.clickData.inventory.setItem(this.clickData.slot, this.getItem());
+            this.clickData.inventory.setItem(this.clickData.slot, getItem(player));
             Brawl.getInstance().getServer().getScheduler().runTaskLater(Brawl.getInstance(), this::revert, this.delayTicks);
         }
 
-        public ItemStack getItem() {
+        public ItemStack getItem(Player player) {
             return (this.item == null) ? new ItemBuilder(Material.BARRIER).name(ChatColor.DARK_RED + (this.title == null ? "Error" : this.title)).description(this.message, ChatColor.GRAY.toString()).create() : this.item;
         }
 

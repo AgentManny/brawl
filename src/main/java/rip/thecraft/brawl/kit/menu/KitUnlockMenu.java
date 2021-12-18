@@ -9,13 +9,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.kit.Kit;
-import rip.thecraft.brawl.kit.menu.KitSelectorMenu;
 import rip.thecraft.brawl.kit.statistic.KitStatistic;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.brawl.util.menu.Menu;
 import rip.thecraft.brawl.util.menu.MenuButton;
-import rip.thecraft.brawl.util.menu.MenuRows;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.ItemBuilder;
 
@@ -24,19 +22,15 @@ import java.util.Map;
 
 public class KitUnlockMenu extends Menu {
 
-    private final Player player;
-
     public KitUnlockMenu(Player player) {
-        super("Unlock Kits", MenuRows.FIVE);
-        this.player = player;
-        addButtons(getButtons());
+        super("Unlock Kits");
     }
 
     @Override
-    public Map<Integer, MenuButton> addButtons(Map<Integer, MenuButton> buttons) {
+    public void init(Player p, Map<Integer, MenuButton> buttons) {
         int x = 1;
         int y = 1;
-        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(p);
         for (Kit kit : Brawl.getInstance().getKitHandler().getKits()) {
             if (kit.isFree() || playerData.hasKit(kit)) continue;
 
@@ -56,7 +50,6 @@ public class KitUnlockMenu extends Menu {
         MenuButton button = playerData.getUnlockingKit() == null ? new MenuButton(Material.INK_SACK, 1, ChatColor.RED + "Not unlocking kit",
                 ChatColor.GRAY + "Choose a kit to start unlocking") : new KitUnlockButton(playerData.getUnlockingKit(), true);
         addButton(5, 4, button);
-        return buttons;
     }
 
 
@@ -90,7 +83,7 @@ public class KitUnlockMenu extends Menu {
         }
 
         @Override
-        public ItemStack getItem() {
+        public ItemStack getItem(Player player) {
             PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
             List<String> lore = ItemBuilder.wrap(kit.getDescription(), CC.GRAY, 25, false);
             if (!kit.getDescription().isEmpty()) {

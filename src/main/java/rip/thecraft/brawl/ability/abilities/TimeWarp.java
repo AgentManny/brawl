@@ -1,15 +1,19 @@
 package rip.thecraft.brawl.ability.abilities;
 
 import org.bukkit.*;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.property.AbilityData;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
+import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.util.LinkedTimeCache;
 import rip.thecraft.brawl.util.player.FakePlayer;
 import rip.thecraft.brawl.util.player.PlayerStatus;
@@ -23,10 +27,16 @@ import java.util.concurrent.TimeUnit;
         color = ChatColor.GOLD,
         icon = Material.WATCH
 )
-public class TimeWarp extends Ability {
+public class TimeWarp extends Ability implements Listener {
 
     @AbilityProperty(id = "expire-time", description = "Time before old locations expire")
     public long locExpiration = TimeUnit.SECONDS.toMillis(5);
+
+    @AbilityProperty(id = "slow-falling", description = "Should slow falling be enabled when teleporting")
+    public boolean slowFalling = true;
+
+    @AbilityProperty(id = "power", description = "Power of slow falling")
+    public double power = 0.05;
 
     private Map<UUID, TimeData> locations = new HashMap<>();
 
@@ -45,7 +55,7 @@ public class TimeWarp extends Ability {
     }
 
     @Override
-    public void onDeactivate(Player player) {
+    public void onRemove(Player player) {
         if (hasActivated(player)) {
             TimeData timeData = locations.get(player.getUniqueId());
             timeData.cancel();
@@ -56,7 +66,6 @@ public class TimeWarp extends Ability {
     @Override
     public void onActivate(Player player) {
         if (hasCooldown(player, true)) return;
-        addCooldown(player);
 
         if (hasActivated(player)) {
             TimeData timeData = locations.get(player.getUniqueId());
@@ -70,28 +79,30 @@ public class TimeWarp extends Ability {
                 player.sendMessage(ChatColor.RED + "You are already teleporting...");
                 return;
             }
-            player.playSound(player.getLocation(), Sound.PORTAL_TRIGGER, 1.75F, 1);
-            timeData.teleporting = true;
-            timeData.teleportLocations = locations.iterator();
-            timeData.fakePlayer.sendTo(player); // TODO send visual to nearby players too
-            timeData.fakePlayer.sendStatus(PlayerStatus.INVISIBLE, true);
-            timeData.fakePlayer.setVisibility(true);
 
-            if (!player.isOnGround()) {
-                player.sendMessage(ChatColor.RED + "Mounting you to invisible entity :D");
-                Location location = player.getLocation();
-                ArmorStand entity = (ArmorStand) location.getWorld().spawnEntity(location, EntityType.ARMOR_STAND);
-                entity.setGravity(false);
-                entity.setCanMove(false);
-                entity.setArms(false);
-                entity.setSmall(true);
-                entity.setVisible(false);
-                entity.setPassenger(player);
-                timeData.vehicle = entity;
-            }
+            addCooldown(player);
+            player.playSound(player.getLocation(), Sound.PORTAL_TRIGGER, 1.75f, 1);
+            timeData.teleporting = true;
+            timeData.onGround = slowFalling && isOnGround(player, 5);
+            timeData.teleportLocations = locations.iterator();
+
+            FakePlayer fakePlayer = timeData.fakePlayer;
+            //fakePlayer.remove();
+
+            fakePlayer.sendTo(player); // TODO send visual to nearby players too
+            fakePlayer.sendStatus(PlayerStatus.INVISIBLE, true);
+            fakePlayer.setVisibility(true);
 
             player.sendMessage(ChatColor.YELLOW + "Teleporting...");
+        }
+    }
 
+    @EventHandler
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        Player player = event.getPlayer();
+        if (hasActivated(player)) {
+            TimeData timeData = locations.get(player.getUniqueId());
+            timeData.clear();
         }
     }
 
@@ -105,6 +116,7 @@ public class TimeWarp extends Ability {
         private boolean teleporting = false;
         private Iterator<Location> teleportLocations;
 
+        private boolean onGround = false;
         private Entity vehicle;
         private Location lastLocation;
 
@@ -117,7 +129,9 @@ public class TimeWarp extends Ability {
         public void clear() {
             teleporting = false;
             teleportLocations = null;
+            onGround = false;
             locations.clear();
+            fakePlayer.remove();
         }
 
         @Override
@@ -131,22 +145,42 @@ public class TimeWarp extends Ability {
                 Location location = teleportLocations.next();
                 fakePlayer.teleport(location);
 
+                if (!onGround) {
+                    if (!player.isFlying()) {
+                        if (!player.getAllowFlight()) {
+                            player.setAllowFlight(true);
+                        }
+                        player.setFlying(true);
+                    } else {
+                        player.setVelocity(new Vector(0, power, 0));
+                    }
+                }
+
                 if (!teleportLocations.hasNext()) {
                     clear();
-                    fakePlayer.remove();
                     if (vehicle != null) {
                         player.eject();
                         vehicle.remove();
                         vehicle = null;
                     }
+                    if (!onGround) {
+                        player.setFlying(false);
+                        player.setAllowFlight(false);
+                    }
+                    player.setFallDistance(0);
                     player.teleport(location);
-                    location.getWorld().playSound(location, Sound.ENDERMAN_TELEPORT, 1, 1.2F);
-                    location.getWorld().playEffect(location, Effect.ENDER_SIGNAL, 1);
-
-                    player.sendMessage(ChatColor.GREEN + "Teleported to your last location.");
+                    World world = location.getWorld();
+                    world.playSound(location, Sound.ENDERMAN_TELEPORT, 1, 1.2F);
+                    world.playEffect(location, Effect.ENDER_SIGNAL, 1);
+                    player.sendMessage(ChatColor.GREEN + "Warped to your last location.");
                 }
             } else {
                 Location location = player.getLocation();
+                PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+                if (playerData.isSpawnProtection() || playerData.isNoFallDamage() || playerData.isDuelArena() || RegionType.SAFEZONE.appliesTo(location)) {
+                    return;
+                }
+
                 if (lastLocation != null) {
                     boolean hasMoved = lastLocation.getBlockX() != location.getBlockX() || lastLocation.getBlockZ() != location.getBlockZ() || lastLocation.getBlockY() != location.getBlockY();
                     if (!hasMoved) { // Reduce amount of teleportation packets, this also speeds up movement
@@ -162,6 +196,8 @@ public class TimeWarp extends Ability {
         @Override
         public synchronized void cancel() throws IllegalStateException {
             super.cancel();
+            TimeWarp.this.locations.remove(player.getUniqueId());
+            fakePlayer.remove();
         }
 
         public List<Location> getLocations() {

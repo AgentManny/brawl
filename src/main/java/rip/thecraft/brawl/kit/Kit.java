@@ -45,6 +45,8 @@ public class Kit implements Listener, Comparable<Kit> {
 
     private double price = 0;
 
+    private long globalAccess = -1L; // System.currentTimeMillis + TimeUnit.DAYS.toMillis(1) to allow free kits
+
     private RankType rankType = RankType.NONE;
 
     private Armor armor = new Armor();
@@ -92,6 +94,10 @@ public class Kit implements Listener, Comparable<Kit> {
 
         this.armor = new Armor(jsonObject.get("armor").getAsJsonObject());
         this.items = new Items(jsonObject.get("items").getAsJsonArray());
+    }
+
+    public boolean isFreeAccess() {
+        return System.currentTimeMillis() < globalAccess;
     }
 
     public boolean isFree() {
