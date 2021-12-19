@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.ability.handlers.ScoreboardHandler;
+import rip.thecraft.brawl.event.Event;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.levels.Level;
 import rip.thecraft.brawl.player.PlayerData;
@@ -39,8 +40,9 @@ public class SpawnScoreboardProvider implements ScoreboardProvider {
             }
             lines.add(ChatColor.BLACK + " ");
         }
-        if (plugin.getEventHandler().getActiveKOTH() != null) {
-            lines.addAll(plugin.getEventHandler().getActiveKOTH().getScoreboard(player));
+        Event activeEvent = plugin.getEventHandler().getActiveEvent();
+        if (activeEvent != null) {
+            activeEvent.getScoreboard(player, lines);
         }
         if (playerData.hasCombatLogged()) {
             lines.add(ChatColor.WHITE + "Combat: " + ChatColor.RED + TimeUnit.MILLISECONDS.toSeconds(playerData.getCombatTaggedTil() - System.currentTimeMillis()) + "s");

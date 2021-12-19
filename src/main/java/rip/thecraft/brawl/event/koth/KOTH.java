@@ -1,6 +1,5 @@
 package rip.thecraft.brawl.event.koth;
 
-import com.mongodb.BasicDBObject;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.Document;
@@ -14,7 +13,6 @@ import rip.thecraft.brawl.event.Event;
 import rip.thecraft.brawl.event.EventType;
 import rip.thecraft.brawl.levels.ExperienceType;
 import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.team.Team;
 import rip.thecraft.brawl.util.EconUtil;
 import rip.thecraft.brawl.util.cuboid.Cuboid;
@@ -26,10 +24,10 @@ import rip.thecraft.spartan.util.TimeUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 @Getter
 @Setter
+@Deprecated
 public class KOTH extends Event {
 
     public static final String PREFIX = CC.DARK_PURPLE + "[ControlPoint] " + CC.WHITE;
@@ -75,7 +73,7 @@ public class KOTH extends Event {
                 }
             }
         }.runTaskTimer(Brawl.getInstance(), 20L, 20L);
-        Brawl.getInstance().getEventHandler().setActiveKOTH(this);
+        Brawl.getInstance().getEventHandler().setActiveEvent(this);
     }
 
     @Override
@@ -105,7 +103,7 @@ public class KOTH extends Event {
             task.cancel();
         }
 
-        Brawl.getInstance().getEventHandler().setActiveKOTH(null);
+        Brawl.getInstance().getEventHandler().setActiveEvent(null);
     }
 
     @Override
@@ -180,13 +178,12 @@ public class KOTH extends Event {
     }
 
     @Override
-    public BasicDBObject serialize() {
-        return new BasicDBObject("name", this.name)
+    public Document serialize() {
+        return new Document("name", this.name)
                 .append("capture-zone", captureZone == null ? null : captureZone.toDocument());
     }
 
-    @Override
-    public void deserialize(BasicDBObject object) {
+    public void deserialize(Document object) {
         if (object.get("capture-zone") != null) {
             this.captureZone = new Cuboid(Document.parse(object.get("capture-zone").toString()));
         }

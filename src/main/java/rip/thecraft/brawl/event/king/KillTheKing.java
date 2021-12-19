@@ -1,16 +1,15 @@
 package rip.thecraft.brawl.event.king;
 
-import com.mongodb.BasicDBObject;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.event.Event;
 import rip.thecraft.brawl.event.EventType;
 import rip.thecraft.brawl.event.king.runnables.WaitingCountdownRunnable;
 import rip.thecraft.brawl.game.GameState;
-import rip.thecraft.brawl.util.LocationSerializer;
 import rip.thecraft.brawl.util.MathUtil;
 
 import java.util.ArrayList;
@@ -23,7 +22,7 @@ public class KillTheKing extends Event {
 
     private final Brawl plugin = Brawl.getInstance();
     private final String name;
-    private Location location;
+    @AbilityProperty public Location location;
     private GameState state = GameState.GRACE_PERIOD;
     private List<UUID> players = new ArrayList<>();
     private UUID kingUUID;
@@ -94,18 +93,5 @@ public class KillTheKing extends Event {
                 onlinePlayers.remove(i);
         }
         players = onlinePlayers;
-    }
-
-    @Override
-    public BasicDBObject serialize() {
-        return new BasicDBObject("name", this.name)
-                .append("location", location == null ? null : LocationSerializer.serialize(location));
-    }
-
-    @Override
-    public void deserialize(BasicDBObject object) {
-        if (object.get("location") != null) {
-            this.location = LocationSerializer.deserialize((BasicDBObject) object.get("location"));
-        }
     }
 }

@@ -1,47 +1,45 @@
 package rip.thecraft.brawl.event;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
 import com.mongodb.lang.Nullable;
+import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.io.FileUtils;
+import org.bson.Document;
+import org.bson.json.JsonMode;
+import org.bson.json.JsonWriterSettings;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.event.king.KillTheKing;
-import rip.thecraft.brawl.event.koth.KOTH;
-import rip.thecraft.spartan.Spartan;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Getter
 public class EventHandler {
 
-    private static long EVENT_COOLDOWN_TIME = TimeUnit.MINUTES.toMillis(10);
+    public static long EVENT_COOLDOWN_TIME = TimeUnit.MINUTES.toMillis(10);
     private long eventCooldown = -1;
 
-    private final List<Event> events = new ArrayList<>();
-    @Nullable private Event activeEvent;
-
-    private final Map<String, KOTH> KOTHS = new HashMap<>();
-    private final Map<String, KillTheKing> KINGS = new HashMap<>();
-
-    private KillTheKing currentKingGame = null;
-
-    @Setter
-    private KOTH activeKOTH;
+    private final Multimap<EventType, Event> events = ArrayListMultimap.create();
+    @Nullable @Setter private Event activeEvent;
 
     public EventHandler() {
-        this.load();
+        try {
+            this.load();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void start(Event event, Player hoster) {
@@ -62,6 +60,7 @@ public class EventHandler {
         }
 
         event.broadcast(false, event.getBroadcastMessage(hoster));
+        event.setup();
         event.setActiveTask(new BukkitRunnable() {
             @Override
             public void run() {
@@ -72,94 +71,95 @@ public class EventHandler {
                     event.tick();
                 }
             }
-        }.runTaskTimer(Brawl.getInstance(), 20L, 20L));
+        }.runTaskTimer(Brawl.getInstance(), 20L, event.getUpdateInterval()));
         event.start();
         activeEvent = event;
      }
 
-    public void load() {
-        try {
-            File file = getFile();
-            String payload = FileUtils.readFileToString(file);
+     public Event getEvent(EventType type, String name) {
+         Collection<Event> events = this.events.get(type);
+         if (events == null || events.isEmpty()) return null;
 
-            if (!payload.isEmpty()) {
-                BasicDBObject data = BasicDBObject.parse(payload);
+         for (Event event : events) {
+             if (event.name.equalsIgnoreCase(name)) {
+                 return event;
+             }
+         }
+         return null;
+     }
 
-                BasicDBList kings = (BasicDBList) data.get("kings");
-                if (kings != null) {
-                    for (Object object : kings) {
-                        BasicDBObject dbo = (BasicDBObject) object;
-                        KillTheKing king = this.createKING(dbo.getString("name"));
-                        king.deserialize(dbo);
-                    }
-                }
+    /**
+     * Loads events from disk
+     */
+    public void load() throws Exception {
+        File file = getFile();
+        @Cleanup FileReader reader = new FileReader(file);
+        JsonElement element = new JsonParser().parse(reader);
+        if (element != null && element.isJsonObject()) {
+            String json = element.toString();
+            Document document = Document.parse(json);
 
-                BasicDBList koths = (BasicDBList) data.get("koths");
-                if (koths != null) {
-                    for (Object object : koths) {
-                        BasicDBObject dbo = (BasicDBObject) object;
-                        KOTH koth = this.createKOTH(dbo.getString("name"));
-                        koth.deserialize(dbo);
+            for (EventType type : EventType.values()) {
+                if (document.containsKey(type.name())) {
+                    List<Document> events = document.getList(type.name(), Document.class);
+                    if (events != null) {
+                        for (Document eventDoc : events) {
+                            Class<? extends Event> eventClazz = type.getRegistry();
+                            Event event = eventClazz.getConstructor(String.class).newInstance(eventDoc.getString("name"));
+                            if (document.containsKey("properties")) {
+                                Document properties = document.get("properties", Document.class);
+                                if (!properties.isEmpty()) {
+                                    event.deserializeProperties(properties);
+                                }
+                            }
+                            this.events.put(type, event);
+                        }
                     }
                 }
             }
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
+        save();
     }
 
+    private Document serialize() {
+        Document eventData = new Document();
+        for (EventType type : EventType.values()) {
+            List<Document> events = new ArrayList<>();
+            if (this.events.containsKey(type)) {
+                for (Event event : this.events.get(type)) {
+                    events.add(event.serialize());
+                }
+            }
+            eventData.put(type.name(), events);
+        }
+        return eventData;
+    }
+
+    /**
+     * Saves events to disk
+     */
     public void save() {
-        try {
-            File file = getFile();
-
-            BasicDBList koths = new BasicDBList();
-            KOTHS.values().forEach(k -> koths.add(k.serialize()));
-
-            BasicDBList kings = new BasicDBList();
-            KINGS.values().forEach(k -> kings.add(k.serialize()));
-
-            FileUtils.write(file, Spartan.GSON.toJson(new JsonParser().parse(new BasicDBObject("koths", koths)
-                    .append("kings", kings).toString())));
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        Document events = serialize();
+        File file = getFile();
+        try (FileWriter writer = new FileWriter(file)) {
+            String json = events.toJson(JsonWriterSettings.builder()
+                    .indent(true)
+                    .outputMode(JsonMode.SHELL)
+                    .build());
+            writer.write(json);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    public KOTH createKOTH(String name) {
-        KOTH koth = new KOTH(name);
-        KOTHS.put(name, koth);
-        return koth;
-    }
-
-    public KillTheKing createKING(String name) {
-        KillTheKing killTheKing = new KillTheKing(name);
-        KINGS.put(name, killTheKing);
-        return killTheKing;
-    }
-
-    public KOTH getKOTHByName(String name) {
-        for (KOTH koth : KOTHS.values()) {
-            if (koth.getName().equalsIgnoreCase(name)) {
-                return koth;
-            }
-        }
-        return KOTHS.get(name);
-    }
-
-    public KillTheKing getKINGbyName(String name) {
-        for (KillTheKing king : KINGS.values()) {
-            if (king.getName().equalsIgnoreCase(name)) {
-                return king;
-            }
-        }
-        return KINGS.get(name);
-    }
-
-    private File getFile() throws IOException {
+    private File getFile() {
         File file = new File(Brawl.getInstance().getDataFolder() + File.separator + "events.json");
         if (!file.exists()) {
-            file.createNewFile();
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return file;
     }

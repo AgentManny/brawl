@@ -1,14 +1,13 @@
 package rip.thecraft.brawl.event.events;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.lang.Nullable;
 import lombok.NonNull;
 import lombok.Setter;
-import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.event.Event;
 import rip.thecraft.brawl.event.EventType;
 import rip.thecraft.brawl.team.Team;
@@ -26,7 +25,7 @@ public class KingOfTheHill extends Event {
     @NonNull @Setter private int defaultCaptureTime = (int) TimeUnit.MINUTES.toSeconds(3);
 
     /** Returns the region of the capture zone */
-    @Setter private Cuboid captureZone;
+    @Setter @AbilityProperty(id = "capture-zone") public Cuboid captureZone;
 
     /** Returns the current capture time (if active) */
     private transient int captureTime;
@@ -83,19 +82,6 @@ public class KingOfTheHill extends Event {
     @Override
     public boolean isSetup() {
         return captureZone != null;
-    }
-
-    @Override
-    public BasicDBObject serialize() {
-        return new BasicDBObject("name", this.name)
-                .append("capture-zone", captureZone == null ? null : captureZone.toDocument());
-    }
-
-    @Override
-    public void deserialize(BasicDBObject object) {
-        if (object.get("capture-zone") != null) {
-            this.captureZone = new Cuboid(Document.parse(object.get("capture-zone").toString()));
-        }
     }
 
     private void sendMessage() {

@@ -5,6 +5,7 @@ import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Wolf;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.ability.Ability;
@@ -24,8 +26,8 @@ import rip.thecraft.brawl.command.adapters.*;
 import rip.thecraft.brawl.duelarena.DuelArenaHandler;
 import rip.thecraft.brawl.duelarena.arena.Arena;
 import rip.thecraft.brawl.event.EventHandler;
-import rip.thecraft.brawl.event.koth.KOTH;
-import rip.thecraft.brawl.event.koth.command.adapter.KOTHCommandAdapter;
+import rip.thecraft.brawl.event.EventType;
+import rip.thecraft.brawl.event.command.adapters.EventTypeCommandAdapter;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameHandler;
 import rip.thecraft.brawl.game.GameType;
@@ -78,6 +80,8 @@ public class Brawl extends JavaPlugin {
 
     private MongoDatabase mongoDatabase;
 
+    private WorldEditPlugin worldEdit;
+
     private PlayerDataHandler playerDataHandler;
     private AbilityHandler abilityHandler;
     private KitHandler kitHandler;
@@ -117,6 +121,9 @@ public class Brawl extends JavaPlugin {
 
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
+
+        Plugin wep = getServer().getPluginManager().getPlugin("WorldEdit");
+        worldEdit = wep instanceof WorldEditPlugin && wep.isEnabled() ? (WorldEditPlugin) wep : null;
 
         loadDatabase();
 
@@ -180,7 +187,8 @@ public class Brawl extends JavaPlugin {
         MCommandHandler.registerParameterType(Arena.class, new ArenaCommandAdapter());
         MCommandHandler.registerParameterType(Kit.class, new KitCommandAdapter());
         MCommandHandler.registerParameterType(PlayerData.class, new PlayerDataTypeAdapter(this));
-        MCommandHandler.registerParameterType(KOTH.class, new KOTHCommandAdapter());
+//        MCommandHandler.registerParameterType(KOTH.class, new KOTHCommandAdapter());
+        MCommandHandler.registerParameterType(EventType.class, new EventTypeCommandAdapter());
         MCommandHandler.registerParameterType(GameType.class, new GameCommandAdapter());
         MCommandHandler.registerParameterType(Team.class, new TeamTypeAdapter());
         MCommandHandler.registerParameterType(Warp.class, new WarpTypeAdapter());
@@ -205,6 +213,7 @@ public class Brawl extends JavaPlugin {
         // Event commands
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.event.koth.command");
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.event.command");
+        MCommandHandler.registerPackage(this, "rip.thecraft.brawl.event.command.manage");
 
         // Team commands
         // MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.team.command");

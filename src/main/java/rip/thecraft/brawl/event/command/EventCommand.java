@@ -2,6 +2,8 @@ package rip.thecraft.brawl.event.command;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import rip.thecraft.brawl.event.menu.EventsMenu;
 import rip.thecraft.spartan.command.Command;
 
 public class EventCommand {
@@ -32,4 +34,8 @@ public class EventCommand {
         sender.sendMessage(" ");
     }
 
+    @Command(names = { "event list", "events list" }, permission = "op")
+    public static void eventList(Player sender) {
+        new EventsMenu().open(sender);
+    }
 }

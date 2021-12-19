@@ -50,12 +50,12 @@ public class MenuHandler implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         Player player = event.getActor();
         int slot = event.getSlot();
-        if (event.getRawSlot() >= event.getInventory().getSize()) {
-            event.setResult(Event.Result.DENY);
-            event.setCancelled(true);
-            return;
-        }
         getMenu(player).ifPresent(menu -> {
+            if (event.getRawSlot() >= event.getInventory().getSize()) {
+                event.setResult(Event.Result.DENY);
+                event.setCancelled(true);
+                return;
+            }
             if (menu.getButtons().containsKey(slot)) {
                 menu.getButtons().get(event.getSlot()).getClick().ifPresent(click ->
                         click.click(player, new MenuButton.ClickData(event.getClickedInventory(), event.getCurrentItem(), event.getClick(), slot))
