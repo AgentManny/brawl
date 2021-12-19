@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import rip.thecraft.brawl.challenges.rewards.RewardType;
 import rip.thecraft.brawl.event.events.KingOfTheHill;
+import rip.thecraft.brawl.event.events.KitFrenzy;
 import rip.thecraft.brawl.event.king.KillTheKing;
 import rip.thecraft.brawl.event.schematic.SchematicEvent;
 
@@ -94,7 +95,7 @@ public enum EventType {
     ),
 
     KIT_FRENZY(
-            null,
+            KitFrenzy.class,
             Material.EMERALD,
             "Kit Frenzy", "Frenzy",
             "Players leaving spawn will spawn with a completely random kit.",
@@ -156,7 +157,7 @@ public enum EventType {
     private Map<RewardType, Integer> rewards;
 
     public String getPrefix() {
-        return color + "[" + shortName + "] " + ChatColor.WHITE;
+        return color.toString() + ChatColor.BOLD + shortName + " " + ChatColor.GRAY;
     }
 
     public static EventType getByName(String source) {

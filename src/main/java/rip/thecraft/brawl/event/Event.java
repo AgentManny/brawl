@@ -12,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
+import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.ability.property.codec.Codec;
 import rip.thecraft.brawl.ability.property.codec.Codecs;
@@ -19,6 +20,7 @@ import rip.thecraft.brawl.util.LocationSerializer;
 import rip.thecraft.brawl.util.cuboid.Cuboid;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +64,7 @@ public abstract class Event {
     }
 
     public void getScoreboard(Player player, List<String> entries) {
+        entries.add(" - " + getDisplayName() + ChatColor.RESET + " - ");
     }
 
     public void end() {
@@ -74,6 +77,19 @@ public abstract class Event {
                 type.getRewards().forEach((reward, value) -> reward.addRewards(winner, value));
             }
         }
+
+        // Remove any values we don't want stored in memory anymore
+        for (Field field : getClass().getFields()) {
+            if (Modifier.isTransient(field.getModifiers())) {
+                try {
+                    field.set(this, null);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        Brawl.getInstance().getEventHandler().setActiveEvent(null);
     }
 
     public long getUpdateInterval() {
@@ -86,10 +102,14 @@ public abstract class Event {
     public abstract boolean isSetup();
 
     public String[] getBroadcastMessage(@Nullable Player hoster) {
+        Location location = getLocation();
         return new String[] {
                 "",
-                type.getColor().toString() + ChatColor.BOLD + name.toUpperCase(),
+                type.getColor().toString() + ChatColor.BOLD + type.getDisplayName(),
                 ChatColor.GRAY + type.getDescription(),
+                " ",
+                ChatColor.WHITE + "Event: " + ChatColor.LIGHT_PURPLE + name,
+                location == null ? "" : ChatColor.WHITE + "Location: " + ChatColor.LIGHT_PURPLE + "(" + location.toVector().toString() + ")",
                 ""
         };
     }
@@ -136,6 +156,7 @@ public abstract class Event {
     }
 
     protected void deserializeProperties(Document properties) {
+        Brawl.getInstance().getServer().getLogger().info(properties.toJson());
         for (Field field : getClass().getFields()) {
             try {
                 AbilityProperty property = field.getAnnotation(AbilityProperty.class);
@@ -148,6 +169,7 @@ public abstract class Event {
                                 type.isAssignableFrom(Location.class) ? LocationSerializer.deserialize(properties.get(id, BasicDBObject.class)) :
                                 type.isAssignableFrom(Cuboid.class) ? new Cuboid(properties.get(id, Document.class)) :
                                         codec != null ? codec.decode(id) : properties.get(id);
+                        Brawl.getInstance().getServer().getLogger().info("Log: " + value.toString());
                         field.set(this, value);
                     }
                 }

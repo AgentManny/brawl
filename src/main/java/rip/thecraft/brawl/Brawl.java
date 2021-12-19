@@ -243,7 +243,7 @@ public class Brawl extends JavaPlugin {
         this.upgradeManager = new UpgradeManager(this);
 
         this.marketHandler = new MarketHandler();
-        this.eventHandler = new EventHandler();
+        this.eventHandler = new EventHandler(this);
         this.gameHandler = new GameHandler(this);
         this.teamHandler = new TeamHandler();
         this.warpManager = new WarpManager();
@@ -292,8 +292,8 @@ public class Brawl extends JavaPlugin {
             double x = configurationSection.getDouble(key + ".x");
             double y = configurationSection.getDouble(key + ".y");
             double z = configurationSection.getDouble(key + ".z");
-            float yaw = configurationSection.getFloat(key + ".yaw");
-            float pitch = configurationSection.getFloat(key + ".pitch");
+            float yaw = (float) configurationSection.getDouble(key + ".yaw");
+            float pitch = (float) configurationSection.getDouble(key + ".pitch");
             this.locationMap.put(key, new Location(world, x, y, z, yaw, pitch));
         }
     }

@@ -31,10 +31,13 @@ public class EventHandler {
     public static long EVENT_COOLDOWN_TIME = TimeUnit.MINUTES.toMillis(10);
     private long eventCooldown = -1;
 
+    private final Brawl plugin;
+
     private final Multimap<EventType, Event> events = ArrayListMultimap.create();
     @Nullable @Setter private Event activeEvent;
 
-    public EventHandler() {
+    public EventHandler(Brawl plugin) {
+        this.plugin = plugin;
         try {
             this.load();
         } catch (Exception e) {
@@ -92,6 +95,7 @@ public class EventHandler {
      * Loads events from disk
      */
     public void load() throws Exception {
+        plugin.getLogger().info("[Event Handler] Loading events...");
         File file = getFile();
         @Cleanup FileReader reader = new FileReader(file);
         JsonElement element = new JsonParser().parse(reader);
@@ -106,8 +110,8 @@ public class EventHandler {
                         for (Document eventDoc : events) {
                             Class<? extends Event> eventClazz = type.getRegistry();
                             Event event = eventClazz.getConstructor(String.class).newInstance(eventDoc.getString("name"));
-                            if (document.containsKey("properties")) {
-                                Document properties = document.get("properties", Document.class);
+                            if (eventDoc.containsKey("properties")) {
+                                Document properties = eventDoc.get("properties", Document.class);
                                 if (!properties.isEmpty()) {
                                     event.deserializeProperties(properties);
                                 }
@@ -118,6 +122,7 @@ public class EventHandler {
                 }
             }
         }
+        plugin.getLogger().info("[Event Handler] Loaded " + events.size() + " events...");
         save();
     }
 
@@ -156,9 +161,10 @@ public class EventHandler {
         File file = new File(Brawl.getInstance().getDataFolder() + File.separator + "events.json");
         if (!file.exists()) {
             try {
+                plugin.getLogger().info("[Event Handler] Creating events.json file...");
                 file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
+
+            } catch (IOException ignored) {
             }
         }
         return file;

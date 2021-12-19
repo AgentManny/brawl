@@ -1,9 +1,13 @@
 package rip.thecraft.brawl.event.type;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.event.Event;
 import rip.thecraft.brawl.event.EventType;
+import rip.thecraft.brawl.util.DurationFormatter;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public abstract class TimeEvent extends Event {
@@ -24,13 +28,20 @@ public abstract class TimeEvent extends Event {
 
     @Override
     public long getUpdateInterval() {
-        return 200L;
+        return 20L;
+    }
+
+    @Override
+    public void getScoreboard(Player player, List<String> entries) {
+        super.getScoreboard(player, entries);
+        entries.add("Time left: " + ChatColor.YELLOW + DurationFormatter.getRemaining(Math.max(0, expiring - System.currentTimeMillis())));
     }
 
     @Override
     public void tick() {
         if (expiring <= System.currentTimeMillis()) {
             finish(null);
+            end();
             broadcast("Event is over.");
         }
     }

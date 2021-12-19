@@ -41,6 +41,12 @@ public class EventsMenu extends Menu {
                     button.createError(clickData, "No maps exist", "This event doesn't have any maps created for it. Please contact a server administrator.", 30L);
                     return;
                 }
+
+                if (events.size() == 1) { // Don't show available maps menu if there is only one map
+                    eventHandler.start(events.stream().findFirst().get(), clicker);
+                    return;
+                }
+
                 new EventMenu(type).open(clicker);
             });
             buttons.put(getSlot(x, y), button);

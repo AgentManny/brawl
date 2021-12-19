@@ -35,7 +35,11 @@ public class EventMenu extends Menu {
         int y = 1;
         Collection<Event> events = eventHandler.getEvents().get(eventType);
         for (Event event : events) {
-            MenuButton button = new MenuButton(getItem(event));
+            MenuButton button = new MenuButton(getItem(event))
+                    .setClick((clicker, clickData) -> {
+                        // TODO check if they got access again
+                        eventHandler.start(event, clicker);
+                    });
             buttons.put(getSlot(x, y), button);
             if (x++ >= 7) {
                 x = 1;

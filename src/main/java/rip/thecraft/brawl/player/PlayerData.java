@@ -456,11 +456,11 @@ public class PlayerData {
             return true;
         }
 
-        if (this.kitRentals.containsKey(kit.getName()) && this.kitRentals.get(kit.getName()) < System.currentTimeMillis()) {
+        if (!this.kitRentals.isEmpty() && this.kitRentals.containsKey(kit.getName()) && this.kitRentals.get(kit.getName()) < System.currentTimeMillis()) {
             this.kitRentals.remove(kit.getName());
         }
 
-        if ((kitRentals.containsKey(kit.getName()) && kitRentals.get(kit.getName()) > System.currentTimeMillis()) || this.getPlayer().isOp() || this.getPlayer().hasPermission("kit." + kit.getName().toLowerCase())) {
+        if ((!kitRentals.isEmpty() && kitRentals.containsKey(kit.getName()) && kitRentals.get(kit.getName()) > System.currentTimeMillis()) || this.getPlayer().isOp() || this.getPlayer().hasPermission("kit." + kit.getName().toLowerCase())) {
             return true;
         }
 
@@ -472,7 +472,7 @@ public class PlayerData {
     }
 
     public boolean hasGame(GameType gameType) {
-        if (this.gameRentals.containsKey(gameType.name()) && this.gameRentals.get(gameType.name()) < System.currentTimeMillis()) {
+        if (!this.gameRentals.isEmpty() && this.gameRentals.containsKey(gameType.name()) && this.gameRentals.get(gameType.name()) < System.currentTimeMillis()) {
             this.gameRentals.remove(gameType.name());
         }
 
@@ -565,6 +565,7 @@ public class PlayerData {
 
     public Cooldown getCooldown(String cooldownName) {
         Cooldown cooldown = null;
+        if (cooldownMap.isEmpty()) return null;
 
         if (cooldownMap.containsKey(cooldownName.toUpperCase())) {
             cooldown = cooldownMap.get(cooldownName.toUpperCase());

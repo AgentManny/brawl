@@ -12,6 +12,7 @@ import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.scoreboard.ScoreboardProvider;
 import rip.thecraft.brawl.util.DurationFormatter;
+import rip.thecraft.server.util.chatcolor.CC;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -40,10 +41,6 @@ public class SpawnScoreboardProvider implements ScoreboardProvider {
             }
             lines.add(ChatColor.BLACK + " ");
         }
-        Event activeEvent = plugin.getEventHandler().getActiveEvent();
-        if (activeEvent != null) {
-            activeEvent.getScoreboard(player, lines);
-        }
         if (playerData.hasCombatLogged()) {
             lines.add(ChatColor.WHITE + "Combat: " + ChatColor.RED + TimeUnit.MILLISECONDS.toSeconds(playerData.getCombatTaggedTil() - System.currentTimeMillis()) + "s");
         }
@@ -51,6 +48,11 @@ public class SpawnScoreboardProvider implements ScoreboardProvider {
         lines.add(ChatColor.WHITE + "Killstreak: " + ChatColor.RED + (int) statistic.get(StatisticType.KILLSTREAK));
         if (playerData.hasCooldown("ENDERPEARL")) {
             lines.add(ChatColor.WHITE + "Enderpearl: " + ChatColor.RED + DurationFormatter.getRemaining(playerData.getCooldown("ENDERPEARL").getRemaining()));
+        }
+        Event activeEvent = plugin.getEventHandler().getActiveEvent();
+        if (activeEvent != null) {
+            lines.add(CC.GOLD + "   ");
+            activeEvent.getScoreboard(player, lines);
         }
         return lines;
     }

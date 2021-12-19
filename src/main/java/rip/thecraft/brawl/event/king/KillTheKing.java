@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
+@Deprecated
 public class KillTheKing extends Event {
 
     private final Brawl plugin = Brawl.getInstance();
