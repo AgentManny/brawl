@@ -1,7 +1,5 @@
 package rip.thecraft.brawl.region.selection;
 
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.region.Region;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +9,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.region.Region;
+import rip.thecraft.brawl.util.cuboid.Cuboid;
 
 /**
  * Represents a region, either completely selection, or not, that has not been created and saved yet.
@@ -81,6 +82,14 @@ public class Selection {
         }
 
         return new Region(point1, point2);
+    }
+
+    public Cuboid createCuboid() {
+        if (!isFullObject()) {
+            return null;
+        }
+
+        return new Cuboid(point1, point2);
     }
 
     /**

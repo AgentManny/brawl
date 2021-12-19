@@ -3,12 +3,14 @@ package rip.thecraft.brawl.event.command;
 import mkremins.fanciful.FancyMessage;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.event.Event;
 import rip.thecraft.brawl.event.EventHandler;
 import rip.thecraft.brawl.event.EventType;
+import rip.thecraft.brawl.util.cuboid.Cuboid;
 import rip.thecraft.spartan.command.Command;
 
 import java.lang.reflect.Field;
@@ -42,7 +44,13 @@ public class EventInfoCommand {
             Field value = entry.getValue();
             try {
                 AbilityProperty property = value.getAnnotation(AbilityProperty.class);
-                new FancyMessage(ChatColor.GRAY + " - " + ChatColor.YELLOW + getFriendlyName(key) + ChatColor.GRAY + " (" + value.getType().getSimpleName() + ")" + ChatColor.YELLOW + ": " + (value.get(event) == null ? ChatColor.RED + "Not set" : ChatColor.LIGHT_PURPLE.toString() + value.get(event)))
+                Object val = value.get(event);
+                String friendlyValue = val != null ? value.getType().isAssignableFrom(Cuboid.class) ? ((Cuboid)val).getFriendlyName() :
+                                value.getType().isAssignableFrom(Location.class) ? "(" + ((Location)val).serialize()
+                                        .values().stream().map(Object::toString).reduce("", String::concat)
+                                        + ")" :
+                                        String.valueOf(val) : "Not set";
+                new FancyMessage(ChatColor.GRAY + " - " + ChatColor.YELLOW + getFriendlyName(key) + ChatColor.GRAY + " (" + value.getType().getSimpleName() + ")" + ChatColor.YELLOW + ": " + (val== null ? ChatColor.RED + "Not set" : ChatColor.LIGHT_PURPLE + friendlyValue))
                         .tooltip(
                                 ChatColor.GRAY + "Property " + ChatColor.WHITE + key,
                                 ChatColor.GRAY + "Description: " + (property.description().isEmpty() ? ChatColor.RED + "None" : ChatColor.WHITE + property.description())
