@@ -40,6 +40,7 @@ import rip.thecraft.brawl.kit.command.adapter.KitCommandAdapter;
 import rip.thecraft.brawl.leaderboard.Leaderboard;
 import rip.thecraft.brawl.listener.*;
 import rip.thecraft.brawl.market.MarketHandler;
+import rip.thecraft.brawl.perks.PerkListener;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerDataHandler;
 import rip.thecraft.brawl.player.adapter.PlayerDataTypeAdapter;
@@ -146,7 +147,7 @@ public class Brawl extends JavaPlugin {
         MovementListener movementListener = new MovementListener(this);
         CraftServer.getInstance().addMovementHandler(movementListener);
 
-        Arrays.asList(new EnderChestListener(), new ChatListener(), new ClickTracker(this), new GameListener(), new AbilityListener(this), new ToolInteractListener(), new ProtectListener(this), new ArenaListener(this), new PlayerListener(this), new DamageListener(this), new SoupListener(this), new TeamListener(this), movementListener)
+        Arrays.asList(new EnderChestListener(), new ChatListener(), new ClickTracker(this), new GameListener(), new AbilityListener(this), new ToolInteractListener(), new ProtectListener(this), new ArenaListener(this), new PlayerListener(this), new DamageListener(this), new SoupListener(this), new TeamListener(this), new PerkListener(), movementListener)
                 .forEach(listener -> this.getServer().getPluginManager().registerEvents(listener, this));
 
         getServer().getScheduler().runTaskLater(this, () -> loaded = true, 10L); // Ensure no issues occur

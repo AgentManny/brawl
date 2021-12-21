@@ -15,7 +15,7 @@ import rip.thecraft.brawl.levels.ExperienceType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.player.statistic.StatisticType;
-import rip.thecraft.brawl.upgrade.perk.Perk;
+import rip.thecraft.brawl.perks.Perk;
 import rip.thecraft.server.util.chatcolor.CC;
 
 import java.util.*;

@@ -1,12 +1,12 @@
-package rip.thecraft.brawl.upgrade.menu;
+package rip.thecraft.brawl.perks.menu;
 
 import lombok.AllArgsConstructor;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.upgrade.menu.button.PerkRemoveButton;
-import rip.thecraft.brawl.upgrade.menu.button.PerkSwitchButton;
-import rip.thecraft.brawl.upgrade.perk.Perk;
+import rip.thecraft.brawl.perks.menu.button.PerkRemoveButton;
+import rip.thecraft.brawl.perks.menu.button.PerkSwitchButton;
+import rip.thecraft.brawl.perks.Perk;
 import rip.thecraft.spartan.menu.Button;
 import rip.thecraft.spartan.menu.Menu;
 import rip.thecraft.spartan.menu.buttons.BackButton;
@@ -32,17 +32,18 @@ public class ChoosePerkMenu extends Menu {
         int x = 1;
         int y = 1;
         for (Perk perk : Perk.values()) {
+            if(perk.getPerkSlot().getValue() == slot){
+                buttons.put(getSlot(x, y), new PerkSwitchButton(playerData, perk, slot, perk.contains(playerData.getActivePerks())));
+                if (x++ >= 7) {
+                    x = 1;
 
-            buttons.put(getSlot(x, y), new PerkSwitchButton(playerData, perk, slot, perk.contains(playerData.getActivePerks())));
-            if (x++ >= 7) {
-                x = 1;
-
-                y++;
+                    y++;
+                }
             }
         }
 
 
-        buttons.put(39, new BackButton(new UpgradeMenu()));
+        buttons.put(39, new BackButton(new PerkMenu()));
         buttons.put(41, new PerkRemoveButton(playerData, slot));
         return buttons;
     }

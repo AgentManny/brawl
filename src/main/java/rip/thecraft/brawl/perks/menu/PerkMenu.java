@@ -1,13 +1,14 @@
-package rip.thecraft.brawl.upgrade.menu;
+package rip.thecraft.brawl.perks.menu;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.perks.Perk;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.perks.menu.button.PerkInfoButton;
-import rip.thecraft.brawl.perks.Perk;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
 import rip.thecraft.spartan.menu.Menu;
@@ -17,41 +18,57 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class UpgradeMenu extends Menu {
+/**
+ * Created by Flatfile on 12/21/2021.
+ */
+public class PerkMenu extends Menu {
 
     @Override
     public String getTitle(Player player) {
-        return "Upgrades";
+        return "Perk Selector";
     }
 
     @Override
     public Map<Integer, Button> getButtons(Player player) {
         Map<Integer, Button> buttons = new HashMap<>();
+        PlayerData data = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
 
-        PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+        buttons.put(4, getPerkPreview());
 
-        buttons.put(11, getPerkPreview());
-
-        int id = 18;
+        int id = 11;
         int slot = 0;
-        for (Perk perk : playerData.getActivePerks()) {
+        for (Perk perk : data.getActivePerks()) {
             buttons.put(++id, new PerkInfoButton(++slot, perk));
         }
 
-        buttons.put(15, getKillstreakPreview());
-        id = 22;
-        slot = 0;
-        // todo killstreak perk
-        buttons.put(++id, new PerkInfoButton(++slot, null));
-        buttons.put(++id, new PerkInfoButton(++slot, null));
-        buttons.put(++id, new PerkInfoButton(++slot, null));
+        buttons.put(26, new Button() {
+            @Override
+            public String getName(Player player) {
+                return ChatColor.RED + "Close";
+            }
+
+            @Override
+            public Material getMaterial(Player player) {
+                return Material.INK_SACK;
+            }
+
+            @Override
+            public byte getDamageValue(Player player) {
+                return 1;
+            }
+
+            @Override
+            public void clicked(Player player, int slot, ClickType clickType) {
+                player.closeInventory();
+            }
+        });
 
         return buttons;
     }
 
     @Override
     public int size(Map<Integer, Button> buttons) {
-        return 36;
+        return 27;
     }
 
     private Button getPerkPreview() {
@@ -66,15 +83,4 @@ public class UpgradeMenu extends Menu {
         return Button.fromItem(perkInfo);
     }
 
-    private Button getKillstreakPreview() {
-        String description = "Killstreaks are specific rewards that are triggered every time you get X amount of kills.";
-
-        List<String> lines = ItemBuilder.wrap(description, CC.GRAY, 30);
-        ItemStack perkInfo = new ItemBuilder(Material.BLAZE_POWDER)
-                .name(ChatColor.RED + "Killstreaks")
-                .lore(lines)
-                .create();
-
-        return Button.fromItem(perkInfo);
-    }
 }

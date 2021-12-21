@@ -22,7 +22,7 @@ import rip.thecraft.brawl.duelarena.match.Match;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.region.RegionType;
-import rip.thecraft.brawl.upgrade.perk.Perk;
+import rip.thecraft.brawl.perks.Perk;
 import rip.thecraft.brawl.util.SchedulerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.Cooldown;

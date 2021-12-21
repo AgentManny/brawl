@@ -36,7 +36,7 @@ import rip.thecraft.brawl.kit.type.RefillType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.region.RegionType;
-import rip.thecraft.brawl.upgrade.perk.Perk;
+import rip.thecraft.brawl.perks.Perk;
 import rip.thecraft.brawl.util.SchedulerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 
@@ -115,6 +115,7 @@ public class SoupListener implements Listener {
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
             Player player = event.getPlayer();
+            PlayerData data = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
 
             double health = event.getPlayer().getHealth();
 
@@ -122,7 +123,13 @@ public class SoupListener implements Listener {
             if (event.hasItem() && event.getItem().getTypeId() == 282 && health < maxHealth) {
                 event.setCancelled(true);
                 player.setHealth(health + 7 > maxHealth ? maxHealth : health + 7);
-                player.getItemInHand().setType(Material.BOWL);
+
+                if(data.usingPerk(Perk.QUICKDROP)){
+                    player.setItemInHand(new ItemStack(Material.AIR));
+                }else{
+                    player.getItemInHand().setType(Material.BOWL);
+                }
+                player.updateInventory();
             } else if (event.hasItem() && event.getItem().getTypeId() == 282 && event.getPlayer().getFoodLevel() < 20) {
                 event.setCancelled(true);
                 player.setFoodLevel((player.getFoodLevel() + 7) > 20D ? 20 : player.getFoodLevel() + 7);

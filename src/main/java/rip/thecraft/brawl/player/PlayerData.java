@@ -30,7 +30,7 @@ import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.team.Team;
-import rip.thecraft.brawl.upgrade.perk.Perk;
+import rip.thecraft.brawl.perks.Perk;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.falcon.Falcon;
 import rip.thecraft.server.util.chatcolor.CC;

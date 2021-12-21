@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.upgrade.perk;
+package rip.thecraft.brawl.perks;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,7 +28,7 @@ import rip.thecraft.brawl.util.MathUtil;
 import rip.thecraft.spartan.deathmessage.event.CustomPlayerDamageEvent;
 import rip.thecraft.spartan.deathmessage.tracker.FallTracker;
 
-import static rip.thecraft.brawl.upgrade.perk.Perk.*;
+import static rip.thecraft.brawl.perks.Perk.*;
 
 public class PerkListener implements Listener {
 
@@ -153,26 +153,26 @@ public class PerkListener implements Listener {
             player.sendMessage(ChatColor.GREEN + "Your " + ChatColor.LIGHT_PURPLE + "Juggernaut" + ChatColor.GREEN + " perk gave you regeneration.");
         }
 
-        if (playerData.usingPerk(MEDIC)) {
-            Team team = playerData.getTeam();
-            if (team != null) {
-                if (!team.isMember(victim)) { // Make sure they didn't kill their own teammates
-                    int healed = 0;
-                    for (Player nearbyPlayer : BrawlUtil.getNearbyPlayers(player, 15)) {
-                        if (team.isMember(nearbyPlayer)) {
-                            nearbyPlayer.sendMessage(ChatColor.WHITE + player.getDisplayName() + ChatColor.GREEN + " healed you using his " + ChatColor.YELLOW + "Medic" + ChatColor.GREEN + " perk.");
-                            nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 60, 1));
-                            healed++;
-                        }
-                    }
-                    if (healed > 0) {
-                        player.sendMessage(ChatColor.GREEN + "Your " + ChatColor.YELLOW + "Medic" + ChatColor.GREEN + " perk healed " + healed + " allies.");
-                    }
-                }
-            // } else {
-                // player.sendMessage(ChatColor.RED + "Uh oh! It appears you are not in a team, Medic perk did not apply.");
-            }
-        }
+//        if (playerData.usingPerk(MEDIC)) {
+//            Team team = playerData.getTeam();
+//            if (team != null) {
+//                if (!team.isMember(victim)) { // Make sure they didn't kill their own teammates
+//                    int healed = 0;
+//                    for (Player nearbyPlayer : BrawlUtil.getNearbyPlayers(player, 15)) {
+//                        if (team.isMember(nearbyPlayer)) {
+//                            nearbyPlayer.sendMessage(ChatColor.WHITE + player.getDisplayName() + ChatColor.GREEN + " healed you using his " + ChatColor.YELLOW + "Medic" + ChatColor.GREEN + " perk.");
+//                            nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 60, 1));
+//                            healed++;
+//                        }
+//                    }
+//                    if (healed > 0) {
+//                        player.sendMessage(ChatColor.GREEN + "Your " + ChatColor.YELLOW + "Medic" + ChatColor.GREEN + " perk healed " + healed + " allies.");
+//                    }
+//                }
+//            // } else {
+//                // player.sendMessage(ChatColor.RED + "Uh oh! It appears you are not in a team, Medic perk did not apply.");
+//            }
+//        }
 
     }
 

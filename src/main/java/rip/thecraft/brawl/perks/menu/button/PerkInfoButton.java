@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.upgrade.menu.button;
+package rip.thecraft.brawl.perks.menu.button;
 
 import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
@@ -6,8 +6,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import rip.thecraft.brawl.upgrade.menu.ChoosePerkMenu;
-import rip.thecraft.brawl.upgrade.perk.Perk;
+import rip.thecraft.brawl.perks.menu.ChoosePerkMenu;
+import rip.thecraft.brawl.perks.Perk;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
 

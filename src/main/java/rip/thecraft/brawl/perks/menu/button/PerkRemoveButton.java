@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.upgrade.menu.button;
+package rip.thecraft.brawl.perks.menu.button;
 
 import lombok.AllArgsConstructor;
 import org.bukkit.ChatColor;
@@ -6,7 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.upgrade.perk.Perk;
+import rip.thecraft.brawl.perks.Perk;
 import rip.thecraft.spartan.menu.Button;
 
 import java.util.ArrayList;
@@ -48,11 +48,11 @@ public class PerkRemoveButton extends Button {
     public void clicked(Player player, int slot, ClickType clickType) {
         Perk selectedPerk = playerData.getActivePerks()[this.slot - 1];
         if (selectedPerk != null) {
-            player.sendMessage(ChatColor.YELLOW + "You have removed " + ChatColor.LIGHT_PURPLE + selectedPerk.getName() + ChatColor.YELLOW + " from your Slot #" + slot + ".");
+            player.sendMessage(ChatColor.YELLOW + "You have removed " + ChatColor.LIGHT_PURPLE + selectedPerk.getName() + ChatColor.YELLOW + " from your Slot #" + this.slot + ".");
             playerData.getActivePerks()[this.slot - 1] = null;
             player.closeInventory();
         } else {
-            player.sendMessage(ChatColor.RED + "You don't have perk selected for this slot.");
+            player.sendMessage(ChatColor.RED + "You don't have a perk selected for this slot.");
         }
     }
 }
