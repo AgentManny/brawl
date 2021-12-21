@@ -9,13 +9,13 @@ import rip.thecraft.spartan.command.Param;
 
 public class PlayEffectCommand {
 
-    @Command(names = "playmobeffect")
+    @Command(names = "playmobeffect", permission = "op")
     public static void playMobEffect(Player sender, EntityEffect effect, @Param(defaultValue = "self") Player target) {
         sender.sendMessage(ChatColor.GREEN + "Playing effect: " + effect.name());
         target.playEffect(effect);
     }
 
-    @Command(names = "playeffect")
+    @Command(names = "playeffect", permission = "op")
     public static void playEffect(Player sender, Effect effect, @Param(defaultValue = "self") Player target, @Param(defaultValue = "1") int i) {
         sender.sendMessage(ChatColor.GREEN + "Playing effect: " + effect.name());
         target.playEffect(target.getLocation(), effect, i);

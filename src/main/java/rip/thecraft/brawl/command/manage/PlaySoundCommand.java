@@ -8,7 +8,7 @@ import rip.thecraft.spartan.command.Param;
 
 public class PlaySoundCommand {
 
-    @Command(names = "playsound")
+    @Command(names = "playsound", permission = "op")
     public static void playSound(Player sender, Sound sound, @Param(defaultValue = "1") float pitch, @Param(defaultValue = "1") float volume) {
         sender.sendMessage(ChatColor.GREEN + "Playing sound: " + sound.name() + " (" + volume + " vol : " + pitch + " pitch)");
         sender.playSound(sender.getLocation(), sound, volume, pitch);
