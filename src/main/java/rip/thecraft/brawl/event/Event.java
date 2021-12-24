@@ -16,6 +16,7 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.ability.property.codec.Codec;
 import rip.thecraft.brawl.ability.property.codec.Codecs;
+import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.LocationSerializer;
 import rip.thecraft.brawl.util.cuboid.Cuboid;
 
@@ -50,6 +51,9 @@ public abstract class Event {
         }
     }
 
+    public void onSpawnLeave(Player player, PlayerData playerData) {
+
+    }
 
     public void setup() {
         this.startedAt = System.currentTimeMillis();

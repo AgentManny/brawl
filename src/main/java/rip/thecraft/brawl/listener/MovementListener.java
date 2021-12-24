@@ -18,6 +18,7 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.duelarena.DuelArena;
 import rip.thecraft.brawl.duelarena.match.Match;
 import rip.thecraft.brawl.duelarena.match.MatchState;
+import rip.thecraft.brawl.event.Event;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameElimination;
 import rip.thecraft.brawl.game.GameFlag;
@@ -119,6 +120,10 @@ public class MovementListener implements MovementHandler, Listener {
             if (playerData.isSpawnProtection()) {
                 if (RegionType.SAFEZONE.appliesTo(from) && !RegionType.SAFEZONE.appliesTo(to)) {
                     playerData.setSpawnProtection(false);
+                    Event activeEvent = Brawl.getInstance().getEventHandler().getActiveEvent();
+                    if (activeEvent != null) {
+                        activeEvent.onSpawnLeave(player, playerData);
+                    }
                     if (playerData.getSelectedKit() == null) {
                         Kit selectedKit = Brawl.getInstance().getKitHandler().getDefaultKit();
                         Kit previousKit = playerData.getPreviousKit();
