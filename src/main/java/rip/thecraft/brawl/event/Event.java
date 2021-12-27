@@ -2,6 +2,7 @@ package rip.thecraft.brawl.event;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.lang.Nullable;
+import gg.manny.streamline.util.PlayerUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -12,11 +13,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
+import org.github.paperspigot.Title;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.ability.property.codec.Codec;
 import rip.thecraft.brawl.ability.property.codec.Codecs;
 import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.util.LocationSerializer;
 import rip.thecraft.brawl.util.cuboid.Cuboid;
 
@@ -220,6 +223,26 @@ public abstract class Event {
             }
         }
         return properties;
+    }
+
+    public void action(String message) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (PlayerUtils.onLegacyVersion(player)) continue;
+            PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+            if (playerData.isSpawnProtection() || playerData.getPlayerState() == PlayerState.FIGHTING) {
+                player.sendActionBar(message);
+            }
+        }
+    }
+
+    public void announce(String title, String subtitle) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (PlayerUtils.onLegacyVersion(player)) continue;
+            PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+            if (playerData.isSpawnProtection() || playerData.getPlayerState() == PlayerState.FIGHTING) {
+                player.sendTitle(new Title(title, subtitle));
+            }
+        }
     }
 
     public void broadcast(String... message) {

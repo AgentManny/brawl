@@ -63,6 +63,7 @@ public class EventHandler {
         }
 
         event.broadcast(false, event.getBroadcastMessage(hoster));
+        event.announce(ChatColor.GREEN.toString() + ChatColor.BOLD + event.getType().getShortName(), "has began.");
         event.setup();
         event.setActiveTask(new BukkitRunnable() {
             @Override

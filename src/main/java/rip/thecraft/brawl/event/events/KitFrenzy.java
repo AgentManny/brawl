@@ -1,9 +1,11 @@
 package rip.thecraft.brawl.event.events;
 
+import org.bukkit.entity.Player;
 import rip.thecraft.brawl.ability.property.AbilityProperty;
 import rip.thecraft.brawl.event.EventType;
 import rip.thecraft.brawl.event.type.TimeEvent;
 import rip.thecraft.brawl.kit.Kit;
+import rip.thecraft.brawl.player.PlayerData;
 
 import java.util.List;
 
@@ -19,6 +21,11 @@ public class KitFrenzy extends TimeEvent {
 
     @Override
     public void start() {
+
+    }
+
+    @Override
+    public void onSpawnLeave(Player player, PlayerData playerData) {
 
     }
 
