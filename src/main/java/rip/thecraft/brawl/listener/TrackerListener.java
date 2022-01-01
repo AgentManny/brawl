@@ -14,7 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.spartan.Spartan;
-import rip.thecraft.spartan.util.ItemBuilder;
+import gg.manny.streamline.util.ItemBuilder;
 
 import java.util.Collections;
 import java.util.List;

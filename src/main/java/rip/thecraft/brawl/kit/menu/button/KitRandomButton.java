@@ -10,7 +10,7 @@ import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
-import rip.thecraft.spartan.util.ItemBuilder;
+import gg.manny.streamline.util.ItemBuilder;
 
 import java.util.ArrayList;
 import java.util.List;

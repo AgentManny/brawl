@@ -24,7 +24,7 @@ import rip.thecraft.brawl.util.BukkitUtil;
 import rip.thecraft.brawl.util.DurationFormatter;
 import rip.thecraft.brawl.util.cuboid.Cuboid;
 import rip.thecraft.server.util.chatcolor.CC;
-import rip.thecraft.spartan.util.ItemBuilder;
+import gg.manny.streamline.util.ItemBuilder;
 import rip.thecraft.spartan.util.TimeUtils;
 
 import java.util.ArrayList;

@@ -26,7 +26,7 @@ import rip.thecraft.brawl.perks.Perk;
 import rip.thecraft.brawl.util.SchedulerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.Cooldown;
-import rip.thecraft.spartan.util.ItemBuilder;
+import gg.manny.streamline.util.ItemBuilder;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

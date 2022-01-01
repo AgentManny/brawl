@@ -9,7 +9,7 @@ import rip.thecraft.brawl.ability.AbilityHandler;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
 import rip.thecraft.spartan.menu.Menu;
-import rip.thecraft.spartan.util.ItemBuilder;
+import gg.manny.streamline.util.ItemBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -7,7 +7,7 @@ import rip.thecraft.brawl.duelarena.loadout.MatchLoadout;
 import rip.thecraft.brawl.item.item.Armor;
 import rip.thecraft.brawl.item.item.Items;
 import rip.thecraft.brawl.kit.type.RefillType;
-import rip.thecraft.spartan.util.ItemBuilder;
+import gg.manny.streamline.util.ItemBuilder;
 
 public class NoDebuff extends MatchLoadout {
 

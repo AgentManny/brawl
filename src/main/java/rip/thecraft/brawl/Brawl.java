@@ -147,7 +147,7 @@ public class Brawl extends JavaPlugin {
         MovementListener movementListener = new MovementListener(this);
         CraftServer.getInstance().addMovementHandler(movementListener);
 
-        Arrays.asList(new EnderChestListener(), new ChatListener(), new ClickTracker(this), new GameListener(), new AbilityListener(this), new ToolInteractListener(), new ProtectListener(this), new ArenaListener(this), new PlayerListener(this), new DamageListener(this), new SoupListener(this), new TeamListener(this), new PerkListener(), movementListener)
+        Arrays.asList(new TestListener(), new EnderChestListener(), new ChatListener(), new ClickTracker(this), new GameListener(), new AbilityListener(this), new ToolInteractListener(), new ProtectListener(this), new ArenaListener(this), new PlayerListener(this), new DamageListener(this), new SoupListener(this), new TeamListener(this), new PerkListener(), movementListener)
                 .forEach(listener -> this.getServer().getPluginManager().registerEvents(listener, this));
 
         getServer().getScheduler().runTaskLater(this, () -> loaded = true, 10L); // Ensure no issues occur

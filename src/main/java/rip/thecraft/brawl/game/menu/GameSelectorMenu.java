@@ -14,7 +14,7 @@ import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
 import rip.thecraft.spartan.menu.Menu;
-import rip.thecraft.spartan.util.ItemBuilder;
+import gg.manny.streamline.util.ItemBuilder;
 import rip.thecraft.spartan.util.TimeUtils;
 
 import java.util.HashMap;
@@ -70,7 +70,7 @@ public class GameSelectorMenu extends Menu {
             boolean noMaps = Brawl.getInstance().getGameHandler().getMapHandler().getMaps(gameType).isEmpty();
             boolean access = playerData.hasGame(gameType);
 
-            List<String> lore = ItemBuilder.wrap(gameType.getDescription(), CC.GRAY, 32);
+            List<String> lore = ItemBuilder.wrap(gameType.getDescription(), CC.GRAY, 32, false);
             lore.add(0, " ");
             lore.add(0, ChatColor.DARK_GRAY + (access ? "Unlocked" : "Locked"));
             lore.add(" ");

@@ -36,7 +36,7 @@ import rip.thecraft.falcon.Falcon;
 import rip.thecraft.falcon.profile.Profile;
 import rip.thecraft.falcon.rank.Rank;
 import rip.thecraft.server.util.chatcolor.CC;
-import rip.thecraft.spartan.util.ItemBuilder;
+import gg.manny.streamline.util.ItemBuilder;
 import rip.thecraft.spartan.util.PlayerUtils;
 
 import java.util.ArrayList;

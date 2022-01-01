@@ -7,7 +7,7 @@ import org.bukkit.potion.PotionEffectType;
 import rip.thecraft.brawl.item.item.Armor;
 import rip.thecraft.brawl.item.item.Items;
 import rip.thecraft.brawl.kit.AbstractKit;
-import rip.thecraft.spartan.util.ItemBuilder;
+import gg.manny.streamline.util.ItemBuilder;
 
 public class Runner extends AbstractKit {
 

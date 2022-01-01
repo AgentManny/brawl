@@ -12,7 +12,7 @@ import rip.thecraft.brawl.perks.menu.button.PerkInfoButton;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
 import rip.thecraft.spartan.menu.Menu;
-import rip.thecraft.spartan.util.ItemBuilder;
+import gg.manny.streamline.util.ItemBuilder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -74,7 +74,7 @@ public class PerkMenu extends Menu {
     private Button getPerkPreview() {
         String description = "A selection of unique perks that can be stacked upon your selected kit.";
 
-        List<String> lines = ItemBuilder.wrap(description, CC.GRAY, 30);
+        List<String> lines = ItemBuilder.wrap(description, CC.GRAY, 30, false);
         ItemStack perkInfo = new ItemBuilder(Material.BREWING_STAND_ITEM)
                 .name(ChatColor.LIGHT_PURPLE + "Perks")
                 .lore(lines)

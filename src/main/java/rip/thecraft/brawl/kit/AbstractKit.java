@@ -11,7 +11,7 @@ import rip.thecraft.brawl.ability.Ability;
 import rip.thecraft.brawl.item.item.Armor;
 import rip.thecraft.brawl.item.item.Items;
 import rip.thecraft.brawl.kit.type.RankType;
-import rip.thecraft.spartan.util.ItemBuilder;
+import gg.manny.streamline.util.ItemBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -19,7 +19,7 @@ import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.util.moreprojectiles.event.CustomProjectileHitEvent;
 import rip.thecraft.brawl.util.moreprojectiles.event.ItemProjectileHitEvent;
 import rip.thecraft.brawl.util.moreprojectiles.projectile.ItemProjectile;
-import rip.thecraft.spartan.util.ItemBuilder;
+import gg.manny.streamline.util.ItemBuilder;
 
 import java.util.concurrent.TimeUnit;
 

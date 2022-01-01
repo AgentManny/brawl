@@ -18,7 +18,7 @@ import rip.thecraft.brawl.game.*;
 import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.util.ParticleEffect;
 import rip.thecraft.server.util.chatcolor.CC;
-import rip.thecraft.spartan.util.ItemBuilder;
+import gg.manny.streamline.util.ItemBuilder;
 import rip.thecraft.spartan.util.TimeUtils;
 
 import java.util.*;

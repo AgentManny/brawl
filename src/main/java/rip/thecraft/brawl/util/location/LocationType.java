@@ -1,9 +1,8 @@
 package rip.thecraft.brawl.util.location;
 
+import gg.manny.streamline.npc.NPC;
+import gg.manny.streamline.npc.NPCRegistry;
 import lombok.Getter;
-import net.citizensnpcs.api.event.DespawnReason;
-import net.citizensnpcs.api.npc.NPC;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
@@ -21,15 +20,11 @@ public enum LocationType {
     HOLOGRAM_LEADERBOARDS_ELO("HOLO_STATS_ELO"),
 
     UPGRADER("NPC_UPGRADER", (player, location) -> {
-        NPC npc = Brawl.getInstance().getUpgradeManager().getNpc();
-        if (npc.isSpawned()) {
-            npc.despawn(DespawnReason.PLUGIN);
-            if (player != null) {
-                player.sendMessage(ChatColor.GRAY + "Removed pre existing Upgrader NPC");
+        for (NPC npc : NPCRegistry.getNpcs()) {
+            if (npc.getName().toLowerCase().contains("upgrader")) {
+                npc.teleport(location);
             }
         }
-
-        npc.spawn(location);
     }),
 
     CHALLENGES("NPC_CHALLENGES");

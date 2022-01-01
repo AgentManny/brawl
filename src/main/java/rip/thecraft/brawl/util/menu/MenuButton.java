@@ -1,5 +1,6 @@
 package rip.thecraft.brawl.util.menu;
 
+import gg.manny.streamline.util.ItemBuilder;
 import lombok.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -8,7 +9,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.spartan.util.ItemBuilder;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -33,7 +33,7 @@ public class MenuButton {
     }
 
     public MenuButton(Material material, int data, String name, String... lore) {
-        this(new ItemBuilder(material).name(name).data(data).lore(lore).create());
+        this(new ItemBuilder(material).name(name).data((short) data).lore(lore).create());
     }
 
     public MenuButton(Material material, String name, String... lore) {

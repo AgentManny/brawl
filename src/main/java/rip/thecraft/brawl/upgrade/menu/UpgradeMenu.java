@@ -1,17 +1,17 @@
 package rip.thecraft.brawl.upgrade.menu;
 
+import gg.manny.streamline.util.ItemBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.perks.menu.button.PerkInfoButton;
 import rip.thecraft.brawl.perks.Perk;
+import rip.thecraft.brawl.perks.menu.button.PerkInfoButton;
+import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
 import rip.thecraft.spartan.menu.Menu;
-import rip.thecraft.spartan.util.ItemBuilder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +57,7 @@ public class UpgradeMenu extends Menu {
     private Button getPerkPreview() {
         String description = "A selection of unique perks that can be stacked upon your selected kit.";
 
-        List<String> lines = ItemBuilder.wrap(description, CC.GRAY, 30);
+        List<String> lines = ItemBuilder.wrap(description, CC.GRAY, 30, false);
         ItemStack perkInfo = new ItemBuilder(Material.BREWING_STAND_ITEM)
                 .name(ChatColor.LIGHT_PURPLE + "Perks")
                 .lore(lines)
@@ -69,7 +69,7 @@ public class UpgradeMenu extends Menu {
     private Button getKillstreakPreview() {
         String description = "Killstreaks are specific rewards that are triggered every time you get X amount of kills.";
 
-        List<String> lines = ItemBuilder.wrap(description, CC.GRAY, 30);
+        List<String> lines = ItemBuilder.wrap(description, CC.GRAY, 30, false);
         ItemStack perkInfo = new ItemBuilder(Material.BLAZE_POWDER)
                 .name(ChatColor.RED + "Killstreaks")
                 .lore(lines)

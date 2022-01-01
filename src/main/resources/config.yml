@@ -34,7 +34,7 @@ LANGUAGE:
     ARENA:
       '0':
         TYPE: IRON_SWORD
-        NAME: '&7» &d&lUnranked Queue &7«'
+        NAME: "&7» &d&lUnranked Queue &7«"
         META: DUEL_ARENA_UNRANKED
       '1':
         TYPE: BLAZE_ROD
@@ -57,24 +57,24 @@ LANGUAGE:
     SPAWN:
       '0':
         TYPE: BOOK
-        NAME: '&7» &5&lKit Selector &7«'
+        NAME: "&7\u00bb &5&lKit Selector &7\u00ab"
         META: KIT_SELECTOR
       '1':
-        TYPE: WATCH
-        NAME: '&7» &d&lPrevious Kit &7«'
-        META: PREVIOUS_KIT
+        TYPE: IRON_SWORD
+        NAME: "&7\u00bb &6&lDuel Arena &7\u00ab"
+        META: DUEL_ARENA
       '4':
-        TYPE: REDSTONE_TORCH_ON
-        NAME: '&7» &c&lSpectator Mode &7«'
-        META: SPECTATOR_JOIN
+        TYPE: EMERALD
+        NAME: "&7\u00bb &2&lShop &7\u00ab"
+        META: SHOP
       '7':
         TYPE: NETHER_STAR
-        NAME: '&7» &e&lEvent Selector &7«'
+        NAME: "&7\u00bb &e&lEvent Selector &7\u00ab"
         META: EVENT_SELECTOR
       '8':
-        TYPE: 381
-        NAME: '&7» &6&l1v1 &7«'
-        META: DUEL_ARENA
+        TYPE: REDSTONE_COMPARATOR
+        NAME: "&7\u00bb &d&lSettings &7\u00ab"
+        META: SETTINGS
     GAME_LOBBY:
       LEAVE_EVENT:
         TYPE: 351

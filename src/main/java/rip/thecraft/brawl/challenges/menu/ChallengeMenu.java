@@ -2,6 +2,7 @@ package rip.thecraft.brawl.challenges.menu;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import gg.manny.streamline.util.ItemBuilder;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
@@ -14,7 +15,6 @@ import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
 import rip.thecraft.spartan.menu.Menu;
-import rip.thecraft.spartan.util.ItemBuilder;
 import rip.thecraft.spartan.util.TimeUtils;
 
 import java.util.List;
@@ -67,7 +67,7 @@ public class ChallengeMenu extends Menu {
 
         @Override
         public List<String> getDescription(Player player) {
-            List<String> lore = ItemBuilder.wrap(challenge.getDescription(), CC.GRAY, 30);
+            List<String> lore = ItemBuilder.wrap(challenge.getDescription(), CC.GRAY, 30, false);
 
             String timeLeft = ChatColor.GRAY + "Expires " + (challenge.getDuration() == Challenge.Duration.WEEKLY ? "at " + ChatColor.WHITE + WordUtils.capitalizeFully(ChallengeTracker.WEEKLY_RESET_DAY.name().toLowerCase()) + " at " + ChallengeTracker.RESET_TIME.format(ChallengeTracker.TIME_FORMATTER) : ChatColor.GRAY + "in " + ChatColor.WHITE + TimeUtils.formatIntoSimplifiedString((int) TimeUnit.MILLISECONDS.toSeconds(tracker.getDailyExpiry())));
             lore.add(" ");

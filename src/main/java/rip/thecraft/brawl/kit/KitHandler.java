@@ -17,7 +17,7 @@ import rip.thecraft.brawl.kit.command.BukkitCommand;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.region.RegionType;
 import rip.thecraft.brawl.util.BrawlUtil;
-import rip.thecraft.spartan.util.ItemBuilder;
+import gg.manny.streamline.util.ItemBuilder;
 
 import java.io.File;
 import java.io.FileReader;

@@ -1,5 +1,6 @@
 package rip.thecraft.brawl.market.items;
 
+import gg.manny.streamline.util.ItemBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.bukkit.ChatColor;
@@ -16,7 +17,6 @@ import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
 import rip.thecraft.spartan.menu.menus.ConfirmMenu;
 import rip.thecraft.spartan.util.Cooldown;
-import rip.thecraft.spartan.util.ItemBuilder;
 import rip.thecraft.spartan.util.TimeUtils;
 
 import java.util.List;
@@ -59,7 +59,7 @@ public abstract class MarketItem extends Button {
     @Override
     public ItemStack getButtonItem(Player player) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
-        List<String> lore = ItemBuilder.wrap(getDescription(), CC.GRAY, 30);
+        List<String> lore = ItemBuilder.wrap(getDescription(), CC.GRAY, 30, false);
         if (!getDescription().isEmpty()) {
             lore.add(" ");
         }

@@ -22,9 +22,6 @@ import java.util.function.BiConsumer;
 
 public enum MetadataType {
 
-    KIT_SELECTOR((player, data) -> {
-        new KitMenu().open(player);
-    }),
     PREVIOUS_KIT((player, playerData) -> {
         Kit kit = playerData.getPreviousKit() == null ? Brawl.getInstance().getKitHandler().getDefaultKit() : playerData.getPreviousKit();
         if(!kit.isEnabled()){
@@ -38,7 +35,13 @@ public enum MetadataType {
             Brawl.getInstance().getKitHandler().getDefaultKit().apply(player, true, true);
         }
     }),
-
+    KIT_SELECTOR((player, data) -> {
+        if (player.isSneaking()) {
+            PREVIOUS_KIT.activate.accept(player, data);
+            return;
+        }
+        new KitMenu().open(player);
+    }),
     EVENT_SELECTOR((player, playerData) -> {
         new GameSelectorMenu().openMenu(player);
     }),

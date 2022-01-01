@@ -11,7 +11,7 @@ import rip.thecraft.brawl.kit.menu.KitUnlockMenu;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
-import rip.thecraft.spartan.util.ItemBuilder;
+import gg.manny.streamline.util.ItemBuilder;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class KitUnlockButton extends Button {
 
     @Override
     public ItemStack getButtonItem(Player player) {
-        List<String> lore = ItemBuilder.wrap("Unlock kits by grinding experience towards an exclusive kit", CC.GRAY, 30);
+        List<String> lore = ItemBuilder.wrap("Unlock kits by grinding experience towards an exclusive kit", CC.GRAY, 30, false);
         lore.add("");
 
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);

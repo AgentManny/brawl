@@ -1,5 +1,6 @@
 package rip.thecraft.brawl.item;
 
+import gg.manny.streamline.util.ItemBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -22,7 +23,6 @@ import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.HiddenStringUtils;
 import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
-import rip.thecraft.spartan.util.ItemBuilder;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,7 +59,7 @@ public class ItemHandler implements Listener {
                 }
 
                 ItemBuilder itemBuilder = new ItemBuilder(material)
-                        .data(data)
+                        .data((short) data)
                         .amount(amount);
 
                 String displayName = configurationSection.getString(key + ".NAME");

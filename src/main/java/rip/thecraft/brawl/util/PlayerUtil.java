@@ -164,7 +164,7 @@ public class PlayerUtil {
             // Bounding box of the given player
             Vector3D targetPos = new Vector3D(target.getLocation());
             Vector3D minimum = targetPos.add(-0.5, 0, -0.5);
-            Vector3D maximum = targetPos.add(0.5, 1.67, 0.5);
+            Vector3D maximum = targetPos.add(0.5, 2.5, 0.5);
 
             if (target != player && hasIntersection(observerStart, observerEnd, minimum, maximum)) {
                 if (hit == null ||

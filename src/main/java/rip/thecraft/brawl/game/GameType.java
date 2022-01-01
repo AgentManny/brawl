@@ -6,7 +6,7 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.kit.type.RankType;
-import rip.thecraft.spartan.util.ItemBuilder;
+import gg.manny.streamline.util.ItemBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;

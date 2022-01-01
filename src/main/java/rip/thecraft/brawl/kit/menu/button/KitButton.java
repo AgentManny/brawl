@@ -1,6 +1,7 @@
 package rip.thecraft.brawl.kit.menu.button;
 
 import gg.manny.hologram.HologramPlugin;
+import gg.manny.streamline.util.ItemBuilder;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -16,7 +17,6 @@ import rip.thecraft.brawl.kit.type.RankType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
-import rip.thecraft.spartan.util.ItemBuilder;
 import rip.thecraft.spartan.util.TimeUtils;
 
 import java.util.List;

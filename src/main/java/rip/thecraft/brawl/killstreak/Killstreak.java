@@ -1,7 +1,7 @@
 package rip.thecraft.brawl.killstreak;
 
 import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.spartan.util.ItemBuilder;
+import gg.manny.streamline.util.ItemBuilder;
 import rip.thecraft.server.util.chatcolor.CC;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
