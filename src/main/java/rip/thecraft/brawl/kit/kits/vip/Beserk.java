@@ -3,9 +3,9 @@ package rip.thecraft.brawl.kit.kits.vip;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import rip.thecraft.brawl.ability.abilities.Dash;
-import rip.thecraft.brawl.item.item.Armor;
-import rip.thecraft.brawl.item.item.Items;
+import rip.thecraft.brawl.kit.ability.abilities.Dash;
+import rip.thecraft.brawl.server.item.item.Armor;
+import rip.thecraft.brawl.server.item.item.Items;
 import rip.thecraft.brawl.kit.AbstractKit;
 import gg.manny.streamline.util.ItemBuilder;
 

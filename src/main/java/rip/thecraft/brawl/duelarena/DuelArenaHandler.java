@@ -32,7 +32,7 @@ import rip.thecraft.brawl.duelarena.match.invite.PlayerMatchInvite;
 import rip.thecraft.brawl.duelarena.match.queue.QueueType;
 import rip.thecraft.brawl.duelarena.queue.QueueData;
 import rip.thecraft.brawl.duelarena.queue.QueueSearchTask;
-import rip.thecraft.brawl.item.type.InventoryType;
+import rip.thecraft.brawl.server.item.type.InventoryType;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;

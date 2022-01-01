@@ -13,7 +13,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.region.RegionType;
+import rip.thecraft.brawl.server.region.RegionType;
 import rip.thecraft.falcon.util.EntityUtils;
 
 import java.lang.reflect.Field;

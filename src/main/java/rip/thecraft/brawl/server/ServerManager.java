@@ -1,7 +1,7 @@
 package rip.thecraft.brawl.server;
 
 import rip.thecraft.brawl.kit.Kit;
-import rip.thecraft.brawl.region.Region;
+import rip.thecraft.brawl.server.region.Region;
 
 public class ServerManager {
 

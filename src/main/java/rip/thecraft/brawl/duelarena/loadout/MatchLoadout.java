@@ -7,8 +7,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import rip.thecraft.brawl.duelarena.arena.ArenaType;
-import rip.thecraft.brawl.item.item.Armor;
-import rip.thecraft.brawl.item.item.Items;
+import rip.thecraft.brawl.server.item.item.Armor;
+import rip.thecraft.brawl.server.item.item.Items;
 import rip.thecraft.brawl.kit.type.RefillType;
 import rip.thecraft.brawl.util.PlayerUtil;
 

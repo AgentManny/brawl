@@ -9,7 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.team.Team;
+import rip.thecraft.brawl.spawn.team.Team;
 
 @RequiredArgsConstructor
 public class TeamListener implements Listener {

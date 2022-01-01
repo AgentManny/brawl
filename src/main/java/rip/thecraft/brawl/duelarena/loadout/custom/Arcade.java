@@ -5,8 +5,8 @@ import org.bukkit.Material;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.duelarena.arena.ArenaType;
 import rip.thecraft.brawl.duelarena.loadout.MatchLoadout;
-import rip.thecraft.brawl.item.item.Armor;
-import rip.thecraft.brawl.item.item.Items;
+import rip.thecraft.brawl.server.item.item.Armor;
+import rip.thecraft.brawl.server.item.item.Items;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.type.RefillType;
 

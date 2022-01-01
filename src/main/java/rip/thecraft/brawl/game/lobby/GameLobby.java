@@ -18,7 +18,7 @@ import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.game.map.GameMap;
 import rip.thecraft.brawl.game.team.GameTeam;
-import rip.thecraft.brawl.item.type.InventoryType;
+import rip.thecraft.brawl.server.item.type.InventoryType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.spectator.SpectatorMode;

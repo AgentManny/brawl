@@ -37,7 +37,7 @@ import rip.thecraft.brawl.game.games.Feast;
 import rip.thecraft.brawl.game.option.impl.StoreBlockOption;
 import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.region.RegionType;
+import rip.thecraft.brawl.server.region.RegionType;
 
 import java.util.concurrent.ThreadLocalRandom;
 

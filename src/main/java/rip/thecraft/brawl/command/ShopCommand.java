@@ -1,7 +1,7 @@
 package rip.thecraft.brawl.command;
 
 import org.bukkit.entity.Player;
-import rip.thecraft.brawl.market.MarketMenu;
+import rip.thecraft.brawl.spawn.market.MarketMenu;
 import rip.thecraft.spartan.command.Command;
 
 public class ShopCommand {

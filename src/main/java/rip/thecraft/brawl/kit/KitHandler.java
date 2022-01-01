@@ -11,11 +11,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.duelarena.match.Match;
-import rip.thecraft.brawl.item.item.Armor;
-import rip.thecraft.brawl.item.item.Items;
+import rip.thecraft.brawl.server.item.item.Armor;
+import rip.thecraft.brawl.server.item.item.Items;
 import rip.thecraft.brawl.kit.command.BukkitCommand;
 import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.region.RegionType;
+import rip.thecraft.brawl.server.region.RegionType;
 import rip.thecraft.brawl.util.BrawlUtil;
 import gg.manny.streamline.util.ItemBuilder;
 

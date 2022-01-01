@@ -3,7 +3,7 @@ package rip.thecraft.brawl.kit.editor.menu;
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
 import org.bukkit.entity.Player;
-import rip.thecraft.brawl.ability.Ability;
+import rip.thecraft.brawl.kit.ability.Ability;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.editor.buttons.KitAbilityEditButton;
 import rip.thecraft.spartan.menu.Button;

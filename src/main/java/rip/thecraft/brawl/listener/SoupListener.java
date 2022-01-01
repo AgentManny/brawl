@@ -35,8 +35,8 @@ import rip.thecraft.brawl.game.GameFlag;
 import rip.thecraft.brawl.kit.type.RefillType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
-import rip.thecraft.brawl.region.RegionType;
-import rip.thecraft.brawl.perks.Perk;
+import rip.thecraft.brawl.server.region.RegionType;
+import rip.thecraft.brawl.spawn.perks.Perk;
 import rip.thecraft.brawl.util.SchedulerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 

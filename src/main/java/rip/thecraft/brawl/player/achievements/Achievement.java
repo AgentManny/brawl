@@ -2,7 +2,7 @@ package rip.thecraft.brawl.player.achievements;
 
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
-import rip.thecraft.brawl.challenges.rewards.RewardType;
+import rip.thecraft.brawl.spawn.challenges.rewards.RewardType;
 import rip.thecraft.brawl.player.PlayerData;
 
 import java.util.Map;

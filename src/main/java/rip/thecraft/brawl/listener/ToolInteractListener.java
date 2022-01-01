@@ -1,6 +1,6 @@
 package rip.thecraft.brawl.listener;
 
-import rip.thecraft.brawl.region.selection.Selection;
+import rip.thecraft.brawl.server.region.selection.Selection;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;

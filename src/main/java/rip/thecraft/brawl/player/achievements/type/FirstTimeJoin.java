@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.player.achievements.Achievement;
 import rip.thecraft.brawl.player.achievements.AchievementType;
-import rip.thecraft.brawl.challenges.rewards.RewardType;
+import rip.thecraft.brawl.spawn.challenges.rewards.RewardType;
 import rip.thecraft.brawl.player.PlayerData;
 
 public class FirstTimeJoin extends Achievement {

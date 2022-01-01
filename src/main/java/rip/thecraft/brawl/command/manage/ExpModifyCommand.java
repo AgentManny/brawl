@@ -2,7 +2,7 @@ package rip.thecraft.brawl.command.manage;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import rip.thecraft.brawl.levels.Level;
+import rip.thecraft.brawl.spawn.levels.Level;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.spartan.command.Command;
 import rip.thecraft.spartan.command.Param;

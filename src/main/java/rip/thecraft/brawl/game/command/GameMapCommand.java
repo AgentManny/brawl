@@ -8,7 +8,7 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.game.map.GameMap;
 import rip.thecraft.brawl.game.map.GameMapHandler;
-import rip.thecraft.brawl.region.selection.Selection;
+import rip.thecraft.brawl.server.region.selection.Selection;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.command.Command;
 

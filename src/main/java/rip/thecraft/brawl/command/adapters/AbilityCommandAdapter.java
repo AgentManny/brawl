@@ -5,8 +5,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.CustomAbility;
+import rip.thecraft.brawl.kit.ability.Ability;
+import rip.thecraft.brawl.kit.ability.CustomAbility;
 import rip.thecraft.spartan.command.ParameterType;
 
 import java.util.ArrayList;

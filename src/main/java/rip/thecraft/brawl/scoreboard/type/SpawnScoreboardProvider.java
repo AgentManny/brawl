@@ -2,11 +2,11 @@ package rip.thecraft.brawl.scoreboard.type;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import rip.thecraft.brawl.ability.Ability;
-import rip.thecraft.brawl.ability.handlers.ScoreboardHandler;
-import rip.thecraft.brawl.event.Event;
+import rip.thecraft.brawl.kit.ability.Ability;
+import rip.thecraft.brawl.kit.ability.handlers.ScoreboardHandler;
+import rip.thecraft.brawl.spawn.event.Event;
 import rip.thecraft.brawl.kit.Kit;
-import rip.thecraft.brawl.levels.Level;
+import rip.thecraft.brawl.spawn.levels.Level;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.player.statistic.StatisticType;

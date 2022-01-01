@@ -1,0 +1,34 @@
+package rip.thecraft.brawl.spawn.challenges.command.adapter;
+
+import com.google.common.collect.Lists;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import rip.thecraft.brawl.spawn.challenges.Challenge;
+import rip.thecraft.spartan.command.ParameterType;
+
+import java.util.List;
+import java.util.Set;
+
+public class ChallengeCommandAdapter implements ParameterType<Challenge> {
+
+    @Override
+    public Challenge transform(CommandSender sender, String source) {
+        Challenge challenge = null;
+        try {
+            challenge = Challenge.valueOf(source.replace(" ", "_").toUpperCase());
+        } catch (EnumConstantNotPresentException e) {
+            sender.sendMessage(ChatColor.RED + "Challenge " + source + " not found.");
+        }
+        return challenge;
+    }
+
+    @Override
+    public List<String> tabComplete(Player sender, Set<String> flags, String source) {
+        List<String> completions = Lists.newArrayList();
+        for (Challenge value : Challenge.values()) {
+            completions.add(value.getName());
+        }
+        return completions;
+    }
+}

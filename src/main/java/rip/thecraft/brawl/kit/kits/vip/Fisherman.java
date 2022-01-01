@@ -4,8 +4,8 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import rip.thecraft.brawl.item.item.Armor;
-import rip.thecraft.brawl.item.item.Items;
+import rip.thecraft.brawl.server.item.item.Armor;
+import rip.thecraft.brawl.server.item.item.Items;
 import rip.thecraft.brawl.kit.AbstractKit;
 import gg.manny.streamline.util.ItemBuilder;
 
@@ -14,7 +14,7 @@ public class Fisherman extends AbstractKit {
     public Fisherman() {
         super("Fisherman", "Hooking a player with your fishing rod reels them in.");
 
-        this.abilities.add(getAbility(rip.thecraft.brawl.ability.abilities.classic.Fisherman.class));
+        this.abilities.add(getAbility(rip.thecraft.brawl.kit.ability.abilities.classic.Fisherman.class));
     }
 
     @Override

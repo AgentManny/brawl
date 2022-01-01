@@ -5,9 +5,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.region.Region;
-import rip.thecraft.brawl.region.RegionType;
-import rip.thecraft.brawl.region.selection.Selection;
+import rip.thecraft.brawl.server.region.Region;
+import rip.thecraft.brawl.server.region.RegionType;
+import rip.thecraft.brawl.server.region.selection.Selection;
 import rip.thecraft.spartan.command.Command;
 
 public class RegionCommands {

@@ -17,8 +17,8 @@ import rip.thecraft.brawl.game.GameFlag;
 import rip.thecraft.brawl.game.GameState;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.game.option.impl.StoreBlockOption;
-import rip.thecraft.brawl.item.item.Armor;
-import rip.thecraft.brawl.item.item.Items;
+import rip.thecraft.brawl.server.item.item.Armor;
+import rip.thecraft.brawl.server.item.item.Items;
 import gg.manny.streamline.util.ItemBuilder;
 
 import java.util.Arrays;

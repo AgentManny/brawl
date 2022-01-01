@@ -25,7 +25,7 @@ import rip.thecraft.brawl.duelarena.arena.ArenaType;
 import rip.thecraft.brawl.duelarena.match.Match;
 import rip.thecraft.brawl.duelarena.match.MatchState;
 import rip.thecraft.brawl.duelarena.match.data.MatchData;
-import rip.thecraft.brawl.item.type.MetadataType;
+import rip.thecraft.brawl.server.item.type.MetadataType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.HiddenStringUtils;
 import rip.thecraft.falcon.rank.Rank;

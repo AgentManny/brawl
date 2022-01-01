@@ -7,7 +7,7 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
-import rip.thecraft.brawl.region.RegionType;
+import rip.thecraft.brawl.server.region.RegionType;
 import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.brawl.warp.Warp;
 import rip.thecraft.brawl.warp.WarpManager;

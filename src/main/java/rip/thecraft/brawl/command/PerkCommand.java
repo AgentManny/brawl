@@ -3,7 +3,7 @@ package rip.thecraft.brawl.command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.perks.menu.PerkMenu;
+import rip.thecraft.brawl.spawn.perks.menu.PerkMenu;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.spartan.command.Command;
 

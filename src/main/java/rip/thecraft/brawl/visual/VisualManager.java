@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.leaderboard.Leaderboard;
-import rip.thecraft.brawl.levels.Level;
+import rip.thecraft.brawl.spawn.levels.Level;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.visual.tasks.HologramUpdateTask;

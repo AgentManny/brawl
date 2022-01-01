@@ -2,8 +2,8 @@ package rip.thecraft.brawl.kit.kits.free;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import rip.thecraft.brawl.item.item.Armor;
-import rip.thecraft.brawl.item.item.Items;
+import rip.thecraft.brawl.server.item.item.Armor;
+import rip.thecraft.brawl.server.item.item.Items;
 import rip.thecraft.brawl.kit.AbstractKit;
 import gg.manny.streamline.util.ItemBuilder;
 

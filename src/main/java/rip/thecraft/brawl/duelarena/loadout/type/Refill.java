@@ -1,8 +1,8 @@
 package rip.thecraft.brawl.duelarena.loadout.type;
 
 import rip.thecraft.brawl.duelarena.loadout.MatchLoadout;
-import rip.thecraft.brawl.item.item.Armor;
-import rip.thecraft.brawl.item.item.Items;
+import rip.thecraft.brawl.server.item.item.Armor;
+import rip.thecraft.brawl.server.item.item.Items;
 import rip.thecraft.brawl.kit.type.RefillType;
 import gg.manny.streamline.util.ItemBuilder;
 import org.bukkit.ChatColor;
