@@ -1,11 +1,11 @@
 package rip.thecraft.brawl.player.statistic;
 
+import gg.manny.streamline.util.NumberUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import rip.thecraft.brawl.util.BukkitUtil;
 import rip.thecraft.brawl.visual.tasks.LeaderboardUpdateTask;
 
 import java.util.Optional;
@@ -53,7 +53,7 @@ public enum StatisticType {
     public String getFormatValue(double value) {
         switch (this) {
             case PRESTIGE: {
-                return BukkitUtil.romanNumerals((int)value);
+                return NumberUtils.romanNumerals((int)value);
             }
             case KDR: {
                 return String.valueOf(Math.round(value * 10.) / 10.);

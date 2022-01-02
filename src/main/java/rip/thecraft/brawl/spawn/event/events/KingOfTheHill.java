@@ -10,7 +10,7 @@ import rip.thecraft.brawl.kit.ability.property.AbilityProperty;
 import rip.thecraft.brawl.spawn.event.Event;
 import rip.thecraft.brawl.spawn.event.EventType;
 import rip.thecraft.brawl.spawn.team.Team;
-import rip.thecraft.brawl.util.cuboid.Cuboid;
+import gg.manny.streamline.util.cuboid.Cuboid;
 import rip.thecraft.falcon.staff.StaffMode;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.TimeUtils;

@@ -21,7 +21,7 @@ import rip.thecraft.brawl.kit.ability.property.codec.Codecs;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.util.LocationSerializer;
-import rip.thecraft.brawl.util.cuboid.Cuboid;
+import gg.manny.streamline.util.cuboid.Cuboid;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

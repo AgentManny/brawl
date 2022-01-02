@@ -58,7 +58,6 @@ import rip.thecraft.brawl.spawn.warp.WarpTypeAdapter;
 import rip.thecraft.brawl.spectator.SpectatorManager;
 import rip.thecraft.brawl.util.EffectRestorer;
 import rip.thecraft.brawl.util.EntityHider;
-import rip.thecraft.brawl.util.menu.MenuHandler;
 import rip.thecraft.brawl.visual.VisualManager;
 import rip.thecraft.server.CraftServer;
 import rip.thecraft.spartan.command.MCommandHandler;
@@ -227,8 +226,6 @@ public class Brawl extends JavaPlugin {
     }
 
     private void registerHandlers() {
-        MenuHandler.init(this); // Eventually we plan to use this menu system
-
         abilityHandler = new AbilityHandler(this);
         kitHandler = new KitHandler(this);
 

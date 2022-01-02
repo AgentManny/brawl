@@ -13,8 +13,8 @@ import rip.thecraft.brawl.kit.ability.handlers.BlockProjectileHitBlockHandler;
 import rip.thecraft.brawl.kit.ability.handlers.BlockProjectileHitHandler;
 import rip.thecraft.brawl.kit.ability.property.AbilityData;
 import rip.thecraft.brawl.server.region.RegionType;
-import rip.thecraft.brawl.util.moreprojectiles.event.BlockProjectileHitEvent;
-import rip.thecraft.brawl.util.moreprojectiles.projectile.BlockProjectile;
+import gg.manny.streamline.util.moreprojectiles.event.BlockProjectileHitEvent;
+import gg.manny.streamline.util.moreprojectiles.projectile.BlockProjectile;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,8 +1,8 @@
 package rip.thecraft.brawl.spawn.levels;
 
+import gg.manny.streamline.util.NumberUtils;
 import lombok.Getter;
 import org.bukkit.ChatColor;
-import rip.thecraft.brawl.util.BukkitUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 
 @Getter
@@ -71,7 +71,7 @@ public enum Levels {
         Levels level = getByLevel(playerLevel.getCurrentLevel());
         LevelPrestige prestige = LevelPrestige.getByPrestige(playerLevel.getPrestige());
 
-        return prestige.getColor() + "[" + (playerLevel.isPrestige() ? prestige.getColor() + BukkitUtil.romanNumerals(playerLevel.getPrestige()) + prestige.getColor() + "-" : "") + level.color + playerLevel.getCurrentLevel() + prestige.getColor()
+        return prestige.getColor() + "[" + (playerLevel.isPrestige() ? prestige.getColor() + NumberUtils.romanNumerals(playerLevel.getPrestige()) + prestige.getColor() + "-" : "") + level.color + playerLevel.getCurrentLevel() + prestige.getColor()
                 + "]";
     }
 }

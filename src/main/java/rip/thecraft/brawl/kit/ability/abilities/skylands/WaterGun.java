@@ -20,8 +20,8 @@ import rip.thecraft.brawl.kit.ability.property.AbilityProperty;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.ParticleEffect;
 import rip.thecraft.brawl.util.PlayerUtil;
-import rip.thecraft.brawl.util.moreprojectiles.event.BlockProjectileHitEvent;
-import rip.thecraft.brawl.util.moreprojectiles.projectile.BlockProjectile;
+import gg.manny.streamline.util.moreprojectiles.event.BlockProjectileHitEvent;
+import gg.manny.streamline.util.moreprojectiles.projectile.BlockProjectile;
 
 import java.util.ArrayList;
 import java.util.List;

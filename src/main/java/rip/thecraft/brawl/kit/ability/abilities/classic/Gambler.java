@@ -1,5 +1,6 @@
 package rip.thecraft.brawl.kit.ability.abilities.classic;
 
+import gg.manny.streamline.util.ColorUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,6 @@ import rip.thecraft.brawl.kit.ability.property.AbilityData;
 import rip.thecraft.brawl.kit.ability.property.AbilityProperty;
 import rip.thecraft.brawl.kit.type.RefillType;
 import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.util.BukkitUtil;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -52,7 +52,7 @@ public class Gambler extends Ability implements Listener {
         addCooldown(player, TimeUnit.SECONDS.toMillis(cooldown));
 
         PotionEffect potionEffect = randomEffect.applyTo(random, player);
-        player.sendMessage(ChatColor.YELLOW + "You've taken a gamble and received " + BukkitUtil.getFriendlyName(potionEffect) + ChatColor.YELLOW + ".");
+        player.sendMessage(ChatColor.YELLOW + "You've taken a gamble and received " + ColorUtil.getFriendlyName(potionEffect) + ChatColor.YELLOW + ".");
     }
 
     @EventHandler

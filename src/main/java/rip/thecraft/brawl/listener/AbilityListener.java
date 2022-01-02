@@ -26,8 +26,8 @@ import rip.thecraft.brawl.game.GameFlag;
 import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.KitHandler;
-import rip.thecraft.brawl.util.moreprojectiles.event.BlockProjectileHitEvent;
-import rip.thecraft.brawl.util.moreprojectiles.event.ItemProjectileHitEvent;
+import gg.manny.streamline.util.moreprojectiles.event.BlockProjectileHitEvent;
+import gg.manny.streamline.util.moreprojectiles.event.ItemProjectileHitEvent;
 
 import java.util.Map;
 

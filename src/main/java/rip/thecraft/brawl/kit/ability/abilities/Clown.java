@@ -11,9 +11,9 @@ import rip.thecraft.brawl.kit.ability.handlers.BlockProjectileHitHandler;
 import rip.thecraft.brawl.kit.ability.property.AbilityData;
 import rip.thecraft.brawl.kit.ability.property.AbilityProperty;
 import rip.thecraft.brawl.server.region.RegionType;
-import rip.thecraft.brawl.util.moreprojectiles.event.BlockProjectileHitEvent;
-import rip.thecraft.brawl.util.moreprojectiles.event.CustomProjectileHitEvent;
-import rip.thecraft.brawl.util.moreprojectiles.projectile.BlockProjectile;
+import gg.manny.streamline.util.moreprojectiles.event.BlockProjectileHitEvent;
+import gg.manny.streamline.util.moreprojectiles.event.CustomProjectileHitEvent;
+import gg.manny.streamline.util.moreprojectiles.projectile.BlockProjectile;
 
 /**
  * Created by Flatfile on 10/19/2021.

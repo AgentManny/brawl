@@ -1,5 +1,8 @@
 package rip.thecraft.brawl.kit.menu;
 
+import gg.manny.streamline.menu.Menu;
+import gg.manny.streamline.menu.MenuButton;
+import gg.manny.streamline.util.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -12,10 +15,7 @@ import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.statistic.KitStatistic;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.BrawlUtil;
-import rip.thecraft.brawl.util.menu.Menu;
-import rip.thecraft.brawl.util.menu.MenuButton;
 import rip.thecraft.server.util.chatcolor.CC;
-import gg.manny.streamline.util.ItemBuilder;
 
 import java.util.List;
 import java.util.Map;

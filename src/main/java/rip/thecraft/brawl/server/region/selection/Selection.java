@@ -11,7 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.server.region.Region;
-import rip.thecraft.brawl.util.cuboid.Cuboid;
+import gg.manny.streamline.util.cuboid.Cuboid;
 
 /**
  * Represents a region, either completely selection, or not, that has not been created and saved yet.

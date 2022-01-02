@@ -10,7 +10,7 @@ import rip.thecraft.brawl.kit.ability.property.AbilityProperty;
 import rip.thecraft.brawl.spawn.event.Event;
 import rip.thecraft.brawl.spawn.event.EventHandler;
 import rip.thecraft.brawl.spawn.event.EventType;
-import rip.thecraft.brawl.util.cuboid.Cuboid;
+import gg.manny.streamline.util.cuboid.Cuboid;
 import rip.thecraft.spartan.command.Command;
 
 import java.lang.reflect.Field;

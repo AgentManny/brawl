@@ -15,7 +15,7 @@ import rip.thecraft.brawl.game.GameState;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.game.team.GamePlayer;
 import rip.thecraft.brawl.game.type.RoundGame;
-import rip.thecraft.brawl.util.cuboid.Cuboid;
+import gg.manny.streamline.util.cuboid.Cuboid;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -11,7 +11,7 @@ import rip.thecraft.brawl.spawn.event.Event;
 import rip.thecraft.brawl.spawn.event.EventHandler;
 import rip.thecraft.brawl.spawn.event.EventType;
 import rip.thecraft.brawl.server.region.selection.Selection;
-import rip.thecraft.brawl.util.cuboid.Cuboid;
+import gg.manny.streamline.util.cuboid.Cuboid;
 import rip.thecraft.spartan.command.Command;
 import rip.thecraft.spartan.command.MCommandHandler;
 import rip.thecraft.spartan.command.Param;

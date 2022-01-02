@@ -16,9 +16,9 @@ import rip.thecraft.brawl.kit.ability.handlers.KillHandler;
 import rip.thecraft.brawl.kit.ability.property.AbilityData;
 import rip.thecraft.brawl.kit.ability.property.AbilityProperty;
 import rip.thecraft.brawl.server.region.RegionType;
-import rip.thecraft.brawl.util.moreprojectiles.event.CustomProjectileHitEvent;
-import rip.thecraft.brawl.util.moreprojectiles.event.ItemProjectileHitEvent;
-import rip.thecraft.brawl.util.moreprojectiles.projectile.ItemProjectile;
+import gg.manny.streamline.util.moreprojectiles.event.CustomProjectileHitEvent;
+import gg.manny.streamline.util.moreprojectiles.event.ItemProjectileHitEvent;
+import gg.manny.streamline.util.moreprojectiles.projectile.ItemProjectile;
 import gg.manny.streamline.util.ItemBuilder;
 
 import java.util.concurrent.TimeUnit;

@@ -2,6 +2,9 @@ package rip.thecraft.brawl.game.games;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import gg.manny.streamline.util.ColorUtil;
+import gg.manny.streamline.util.ItemBuilder;
+import gg.manny.streamline.util.cuboid.Cuboid;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -20,11 +23,8 @@ import rip.thecraft.brawl.game.GameFlag;
 import rip.thecraft.brawl.game.GameState;
 import rip.thecraft.brawl.game.GameType;
 import rip.thecraft.brawl.game.team.GamePlayer;
-import rip.thecraft.brawl.util.BukkitUtil;
 import rip.thecraft.brawl.util.DurationFormatter;
-import rip.thecraft.brawl.util.cuboid.Cuboid;
 import rip.thecraft.server.util.chatcolor.CC;
-import gg.manny.streamline.util.ItemBuilder;
 import rip.thecraft.spartan.util.TimeUtils;
 
 import java.util.ArrayList;
@@ -167,9 +167,9 @@ public class WoolShuffle extends Game implements Listener {
     public void regenerate() {
         blockData.clear(); // Reset
 
-        broadcast(Game.PREFIX + ChatColor.YELLOW + "Color chosen is now " + BukkitUtil.getFriendlyName(chosenColor) + ChatColor.YELLOW + ".");
-        broadcast(Game.PREFIX + ChatColor.YELLOW + "Color chosen is now " + BukkitUtil.getFriendlyName(chosenColor) + ChatColor.YELLOW + ".");
-        broadcast(Game.PREFIX + ChatColor.YELLOW + "Color chosen is now " + BukkitUtil.getFriendlyName(chosenColor) + ChatColor.YELLOW + ".");
+        broadcast(Game.PREFIX + ChatColor.YELLOW + "Color chosen is now " + ColorUtil.getFriendlyName(chosenColor) + ChatColor.YELLOW + ".");
+        broadcast(Game.PREFIX + ChatColor.YELLOW + "Color chosen is now " + ColorUtil.getFriendlyName(chosenColor) + ChatColor.YELLOW + ".");
+        broadcast(Game.PREFIX + ChatColor.YELLOW + "Color chosen is now " + ColorUtil.getFriendlyName(chosenColor) + ChatColor.YELLOW + ".");
 
         state = GameState.STARTED;
         ItemStack item = getItem();
@@ -245,7 +245,7 @@ public class WoolShuffle extends Game implements Listener {
             toReturn.add(CC.BLUE + "   ");
         }
         if (this.state == GameState.STARTED) {
-            toReturn.add(CC.WHITE + "Color: "  + (chosenColor == null ? "None" : BukkitUtil.getFriendlyName(chosenColor)));
+            toReturn.add(CC.WHITE + "Color: "  + (chosenColor == null ? "None" : ColorUtil.getFriendlyName(chosenColor)));
         } else if (this.state == GameState.FINISHED) {
             toReturn.add(CC.WHITE + "Final Round: " + CC.LIGHT_PURPLE + this.round);
             toReturn.add(CC.BLUE + "   ");
@@ -273,7 +273,7 @@ public class WoolShuffle extends Game implements Listener {
     private ItemStack getItem() {
         return new ItemBuilder(Material.CARPET)
                 .data(this.chosenColor.getData())
-                .name(BukkitUtil.getFriendlyName(this.chosenColor))
+                .name(ColorUtil.getFriendlyName(this.chosenColor))
                 .build();
     }
 
