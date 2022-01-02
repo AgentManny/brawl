@@ -1,18 +1,21 @@
 package rip.thecraft.brawl.spawn.event.menu;
 
+import gg.manny.streamline.util.ItemBuilder;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.game.menu.GameMenu;
 import rip.thecraft.brawl.spawn.event.Event;
 import rip.thecraft.brawl.spawn.event.EventHandler;
 import rip.thecraft.brawl.spawn.event.EventType;
 import rip.thecraft.brawl.util.menu.Menu;
 import rip.thecraft.brawl.util.menu.MenuButton;
 import rip.thecraft.server.util.chatcolor.CC;
-import gg.manny.streamline.util.ItemBuilder;
 import rip.thecraft.spartan.util.TimeUtils;
 
 import java.util.Collection;
@@ -23,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 public class EventsMenu extends Menu {
 
     public EventsMenu() {
-        super("Events");
+        super("Spawn Events");
     }
 
     @Override
@@ -55,11 +58,16 @@ public class EventsMenu extends Menu {
                 y++;
             }
         }
-    }
 
-    @Override
-    public int size(Map<Integer, MenuButton> buttons) {
-        return super.size(buttons) + 9;
+        ItemStack item = new ItemBuilder(Material.FIREWORK_CHARGE)
+                .color(Color.PURPLE)
+                .name(ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Minigames")
+                .flags(ItemFlag.HIDE_POTION_EFFECTS)
+                .lore(ChatColor.GRAY + "Click to browse our minigame", ChatColor.GRAY + "selection.")
+                .create();
+        buttons.put(size(buttons) + 4, new MenuButton(item).setClick((clicker, click) -> {
+            new GameMenu().open(clicker);
+        }));
     }
 
     private ItemStack getItem(EventHandler handler, EventType type) {
@@ -86,7 +94,7 @@ public class EventsMenu extends Menu {
         }
         meta.setDisplayName(type.getColor() + ChatColor.BOLD.toString() + type.getDisplayName());
         meta.setLore(lore);
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_POTION_EFFECTS);
         item.setItemMeta(meta);
         return item;
     }

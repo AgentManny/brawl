@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameType;
-import rip.thecraft.brawl.game.menu.GameSelectorMenu;
+import rip.thecraft.brawl.game.menu.GameMenu;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.EconUtil;
 import rip.thecraft.server.util.chatcolor.CC;
@@ -19,7 +19,7 @@ public class HostCommand {
     @Command(names = { "host", "event", "game" }, description = "Host an event")
     public static void execute(Player sender) {
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(sender);
-        if (playerData.isSpawnProtection()) new GameSelectorMenu().openMenu(sender);
+        if (playerData.isSpawnProtection()) new GameMenu().open(sender);
         else {
             sender.sendMessage(ChatColor.RED + "You need to be in spawn to host events.");
         }

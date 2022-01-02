@@ -8,12 +8,12 @@ import rip.thecraft.brawl.duelarena.DuelArena;
 import rip.thecraft.brawl.duelarena.match.queue.QueueType;
 import rip.thecraft.brawl.duelarena.menu.LoadoutMenu;
 import rip.thecraft.brawl.game.lobby.GameLobby;
-import rip.thecraft.brawl.game.menu.GameSelectorMenu;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.menu.KitMenu;
 import rip.thecraft.brawl.leaderboard.menu.LeaderboardEloMenu;
 import rip.thecraft.brawl.leaderboard.menu.LeaderboardMenu;
 import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.spawn.event.menu.EventsMenu;
 import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.brawl.spectator.menu.SpectatorPlayerMenu;
 import rip.thecraft.server.util.chatcolor.CC;
@@ -43,7 +43,7 @@ public enum MetadataType {
         new KitMenu().open(player);
     }),
     EVENT_SELECTOR((player, playerData) -> {
-        new GameSelectorMenu().openMenu(player);
+        new EventsMenu().open(player);
     }),
     EVENT_LEAVE((player, playerData) -> {
         GameLobby lobby = Brawl.getInstance().getGameHandler().getLobby();

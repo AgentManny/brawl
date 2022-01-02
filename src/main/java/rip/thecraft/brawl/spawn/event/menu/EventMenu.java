@@ -71,7 +71,7 @@ public class EventMenu extends Menu {
         }
 
         meta.setDisplayName((event.isSetup() ? ChatColor.GREEN : ChatColor.RED) + ChatColor.BOLD.toString() + event.getName());
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_POTION_EFFECTS);
         item.setItemMeta(meta);
         return item;
     }

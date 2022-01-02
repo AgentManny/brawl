@@ -14,7 +14,6 @@ import rip.thecraft.brawl.kit.ability.Ability;
 import rip.thecraft.brawl.kit.ability.AbilityHandler;
 import rip.thecraft.brawl.duelarena.DuelArena;
 import rip.thecraft.brawl.game.GameType;
-import rip.thecraft.brawl.listener.TestListener;
 import rip.thecraft.spartan.command.Command;
 import rip.thecraft.spartan.command.Param;
 
@@ -38,17 +37,6 @@ public class ServerCommand {
         boolean newValue = !type.isDisabled();
         sender.sendMessage(ChatColor.GOLD + "You have " + (newValue ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled") + ChatColor.GOLD + " game " + ChatColor.WHITE + type.getShortName() + ChatColor.GOLD + ".");
         type.setDisabled(newValue);
-    }
-
-    @Command(names = "range", permission = "op", hidden = true)
-    public static void range(Player player, Player target, @Param(defaultValue = "0") int range) {
-        if (range <= 0) {
-            player.sendMessage(ChatColor.RED + "Removed range from " + target.getName() + ".");
-            TestListener.range.remove(target.getUniqueId());
-            return;
-        }
-        player.sendMessage(ChatColor.GREEN + "Set range for " + ChatColor.WHITE + target.getName() + ChatColor.GREEN + " to: " + range + " blocks");
-        TestListener.range.put(target.getUniqueId(), range);
     }
 
     @Command(names = "setmodifers strength", permission = "op")

@@ -1,5 +1,6 @@
 package rip.thecraft.brawl.kit.menu;
 
+import gg.manny.streamline.util.ItemBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -15,7 +16,6 @@ import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.util.menu.Menu;
 import rip.thecraft.brawl.util.menu.MenuButton;
 import rip.thecraft.server.util.chatcolor.CC;
-import gg.manny.streamline.util.ItemBuilder;
 import rip.thecraft.spartan.util.TimeUtils;
 
 import java.util.List;
@@ -124,7 +124,7 @@ public class KitMenu extends Menu {
         }
         meta.setDisplayName((unlocked ? ChatColor.GREEN : ChatColor.RED) + ChatColor.BOLD.toString() + kit.getName());
         meta.setLore(lore);
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_POTION_EFFECTS);
         item.setItemMeta(meta);
         return item;
     }

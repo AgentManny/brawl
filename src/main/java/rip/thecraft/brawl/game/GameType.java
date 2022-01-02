@@ -1,12 +1,13 @@
 package rip.thecraft.brawl.game;
 
+import gg.manny.streamline.util.ItemBuilder;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.text.WordUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.kit.type.RankType;
-import gg.manny.streamline.util.ItemBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +18,7 @@ public enum GameType {
 
 	FFA(
 			"Free For All", "FFA",
+			ChatColor.AQUA,
 			new ItemBuilder(Material.DIAMOND_SWORD).build(),
 			RankType.SILVER,
 			"Kill each other until one player is declared the champion.",
@@ -26,6 +28,7 @@ public enum GameType {
 	),
 
 	SPLEEF(
+			ChatColor.BLUE,
 			new ItemBuilder(Material.DIAMOND_SPADE).build(),
 			RankType.SILVER,
 			"Destroy blocks below other players, allowing them to fall off the playing field.",
@@ -35,6 +38,7 @@ public enum GameType {
 	),
 
 	BRACKETS(
+			ChatColor.GOLD,
 			new ItemBuilder(Material.MUSHROOM_SOUP).build(),
 			RankType.GOLD,
 			"A series of 1v1 matches against players, whoever has the best skills wins.",
@@ -46,6 +50,7 @@ public enum GameType {
 	),
 
 	SUMO(
+			ChatColor.YELLOW,
 			new ItemBuilder(Material.LEASH).build(),
 			RankType.PLATINUM,
 			"Punch opponents off a platform, being the last player standing to be declared victorious.",
@@ -58,6 +63,7 @@ public enum GameType {
 
 	OITC(
 			"One in the Chamber", "OITC",
+			ChatColor.LIGHT_PURPLE,
 			new ItemBuilder(Material.BOW).build(),
 			RankType.PLATINUM,
 			"Sniper. One shot, one kill! Last man standing wins!",
@@ -70,6 +76,7 @@ public enum GameType {
 
 	WOOL_SHUFFLE(
 			"Wool Shuffle",
+			ChatColor.LIGHT_PURPLE,
 			new ItemBuilder(Material.WOOL).data((byte)10).build(),
 			RankType.DIAMOND,
 			"Run to the right color before the floor drops! Last man standing wins.",
@@ -82,6 +89,7 @@ public enum GameType {
 
 	THIMBLE(
 			"Thimble",
+			ChatColor.AQUA,
 			new ItemBuilder(Material.WATER_BUCKET).build(),
 			RankType.MASTER,
 			"Jump in the water and avoid obstacles. Last man standing wins.",
@@ -93,6 +101,7 @@ public enum GameType {
 	),
 
 	TNT_TAG("TNT Tag", "Tag",
+			ChatColor.RED,
 			new ItemBuilder(Material.TNT).build(),
 			RankType.CHAMPION,
 			"Tag with a twist, don't blow up! Last man standing wins!",
@@ -104,6 +113,7 @@ public enum GameType {
 	),
 
 	ARCADE("Arcade",
+			ChatColor.DARK_PURPLE,
 			new ItemBuilder(Material.IRON_CHESTPLATE).build(),
 			RankType.CHAMPION,
 			"Free for All with a twist. Players spawn with random kits.",
@@ -115,6 +125,7 @@ public enum GameType {
 	),
 
 	WOOL("Wool FFA",
+			ChatColor.WHITE,
 			new ItemBuilder(Material.WOOL).build(),
 			RankType.CHAMPION,
 			"Free for All with a twist. Players spawn with the ability to place blocks.",
@@ -126,6 +137,7 @@ public enum GameType {
 	),
 
 	FEAST("Feast",
+			ChatColor.GREEN,
 			new ItemBuilder(Material.ENCHANTMENT_TABLE).build(),
 			RankType.CHAMPION,
 			"Feast",
@@ -139,6 +151,8 @@ public enum GameType {
 
 	private final String name;
 	private final String shortName;
+
+	private ChatColor color = ChatColor.LIGHT_PURPLE;
 
 	private final String description;
 
@@ -157,9 +171,10 @@ public enum GameType {
 
 	@Setter private boolean disabled = false;
 
-	GameType(ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, int creditsReward, int expReward) {
+	GameType(ChatColor color, ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, int creditsReward, int expReward) {
 		this.name = WordUtils.capitalizeFully(this.name()).replace("_", " ");
 		this.shortName = this.name;
+		this.color = color;
 		this.icon = icon;
 		this.description = description;
 		this.minPlayers = minPlayers;
@@ -171,9 +186,10 @@ public enum GameType {
 		this.requiredLocations = new ArrayList<>(); //Random
 	}
 
-	GameType(ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, List<String> requiredLocations, int creditsReward, int expReward) {
+	GameType(ChatColor color, ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, List<String> requiredLocations, int creditsReward, int expReward) {
 		this.name = WordUtils.capitalizeFully(this.name()).replace("_", " ");
 		this.shortName = this.name;
+		this.color = color;
 		this.description = description;
 		this.icon = icon;
 		this.rankType = rankType;
@@ -187,9 +203,10 @@ public enum GameType {
 		}
 	}
 
-	GameType(String name, ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, List<String> requiredLocations, int creditsReward, int expReward) {
+	GameType(String name, ChatColor color, ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, List<String> requiredLocations, int creditsReward, int expReward) {
 		this.name = name;
 		this.shortName = name;
+		this.color = color;
 		this.description = description;
 		this.minPlayers = minPlayers;
 		this.maxPlayers = maxPlayers;
@@ -203,9 +220,10 @@ public enum GameType {
 		}
 	}
 
-	GameType(String name, ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, List<String> requiredLocations, int creditsReward, int expReward, boolean hidden) {
+	GameType(String name, ChatColor color, ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, List<String> requiredLocations, int creditsReward, int expReward, boolean hidden) {
 		this.name = name;
 		this.shortName = name;
+		this.color = color;
 		this.description = description;
 		this.minPlayers = minPlayers;
 		this.maxPlayers = maxPlayers;
@@ -220,8 +238,9 @@ public enum GameType {
 		this.hidden = hidden;
 	}//temporary
 
-	GameType(String name, String shortName, ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, List<String> requiredLocations, int creditsReward, int expReward) {
+	GameType(String name, String shortName, ChatColor color, ItemStack icon, RankType rankType, String description, int minPlayers, int maxPlayers, List<String> requiredLocations, int creditsReward, int expReward) {
 		this.name = name;
+		this.color = color;
 		this.minPlayers = minPlayers;
 		this.maxPlayers = maxPlayers;
 		this.creditsReward = creditsReward;

@@ -79,7 +79,7 @@ public class KitButton extends Button {
         }
         ItemStack itemStack = item.create();
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_POTION_EFFECTS);
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
