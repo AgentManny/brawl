@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.player.PlayerData;
 
 import static rip.thecraft.brawl.visual.VisualManager.HOLO_STATS;
 
@@ -45,6 +46,10 @@ public class VisualListener implements Listener {
             public void run() {
                 if (visualManager.playerStats.containsKey(player.getUniqueId())) {
                     visualManager.playerStats.get(player.getUniqueId()).sendTo(player);
+                }
+                PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
+                if (playerData != null && (playerData.isSpawnProtection() || playerData.isDuelArena())) {
+                    playerData.getLevel().updateExp(player);
                 }
             }
         }.runTaskLater(HologramPlugin.getInstance(), 15L);

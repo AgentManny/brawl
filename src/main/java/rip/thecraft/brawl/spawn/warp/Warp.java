@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.warp;
+package rip.thecraft.brawl.spawn.warp;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

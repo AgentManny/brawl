@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.warp;
+package rip.thecraft.brawl.spawn.warp;
 
 import com.google.gson.reflect.TypeToken;
 import lombok.Getter;

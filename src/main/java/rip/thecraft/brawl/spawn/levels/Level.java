@@ -7,14 +7,12 @@ import org.bson.Document;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.spawn.challenges.ChallengeType;
-import rip.thecraft.brawl.spawn.challenges.player.PlayerChallenge;
 import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.statistic.KitStatistic;
-import rip.thecraft.brawl.spawn.levels.task.LevelFlashTask;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.statistic.StatisticType;
+import rip.thecraft.brawl.spawn.challenges.ChallengeType;
+import rip.thecraft.brawl.spawn.challenges.player.PlayerChallenge;
 import rip.thecraft.brawl.util.MathUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 
@@ -118,7 +116,9 @@ public class Level {
         currentExp += exp;
 
         if (player != null) {
-            player.setExp((float) (getPercentageExp() * 0.01F));
+            if (playerData.isSpawnProtection() || playerData.isDuelArena()) {
+                player.setExp((float) (getPercentageExp() * 0.01F));
+            }
             String message = ChatColor.GREEN + "+" + exp + " exp";
             if (action != null) {
                 message += ChatColor.GRAY + " (" + action + ChatColor.GRAY + ")";
@@ -169,7 +169,7 @@ public class Level {
             for (LevelFeature feature : levelData.getFeatures()) {
                 player.sendMessage(ChatColor.GRAY + " - " + ChatColor.WHITE + feature.getName());
             }
-            new LevelFlashTask(player, this).runTaskTimer(Brawl.getInstance(), 0, 7); // Run cool animation :D
+//            new LevelFlashTask(player, this).runTaskTimer(Brawl.getInstance(), 0, 7); // Run cool animation :D
         }
         playerData.markForSave();
     }
@@ -180,8 +180,10 @@ public class Level {
 
     public void updateExp(Player player) {
         if (player != null) {
-            player.setLevel(getCurrentLevel());
-            player.setExp((float) (getPercentageExp() * 0.01F));
+            if (playerData.isSpawnProtection() || playerData.isDuelArena()) {
+                player.setLevel(getCurrentLevel());
+                player.setExp((float) (getPercentageExp() * 0.01F));
+            }
         }
     }
 

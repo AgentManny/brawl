@@ -13,24 +13,25 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.kit.ability.Ability;
-import rip.thecraft.brawl.spawn.challenges.player.ChallengeTracker;
 import rip.thecraft.brawl.duelarena.queue.QueueData;
 import rip.thecraft.brawl.game.GameType;
-import rip.thecraft.brawl.server.item.type.InventoryType;
 import rip.thecraft.brawl.kit.Kit;
+import rip.thecraft.brawl.kit.ability.Ability;
 import rip.thecraft.brawl.kit.event.KitActivateEvent;
 import rip.thecraft.brawl.kit.event.KitDeactivateEvent;
 import rip.thecraft.brawl.kit.type.RankType;
 import rip.thecraft.brawl.kit.type.RefillType;
-import rip.thecraft.brawl.spawn.levels.Level;
 import rip.thecraft.brawl.player.achievements.Achievement;
 import rip.thecraft.brawl.player.data.SpawnData;
 import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.player.statistic.StatisticType;
+import rip.thecraft.brawl.player.task.PlayerCooldownTask;
+import rip.thecraft.brawl.server.item.type.InventoryType;
 import rip.thecraft.brawl.server.region.RegionType;
-import rip.thecraft.brawl.spawn.team.Team;
+import rip.thecraft.brawl.spawn.challenges.player.ChallengeTracker;
+import rip.thecraft.brawl.spawn.levels.Level;
 import rip.thecraft.brawl.spawn.perks.Perk;
+import rip.thecraft.brawl.spawn.team.Team;
 import rip.thecraft.brawl.util.BrawlUtil;
 import rip.thecraft.falcon.Falcon;
 import rip.thecraft.server.util.chatcolor.CC;
@@ -108,6 +109,8 @@ public class PlayerData {
 
     private BukkitTask enderpearlTask;
     private BukkitRunnable tpTask;
+
+    private PlayerCooldownTask cooldownTask;
 
     private long lastAction = System.currentTimeMillis();
     private Location lastLocation = null;
@@ -306,6 +309,7 @@ public class PlayerData {
                 player.sendMessage(ChatColor.GREEN + "Clear your kit by using " + ChatColor.WHITE + "/clearkit" + ChatColor.GREEN + ".");
             }
         }
+        level.updateExp(player);
     }
 
     public void clearKit(boolean sendMessage) {
@@ -327,7 +331,9 @@ public class PlayerData {
         }
 
         selectedKit.getAbilities().forEach(ability -> removeCooldown(ability.getCooldownId()));
-
+        if (cooldownTask != null) {
+            cooldownTask.cancel();
+        }
         previousKit = selectedKit;
         selectedKit = null;
 
@@ -336,6 +342,7 @@ public class PlayerData {
 
         spawnProtection = true;
 
+        level.updateExp(player);
         if (!player.hasMetadata("staffmode")) {
             Brawl.getInstance().getItemHandler().apply(player, InventoryType.SPAWN);
         }
@@ -524,6 +531,9 @@ public class PlayerData {
                     if (cd != null) {
                         cd.setExpire(0);
                         cd.setNotified(true);
+                    }
+                    if (cooldownTask != null) {
+                        cooldownTask.cancel();
                     }
                 });
                 if (selectedKit != this.selectedKit) {

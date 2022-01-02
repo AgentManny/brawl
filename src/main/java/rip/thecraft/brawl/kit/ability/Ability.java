@@ -1,5 +1,6 @@
 package rip.thecraft.brawl.kit.ability;
 
+import gg.manny.streamline.util.ItemBuilder;
 import lombok.Getter;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -10,23 +11,22 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.duelarena.match.Match;
+import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.kit.ability.event.AbilityCooldownEvent;
 import rip.thecraft.brawl.kit.ability.property.AbilityData;
 import rip.thecraft.brawl.kit.ability.property.AbilityProperty;
 import rip.thecraft.brawl.kit.ability.property.codec.Codec;
 import rip.thecraft.brawl.kit.ability.property.codec.Codecs;
 import rip.thecraft.brawl.kit.ability.task.AbilityTasks;
+import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.player.task.PlayerCooldownTask;
+import rip.thecraft.brawl.server.region.RegionType;
 import rip.thecraft.brawl.spawn.challenges.ChallengeType;
 import rip.thecraft.brawl.spawn.challenges.player.PlayerChallenge;
-import rip.thecraft.brawl.duelarena.match.Match;
-import rip.thecraft.brawl.kit.Kit;
-import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.server.region.RegionType;
 import rip.thecraft.brawl.spawn.perks.Perk;
-import rip.thecraft.brawl.util.SchedulerUtil;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.util.Cooldown;
-import gg.manny.streamline.util.ItemBuilder;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -266,7 +266,7 @@ public abstract class Ability {
     /**
      * @return Cooldown timer in millis
      */
-    private long getCooldown() {
+    public long getCooldown() {
         return TimeUnit.SECONDS.toMillis(cooldown);
     }
 
@@ -304,17 +304,9 @@ public abstract class Ability {
         }
 
         Cooldown cooldown = toCooldown(playerData);
-        SchedulerUtil.runTaskLater(() -> {
-            if (player == null || cooldown == null) return;
-
-            if (hasCooldown(player, false)) {
-                if (!cooldown.isNotified()) {
-                    player.sendMessage(ChatColor.GREEN + "You can now use " + ChatColor.BOLD + getName() + ChatColor.GREEN + " again.");
-                    cooldown.setNotified(true);
-                    onCooldownExpire(player);
-                }
-            }
-        }, 20L * TimeUnit.MILLISECONDS.toSeconds(countdown), false);
+        PlayerCooldownTask cooldownTask = new PlayerCooldownTask(player, playerData, this, getItem(), cooldown, this.cooldown);
+        cooldownTask.runTaskTimer(Brawl.getInstance(), 2L, 2L);
+        playerData.setCooldownTask(cooldownTask);
     }
 
     public Cooldown toCooldown(PlayerData playerData) {

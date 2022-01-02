@@ -18,7 +18,6 @@ import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.duelarena.DuelArena;
 import rip.thecraft.brawl.duelarena.match.Match;
 import rip.thecraft.brawl.duelarena.match.MatchState;
-import rip.thecraft.brawl.spawn.event.Event;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameElimination;
 import rip.thecraft.brawl.game.GameFlag;
@@ -27,6 +26,7 @@ import rip.thecraft.brawl.kit.Kit;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.server.region.RegionType;
+import rip.thecraft.brawl.spawn.event.Event;
 import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.falcon.staff.StaffMode;
 import rip.thecraft.server.handler.MovementHandler;
@@ -137,6 +137,8 @@ public class MovementListener implements MovementHandler, Listener {
 
                     player.sendMessage(ChatColor.GRAY + "You no longer have spawn protection.");
                     playerData.setNoFallDamage(true);
+                    player.setLevel(0);
+                    player.setExp(0);
                 }
 
             } else {

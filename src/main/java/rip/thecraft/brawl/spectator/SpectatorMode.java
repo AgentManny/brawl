@@ -22,7 +22,7 @@ import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.util.VisibilityUtils;
 import rip.thecraft.brawl.util.location.LocationType;
-import rip.thecraft.brawl.warp.Warp;
+import rip.thecraft.brawl.spawn.warp.Warp;
 import rip.thecraft.spartan.nametag.NametagHandler;
 
 import java.util.UUID;

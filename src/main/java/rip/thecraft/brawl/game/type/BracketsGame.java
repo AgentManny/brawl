@@ -285,7 +285,6 @@ public class BracketsGame extends Game {
             }
 
             toReturn.add(CC.LIGHT_PURPLE + playerOne.getName() + CC.WHITE + " vs. " + CC.LIGHT_PURPLE + playerTwo.getName());
-            toReturn.add(CC.WHITE + "(" + CC.LIGHT_PURPLE + playerOne.getCPS() + "CPS" + CC.WHITE + ") vs. (" + CC.LIGHT_PURPLE + playerTwo.getCPS() + "CPS" + CC.WHITE + ")");
             toReturn.add(CC.WHITE + "(" + CC.LIGHT_PURPLE + playerOne.getPing() + "ms" + CC.WHITE + ") vs. (" + CC.LIGHT_PURPLE + playerTwo.getPing() + "ms" + CC.WHITE + ")");
 
         } else if (this.state == GameState.FINISHED) {

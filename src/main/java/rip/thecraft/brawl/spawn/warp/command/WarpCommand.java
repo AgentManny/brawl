@@ -1,4 +1,4 @@
-package rip.thecraft.brawl.warp.command;
+package rip.thecraft.brawl.spawn.warp.command;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -9,8 +9,8 @@ import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.server.region.RegionType;
 import rip.thecraft.brawl.spectator.SpectatorMode;
-import rip.thecraft.brawl.warp.Warp;
-import rip.thecraft.brawl.warp.WarpManager;
+import rip.thecraft.brawl.spawn.warp.Warp;
+import rip.thecraft.brawl.spawn.warp.WarpManager;
 import rip.thecraft.spartan.command.Command;
 import rip.thecraft.spartan.command.Param;
 

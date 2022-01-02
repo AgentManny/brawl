@@ -35,7 +35,6 @@ import rip.thecraft.brawl.listener.*;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerDataHandler;
 import rip.thecraft.brawl.player.adapter.PlayerDataTypeAdapter;
-import rip.thecraft.brawl.player.cps.ClickTracker;
 import rip.thecraft.brawl.scoreboard.BrawlNametagAdapter;
 import rip.thecraft.brawl.scoreboard.BrawlScoreboardAdapter;
 import rip.thecraft.brawl.server.item.ItemHandler;
@@ -53,14 +52,14 @@ import rip.thecraft.brawl.spawn.team.Team;
 import rip.thecraft.brawl.spawn.team.TeamHandler;
 import rip.thecraft.brawl.spawn.team.adapter.TeamTypeAdapter;
 import rip.thecraft.brawl.spawn.upgrade.UpgradeManager;
+import rip.thecraft.brawl.spawn.warp.Warp;
+import rip.thecraft.brawl.spawn.warp.WarpManager;
+import rip.thecraft.brawl.spawn.warp.WarpTypeAdapter;
 import rip.thecraft.brawl.spectator.SpectatorManager;
 import rip.thecraft.brawl.util.EffectRestorer;
 import rip.thecraft.brawl.util.EntityHider;
 import rip.thecraft.brawl.util.menu.MenuHandler;
 import rip.thecraft.brawl.visual.VisualManager;
-import rip.thecraft.brawl.warp.Warp;
-import rip.thecraft.brawl.warp.WarpManager;
-import rip.thecraft.brawl.warp.WarpTypeAdapter;
 import rip.thecraft.server.CraftServer;
 import rip.thecraft.spartan.command.MCommandHandler;
 import rip.thecraft.spartan.nametag.NametagHandler;
@@ -147,7 +146,7 @@ public class Brawl extends JavaPlugin {
         MovementListener movementListener = new MovementListener(this);
         CraftServer.getInstance().addMovementHandler(movementListener);
 
-        Arrays.asList(new EnderChestListener(), new ChatListener(), new ClickTracker(this), new GameListener(), new AbilityListener(this), new ToolInteractListener(), new ProtectListener(this), new ArenaListener(this), new PlayerListener(this), new DamageListener(this), new SoupListener(this), new TeamListener(this), new PerkListener(), movementListener)
+        Arrays.asList(new EnderChestListener(), new ChatListener(), new GameListener(), new AbilityListener(this), new ToolInteractListener(), new ProtectListener(this), new ArenaListener(this), new PlayerListener(this), new DamageListener(this), new SoupListener(this), new TeamListener(this), new PerkListener(), movementListener)
                 .forEach(listener -> this.getServer().getPluginManager().registerEvents(listener, this));
 
         getServer().getScheduler().runTaskLater(this, () -> loaded = true, 10L); // Ensure no issues occur
@@ -207,7 +206,7 @@ public class Brawl extends JavaPlugin {
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.duelarena.command");
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.game.command");
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.kit.command");
-        MCommandHandler.registerPackage(this, "rip.thecraft.brawl.warp.command");
+        MCommandHandler.registerPackage(this, "rip.thecraft.brawl.spawn.warp.command");
 
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.spawn.challenges.command");
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.kit.ability.command");

@@ -8,9 +8,8 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.server.item.type.InventoryType;
 import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.player.cps.ClickTracker;
+import rip.thecraft.brawl.server.item.type.InventoryType;
 import rip.thecraft.brawl.util.VisibilityUtils;
 import rip.thecraft.spartan.nametag.NametagHandler;
 
@@ -82,15 +81,6 @@ public class GamePlayer {
         final Player player = this.toPlayer();
 
         return player == null ? this.getName() : player.getDisplayName();
-    }
-
-    public int getCPS() {
-        Player player = toPlayer();
-        if (player == null) {
-            return 0;
-        }
-
-        return ClickTracker.getCPS(player);
     }
 
     public int getPing() {
