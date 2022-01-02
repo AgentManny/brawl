@@ -1,5 +1,6 @@
 package rip.thecraft.brawl.spawn.event.command.manage;
 
+import gg.manny.streamline.util.cuboid.Cuboid;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -7,17 +8,17 @@ import org.bukkit.entity.Player;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.kit.ability.property.codec.Codec;
 import rip.thecraft.brawl.kit.ability.property.codec.Codecs;
+import rip.thecraft.brawl.server.region.selection.Selection;
 import rip.thecraft.brawl.spawn.event.Event;
 import rip.thecraft.brawl.spawn.event.EventHandler;
 import rip.thecraft.brawl.spawn.event.EventType;
-import rip.thecraft.brawl.server.region.selection.Selection;
-import gg.manny.streamline.util.cuboid.Cuboid;
 import rip.thecraft.spartan.command.Command;
 import rip.thecraft.spartan.command.MCommandHandler;
 import rip.thecraft.spartan.command.Param;
 import rip.thecraft.spartan.command.ParameterType;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
 
 import static rip.thecraft.brawl.spawn.event.command.EventInfoCommand.getFriendlyName;
@@ -64,6 +65,8 @@ public class EventSetCommand {
                                 e.printStackTrace();
                             }
                         }
+                    } else if (type.isAssignableFrom(List.class)) {
+                        sender.sendMessage(ChatColor.RED + "Usage: /event <add|remove|list> " + event.getName() + " " + property);
                     } else {
                         sender.sendMessage(ChatColor.RED + id + ChatColor.RED + " property is not editable.");
                     }
@@ -100,6 +103,8 @@ public class EventSetCommand {
                             sender.sendMessage(ChatColor.RED + newValue + ChatColor.RED + " is not a valid " + type.getSimpleName().toLowerCase() + ".");
                             e.printStackTrace();
                         }
+                    } else if (type.isAssignableFrom(List.class)) {
+                        sender.sendMessage(ChatColor.RED + "Usage: /event <add|remove|list> " + event.getName() + " " + property);
                     } else {
                         sender.sendMessage(ChatColor.RED + "Property " + property + " requires a value.");
                     }

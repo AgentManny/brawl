@@ -6,8 +6,10 @@ import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import rip.thecraft.brawl.spawn.challenges.rewards.RewardType;
+import rip.thecraft.brawl.spawn.event.events.FreeKits;
 import rip.thecraft.brawl.spawn.event.events.KingOfTheHill;
 import rip.thecraft.brawl.spawn.event.events.KitFrenzy;
+import rip.thecraft.brawl.spawn.event.events.Warper;
 import rip.thecraft.brawl.spawn.event.king.KillTheKing;
 import rip.thecraft.brawl.spawn.event.schematic.SchematicEvent;
 
@@ -119,7 +121,7 @@ public enum EventType {
     ),
 
     FREE_KITS(
-            null,
+            FreeKits.class,
             Material.GOLD_INGOT,
             "Free Kits", "Free Kits",
             "Players have access to all kits.",
@@ -131,7 +133,7 @@ public enum EventType {
     ),
 
     WARPER(
-            null,
+            Warper.class,
             Material.EYE_OF_ENDER,
             "Warper", "Warper",
             "Leaving spawn will teleport you to a new location.",

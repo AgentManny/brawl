@@ -25,6 +25,11 @@ public class KitFrenzy extends TimeEvent {
     }
 
     @Override
+    public boolean isMapsRequired() {
+        return false;
+    }
+
+    @Override
     public void onSpawnLeave(Player player, PlayerData playerData) {
         if (!playerData.isWarp() && playerData.getPlayerState() == PlayerState.FIGHTING) {
             Kit kit = Brawl.getInstance().getKitHandler().getRandomAbilityKit();

@@ -125,6 +125,10 @@ public abstract class Event {
         return type.getColor() + type.getDisplayName();
     }
 
+    public boolean isMapsRequired() {
+        return true;
+    }
+
     /**
      * Location of the event, will return null if no location is displayed.
      * @return Location of event

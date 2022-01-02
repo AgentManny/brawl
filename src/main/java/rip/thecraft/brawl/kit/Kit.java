@@ -19,6 +19,7 @@ import rip.thecraft.brawl.kit.type.RankType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.server.item.item.Armor;
 import rip.thecraft.brawl.server.item.item.Items;
+import rip.thecraft.brawl.spawn.event.events.FreeKits;
 import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.spartan.Spartan;
 import rip.thecraft.spartan.serialization.PotionEffectAdapter;
@@ -97,7 +98,7 @@ public class Kit implements Listener, Comparable<Kit> {
     }
 
     public boolean isFreeAccess() {
-        return System.currentTimeMillis() < globalAccess;
+        return Brawl.getInstance().getEventHandler().getActiveEvent() instanceof FreeKits || System.currentTimeMillis() < globalAccess;
     }
 
     public boolean isFree() {
