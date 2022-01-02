@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class TimeEvent extends Event {
 
-    @AbilityProperty
+    @AbilityProperty(id = "duration")
     public long duration = TimeUnit.SECONDS.toMillis(15);
 
     private transient long expiring;

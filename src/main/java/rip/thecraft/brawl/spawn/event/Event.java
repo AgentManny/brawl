@@ -3,6 +3,7 @@ package rip.thecraft.brawl.spawn.event;
 import com.mongodb.BasicDBObject;
 import com.mongodb.lang.Nullable;
 import gg.manny.streamline.util.PlayerUtils;
+import gg.manny.streamline.util.cuboid.Cuboid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -21,7 +22,6 @@ import rip.thecraft.brawl.kit.ability.property.codec.Codecs;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.util.LocationSerializer;
-import gg.manny.streamline.util.cuboid.Cuboid;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -175,7 +175,7 @@ public abstract class Event {
                         Object value =
                                 type.isAssignableFrom(Location.class) ? LocationSerializer.deserialize(properties.get(id, BasicDBObject.class)) :
                                 type.isAssignableFrom(Cuboid.class) ? new Cuboid(properties.get(id, Document.class)) :
-                                        codec != null ? codec.decode(id) : properties.get(id);
+                                        codec != null ? codec.decode(properties.getString(id)) : properties.get(id);
                         Brawl.getInstance().getServer().getLogger().info("Log: " + value.toString());
                         field.set(this, value);
                     }
@@ -216,7 +216,8 @@ public abstract class Event {
             try {
                 AbilityProperty property = field.getAnnotation(AbilityProperty.class);
                 if (property != null) {
-                    properties.put(property.id(), field);
+                    String id = property.id().isEmpty() ? field.getName().toLowerCase() : property.id();
+                    properties.put(id, field);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

@@ -6,7 +6,7 @@ public class LongCodecProvider implements Codec<Long> {
 
     @Override
     public Long decode(String value) {
-        return Long.valueOf(value);
+        return Long.parseLong(value);
     }
 
     @Override

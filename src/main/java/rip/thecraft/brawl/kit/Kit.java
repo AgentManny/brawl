@@ -15,10 +15,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.kit.ability.Ability;
-import rip.thecraft.brawl.server.item.item.Armor;
-import rip.thecraft.brawl.server.item.item.Items;
 import rip.thecraft.brawl.kit.type.RankType;
 import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.server.item.item.Armor;
+import rip.thecraft.brawl.server.item.item.Items;
 import rip.thecraft.brawl.util.PlayerUtil;
 import rip.thecraft.spartan.Spartan;
 import rip.thecraft.spartan.serialization.PotionEffectAdapter;
@@ -151,11 +151,17 @@ public class Kit implements Listener, Comparable<Kit> {
     }
 
     public void apply(Player player, boolean updateProfile, boolean addRefill) {
+        apply(player, updateProfile, addRefill, ChatColor.YELLOW + "You have chosen the " + ChatColor.LIGHT_PURPLE + this.name + ChatColor.YELLOW + " kit.");
+    }
+
+    public void apply(Player player, boolean updateProfile, boolean addRefill, String message) {
         PlayerUtil.resetInventory(player, GameMode.SURVIVAL);
 
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
         if (updateProfile) {
-            player.sendMessage(ChatColor.YELLOW + "You have chosen the " + ChatColor.LIGHT_PURPLE + this.name + ChatColor.YELLOW + " kit.");
+            if (message != null) {
+                player.sendMessage(message);
+            }
             playerData.setSelectedKit(this);
             playerData.getStatistic().get(this).addUses();
         }
