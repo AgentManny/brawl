@@ -6,9 +6,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.spawn.perks.Perk;
 import rip.thecraft.brawl.spawn.perks.menu.button.PerkInfoButton;
-import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.server.util.chatcolor.CC;
 import rip.thecraft.spartan.menu.Button;
 import rip.thecraft.spartan.menu.Menu;
@@ -30,7 +30,7 @@ public class UpgradeMenu extends Menu {
 
         PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
 
-        buttons.put(11, getPerkPreview());
+        buttons.put(10, getPerkPreview());
 
         int id = 18;
         int slot = 0;

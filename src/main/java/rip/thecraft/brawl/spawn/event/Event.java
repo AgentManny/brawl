@@ -1,7 +1,10 @@
 package rip.thecraft.brawl.spawn.event;
 
+import com.lunarclient.bukkitapi.LunarClientAPI;
+import com.lunarclient.bukkitapi.object.LCWaypoint;
 import com.mongodb.BasicDBObject;
 import com.mongodb.lang.Nullable;
+import gg.manny.streamline.util.ColorUtil;
 import gg.manny.streamline.util.PlayerUtils;
 import gg.manny.streamline.util.cuboid.Cuboid;
 import lombok.Getter;
@@ -96,8 +99,24 @@ public abstract class Event {
             }
         }
 
+        LCWaypoint waypoint = getWaypoint(false);
+        if (waypoint != null) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (PlayerUtils.onLegacyVersion(player)) continue;
+                LunarClientAPI.getInstance().removeWaypoint(player, waypoint);
+            }
+        }
+
         Brawl.getInstance().getEventHandler().setActiveEvent(null);
     }
+
+    protected LCWaypoint getWaypoint(boolean visibility) {
+        Location location = getLocation();
+        if (location == null) return null;
+        int color = ColorUtil.toDyeColor(type.getColor()).getColor().asRGB();
+        return new LCWaypoint(name, location, color, false, visibility);
+    }
+
 
     public long getUpdateInterval() {
         return 20L;
@@ -167,7 +186,6 @@ public abstract class Event {
     }
 
     protected void deserializeProperties(Document properties) {
-        Brawl.getInstance().getServer().getLogger().info(properties.toJson());
         for (Field field : getClass().getFields()) {
             try {
                 AbilityProperty property = field.getAnnotation(AbilityProperty.class);
@@ -177,10 +195,9 @@ public abstract class Event {
                         Class<?> type = field.getType();
                         Codec<?> codec = Codecs.getCodecByClass(type);
                         Object value =
-                                type.isAssignableFrom(Location.class) ? LocationSerializer.deserialize(properties.get(id, BasicDBObject.class)) :
+                                type.isAssignableFrom(Location.class) ? LocationSerializer.deserialize(BasicDBObject.parse(properties.get(id, Document.class).toJson())) :
                                 type.isAssignableFrom(Cuboid.class) ? new Cuboid(properties.get(id, Document.class)) :
                                         codec != null ? codec.decode(properties.getString(id)) : properties.get(id);
-                        Brawl.getInstance().getServer().getLogger().info("Log: " + value.toString());
                         field.set(this, value);
                     }
                 }
@@ -241,11 +258,15 @@ public abstract class Event {
     }
 
     public void announce(String title, String subtitle) {
+        LCWaypoint waypoint = getWaypoint(true);
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (PlayerUtils.onLegacyVersion(player)) continue;
             PlayerData playerData = Brawl.getInstance().getPlayerDataHandler().getPlayerData(player);
             if (playerData.isSpawnProtection() || playerData.getPlayerState() == PlayerState.FIGHTING) {
                 player.sendTitle(new Title(title, subtitle));
+                if (waypoint != null) {
+                    LunarClientAPI.getInstance().sendWaypoint(player, waypoint);
+                }
             }
         }
     }

@@ -5,9 +5,10 @@ import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
+import org.bukkit.Bukkit;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.spawn.challenges.Challenge;
 import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.spawn.challenges.Challenge;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -45,13 +46,15 @@ public class ChallengeTracker {
             // Adds the daily challenges
             List<Challenge> challenges = Challenge.getByDuration(Challenge.Duration.DAILY);
             List<PlayerChallenge> addedChallenges = new ArrayList<>();
-            while (!challenges.isEmpty() && challenges.size() > Challenge.MAX_DAILY_CHALLENGES) {
+            Bukkit.broadcastMessage("Forcing daily challenges: Total challenges: " + challenges.size() + " : ");
+            while (!challenges.isEmpty() && challenges.size() >= Challenge.MAX_DAILY_CHALLENGES) {
                 Challenge challenge = challenges.get(Brawl.RANDOM.nextInt(challenges.size() - 1));
-
+                Bukkit.broadcastMessage("Does this call: " + challenge.getName());
                 addedChallenges.add(new PlayerChallenge(challenge));
                 challenges.remove(challenge); // To prevent it from being added
             }
-            this.challenges.putAll(Challenge.Duration.WEEKLY, addedChallenges);
+            this.challenges.putAll(Challenge.Duration.DAILY, addedChallenges);
+            Bukkit.broadcastMessage("Added new daily cahllenges : " + addedChallenges.size());
         }
 
         if (forced || weeklyExpiry < System.currentTimeMillis()) {

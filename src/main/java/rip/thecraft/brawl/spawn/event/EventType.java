@@ -11,7 +11,7 @@ import rip.thecraft.brawl.spawn.event.events.KingOfTheHill;
 import rip.thecraft.brawl.spawn.event.events.KitFrenzy;
 import rip.thecraft.brawl.spawn.event.events.Warper;
 import rip.thecraft.brawl.spawn.event.king.KillTheKing;
-import rip.thecraft.brawl.spawn.event.schematic.SchematicEvent;
+import rip.thecraft.brawl.spawn.event.events.Schematic;
 
 import java.util.Map;
 
@@ -61,7 +61,7 @@ public enum EventType {
     ),
 
     SCHEMATIC(
-            SchematicEvent.class,
+            Schematic.class,
             Material.EMPTY_MAP,
             "Schematic", "Schematic",
             "Spawns a schematic for a certain amount of time",
