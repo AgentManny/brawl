@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import rip.thecraft.brawl.Brawl;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.spawn.challenges.Challenge;
+import rip.thecraft.brawl.spawn.challenges.ChallengeHandler;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -44,10 +45,10 @@ public class ChallengeTracker {
             dailyExpiry = upcomingDay.toInstant(ZoneOffset.UTC).toEpochMilli();
 
             // Adds the daily challenges
-            List<Challenge> challenges = Challenge.getByDuration(Challenge.Duration.DAILY);
+            List<Challenge> challenges = Brawl.getInstance().getChallengeHandler().getByDuration(Challenge.Duration.DAILY);
             List<PlayerChallenge> addedChallenges = new ArrayList<>();
             Bukkit.broadcastMessage("Forcing daily challenges: Total challenges: " + challenges.size() + " : ");
-            while (!challenges.isEmpty() && challenges.size() >= Challenge.MAX_DAILY_CHALLENGES) {
+            while (!challenges.isEmpty() && addedChallenges.size() < ChallengeHandler.MAX_DAILY_CHALLENGES) {
                 Challenge challenge = challenges.get(Brawl.RANDOM.nextInt(challenges.size() - 1));
                 Bukkit.broadcastMessage("Does this call: " + challenge.getName());
                 addedChallenges.add(new PlayerChallenge(challenge));
@@ -64,11 +65,10 @@ public class ChallengeTracker {
             LocalDateTime weeklyReset = LocalDateTime.of(upcomingDay, RESET_TIME);
             dailyExpiry = weeklyReset.toInstant(ZoneOffset.UTC).toEpochMilli();
 
-            List<Challenge> challenges = Challenge.getByDuration(Challenge.Duration.WEEKLY);
+            List<Challenge> challenges = Brawl.getInstance().getChallengeHandler().getByDuration(Challenge.Duration.WEEKLY);
             List<PlayerChallenge> addedChallenges = new ArrayList<>();
-            while (!challenges.isEmpty() && challenges.size() > Challenge.MAX_WEEKLY_CHALLENGES) {
+            while (!challenges.isEmpty() && addedChallenges.size() < ChallengeHandler.MAX_WEEKLY_CHALLENGES) {
                 Challenge challenge = challenges.get(Brawl.RANDOM.nextInt(challenges.size() - 1));
-
                 addedChallenges.add(new PlayerChallenge(challenge));
                 challenges.remove(challenge); // To prevent it from being added
             }
@@ -91,8 +91,12 @@ public class ChallengeTracker {
         weeklyExpiry = document.getLong("weekly-expiry");
         List<Document> challengesDoc = (List<Document>) document.get("challenges");
         challengesDoc.forEach(doc -> {
-            PlayerChallenge challenge = new PlayerChallenge(document);
-            this.challenges.get(challenge.getChallenge().getDuration()).add(challenge);
+            try {
+                Challenge challenge = Brawl.getInstance().getChallengeHandler().getChallengeByName(doc.getString("challenge"));
+                PlayerChallenge playerChallenge = new PlayerChallenge(challenge, doc);
+                this.challenges.get(challenge.getDuration()).add(playerChallenge);
+            } catch (EnumConstantNotPresentException ignored) { // If a challenge was removed
+            }
         });
 
         refresh(false);

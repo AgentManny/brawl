@@ -6,6 +6,8 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import gg.manny.streamline.Streamline;
+import gg.manny.streamline.command.CommandService;
 import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -41,6 +43,7 @@ import rip.thecraft.brawl.server.item.ItemHandler;
 import rip.thecraft.brawl.server.region.RegionHandler;
 import rip.thecraft.brawl.server.task.SaveTask;
 import rip.thecraft.brawl.spawn.challenges.Challenge;
+import rip.thecraft.brawl.spawn.challenges.ChallengeHandler;
 import rip.thecraft.brawl.spawn.challenges.command.adapter.ChallengeCommandAdapter;
 import rip.thecraft.brawl.spawn.event.EventHandler;
 import rip.thecraft.brawl.spawn.event.EventType;
@@ -84,6 +87,8 @@ public class Brawl extends JavaPlugin {
     private PlayerDataHandler playerDataHandler;
     private AbilityHandler abilityHandler;
     private KitHandler kitHandler;
+
+    private ChallengeHandler challengeHandler;
 
     // Upgrade section
     private KillstreakHandler killstreakHandler;
@@ -207,7 +212,7 @@ public class Brawl extends JavaPlugin {
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.kit.command");
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.spawn.warp.command");
 
-        MCommandHandler.registerPackage(this, "rip.thecraft.brawl.spawn.challenges.command");
+//        MCommandHandler.registerPackage(this, "rip.thecraft.brawl.spawn.challenges.command");
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.kit.ability.command");
         // Event commands
         MCommandHandler.registerPackage(this, "rip.thecraft.brawl.spawn.event.koth.command");
@@ -223,6 +228,11 @@ public class Brawl extends JavaPlugin {
         MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.spawn.team.command.staff");
         MCommandHandler.registerPackage(Brawl.getInstance(), "rip.thecraft.brawl.spawn.team.command");
          */
+        getCommandService().registerCommands();
+    }
+
+    public CommandService getCommandService() {
+        return Streamline.getCommandService(this);
     }
 
     private void registerHandlers() {
@@ -235,6 +245,8 @@ public class Brawl extends JavaPlugin {
 
         spectatorManager = new SpectatorManager();
         this.matchHandler = new DuelArenaHandler();
+
+        this.challengeHandler = new ChallengeHandler(this);
 
         this.killstreakHandler = new KillstreakHandler(this);
         this.upgradeManager = new UpgradeManager(this);

@@ -18,14 +18,14 @@ public class PlayerChallenge {
     private int value; // data tracker for player
     private boolean completed = true;
 
-    public PlayerChallenge(Document document) {
-        this.challenge = Challenge.valueOf(document.getString("challenge"));
+    public PlayerChallenge(Challenge challenge, Document document) {
+        this.challenge = challenge;
         this.completed = document.getBoolean("completed");
         this.value = document.getInteger("value");
     }
 
     public Document getAsDocument() {
-        return new Document("challenge", challenge.name())
+        return new Document("challenge", challenge.getName())
                 .append("value", value)
                 .append("completed", completed);
     }
@@ -34,7 +34,7 @@ public class PlayerChallenge {
         this.value += value;
         if (challenge.isComplete(value) && completed) {
             completed = false;
-            player.sendMessage(ChatColor.LIGHT_PURPLE + "Completed " + ChatColor.BOLD + challenge.getDuration().getDisplayName() + ChatColor.LIGHT_PURPLE + " challenge: " + ChatColor.YELLOW + challenge.name() + ChatColor.LIGHT_PURPLE + "(" + ChatColor.YELLOW + value + "/" + challenge.getMaxValue() + ChatColor.LIGHT_PURPLE + "):");
+            player.sendMessage(ChatColor.LIGHT_PURPLE + "Completed " + ChatColor.BOLD + challenge.getDuration().getDisplayName() + ChatColor.LIGHT_PURPLE + " challenge: " + ChatColor.YELLOW + challenge.getName() + ChatColor.LIGHT_PURPLE + "(" + ChatColor.YELLOW + value + "/" + challenge.getMaxValue() + ChatColor.LIGHT_PURPLE + "):");
             challenge.getRewards().forEach((rewardType, rewards) -> rewardType.addRewards(player, rewards));
         }
     }
