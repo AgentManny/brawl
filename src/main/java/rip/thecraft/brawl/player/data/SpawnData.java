@@ -1,25 +1,34 @@
 package rip.thecraft.brawl.player.data;
 
+import gg.manny.streamline.util.PlayerUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.bukkit.*;
+import org.bukkit.entity.*;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 import rip.thecraft.brawl.Brawl;
+import rip.thecraft.brawl.kit.Kit;
+import rip.thecraft.brawl.kit.statistic.KitStatistic;
+import rip.thecraft.brawl.player.PlayerData;
+import rip.thecraft.brawl.player.statistic.PlayerStatistic;
+import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.spawn.challenges.ChallengeType;
 import rip.thecraft.brawl.spawn.challenges.player.PlayerChallenge;
 import rip.thecraft.brawl.spawn.killstreak.Killstreak;
 import rip.thecraft.brawl.spawn.killstreak.KillstreakHandler;
-import rip.thecraft.brawl.kit.Kit;
-import rip.thecraft.brawl.kit.statistic.KitStatistic;
 import rip.thecraft.brawl.spawn.levels.ExperienceType;
-import rip.thecraft.brawl.player.PlayerData;
-import rip.thecraft.brawl.player.statistic.PlayerStatistic;
-import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.spawn.perks.Perk;
 import rip.thecraft.server.util.chatcolor.CC;
 
 import java.util.*;
 import java.util.stream.DoubleStream;
+
+import static rip.thecraft.brawl.spawn.jump.JumpHandler.JUMP_METADATA;
 
 @Getter
 @RequiredArgsConstructor
@@ -30,6 +39,132 @@ public class SpawnData {
     private final PlayerData playerData;
 
     private Map<UUID, Double> damageReceived = new HashMap<>();
+
+    private Location jumpLocation;
+    private BukkitTask jumpTask;
+    private boolean jumping = false;
+
+
+    public void cancelJump() {
+        jumpLocation = null;
+        jumping = false;
+        if (jumpTask != null) {
+            if (Brawl.getInstance().getServer().getScheduler().isCurrentlyRunning(jumpTask.getTaskId())) {
+                jumpTask.cancel();
+            }
+            jumpTask = null;
+        }
+    }
+
+    public void processJump(Player player) {
+        if (!jumping || jumpLocation == null) return;
+
+        Location playerLocation = player.getLocation();
+        double distance = jumpLocation.distance(playerLocation);
+        if (distance <= 3.5) {
+            Entity vehicle = player.getVehicle();
+            if (vehicle != null) {
+                if (!vehicle.isDead()) {
+                    vehicle.remove();
+                }
+            }
+            player.eject();
+            player.setFallDistance(0f);
+
+            final Location teleportLoc = jumpLocation.clone().add(0, 1, 0);
+            player.teleport(teleportLoc);
+            player.playSound(teleportLoc, Sound.BAT_TAKEOFF, 1f, 1.2f);
+
+            cancelJump();
+        }
+    }
+
+    /**
+     * Shoots a player to a specific location
+     * @param location Location to throw
+     */
+    public void throwPlayer(Location location) {
+        Player player = playerData.getPlayer();
+        if (player == null || jumping || !playerData.isSpawnProtection()) return;
+
+        if (playerData.getSelectedKit() == null) {
+            player.sendMessage(ChatColor.RED + "You need a kit selected to use launch pads.");
+            return;
+        }
+
+        boolean legacy = PlayerUtils.onLegacyVersion(player);
+        World world = player.getWorld();
+        Location playerLocation = player.getLocation();
+
+        LivingEntity entity = (LivingEntity) world.spawnEntity(playerLocation, legacy ? EntityType.HORSE : EntityType.ARMOR_STAND);
+        entity.spigot().setSilent(true); // Prevent entity from making a sound
+        entity.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 10, true, false)); // Prevent others from seeing
+        entity.setMetadata(JUMP_METADATA, new FixedMetadataValue(Brawl.getInstance(), true));
+        if (legacy) {
+            Horse horseEntity = (Horse) entity;
+            horseEntity.setTamed(true);
+            horseEntity.setAgeLock(true);
+        } else {
+            ArmorStand armorStand = (ArmorStand) entity;
+            armorStand.setSmall(true);
+            armorStand.setVisible(false);
+        }
+
+        double distance = location.distance(playerLocation);
+        if (distance <= 5) return; // If they are nearby don't shoot
+
+        Vector vector = location.clone().subtract(player.getLocation()).toVector().normalize();
+        boolean boost = playerLocation.getY() >= location.getY();
+        double yDiff = Math.abs(playerLocation.getY() - location.getY());
+
+        vector.setY(boost ? 1.2 : yDiff);
+        if (vector.getY() < 0.0) {
+            vector.setY(0.0);
+        }
+
+        vector.multiply(distance / 11);
+        vector.setY(Math.min(2.25, vector.getY() + (!boost ? yDiff / 35 : 0)));
+        // todo off set this location (create a large radius and choose a random location)
+        Location clone = location.clone();
+        clone.setDirection(vector);
+        Location entityLocation = entity.getLocation();
+        entityLocation.setYaw(clone.getYaw());
+        entityLocation.setPitch(clone.getPitch());
+
+        for (int i = 0; i < 3; i++) {
+            world.playEffect(playerLocation, Effect.EXPLOSION_LARGE, 1);
+        }
+        player.playSound(playerLocation, Sound.FIREWORK_BLAST, 1f, 1.5f);
+
+        jumping = true;
+        jumpLocation = location;
+
+        // Apply velocity
+        entity.setVelocity(vector);
+        entity.setPassenger(player);
+
+        jumpTask = new BukkitRunnable() {
+
+            int ticks = 0;
+
+            @Override
+            public void run() {
+                if (ticks++ >= 45) {
+                    if (jumping) {
+                        cancelJump();
+                        if (entity != null && !entity.isDead()) {
+                            entity.remove();
+                        }
+                    }
+                    cancel();
+                    return;
+                }
+
+                processJump(player);
+            }
+
+        }.runTaskTimer(Brawl.getInstance(), 2L, 2L);
+    }
 
     public List<String> applyAssists(Player killer, double finalCredits) {
         List<String> assisters = new ArrayList<>();

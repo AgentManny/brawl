@@ -150,8 +150,8 @@ public class MovementListener implements MovementHandler, Listener {
             }
 
             Location baseLocation = to.clone().subtract(0, .01D, 0);
-
-            if (baseLocation.getBlock().getType() == Material.SPONGE) {
+            Material type = baseLocation.getBlock().getType();
+            if (type == Material.SPONGE) {
                 Vector send = new Vector(0, 0, 0);
 
                 if (baseLocation.subtract(0, 1, 0).getBlock().getType() == Material.SPONGE) {
@@ -167,7 +167,7 @@ public class MovementListener implements MovementHandler, Listener {
                     }
                     player.setVelocity(send);
                 }
-            } else if (baseLocation.getBlock().getType() == Material.GOLD_BLOCK) {
+            } else if (type == Material.GOLD_BLOCK) {
                 Block relative = baseLocation.getBlock().getRelative(BlockFace.DOWN);
                 if (relative.getType() == Material.COMMAND) {
                     CommandBlock commandBlock = (CommandBlock) relative.getState();
@@ -183,6 +183,8 @@ public class MovementListener implements MovementHandler, Listener {
                         }
                     }
                 }
+            } else if (type == Material.SLIME_BLOCK) {
+                // todo implement launching for jump
             }
         }
     }

@@ -1,13 +1,11 @@
 package rip.thecraft.brawl.listener;
 
+import gg.manny.streamline.util.ItemBuilder;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
@@ -16,27 +14,28 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 import rip.thecraft.brawl.Brawl;
-import rip.thecraft.brawl.kit.ability.abilities.TimeLock;
-import rip.thecraft.brawl.kit.ability.handlers.KillHandler;
 import rip.thecraft.brawl.game.Game;
 import rip.thecraft.brawl.game.GameElimination;
 import rip.thecraft.brawl.game.GameFlag;
 import rip.thecraft.brawl.game.GameState;
-import rip.thecraft.brawl.server.item.type.InventoryType;
 import rip.thecraft.brawl.kit.Kit;
+import rip.thecraft.brawl.kit.ability.abilities.TimeLock;
+import rip.thecraft.brawl.kit.ability.handlers.KillHandler;
 import rip.thecraft.brawl.kit.type.RefillType;
-import rip.thecraft.brawl.spawn.levels.ExperienceType;
 import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
+import rip.thecraft.brawl.player.data.SpawnData;
 import rip.thecraft.brawl.player.event.PlayerKillEvent;
 import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.player.statistic.StatisticType;
+import rip.thecraft.brawl.server.item.type.InventoryType;
 import rip.thecraft.brawl.server.region.RegionType;
+import rip.thecraft.brawl.spawn.jump.JumpHandler;
+import rip.thecraft.brawl.spawn.levels.ExperienceType;
 import rip.thecraft.falcon.Falcon;
 import rip.thecraft.falcon.profile.Profile;
 import rip.thecraft.falcon.rank.Rank;
 import rip.thecraft.server.util.chatcolor.CC;
-import gg.manny.streamline.util.ItemBuilder;
 import rip.thecraft.spartan.util.PlayerUtils;
 
 import java.util.ArrayList;
@@ -101,8 +100,13 @@ public class DamageListener implements Listener {
                     playerData.setSelectedKit(null);
                 }
 
-                if(player.getVehicle() != null){
-                    player.getVehicle().remove();
+                Entity vehicle = player.getVehicle();
+                if(vehicle != null){
+                    if (vehicle.hasMetadata(JumpHandler.JUMP_METADATA)) {
+                        SpawnData spawnData = playerData.getSpawnData();
+                        spawnData.cancelJump();
+                    }
+                    vehicle.remove();
                     player.eject();
                 }
 
@@ -111,7 +115,7 @@ public class DamageListener implements Listener {
                 break;
             }
         }
-        
+
         Player killer = player.getKiller();
         if(killer != null && !killer.getUniqueId().equals(player.getUniqueId())) {
 

@@ -48,6 +48,7 @@ import rip.thecraft.brawl.spawn.challenges.command.adapter.ChallengeCommandAdapt
 import rip.thecraft.brawl.spawn.event.EventHandler;
 import rip.thecraft.brawl.spawn.event.EventType;
 import rip.thecraft.brawl.spawn.event.command.adapters.EventTypeCommandAdapter;
+import rip.thecraft.brawl.spawn.jump.JumpHandler;
 import rip.thecraft.brawl.spawn.killstreak.KillstreakHandler;
 import rip.thecraft.brawl.spawn.market.MarketHandler;
 import rip.thecraft.brawl.spawn.perks.PerkListener;
@@ -111,6 +112,8 @@ public class Brawl extends JavaPlugin {
     private RegionHandler regionHandler;
 
     private ItemHandler itemHandler;
+
+    private JumpHandler jumpHandler;
 
     private EntityHider entityHider;
     private EffectRestorer effectRestorer;
@@ -260,6 +263,7 @@ public class Brawl extends JavaPlugin {
         this.leaderboard = new Leaderboard(this);
         this.visualManager = new VisualManager(this);
 
+        this.jumpHandler = new JumpHandler(this);
         this.itemHandler = new ItemHandler(this);
 
         MScoreboardHandler.setAdapter(new BrawlScoreboardAdapter(this));
