@@ -23,12 +23,13 @@ import rip.thecraft.brawl.spawn.killstreak.Killstreak;
 import rip.thecraft.brawl.spawn.killstreak.KillstreakHandler;
 import rip.thecraft.brawl.spawn.levels.ExperienceType;
 import rip.thecraft.brawl.spawn.perks.Perk;
+import rip.thecraft.brawl.util.Tasks;
 import rip.thecraft.server.util.chatcolor.CC;
 
 import java.util.*;
 import java.util.stream.DoubleStream;
 
-import static rip.thecraft.brawl.spawn.jump.JumpHandler.JUMP_METADATA;
+import static rip.thecraft.brawl.spawn.launchpad.LaunchpadHandler.JUMP_METADATA;
 
 @Getter
 @RequiredArgsConstructor
@@ -46,6 +47,7 @@ public class SpawnData {
 
 
     public void cancelJump() {
+        Brawl.getInstance().getLaunchpadHandler().getPendingJumps().remove(playerData.getUuid());
         jumpLocation = null;
         jumping = false;
         if (jumpTask != null) {
@@ -54,6 +56,13 @@ public class SpawnData {
             }
             jumpTask = null;
         }
+        Tasks.schedule(() -> {
+            Player player = playerData.getPlayer();
+            if (player != null) {
+                player.setFallDistance(0f);
+                player.removeMetadata("MoveTooQuicklyBypass", Brawl.getInstance());
+            }
+        }, 10);
     }
 
     public void processJump(Player player) {
@@ -61,19 +70,21 @@ public class SpawnData {
 
         Location playerLocation = player.getLocation();
         double distance = jumpLocation.distance(playerLocation);
-        if (distance <= 3.5) {
-            Entity vehicle = player.getVehicle();
+        Entity vehicle = player.getVehicle();
+        if ((vehicle != null && vehicle.isOnGround()) || distance <= 3.5) {
+
+            player.eject();
             if (vehicle != null) {
                 if (!vehicle.isDead()) {
                     vehicle.remove();
                 }
             }
-            player.eject();
+
+//            final Location teleportLoc = jumpLocation.clone().add(0, 1, 0);
+//            player.teleport(teleportLoc);
             player.setFallDistance(0f);
 
-            final Location teleportLoc = jumpLocation.clone().add(0, 1, 0);
-            player.teleport(teleportLoc);
-            player.playSound(teleportLoc, Sound.BAT_TAKEOFF, 1f, 1.2f);
+            player.playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1f, 1.2f);
 
             cancelJump();
         }
@@ -87,16 +98,15 @@ public class SpawnData {
         Player player = playerData.getPlayer();
         if (player == null || jumping || !playerData.isSpawnProtection()) return;
 
-        if (playerData.getSelectedKit() == null) {
-            player.sendMessage(ChatColor.RED + "You need a kit selected to use launch pads.");
-            return;
-        }
-
         boolean legacy = PlayerUtils.onLegacyVersion(player);
         World world = player.getWorld();
         Location playerLocation = player.getLocation();
+        double distance = location.distance(playerLocation);
+        if (distance <= 5) return; // If they are nearby don't shoot
 
-        LivingEntity entity = (LivingEntity) world.spawnEntity(playerLocation, legacy ? EntityType.HORSE : EntityType.ARMOR_STAND);
+        playerData.setSpawnProtection(false);
+
+        LivingEntity entity = (LivingEntity) world.spawnEntity(playerLocation, EntityType.HORSE);
         entity.spigot().setSilent(true); // Prevent entity from making a sound
         entity.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 10, true, false)); // Prevent others from seeing
         entity.setMetadata(JUMP_METADATA, new FixedMetadataValue(Brawl.getInstance(), true));
@@ -110,8 +120,8 @@ public class SpawnData {
             armorStand.setVisible(false);
         }
 
-        double distance = location.distance(playerLocation);
-        if (distance <= 5) return; // If they are nearby don't shoot
+        player.setMetadata("MoveTooQuicklyBypass", new FixedMetadataValue(Brawl.getInstance(), true));
+        Brawl.getInstance().getLaunchpadHandler().getPendingJumps().put(player.getUniqueId(), location);
 
         Vector vector = location.clone().subtract(player.getLocation()).toVector().normalize();
         boolean boost = playerLocation.getY() >= location.getY();
@@ -142,7 +152,7 @@ public class SpawnData {
         // Apply velocity
         entity.setVelocity(vector);
         entity.setPassenger(player);
-
+        playerData.setNoFallDamage(true);
         jumpTask = new BukkitRunnable() {
 
             int ticks = 0;

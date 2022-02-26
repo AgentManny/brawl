@@ -30,7 +30,7 @@ import rip.thecraft.brawl.player.statistic.PlayerStatistic;
 import rip.thecraft.brawl.player.statistic.StatisticType;
 import rip.thecraft.brawl.server.item.type.InventoryType;
 import rip.thecraft.brawl.server.region.RegionType;
-import rip.thecraft.brawl.spawn.jump.JumpHandler;
+import rip.thecraft.brawl.spawn.launchpad.LaunchpadHandler;
 import rip.thecraft.brawl.spawn.levels.ExperienceType;
 import rip.thecraft.falcon.Falcon;
 import rip.thecraft.falcon.profile.Profile;
@@ -102,7 +102,7 @@ public class DamageListener implements Listener {
 
                 Entity vehicle = player.getVehicle();
                 if(vehicle != null){
-                    if (vehicle.hasMetadata(JumpHandler.JUMP_METADATA)) {
+                    if (vehicle.hasMetadata(LaunchpadHandler.JUMP_METADATA)) {
                         SpawnData spawnData = playerData.getSpawnData();
                         spawnData.cancelJump();
                     }

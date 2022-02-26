@@ -27,6 +27,7 @@ import rip.thecraft.brawl.player.PlayerData;
 import rip.thecraft.brawl.player.PlayerState;
 import rip.thecraft.brawl.server.region.RegionType;
 import rip.thecraft.brawl.spawn.event.Event;
+import rip.thecraft.brawl.spawn.launchpad.LaunchpadHandler;
 import rip.thecraft.brawl.spectator.SpectatorMode;
 import rip.thecraft.falcon.staff.StaffMode;
 import rip.thecraft.server.handler.MovementHandler;
@@ -184,7 +185,17 @@ public class MovementListener implements MovementHandler, Listener {
                     }
                 }
             } else if (type == Material.SLIME_BLOCK) {
-                // todo implement launching for jump
+                if (playerData.isSpawnProtection()) {
+                    if (playerData.getSelectedKit() == null) {
+                        if (playerData.getLastAction() < System.currentTimeMillis()) {
+                            player.sendMessage(ChatColor.RED + "You can't use Launchpads without selecting a kit.");
+                            playerData.setLastAction(System.currentTimeMillis() + 750L);
+                        }
+                        return;
+                    }
+                    LaunchpadHandler launchpadHandler = Brawl.getInstance().getLaunchpadHandler();
+                    playerData.getSpawnData().throwPlayer(launchpadHandler.getOptimalLocation(launchpadHandler.getRandomLocation()));
+                }
             }
         }
     }
